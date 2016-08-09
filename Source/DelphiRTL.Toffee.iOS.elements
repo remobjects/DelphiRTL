@@ -1,0 +1,48 @@
+<?xml version="1.0" standalone="yes"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
+    <PropertyGroup>
+        <RootNamespace>RTL2.Delphi</RootNamespace>
+        <ProjectGuid>632E0AD5-142E-4DB0-A8AC-2AB8E2D29BC4</ProjectGuid>
+        <OutputType>StaticLibrary</OutputType>
+        <AssemblyName>Delphi</AssemblyName>
+        <AllowGlobals>False</AllowGlobals>
+        <AllowLegacyWith>False</AllowLegacyWith>
+        <AllowLegacyOutParams>False</AllowLegacyOutParams>
+        <AllowLegacyCreate>False</AllowLegacyCreate>
+        <AllowUnsafeCode>False</AllowUnsafeCode>
+        <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+        <SDK>iOS</SDK>
+        <CreateHeaderFile>True</CreateHeaderFile>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <Optimize>false</Optimize>
+        <OutputPath>..\Bin\Debug</OutputPath>
+        <DefineConstants>DEBUG;TRACE;</DefineConstants>
+        <GenerateDebugInfo>True</GenerateDebugInfo>
+        <EnableAsserts>True</EnableAsserts>
+        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+        <CaptureConsoleOutput>False</CaptureConsoleOutput>
+        <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <Optimize>true</Optimize>
+        <OutputPath>..\Bin\Release</OutputPath>
+        <GenerateDebugInfo>True</GenerateDebugInfo>
+        <EnableAsserts>False</EnableAsserts>
+        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+        <CaptureConsoleOutput>False</CaptureConsoleOutput>
+        <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="CoreGraphics"/>
+        <Reference Include="Foundation"/>
+        <Reference Include="UIKit"/>
+        <Reference Include="rtl"/>
+        <Reference Include="libToffee"/>
+        <Reference Include="libxml2"/>
+        <Reference Include="libSugar"/>
+    </ItemGroup>
+    <ItemGroup/>
+    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets"/>
+    <Import Project="DelphiRTL.Shared.projitems" Label="Shared"/>
+</Project>
