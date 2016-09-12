@@ -74,6 +74,7 @@
     <ItemGroup/>
     <ItemGroup>
         <Compile Include="String.Echoes.pas"/>
+        <Compile Include="Properties\AssemblyInfo.pas"/>
     </ItemGroup>
     <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Echoes.targets"/>
     <Import Project="DelphiRTL.Shared.projitems" Label="Shared"/>
