@@ -1,4 +1,4 @@
-﻿namespace RTL2.Delphi;
+﻿namespace Elements.RTL.Delphi;
 
 type
   TClass = Sugar.Reflection.Type;

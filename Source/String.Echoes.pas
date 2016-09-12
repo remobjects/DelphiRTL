@@ -1,8 +1,10 @@
-﻿namespace RTL2.Delphi;
+﻿namespace Elements.RTL.Delphi;
 
 interface
 
 type
+  PlatformString = System.String;
+
   DelphiString = public partial record
   private
     method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer; static; partial;

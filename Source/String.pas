@@ -1,10 +1,8 @@
-﻿namespace RTL2.Delphi;
+﻿namespace Elements.RTL.Delphi;
 
 interface
 
 type
-  PlatformString = {$IF ECHOES}System.String{$ELSEIF TOFFEE}Foundation.NSString{$ELSEIF COOPER}java.lang.String{$ELSEIF ISLAND}RemObjects.Elements.System.String{$ENDIF};
-
   TCompareOption = (coLingIgnoreCase, coLingIgnoreDiacritic, coIgnoreCase,
     coIgnoreKanatype, coIgnoreNonSpace, coIgnoreSymbols, coIgnoreWidth,
     coLingCasing, coDigitAsNumbers, coStringSort) of Integer;

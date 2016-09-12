@@ -1,4 +1,4 @@
-﻿namespace RTL2.Delphi;
+﻿namespace Elements.RTL.Delphi;
 
 type
   TObject = Object;
@@ -70,7 +70,7 @@ type
 
     class method NewInstance: TObject; {virtual;}
     begin
-      result := new self; {$HINT is this valid? can;t imagune it would be}
+      result := new self; {$HINT is this valid? can't imagine it would be}
     end;
     
     procedure FreeInstance; {virtual;}

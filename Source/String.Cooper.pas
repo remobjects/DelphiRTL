@@ -1,8 +1,10 @@
-﻿namespace RTL2.Delphi;
+﻿namespace Elements.RTL.Delphi;
 
 interface
 
 type
+  PlatformString = java.lang.String;
+
   DelphiString = public partial record
   private
     method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer; static; partial;
@@ -15,7 +17,7 @@ type
     method ArrayToSplitRegex(Value: array of Char): PlatformString;
     method ArrayToSplitRegex(Value: array of DelphiString): PlatformString;
     method PlatformCharArrayToCharArray(Value: array of Char; StartIndex: Integer := -1; ALength: Integer := -1): TArray<Character>;
-    method CreateWithChars(Char: Char; Count: Integer): DelphiString; partial; static; 
+    method CreateWithChars(aChar: Char; aCount: Integer): DelphiString; partial; static; 
     method CreateFromArray(const Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString; partial; static; 
    
   public
@@ -669,12 +671,12 @@ begin
     result[i - lBegin] := Value[i];
 end;
 
-method DelphiString.CreateWithChars(Char: Char; Count: Integer): DelphiString;
+method DelphiString.CreateWithChars(aChar: Char; aCount: Integer): DelphiString;
 begin
- var chars := new Char[aCount];
+  var lChars := new Char[aCount];
   for i: Integer := 0 to aCount-1 do
-    chars[i] := aChar;
-  result := new java.lang.String(chars);
+    lChars[i] := aChar;
+  result := new java.lang.String(lChars);
 end;
 
 method DelphiString.CreateFromArray(Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString;
