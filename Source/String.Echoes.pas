@@ -382,7 +382,7 @@ end;
 
 method DelphiString.SetChar(aIndex: Int32; aValue: Char);
 begin
-  fData := fData.Substring(0, aIndex - 1) + aValue + fData.Substring(aIndex + 1);
+  fData := fData.Substring(0, aIndex) + aValue + fData.Substring(aIndex+1);
 end;
 
 method DelphiString.InternalCreate: PlatformString;

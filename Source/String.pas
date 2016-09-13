@@ -22,12 +22,11 @@ type
   [assembly:DefaultStringType("Elements.RTL.Delphi", typeOf(Elements.RTL.Delphi.WideString))]
   {$ENDIF}
 
-  WideString = DelphiString;
+  WideString = public DelphiString;
 
   DelphiString = public partial record
   private
     fData: PlatformString;
-    class var fOffset: Integer := 1;
     method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer; partial; static; empty;
     method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; IgnoreCase: Boolean; LocaleID: TLocaleID): Integer; static;
 
@@ -37,6 +36,14 @@ type
     method SetChar(aIndex: Int32; aValue: Char); partial; empty;
     method GetOffsetChar(aIndex: Int32): Char;
     method SetOffsetChar(aIndex: Int32; aValue: Char);
+    
+    class var fOffset: Integer := 1;
+    class method SetOffset(aOffset: Integer);
+    begin
+      if aOffset not in [0,1] then raise new Exception("Delphi String offset must be 0 or 1");
+      fOffset := aOffset;
+    end;
+    
     method GetLength: Integer;
     method CreateWithChars(Char: Char; Count: Integer): DelphiString; partial; static; empty;
     method CreateFromArray(const Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString; partial; static; empty;
@@ -54,7 +61,7 @@ type
     class operator &Add(Value1: DelphiString; Value2: Char): DelphiString;
     class operator &Add(Value1: Char; Value2: DelphiString): DelphiString;
     class operator Equal(Value1, Value2: DelphiString): Boolean;
-    class property Offset: Integer read fOffset write fOffset;
+    class property Offset: Integer read fOffset write SetOffset;
     
     method Compare(const StrA: DelphiString; const StrB: DelphiString): Integer; static;    
     method Compare(const StrA: DelphiString; const StrB: DelphiString; LocaleID: TLocaleID): Integer; static;
@@ -472,12 +479,14 @@ end;
 
 method DelphiString.GetOffsetChar(aIndex: Int32): Char;
 begin
-  result := GetChar(aIndex + fOffset);
+  if (aIndex = 0) and (fOffset > 0) then raise new Exception("Index ot of range: Delphi Strings are one-based.");
+  result := GetChar(aIndex - fOffset);
 end;
 
 method DelphiString.SetOffsetChar(aIndex: Int32; aValue: Char);
 begin
-  SetChar(aIndex + fOffset, aValue);
+  if (aIndex = 0) and (fOffset > 0) then raise new Exception("Index ot of range: Delphi Strings are one-based.");
+  SetChar(aIndex - fOffset, aValue);
 end;
 
 method DelphiString.GetLength: Integer;

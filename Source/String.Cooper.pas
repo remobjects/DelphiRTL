@@ -139,7 +139,7 @@ end;
 
 method DelphiString.SetChar(aIndex: Int32; aValue: Char);
 begin
-  fData := fData.substring(0, (aIndex - 1)) + aValue + fData.substring(aIndex + 1);
+  fData := fData.substring(0, aIndex) + aValue + fData.substring(aIndex+1);
 end;
 
 method DelphiString.CompareOrdinal(StrA: DelphiString; StrB: DelphiString): Integer;
