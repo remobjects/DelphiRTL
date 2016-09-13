@@ -63,6 +63,12 @@ type
     class operator Equal(Value1, Value2: DelphiString): Boolean;
     class property Offset: Integer read fOffset write SetOffset;
     
+    [ToString]
+    method ToString: PlatformString;
+    begin
+      result := fData;
+    end;
+    
     method Compare(const StrA: DelphiString; const StrB: DelphiString): Integer; static;    
     method Compare(const StrA: DelphiString; const StrB: DelphiString; LocaleID: TLocaleID): Integer; static;
     method Compare(const StrA: DelphiString; const StrB: DelphiString; IgnoreCase: Boolean): Integer; static; 
