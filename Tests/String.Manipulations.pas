@@ -17,7 +17,11 @@ type
       x[1] := 'm';
       Assert.AreEqual(x, 'mouse');
 
-      //Assert.AreEqual(x, 'mouse2');
+      x.Remove(0, 1);
+      Assert.AreEqual(x, 'ouse');
+
+      x.Insert(0, "sp");
+      Assert.AreEqual(x, 'spouse');
     end;
   end;
 
