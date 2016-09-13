@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
+    <PropertyGroup>
+        <RootNamespace>DelphiRTL.Tests</RootNamespace>
+        <ProjectGuid>A4294C37-C9F1-4B5A-975B-C5530E0F27BD</ProjectGuid>
+        <OutputType>executable</OutputType>
+        <AssemblyName>DelphiRTL.Tests.Toffee.iOS</AssemblyName>
+        <AllowGlobals>False</AllowGlobals>
+        <AllowLegacyWith>False</AllowLegacyWith>
+        <AllowLegacyOutParams>False</AllowLegacyOutParams>
+        <AllowLegacyCreate>False</AllowLegacyCreate>
+        <AllowUnsafeCode>False</AllowUnsafeCode>
+        <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+        <SDK>iOS</SDK>
+        <CreateAppBundle>True</CreateAppBundle>
+        <InfoPListFile>.\Resources\Info.plist</InfoPListFile>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <Optimize>False</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <GenerateDebugInfo>True</GenerateDebugInfo>
+        <DefineConstants>DEBUG;TRACE;</DefineConstants>
+        <CaptureConsoleOutput>False</CaptureConsoleOutput>
+        <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <Optimize>true</Optimize>
+        <OutputPath>.\bin\Release</OutputPath>
+        <GenerateDebugInfo>True</GenerateDebugInfo>
+        <GenerateDSym>True</GenerateDSym>
+        <EnableAsserts>False</EnableAsserts>
+        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+        <CaptureConsoleOutput>False</CaptureConsoleOutput>
+        <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+        <CreateIPA>True</CreateIPA>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="CoreGraphics"/>
+        <Reference Include="Foundation"/>
+        <Reference Include="libEUnit"/>
+        <Reference Include="libSugar"/>
+        <Reference Include="libxml2"/>
+        <Reference Include="libToffee"/>
+        <Reference Include="UIKit"/>
+        <Reference Include="rtl"/>
+        <Reference Include="libDelphi">
+            <HintPath>../Bin/Debug/iOS/libDelphi.fx</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup/>
+    <ItemGroup>
+        <Content Include="Resources\Info.plist"/>
+        <AssetCatalog Include="Resources\Images.xcassets">
+            <AppIcon>AppIcon</AppIcon>
+        </AssetCatalog>
+        <Xib Include="Resources\LaunchScreen.xib"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Resources\"/>
+    </ItemGroup>
+    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets"/>
+    <Import Project="DelphiRTL.Tests.Shared.projitems" Label="Shared"/>
+</Project>
