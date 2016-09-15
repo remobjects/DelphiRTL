@@ -353,7 +353,7 @@ end;
 
 method DelphiString.LastIndexOfAny(AnyOf: array of Char): Integer;
 begin
-  result := LastIndexOfAny(AnyOf, 0, fData.length); 
+  result := LastIndexOfAny(AnyOf, fData.Length, fData.length); 
 end;
 
 method DelphiString.LastIndexOfAny(AnyOf: array of Char; StartIndex: Integer): Integer;

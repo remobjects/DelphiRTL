@@ -19,11 +19,11 @@ type
     method CompareOrdinal(const StrA: DelphiString; const StrB: DelphiString): Integer; static; partial;
     method CompareOrdinal(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer): Integer; static; partial;
     method CompareText(const StrA: DelphiString; const StrB: DelphiString): Integer; static; partial;
-    method CompareTo(const strB: DelphiString): Integer; partial;
-    method Contains(Value: DelphiString): Boolean; partial;
-    method Copy(Str: DelphiString): DelphiString; inline; static; partial;
-    method CopyTo(SourceIndex: Integer; var destination: array of Char; DestinationIndex: Integer; Count: Integer); partial;
-    method DeQuotedString(QuoteChar: Char): DelphiString; partial;
+    //method CompareTo(const strB: DelphiString): Integer; partial;
+    //method Contains(Value: DelphiString): Boolean; partial;
+    //method Copy(Str: DelphiString): DelphiString; inline; static; partial;
+    //method CopyTo(SourceIndex: Integer; var destination: array of Char; DestinationIndex: Integer; Count: Integer); partial;
+    //method DeQuotedString(QuoteChar: Char): DelphiString; partial;
     method EndsWith(Value: DelphiString; IgnoreCase: Boolean): Boolean; partial;
     method GetHashCode: Integer; partial; override;
     method IndexOf(Value: Char): Integer; partial;
@@ -96,7 +96,7 @@ type
 
 implementation
 
-method DelphiString.Contains(Value: DelphiString): Boolean;
+/*method DelphiString.Contains(Value: DelphiString): Boolean;
 begin
   result := fData.Contains(Value.fData);
 end;
@@ -104,12 +104,13 @@ end;
 method DelphiString.Copy(Str: DelphiString): DelphiString;
 begin
   result := System.String.Copy(Str);
-end;
+end;*/
 
-method DelphiString.DeQuotedString(QuoteChar: Char): DelphiString;
+/*method DelphiString.DeQuotedString(QuoteChar: Char): DelphiString;
 begin
   result := fData.Trim(QuoteChar);
 end;
+*/
 
 method DelphiString.EndsWith(Value: DelphiString; IgnoreCase: Boolean): Boolean;
 begin
@@ -525,7 +526,7 @@ begin
   result := System.String.Compare(StrA, StrB, StringComparison.OrdinalIgnoreCase);
 end;
 
-method DelphiString.CompareTo(strB: DelphiString): Integer;
+/*method DelphiString.CompareTo(strB: DelphiString): Integer;
 begin
   result := System.String.CompareOrdinal(fData, strB.fData);
 end;
@@ -534,6 +535,7 @@ method DelphiString.CopyTo(SourceIndex: Integer; var destination: array of Char;
 begin
   fData.CopyTo(SourceIndex, destination, DestinationIndex, Count);
 end;
+*/
 
 method DelphiString.CreateWithChars(Char: Char; Count: Integer): DelphiString;
 begin
