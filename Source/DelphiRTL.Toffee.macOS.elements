@@ -37,9 +37,7 @@
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="Foundation"/>
-        <Reference Include="libSugar">
-            <HintPath>..\..\sugar\Sugar\bin\macOS\libSugar.fx</HintPath>
-        </Reference>
+        <Reference Include="libSugar"/>
         <Reference Include="rtl"/>
         <Reference Include="libToffee"/>
         <Reference Include="libxml2"/>

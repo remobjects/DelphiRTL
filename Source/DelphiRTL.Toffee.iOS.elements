@@ -38,9 +38,7 @@
     <ItemGroup>
         <Reference Include="CoreGraphics"/>
         <Reference Include="Foundation"/>
-        <Reference Include="libSugar">
-            <HintPath>..\..\sugar\Sugar\bin\iOS Simulator\libSugar.fx</HintPath>
-        </Reference>
+        <Reference Include="libSugar"/>
         <Reference Include="UIKit"/>
         <Reference Include="rtl"/>
         <Reference Include="libToffee"/>
