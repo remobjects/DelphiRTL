@@ -23,7 +23,7 @@ type
   {$ENDIF}
 
   WideString = public DelphiString;
-  PlatformString = {$IF ECHOES}System.String{$ELSEIF TOFFEE}Foundation.NSString{$ELSEIF COOPER}java.lang.String{$ELSEIF ISLAND}RemObjects.Elements.System.String{$ENDIF};
+  PlatformString = public {$IF ECHOES}System.String{$ELSEIF TOFFEE}Foundation.NSString{$ELSEIF COOPER}java.lang.String{$ELSEIF ISLAND}RemObjects.Elements.System.String{$ENDIF};
 
   DelphiString = public partial record
   private
@@ -76,9 +76,7 @@ type
     class operator Equal(Value1, Value2: DelphiString): Boolean;
     class property Offset: Integer read fOffset write SetOffset;
     
-    {$IF COOPER OR ECHOES}
     [ToString]
-    {$ENDIF}
     method ToString: PlatformString;
     begin
       result := fData;

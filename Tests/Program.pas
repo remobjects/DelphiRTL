@@ -8,6 +8,11 @@ uses
 implementation
 
 begin
+  {$IF TOFFEE}
+  writeLn(Foundation.NSProcessInfo.processInfo.environment().description);
+  for a in Foundation.NSProcessInfo.processInfo.arguments do
+    writeLn(a);
+  {$ENDIF}
   var lTests := Discovery.DiscoverTests();
   Runner.RunTests(lTests) withListener(Runner.DefaultListener);
 end.
