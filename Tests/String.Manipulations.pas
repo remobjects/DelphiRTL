@@ -26,10 +26,25 @@ type
     //method JoinTests;
     //method SubStringTests;
     // end of Sugar tests
-
+  public
   end;
 
 implementation
+
+method DefaultStringTypeTests();
+begin
+  var x {: DelphiString} := 'hello';
+  Assert.IsTrue(x is Elements.RTL.Delphi.DelphiString);      
+
+  var ds: Elements.RTL.Delphi.DelphiString := 'hello';
+  Assert.IsTrue(ds is Elements.RTL.Delphi.DelphiString);      
+
+  //var ws: WideString := 'hello';
+  //Assert.IsTrue(ws is DelphiString);  // Invalid IL code in DelphiRTL.Tests.Shared.StringManipulations:DefaultStringTypeTests (): IL_006c: isinst    0x01000002
+
+  var s : String := 'hello';
+  Assert.IsTrue(s is PlatformString);      
+end;
 
 method StringManipulations.IndexerTests();
 begin
