@@ -15,6 +15,7 @@
         <CreateHeaderFile>True</CreateHeaderFile>
         <DefaultUses>Foundation</DefaultUses>
         <MangleTypeNames>True</MangleTypeNames>
+        <DeploymentTargetVersion>10.10</DeploymentTargetVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Optimize>false</Optimize>
@@ -28,14 +29,15 @@
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <Optimize>true</Optimize>
-        <OutputPath>.\bin\Release</OutputPath>
-        <GenerateDebugInfo>False</GenerateDebugInfo>
+        <OutputPath>.\Bin\Release</OutputPath>
+        <GenerateDebugInfo>True</GenerateDebugInfo>
         <EnableAsserts>False</EnableAsserts>
         <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
         <CaptureConsoleOutput>False</CaptureConsoleOutput>
         <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="CoreGraphics"/>
         <Reference Include="Foundation"/>
         <Reference Include="libSugar"/>
         <Reference Include="rtl"/>

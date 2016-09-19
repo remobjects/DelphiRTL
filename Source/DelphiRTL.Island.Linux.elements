@@ -1,67 +1,65 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
-  <PropertyGroup>
-    <ProductVersion>3.5</ProductVersion>
-    <RootNamespace>Elements.RTL.Delphi</RootNamespace>
-    <ProjectGuid>A3390279-D9EC-4511-899A-AEDEBBF4CF71</ProjectGuid>
-    <OutputType>library</OutputType>
-    <AssemblyName>Delphi</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
-    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <CrossPlatform>True</CrossPlatform>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <Optimize>false</Optimize>
-    <OutputPath>..\Bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;TRACE;</DefineConstants>
-    <GenerateDebugInfo>True</GenerateDebugInfo>
-    <EnableAsserts>True</EnableAsserts>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <CaptureConsoleOutput>False</CaptureConsoleOutput>
-    <StartMode>Project</StartMode>
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <CpuType>anycpu</CpuType>
-    <RuntimeVersion>v25</RuntimeVersion>
-    <XmlDoc>False</XmlDoc>
-    <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
-    <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
-    <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <Optimize>true</Optimize>
-    <OutputPath>..\Bin\Release</OutputPath>
-    <GenerateDebugInfo>False</GenerateDebugInfo>
-    <EnableAsserts>False</EnableAsserts>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <CaptureConsoleOutput>False</CaptureConsoleOutput>
-    <StartMode>Project</StartMode>
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <CpuType>anycpu</CpuType>
-    <RuntimeVersion>v25</RuntimeVersion>
-    <XmlDoc>False</XmlDoc>
-    <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
-    <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
-    <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="rtl" />
-    <Reference Include="gc" />
-    <Reference Include="Island" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Linux.targets" />
-  <Import Project="DelphiRTL.Shared.projitems" Label="Shared" />
-  <PropertyGroup>
-    <PreBuildEvent />
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="String.Island.pas" />
-  </ItemGroup>
+    <PropertyGroup>
+        <ProductVersion>3.5</ProductVersion>
+        <RootNamespace>Elements.RTL.Delphi</RootNamespace>
+        <ProjectGuid>A3390279-D9EC-4511-899A-AEDEBBF4CF71</ProjectGuid>
+        <OutputType>StaticLibrary</OutputType>
+        <AssemblyName>Delphi</AssemblyName>
+        <AllowGlobals>False</AllowGlobals>
+        <AllowLegacyWith>False</AllowLegacyWith>
+        <AllowLegacyOutParams>False</AllowLegacyOutParams>
+        <AllowLegacyCreate>False</AllowLegacyCreate>
+        <AllowUnsafeCode>False</AllowUnsafeCode>
+        <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+        <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+        <CrossPlatform>True</CrossPlatform>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <Optimize>false</Optimize>
+        <OutputPath>..\Bin\Debug</OutputPath>
+        <DefineConstants>DEBUG;TRACE;</DefineConstants>
+        <GenerateDebugInfo>True</GenerateDebugInfo>
+        <EnableAsserts>True</EnableAsserts>
+        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+        <CaptureConsoleOutput>False</CaptureConsoleOutput>
+        <StartMode>Project</StartMode>
+        <RegisterForComInterop>False</RegisterForComInterop>
+        <CpuType>anycpu</CpuType>
+        <RuntimeVersion>v25</RuntimeVersion>
+        <XmlDoc>False</XmlDoc>
+        <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
+        <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
+        <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <Optimize>true</Optimize>
+        <OutputPath>..\Bin\Release</OutputPath>
+        <GenerateDebugInfo>False</GenerateDebugInfo>
+        <EnableAsserts>False</EnableAsserts>
+        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+        <CaptureConsoleOutput>False</CaptureConsoleOutput>
+        <StartMode>Project</StartMode>
+        <RegisterForComInterop>False</RegisterForComInterop>
+        <CpuType>anycpu</CpuType>
+        <RuntimeVersion>v25</RuntimeVersion>
+        <XmlDoc>False</XmlDoc>
+        <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
+        <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
+        <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="rtl"/>
+        <Reference Include="gc"/>
+        <Reference Include="Island"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Properties\"/>
+    </ItemGroup>
+    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Linux.targets"/>
+    <Import Project="DelphiRTL.Shared.projitems" Label="Shared"/>
+    <PropertyGroup>
+        <PreBuildEvent/>
+    </PropertyGroup>
+    <ItemGroup/>
 </Project>
