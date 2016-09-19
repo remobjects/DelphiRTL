@@ -9,5 +9,6 @@ implementation
 
 begin
   var lTests := Discovery.DiscoverTests();
-  Runner.RunTests(lTests) withListener(Runner.DefaultListener);
+  //Runner.RunTests(lTests) withListener(Runner.DefaultListener);
+  Runner.RunTests(lTests) withListener(new ConsoleTestListener);
 end.
