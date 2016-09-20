@@ -442,6 +442,7 @@ end;
 operator DelphiString.Implicit(Value: Char): DelphiString;
 begin
   {$IF COCOA}
+  //76216: Toffee: can't call `Object` extension methods on value types
   result := NSString.stringWithFormat("%c", Value);
   {$ELSE}
   result := Value.ToString();
