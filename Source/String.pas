@@ -439,6 +439,16 @@ begin
   result := Value.fData;
 end;
 
+operator DelphiString.Implicit(Value: Char): DelphiString;
+begin
+  {$IF COCOA}
+  //76216: Toffee: can't call `Object` extension methods on value types
+  result := NSString.stringWithFormat("%c", Value);
+  {$ELSE}
+  result := Value.ToString();
+  {$ENDIF}
+end;
+
 constructor DelphiString(Value: PlatformString);
 begin
   fData := InternalCreate(Value);
@@ -518,20 +528,6 @@ end;
 method DelphiString.GetLength: Integer;
 begin
   result := fData.Length;
-end;
-
-class operator DelphiString.Implicit(Value: Char): DelphiString;
-begin
-  {$IF COOPER}
-  result := new java.lang.String(Value);
-  {$ELSEIF ECHOES}
-  result := new System.String(Value, 1);
-  {$ELSEIF TOFFEE}
-  if Value = #0 then
-    exit NSString.stringWithFormat(#0) as not nullable;
-
-  exit NSString.stringWithFormat("%c", Value) as not nullable;
-  {$ENDIF}
 end;
 
 class method DelphiString.LowerCase(S: DelphiString): DelphiString;
@@ -878,7 +874,7 @@ begin
   {$ELSEIF ECHOES}
   fData := PlatformString(fData).Remove(StartIndex, Count);
   {$ELSEIF TOFFEE}
-  fData := PlatformString(fData).substringWithRange(Foundation.NSMakeRange(0, StartIndex - 1)) + PlatformString(fData).substringWithRange(Foundation.NSMakeRange(StartIndex + Count, fData.Length - 1));
+  fData := PlatformString(fData).substringWithRange(Foundation.NSMakeRange(0, StartIndex)) + PlatformString(fData).substringWithRange(Foundation.NSMakeRange(StartIndex + Count, fData.Length - 1));
   {$ENDIF}
   result := fData;
 end;

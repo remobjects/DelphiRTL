@@ -193,7 +193,7 @@ type
       Assert.AreEqual(x.StartsWith('string', true), true, 'StartsWith 3');
       x := 'string';
       Assert.AreEqual(x.StartsWith('string'), true, 'StartsWith 4');
-      Assert.AreEqual(x.StartsWith('s'), true, 'StartsWith 5'); 
+      Assert.AreEqual(x.StartsWith('s'), true, 'StartsWith 5'); // NREs before hitting StartsWith()
     end;
     
     method EndsWithTests;
@@ -201,7 +201,7 @@ type
       var x: Elements.RTL.Delphi.DelphiString := '';
       x := 'This is an string';
       Assert.AreEqual(x.EndsWith('string'), true, 'EndsWith 1');
-      Assert.AreEqual(x.EndsWith('g'), true, 'EndsWith 2'); 
+      Assert.AreEqual(x.EndsWith('g'), true, 'EndsWith 2'); // Stack overflow
       Assert.AreEqual(x.EndsWith('String'), False, 'EndsWith 3');
       Assert.AreEqual(x.EndsWith('sTRING', true), true, 'EndsWith 4');
       Assert.AreEqual(x.EndsWith('sTRING', false), false, 'EndsWith 5');
