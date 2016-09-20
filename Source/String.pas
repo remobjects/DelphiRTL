@@ -439,6 +439,11 @@ begin
   result := Value.fData;
 end;
 
+operator DelphiString.Implicit(Value: Char): DelphiString;
+begin
+  result := Value.ToString;
+end;
+
 constructor DelphiString(Value: PlatformString);
 begin
   fData := InternalCreate(Value);
@@ -518,11 +523,6 @@ end;
 method DelphiString.GetLength: Integer;
 begin
   result := fData.Length;
-end;
-
-operator DelphiString.Implicit(Value: Char): DelphiString;
-begin
-  result := Value;
 end;
 
 method DelphiString.LowerCase(S: DelphiString): DelphiString;
