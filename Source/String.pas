@@ -3,7 +3,7 @@
 interface
 
 type
-  TCompareOption = (coLingIgnoreCase, coLingIgnoreDiacritic, coIgnoreCase,
+  TCompareOption = public (coLingIgnoreCase, coLingIgnoreDiacritic, coIgnoreCase,
     coIgnoreKanatype, coIgnoreNonSpace, coIgnoreSymbols, coIgnoreWidth,
     coLingCasing, coDigitAsNumbers, coStringSort) of Integer;
   TCompareOptions = public set of TCompareOption;
@@ -28,6 +28,7 @@ type
   DelphiString = public partial record
   private
     fData: Sugar.String;
+    class const MaxInt = 2147483647;
     class method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer; static;
     class method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; IgnoreCase: Boolean; LocaleID: TLocaleID): Integer; static;
 
@@ -241,7 +242,10 @@ end;
 
 class method DelphiString.Compare(const StrA: DelphiString; const StrB: DelphiString; IgnoreCase: Boolean): Integer;
 begin
-  result := InternalCompare(StrA, 0, StrB, 0, StrA.Length, StrB.Length, [TCompareOptions.coIgnoreCase], nil);  // TODO locale
+  if IgnoreCase then
+    result := InternalCompare(StrA, 0, StrB, 0, StrA.Length, StrB.Length, [TCompareOptions.coIgnoreCase], nil)  // TODO locale
+  else
+    result := InternalCompare(StrA, 0, StrB, 0, StrA.Length, StrB.Length, [], nil)  // TODO locale
 end;
 
 class method DelphiString.Compare(const StrA: DelphiString; const StrB: DelphiString; IgnoreCase: Boolean; LocaleID: TLocaleID): Integer;
@@ -266,12 +270,12 @@ end;
 
 class method DelphiString.Compare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer; LocaleID: TLocaleID): Integer;
 begin
-  result := Compare(StrA, IndexA, StrB, IndexB, ALength, nil); // TODO locale
+  result := InternalCompare(StrA, IndexA, StrB, IndexB, ALength, ALength, False, nil); // TODO locale
 end;
 
 class method DelphiString.Compare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer; IgnoreCase: Boolean): Integer;
 begin
-  result := Compare(StrA, IndexA, StrB, IndexB, ALength, IgnoreCase, nil); // TODO locale
+  result := InternalCompare(StrA, IndexA, StrB, IndexB, ALength, ALength, IgnoreCase, nil); // TODO locale
 end;
 
 class method DelphiString.Compare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer; IgnoreCase: Boolean; LocaleID: TLocaleID): Integer;
@@ -501,7 +505,7 @@ begin
   else
     lTotal := Count - 1;
 
-  result := new DelphiString[lTotal];
+  result := new DelphiString[lTotal + 1];
   for i: Integer := 0 to lTotal do
     result[i] := Value[i];
 end;
@@ -741,7 +745,8 @@ begin
   end;
   result := sb.toString;
   {$ELSEIF ECHOES}
-  result := System.String.Join(Separator, Values, StartIndex, Count);
+  var lArray := StringArrayToPlatformArray(Values);
+  result := System.String.Join(Separator, lArray, StartIndex, Count);
   {$ELSEIF TOFFEE}
   var lArray := new NSMutableArray(Values.length);
   for i: Integer := StartIndex to (StartIndex + Count) - 1 do
@@ -993,10 +998,11 @@ begin
     result := Split(Separator, Count);
   {$ELSEIF ECHOES}
   var lArray: array of PlatformString;  
+  var lCount := if Count = -1 then MaxInt else Count;
   if Options = TStringSplitOptions.ExcludeEmpty then
-    lArray := PlatformString(fData).Split(Separator, Count, [StringSplitOptions.RemoveEmptyEntries])
+    lArray := PlatformString(fData).Split(Separator, lCount, [StringSplitOptions.RemoveEmptyEntries])
   else
-    lArray := PlatformString(fData).Split(Separator, Count);
+    lArray := PlatformString(fData).Split(Separator, lCount);
     
   result := PlatformArrayToStringArray(lArray);
   {$ELSEIF TOFFEE}
@@ -1058,10 +1064,11 @@ begin
   {$ELSEIF ECHOES}
   var lArray: array of PlatformString;
   var lSep := StringArrayToPlatformArray(Separator);
+  var lCount := if Count = -1 then MaxInt else Count;
   if Options = TStringSplitOptions.ExcludeEmpty then
-    lArray := PlatformString(fData).Split(lSep, Count, [StringSplitOptions.RemoveEmptyEntries])
+    lArray := PlatformString(fData).Split(lSep, lCount, [StringSplitOptions.RemoveEmptyEntries])
   else
-    lArray := PlatformString(fData).Split(lSep, Count, StringSplitOptions.None);
+    lArray := PlatformString(fData).Split(lSep, lCount, StringSplitOptions.None);
     
   result := PlatformArrayToStringArray(lArray);
   {$ELSEIF TOFFEE}
@@ -1282,23 +1289,23 @@ begin
   var LOptions: System.Globalization.CompareOptions := 0;
   var LTotalChars: Integer;
 
-  if [TCompareOption.coLingIgnoreCase] in Options then
+  if TCompareOption.coLingIgnoreCase in Options then
     LOptions := LOptions or System.Globalization.CompareOptions.IgnoreCase;
-  if [TCompareOption.coLingIgnoreDiacritic] in Options then
+  if TCompareOption.coLingIgnoreDiacritic in Options then
     LOptions := LOptions or System.Globalization.CompareOptions.IgnoreNonSpace;
-  if [TCompareOption.coIgnoreCase] in Options then
+  if TCompareOption.coIgnoreCase in Options then
     LOptions := LOptions or System.Globalization.CompareOptions.OrdinalIgnoreCase;
-  if [TCompareOption.coIgnoreKanatype] in Options then
+  if TCompareOption.coIgnoreKanatype in Options then
     LOptions := LOptions or System.Globalization.CompareOptions.IgnoreKanaType;
-  if [TCompareOption.coIgnoreNonSpace] in Options then
+  if TCompareOption.coIgnoreNonSpace in Options then
     LOptions := LOptions or System.Globalization.CompareOptions.IgnoreNonSpace;  
-  if [TCompareOption.coIgnoreSymbols] in Options then
+  if TCompareOption.coIgnoreSymbols in Options then
     LOptions := LOptions or System.Globalization.CompareOptions.IgnoreSymbols;
-  if [TCompareOption.coIgnoreWidth] in Options then
+  if TCompareOption.coIgnoreWidth in Options then
     LOptions := LOptions or System.Globalization.CompareOptions.IgnoreWidth;
-  if [TCompareOption.coDigitAsNumbers] in Options then
+  if TCompareOption.coDigitAsNumbers in Options then
     LOptions := LOptions or System.Globalization.CompareOptions.StringSort;
-  if [TCompareOption.coStringSort] in Options then
+  if TCompareOption.coStringSort in Options then
     LOptions := LOptions or System.Globalization.CompareOptions.StringSort;
 
   if StrA.Length <= StrB.Length then
@@ -1306,7 +1313,7 @@ begin
   else
     LTotalChars := StrB.Length;
 
-  result := System.String.Compare(StrA, IndexA, StrB, IndexB, LTotalChars, nil, LOptions);
+  result := System.String.Compare(StrA, IndexA, StrB, IndexB, LTotalChars, System.Globalization.CultureInfo.CurrentCulture, LOptions);
   {$ELSEIF TOFFEE}
   var lOptions: Foundation.NSStringCompareOptions := 0;
   var lTotalChars: Integer;

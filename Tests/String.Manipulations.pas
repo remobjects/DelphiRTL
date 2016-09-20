@@ -218,8 +218,8 @@ type
       Assert.AreEqual(x.Join('##', lStrings), 'string##in##the##street');      
       Assert.AreEqual(x.Join('#', lStrings, 0, 1), 'string');
       Assert.AreEqual(x.Join('##', lStrings, 0, 1), 'string');
-      Assert.AreEqual('One, Two', x.Join('#', lStrings, 0, 2), 'string#in');
-      Assert.AreEqual('One, Two', x.Join('##', lStrings, 0, 2), 'string##in');
+      Assert.AreEqual(x.Join('#', lStrings, 0, 2), 'string#in');
+      Assert.AreEqual(x.Join('##', lStrings, 0, 2), 'string##in');
     end;
 
     method SubStringTests;
@@ -370,7 +370,7 @@ type
     method ReplaceTests;
     begin
       var x: DelphiString := 'Test string';
-      Assert.AreEqual(x.Replace('t', 'x'), 'Tesx string');
+      Assert.AreEqual(x.Replace('t', 'x'), 'Tesx sxring');
       Assert.AreEqual(x.Replace('x', 'v'), 'Test string');
       Assert.AreEqual(x.Replace('t', 'x', [TReplaceFlags.rfReplaceAll]), 'Tesx sxring');
       Assert.AreEqual(x.Replace('T', 'x'), 'xest string');
@@ -395,60 +395,60 @@ type
       lCharSep := ['|', '#', '@', '%'];
       x := 'one|two|three#four@five%six|seven@eight@nine%ten';
       lRes := x.Split(lCharSep);
-      Assert.AreEqual(x.Length, 10);
-      Assert.AreEqual(x[0], 'one');
-      Assert.AreEqual(x[9], 'ten');
+      Assert.AreEqual(lRes.Length, 10);
+      Assert.AreEqual(lRes[0], 'one');
+      Assert.AreEqual(lRes[9], 'ten');
       
       lRes := x.Split(lCharSep, 4);
-      Assert.AreEqual(x.Length, 4);
-      Assert.AreEqual(x[0], 'one');
-      Assert.AreEqual(x[3], 'four');
+      Assert.AreEqual(lRes.Length, 4);
+      Assert.AreEqual(lRes[0], 'one');
+      Assert.AreEqual(lRes[3], 'four@five%six|seven@eight@nine%ten');
 
       x := 'one|two|three##four@five%six|seven@eight@nine%ten';
       lRes := x.Split(lCharSep);
-      Assert.AreEqual(x.Length, 11);
-      Assert.AreEqual(x[0], 'one');
-      Assert.AreEqual(x[10], 'ten');
+      Assert.AreEqual(lRes.Length, 11);
+      Assert.AreEqual(lRes[0], 'one');
+      Assert.AreEqual(lRes[10], 'ten');
       
       lRes := x.Split(lCharSep, TStringSplitOptions.ExcludeEmpty);
-      Assert.AreEqual(x.Length, 10);
-      Assert.AreEqual(x[0], 'one');
-      Assert.AreEqual(x[9], 'ten');
+      Assert.AreEqual(lRes.Length, 10);
+      Assert.AreEqual(lRes[0], 'one');
+      Assert.AreEqual(lRes[9], 'ten');
 
       lRes := x.Split(lCharSep, 4, TStringSplitOptions.ExcludeEmpty);
-      Assert.AreEqual(x.Length, 4);
-      Assert.AreEqual(x[0], 'one');
-      Assert.AreEqual(x[3], 'four');
+      Assert.AreEqual(lRes.Length, 4);
+      Assert.AreEqual(lRes[0], 'one');
+      Assert.AreEqual(lRes[3], 'four@five%six|seven@eight@nine%ten');
 
       var lStringSep := new DelphiString[4];
       lStringSep := ['||', '##', '@@', '%%'];
 
       x := 'one||two||three##four@@five%%six||seven@@eight@@nine%%ten';
       lRes := x.Split(lStringSep);
-      Assert.AreEqual(x.Length, 10);
-      Assert.AreEqual(x[0], 'one');
-      Assert.AreEqual(x[9], 'ten');
+      Assert.AreEqual(lRes.Length, 10);
+      Assert.AreEqual(lRes[0], 'one');
+      Assert.AreEqual(lRes[9], 'ten');
       
       lRes := x.Split(lStringSep, 4);
-      Assert.AreEqual(x.Length, 4);
-      Assert.AreEqual(x[0], 'one');
-      Assert.AreEqual(x[3], 'four');
+      Assert.AreEqual(lRes.Length, 4);
+      Assert.AreEqual(lRes[0], 'one');
+      Assert.AreEqual(lRes[3], 'four@@five%%six||seven@@eight@@nine%%ten');
 
       x := 'one||two||three####four@@five%%six||seven@@eight@@nine%%ten';
       lRes := x.Split(lStringSep);
-      Assert.AreEqual(x.Length, 11);
-      Assert.AreEqual(x[0], 'one');
-      Assert.AreEqual(x[10], 'ten');
+      Assert.AreEqual(lRes.Length, 11);
+      Assert.AreEqual(lRes[0], 'one');
+      Assert.AreEqual(lRes[10], 'ten');
       
       lRes := x.Split(lStringSep, TStringSplitOptions.ExcludeEmpty);
-      Assert.AreEqual(x.Length, 10);
-      Assert.AreEqual(x[0], 'one');
-      Assert.AreEqual(x[9], 'ten');
+      Assert.AreEqual(lRes.Length, 10);
+      Assert.AreEqual(lRes[0], 'one');
+      Assert.AreEqual(lRes[9], 'ten');
 
       lRes := x.Split(lStringSep, 4, TStringSplitOptions.ExcludeEmpty);
-      Assert.AreEqual(x.Length, 4);
-      Assert.AreEqual(x[0], 'one');
-      Assert.AreEqual(x[3], 'four');
+      Assert.AreEqual(lRes.Length, 4);
+      Assert.AreEqual(lRes[0], 'one');
+      Assert.AreEqual(lRes[3], 'four@@five%%six||seven@@eight@@nine%%ten'); 
     end;
 
     method CompareToTests;
@@ -528,7 +528,16 @@ type
       Assert.AreEqual(x.Equals(y), false);
       Assert.AreEqual(x.Equals(x), true);
     end;
-  end; 
 
-    // Compare
+    method CompareTests;
+    begin
+      var x: DelphiString := 'Do not touch';
+      var y: DelphiString := 'Test string';
+      Assert.AreEqual(DelphiString.Compare(x, 'Do not touch'), 0, 'Compare 1');
+      Assert.AreEqual(DelphiString.Compare(x, 'DO NOT TOUCH', [TCompareOption.coIgnoreCase]), 0, 'Compare 2');
+      Assert.AreEqual(DelphiString.Compare(x, 'DO NOT TOUCH', true), 0, 'Compare 3');
+      Assert.AreEqual(DelphiString.Compare(x, 'DO NOT TOUCH', false) <> 0, true, 'Compare 4');
+      Assert.AreEqual(DelphiString.Compare(x, 2, 'DO NOT TOUCH', 2, 6, true), 0, 'Compare 5');
+    end;
+  end; 
 end.
