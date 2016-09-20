@@ -2,3 +2,5 @@ Bin
 obj
 *.sln.fire.cache
 *.user
+.vs
+.suo
