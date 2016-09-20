@@ -874,7 +874,7 @@ begin
   {$ELSEIF ECHOES}
   fData := PlatformString(fData).Remove(StartIndex, Count);
   {$ELSEIF TOFFEE}
-  fData := PlatformString(fData).substringWithRange(Foundation.NSMakeRange(0, StartIndex - 1)) + PlatformString(fData).substringWithRange(Foundation.NSMakeRange(StartIndex + Count, fData.Length - 1));
+  fData := PlatformString(fData).substringWithRange(Foundation.NSMakeRange(0, StartIndex)) + PlatformString(fData).substringWithRange(Foundation.NSMakeRange(StartIndex + Count, fData.Length - 1));
   {$ENDIF}
   result := fData;
 end;
