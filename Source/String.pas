@@ -441,7 +441,11 @@ end;
 
 operator DelphiString.Implicit(Value: Char): DelphiString;
 begin
-  result := Value.ToString;
+  {$IF COCOA}
+  result := NSString.stringWithFormat("%c", Value);
+  {$ELSE}
+  result := Value.ToString();
+  {$ENDIF}
 end;
 
 constructor DelphiString(Value: PlatformString);
