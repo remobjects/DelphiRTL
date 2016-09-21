@@ -25,7 +25,6 @@ type
   DelphiString = public partial record
   private
     fData: Sugar.String;
-    class const MaxInt = 2147483647;
     class method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer; static;
     class method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; IgnoreCase: Boolean; LocaleID: TLocaleID): Integer; static;
 
@@ -165,9 +164,9 @@ type
     method Replace(const OldValue: DelphiString; const NewValue: DelphiString): DelphiString;
     method Replace(const OldValue: DelphiString; const NewValue: DelphiString; ReplaceFlags: TReplaceFlags): DelphiString; 
     
-    method Split(const Separator: array of Char): array of DelphiString; inline;
-    method Split(const Separator: array of Char; Count: Integer): array of DelphiString; inline;
-    method Split(const Separator: array of Char; Options: TStringSplitOptions): array of DelphiString; inline;
+    method Split(const Separator: array of Char): array of DelphiString; //inline; // enable when T76228 is fixed
+    method Split(const Separator: array of Char; Count: Integer): array of DelphiString; //inline; // enable when T76228 is fixed
+    method Split(const Separator: array of Char; Options: TStringSplitOptions): array of DelphiString; //inline; // enable when T76228 is fixed
     method Split(const Separator: array of Char; Count: Integer; Options: TStringSplitOptions): array of DelphiString; 
     method Split(const Separator: array of DelphiString): array of DelphiString; inline;
     method Split(const Separator: array of DelphiString; Count: Integer): array of DelphiString; 
@@ -457,12 +456,20 @@ end;
 
 class operator DelphiString.Add(Value1: DelphiString; Value2: Char): DelphiString;
 begin
+  {$IF COOPER OR ECHOES}
   result := new DelphiString(Value1 + DelphiString(Value2));
+  {$ELSEIF TOFFEE}
+  result := new DelphiString(NSString(Value1) + NSString.stringWithFormat("%c", Value2));
+  {$ENDIF}
 end;
 
 class operator DelphiString.Add(Value1: Char; Value2: DelphiString): DelphiString;
 begin
+  {$IF COOPER OR ECHOES}
   result := new DelphiString(DelphiString(Value1) + Value2);
+  {$ELSEIF TOFFEE}
+  result := new DelphiString(NSString.stringWithFormat("%c", Value1) + NSString(Value2));
+  {$ENDIF}
 end;
 
 class operator DelphiString.Add(Value1: DelphiString; Value2: DelphiString): not nullable DelphiString;
@@ -995,7 +1002,7 @@ begin
     result := Split(Separator, Count);
   {$ELSEIF ECHOES}
   var lArray: array of PlatformString;  
-  var lCount := if Count = -1 then MaxInt else Count;
+  var lCount := if Count = -1 then Sugar.Consts.MaxInteger else Count;
   if Options = TStringSplitOptions.ExcludeEmpty then
     lArray := PlatformString(fData).Split(Separator, lCount, [StringSplitOptions.RemoveEmptyEntries])
   else
@@ -1061,7 +1068,7 @@ begin
   {$ELSEIF ECHOES}
   var lArray: array of PlatformString;
   var lSep := StringArrayToPlatformArray(Separator);
-  var lCount := if Count = -1 then MaxInt else Count;
+  var lCount := if Count = -1 then Sugar.Consts.MaxInteger else Count;
   if Options = TStringSplitOptions.ExcludeEmpty then
     lArray := PlatformString(fData).Split(lSep, lCount, [StringSplitOptions.RemoveEmptyEntries])
   else

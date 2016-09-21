@@ -532,7 +532,6 @@ type
     method CompareTests;
     begin
       var x: DelphiString := 'Do not touch';
-      var y: DelphiString := 'Test string';
       Assert.AreEqual(DelphiString.Compare(x, 'Do not touch'), 0, 'Compare 1');
       Assert.AreEqual(DelphiString.Compare(x, 'DO NOT TOUCH', [TCompareOption.coIgnoreCase]), 0, 'Compare 2');
       Assert.AreEqual(DelphiString.Compare(x, 'DO NOT TOUCH', true), 0, 'Compare 3');
