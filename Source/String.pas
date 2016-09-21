@@ -17,10 +17,7 @@ type
     fWrap: Sugar.Locale;
   end;
 
-  //76137: Delphi RTL: `DefaultStringType` needs to support records
-  {$IF NOT NOUGAT AND NOT ISLAND}
   [assembly:DefaultStringType("Elements.RTL.Delphi", typeOf(Elements.RTL.Delphi.WideString))]
-  {$ENDIF}
 
   WideString = public DelphiString;
   PlatformString = public {$IF ECHOES}System.String{$ELSEIF TOFFEE}Foundation.NSString{$ELSEIF COOPER}java.lang.String{$ELSEIF ISLAND}RemObjects.Elements.System.String{$ENDIF};
