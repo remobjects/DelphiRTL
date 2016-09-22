@@ -164,9 +164,9 @@ type
     method Replace(const OldValue: DelphiString; const NewValue: DelphiString): DelphiString;
     method Replace(const OldValue: DelphiString; const NewValue: DelphiString; ReplaceFlags: TReplaceFlags): DelphiString; 
     
-    method Split(const Separator: array of Char): array of DelphiString; //inline; // enable when T76228 is fixed
-    method Split(const Separator: array of Char; Count: Integer): array of DelphiString; //inline; // enable when T76228 is fixed
-    method Split(const Separator: array of Char; Options: TStringSplitOptions): array of DelphiString; //inline; // enable when T76228 is fixed
+    method Split(const Separator: array of Char): array of DelphiString; inline; 
+    method Split(const Separator: array of Char; Count: Integer): array of DelphiString; inline; 
+    method Split(const Separator: array of Char; Options: TStringSplitOptions): array of DelphiString; inline; 
     method Split(const Separator: array of Char; Count: Integer; Options: TStringSplitOptions): array of DelphiString; 
     method Split(const Separator: array of DelphiString): array of DelphiString; inline;
     method Split(const Separator: array of DelphiString; Count: Integer): array of DelphiString; 
@@ -335,13 +335,17 @@ begin
   result := DelphiString.Copy(self);
   for i: Integer := fData.Length - 1 downto 0 do
     if result.Chars[i] = QuoteChar then
-      result := result.Insert(i, QuoteChar);
+      result.Insert(i, QuoteChar);
   result := QuoteChar + result + QuoteChar;    
 end;
 
 method DelphiString.Replace(OldChar: Char; NewChar: Char): DelphiString;
 begin
+  {$IF COOPER OR ECHOES}
   result := Replace(PlatformString(OldChar), PlatformString(NewChar), [TReplaceFlags.rfReplaceAll]);
+  {$ELSEIF TOFFEE}
+  result := Replace(Foundation.NSString.stringWithFormat("%c", OldChar), Foundation.NSString.stringWithFormat("%c", NewChar), [TReplaceFlags.rfReplaceAll]); 
+  {$ENDIF}
 end;
 
 method DelphiString.Replace(OldValue: DelphiString; NewValue: DelphiString): DelphiString;
@@ -647,7 +651,7 @@ begin
   {$ELSEIF ECHOES}
   result := PlatformString(fData).IndexOf(Value, StartIndex, Count);
   {$ELSEIF TOFFEE}
-  result := IndexOf(Foundation.NSString(Value), StartIndex, Count);
+  result := IndexOf(DelphiString(Value), StartIndex, Count);
   {$ENDIF}
 end;
 
@@ -710,10 +714,10 @@ begin
   {$ELSEIF ECHOES}
   fData := PlatformString(fData).Insert(StartIndex, Value);
   {$ELSEIF TOFFEE}
-  if StartIndex > 0 then
-    fData := PlatformString(fData).substringToIndex(StartIndex - 1) + Value.fData + PlatformString(fData).substringFromIndex(StartIndex)
-  else
-    fData := Value.fData + PlatformString(fData).substringFromIndex(StartIndex);
+  var lString := new NSMutableString(fData.Length);
+  lString.setString(fData);
+  lString.insertString(Value) atIndex(StartIndex);
+  fData := lString;
   {$ENDIF}
   result := fData;
 end;
@@ -787,7 +791,7 @@ begin
   {$ELSEIF ECHOES}
   result := PlatformString(fData).LastIndexOf(Value, StartIndex, Count);
   {$ELSEIF TOFFEE}
-  result := LastIndexOf(Foundation.NSString(Value), StartIndex, Count);
+  result := LastIndexOf(DelphiString(Value), StartIndex, Count);
   {$ENDIF}
 end;
 
@@ -798,7 +802,7 @@ begin
   {$ELSEIF ECHOES}
   result := PlatformString(fData).LastIndexOf(Value, StartIndex, Count);
   {$ELSEIF TOFFEE}
-  var lRange:= PlatformString(fData).rangeOfString(Value) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange(StartIndex, Count));
+  var lRange:= PlatformString(fData).rangeOfString(Value) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange((StartIndex - Count) + 1, Count));
   result := if lRange.location <> NSNotFound then lRange.location else -1;  
   {$ENDIF}
 end;
@@ -883,19 +887,21 @@ begin
   {$ELSEIF ECHOES}
   fData := PlatformString(fData).Remove(StartIndex, Count);
   {$ELSEIF TOFFEE}
-  fData := PlatformString(fData).substringWithRange(Foundation.NSMakeRange(0, StartIndex)) + PlatformString(fData).substringWithRange(Foundation.NSMakeRange(StartIndex + Count, fData.Length - 1));
+  var lString := new NSMutableString(fData.Length);
+  lString.setString(fData);
+  lString.deleteCharactersInRange(NSMakeRange(StartIndex, Count));
+  fData := lString;
   {$ENDIF}
   result := fData;
 end;
 
 method DelphiString.Replace(OldChar: Char; NewChar: Char; ReplaceFlags: TReplaceFlags): DelphiString;
 begin
-/*  {$IF COOPER OR ECHOES}
+  {$IF COOPER OR ECHOES}
   result := Replace(PlatformString(OldChar), PlatformString(NewChar), ReplaceFlags);
   {$ELSEIF TOFFEE}
   result := Replace(Foundation.NSString.stringWithFormat("%c", OldChar), Foundation.NSString.stringWithFormat("%c", NewChar), ReplaceFlags); 
-  {$ENDIF}*/
-  result := Replace(PlatformString(OldChar), PlatformString(NewChar), ReplaceFlags);
+  {$ENDIF}
 end;
 
 method DelphiString.Replace(OldValue: DelphiString; NewValue: DelphiString; ReplaceFlags: TReplaceFlags): DelphiString;
@@ -922,15 +928,15 @@ begin
   var lOptions: NSStringCompareOptions := 0;
   var lRange: Foundation.NSRange;
 
-  if [TReplaceFlags.rfIgnoreCase] in ReplaceFlags then
+  if TReplaceFlags.rfIgnoreCase in ReplaceFlags then
     lOptions := NSStringCompareOptions.NSCaseInsensitiveSearch;
-  if not ([TReplaceFlags.rfReplaceAll] in ReplaceFlags) then begin
+  if not (TReplaceFlags.rfReplaceAll in ReplaceFlags) then begin
     lRange := PlatformString(fData).rangeOfString(OldValue) options(lOptions);
     if lRange.location = NSNotFound then
       exit self;   
   end
   else
-    lRange := Foundation.NSMakeRange(0, fData.Length - 1);
+    lRange := Foundation.NSMakeRange(0, fData.Length);
   result := PlatformString(fData).stringByReplacingOccurrencesOfString(OldValue.fData) withString(NewValue.fData) options(lOptions) range(lRange)
   {$ENDIF}
 end;
@@ -1010,12 +1016,21 @@ begin
     
   result := PlatformArrayToStringArray(lArray);
   {$ELSEIF TOFFEE}
-  var lChars := Foundation.NSCharacterSet.characterSetWithCharactersInString(new Foundation.NSString withCharacters(@Separator) length(Separator.length));
-  var lArray := PlatformString(fData).componentsSeparatedByCharactersInSet(lChars);
-  if Options = TStringSplitOptions.ExcludeEmpty then
-    lArray := lArray.filteredArrayUsingPredicate(NSPredicate.predicateWithFormat('length > 0'));
+  if Count <> -1 then begin
+    var lArray := new DelphiString[Separator.length];
+    for i: Integer := 0 to Separator.length - 1 do
+      lArray[i] := DelphiString(Separator[i]);
+  
+    result := Split(lArray, Count, Options);
+  end
+  else begin
+    var lChars := Foundation.NSCharacterSet.characterSetWithCharactersInString(new Foundation.NSString withCharacters(@Separator) length(Separator.length));
+    var lArray := PlatformString(fData).componentsSeparatedByCharactersInSet(lChars);
+    if Options = TStringSplitOptions.ExcludeEmpty then
+      lArray := lArray.filteredArrayUsingPredicate(NSPredicate.predicateWithFormat('length > 0'));
 
-  result := NSArrayToStringArray(lArray, Count);
+    result := NSArrayToStringArray(lArray, Count);  
+  end;
   {$ENDIF}
 end;
 
@@ -1049,8 +1064,14 @@ end;
 
 method DelphiString.NSArrayToStringArray(Value: NSArray; Count: Integer): array of DelphiString;
 begin
-  result := new DelphiString[Value.count];
-  for i: Integer := 0 to Count - 1 do
+  var lTotal: Integer;
+  if Count = -1 then
+    lTotal := Value.count
+  else
+    lTotal := Count;
+
+  result := new DelphiString[lTotal];
+  for i: Integer := 0 to lTotal - 1 do
     result[i] := NSString(Value[i]);
 end;
 {$ENDIF}
@@ -1081,18 +1102,25 @@ begin
   var lArray := new NSMutableArray(10);
   var lCurrentLength := 0;
   var lStartIndex := 0;
+  var lStr: DelphiString := '';
+  var lCount := if Count = -1 then Sugar.Consts.MaxInteger else Count;
 
   lIndex := InternalIndexOfAny(Separator, lStartIndex, var lCurrentLength);
-  while (lIndex >= 0) and (lTotal < Count) do
+  while (lIndex >= 0) and (lTotal < lCount) do
   begin
+    if (lTotal = lCount - 1) and (not ((lIndex - lStartIndex = 0 ) and (Options = TStringSplitOptions.ExcludeEmpty))) then
+      lStr := SubString(lStartIndex)
+    else
+      lStr := SubString(lStartIndex, lIndex - lStartIndex);
     lStartIndex := lIndex + lCurrentLength;
-    var lStr := Substring(lStartIndex, lIndex - lStartIndex);
-    if (lStr.IsEmpty) or ((lStr.IsEmpty) and (Options <> TStringSplitOptions.ExcludeEmpty)) then 
+    if (not lStr.IsEmpty) or ((lStr.IsEmpty) and (Options <> TStringSplitOptions.ExcludeEmpty)) then begin
       lArray.addObject(lStr.fData);
+      inc(lTotal);
+    end;
     lIndex := InternalIndexOfAny(Separator, lStartIndex, var lCurrentLength);
   end;
 
-  if (lStartIndex < Length) and (lTotal < Count) then
+  if (lStartIndex < Length) and (lTotal < lCount) then
     lArray.addObject(PlatformString(fData).substringFromIndex(lStartIndex));
 
   result := NSArrayToStringArray(lArray, Count);  
@@ -1322,21 +1350,16 @@ begin
   var lOptions: Foundation.NSStringCompareOptions := 0;
   var lTotalChars: Integer;
 
-  if ([TCompareOption.coLingIgnoreCase] in Options) or ([TCompareOption.coIgnoreCase] in Options) then
+  if (TCompareOption.coLingIgnoreCase in Options) or (TCompareOption.coIgnoreCase in Options) then
     lOptions := lOptions or Foundation.NSStringCompareOptions.NSCaseInsensitiveSearch;
-  if [TCompareOption.coLingIgnoreDiacritic] in Options then
+  if TCompareOption.coLingIgnoreDiacritic in Options then
     lOptions := lOptions or Foundation.NSStringCompareOptions.NSDiacriticInsensitiveSearch;
-  if [TCompareOption.coIgnoreWidth] in Options then
+  if TCompareOption.coIgnoreWidth in Options then
     lOptions := lOptions or Foundation.NSStringCompareOptions.NSWidthInsensitiveSearch;
-  if [TCompareOption.coDigitAsNumbers] in Options then
+  if TCompareOption.coDigitAsNumbers in Options then
     lOptions := lOptions or Foundation.NSStringCompareOptions.NSNumericSearch;
-  if [TCompareOption.coStringSort] in Options then
+  if TCompareOption.coStringSort in Options then
     lOptions := lOptions or Foundation.NSStringCompareOptions.NSForcedOrderingSearch;
-
-  if StrA.Length <= StrB.Length then
-    lTotalChars := StrA.Length
-  else
-    lTotalChars := StrB.Length;
 
   { create new strings only if needed }
   var lStrA: Foundation.NSString;
@@ -1350,6 +1373,11 @@ begin
     lStrB := PlatformString(StrB.fData).substringWithRange(Foundation.NSMakeRange(IndexB, LengthB))
   else
     lStrB := StrB.fData;
+
+  if lStrA.length <= lStrB.length then
+    lTotalChars := lStrA.length
+  else
+    lTotalChars := lStrB.length;
 
   result := lStrA.compare(lStrB) options(lOptions) range(Foundation.NSMakeRange(0, lTotalChars));
   {$ENDIF}

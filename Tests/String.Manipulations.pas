@@ -505,8 +505,8 @@ type
       Assert.AreEqual(DelphiString.Parse(0), '0');
       Assert.AreEqual(DelphiString.Parse(123456), '123456');
       Assert.AreEqual(DelphiString.Parse(-123456), '-123456');
-      Assert.AreEqual(DelphiString.Parse(123456.123), '123456.123');
-      Assert.AreEqual(DelphiString.Parse(-123456.123), '-123456.123');
+      Assert.AreEqual(DelphiString.Parse(123456.123), Sugar.Convert.ToString(123456.123));  // Locale changes '.' and ','
+      Assert.AreEqual(DelphiString.Parse(-123456.123), Sugar.Convert.ToString(-123456.123));
     end;
 
     method CompareTextTests;
