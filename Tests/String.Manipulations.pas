@@ -172,16 +172,16 @@ type
       var lToTrim := new Char[4];
       var x: Elements.RTL.Delphi.DelphiString := '';
       lToTrim := ['&', '(', '[', '<'];
-      x := 'String functions';
-      Assert.AreEqual(x.TrimRight(lToTrim), 'String functions');
-      x := ' String functions&';
-      Assert.AreEqual(x.TrimRight(lToTrim), ' String functions');
-      x := ' =String functions&[[';
-      Assert.AreEqual(x.TrimRight(lToTrim), ' =String functions');
-      x := '=String functions<<<<<<&([';
-      Assert.AreEqual(x.TrimRight(lToTrim), '=String functions');
-      x := 'String functions    ';
-      Assert.AreEqual(x.TrimRight, 'String functions');
+      x := 'String functions1';
+      Assert.AreEqual(x.TrimRight(lToTrim), 'String functions1');
+      x := ' String functions2&';
+      Assert.AreEqual(x.TrimRight(lToTrim), ' String functions2');
+      x := ' =String functions3&[[';
+      Assert.AreEqual(x.TrimRight(lToTrim), ' =String functions3');
+      x := '=String functions4<<<<<<&([';
+      Assert.AreEqual(x.TrimRight(lToTrim), '=String functions4');
+      x := 'String functions5    ';
+      Assert.AreEqual(x.TrimRight, 'String functions5');
     end;
     
     method StartsWithTests;
@@ -372,19 +372,23 @@ type
       var x: DelphiString := 'Test string';
       Assert.AreEqual(x.Replace('t', 'x'), 'Tesx sxring');
       Assert.AreEqual(x.Replace('x', 'v'), 'Test string');
+      {$IF ECHOES OR TOFFEE} // T76259
       Assert.AreEqual(x.Replace('t', 'x', [TReplaceFlags.rfReplaceAll]), 'Tesx sxring');
       Assert.AreEqual(x.Replace('T', 'x'), 'xest string');
       Assert.AreEqual(x.Replace('t', 'x', [TReplaceFlags.rfIgnoreCase]), 'xest string');
       Assert.AreEqual(x.Replace('t', 'x', [TReplaceFlags.rfReplaceAll, TReplaceFlags.rfIgnoreCase]), 'xesx sxring');
+      {$ENDIF}
 
       x := 'This is a test string';
       Assert.AreEqual(x.Replace('This', 'Maybe'), 'Maybe is a test string');
       Assert.AreEqual(x.Replace('string', 'procedure'), 'This is a test procedure');
 
+      {$IF ECHOES OR TOFFEE} // T76259
       x := 'This this xxx this';
       Assert.AreEqual(x.Replace('This', 'Wall'), 'Wall this xxx this');
       Assert.AreEqual(x.Replace('this', 'that', [TReplaceFlags.rfReplaceAll]), 'This that xxx that');
       Assert.AreEqual(x.Replace('this', 'that', [TReplaceFlags.rfReplaceAll, TReplaceFlags.rfIgnoreCase]), 'that that xxx that');
+      {$ENDIF}
     end;
 
     method SplitTests;
@@ -394,6 +398,7 @@ type
       var lRes: array of DelphiString;
       lCharSep := ['|', '#', '@', '%'];
       x := 'one|two|three#four@five%six|seven@eight@nine%ten';
+
       lRes := x.Split(lCharSep);
       Assert.AreEqual(lRes.Length, 10);
       Assert.AreEqual(lRes[0], 'one');

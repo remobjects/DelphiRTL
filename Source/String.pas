@@ -52,8 +52,10 @@ type
     class method ArrayToSplitRegex(Value: array of DelphiString): PlatformString; static;
     class method PlatformCharArrayToCharArray(Value: array of Char; StartIndex: Integer := -1; ALength: Integer := -1): array of Char; static;
     {$ENDIF}
-    {$IF TOFFEE}
+    {$IF TOFFEE OR COOPER}
     method InternalIndexOfAny(Value: array of DelphiString; StartIndex: Integer; var CurrentLength: Integer): Integer;
+    {$ENDIF}
+    {$IF TOFFEE}
     method NSArrayToStringArray(Value: NSArray; Count: Integer): array of DelphiString;
     {$ENDIF}
   public
@@ -644,10 +646,7 @@ method DelphiString.IndexOf(Value: Char; StartIndex: Integer; Count: Integer): I
 begin
   {$IF COOPER}
   var lIndex := PlatformString(fData).indexOf(Value, StartIndex);
-  if (lIndex >= 0) and (lIndex <= StartIndex + Count) then
-    result := lIndex
-  else
-    result := -1;
+  result := if (lIndex >= StartIndex) and (lIndex <= (StartIndex + Count - 1)) then lIndex else -1;
   {$ELSEIF ECHOES}
   result := PlatformString(fData).IndexOf(Value, StartIndex, Count);
   {$ELSEIF TOFFEE}
@@ -659,10 +658,7 @@ method DelphiString.IndexOf(Value: DelphiString; StartIndex: Integer; Count: Int
 begin
   {$IF COOPER}
   var lIndex := PlatformString(fData).indexOf(Value, StartIndex);
-  if (lIndex >= 0) and (lIndex <= StartIndex + Count) then
-    result := lIndex
-  else
-    result := -1;
+  result := if (lIndex >= StartIndex) and (lIndex <= (StartIndex + Count - 1)) then lIndex else -1;
   {$ELSEIF ECHOES}
   result := PlatformString(fData).IndexOf(Value, StartIndex, Count);
   {$ELSEIF TOFFEE}
@@ -787,7 +783,9 @@ end;
 method DelphiString.LastIndexOf(Value: Char; StartIndex: Integer; Count: Integer): Integer;
 begin
   {$IF COOPER}
-  result := PlatformString(fData).lastIndexOf(Value, (StartIndex - Count));
+  result := PlatformString(fData).lastIndexOf(Value, StartIndex);
+  if result < (StartIndex - Count) + 1 then
+    result := -1;
   {$ELSEIF ECHOES}
   result := PlatformString(fData).LastIndexOf(Value, StartIndex, Count);
   {$ELSEIF TOFFEE}
@@ -798,7 +796,9 @@ end;
 method DelphiString.LastIndexOf(Value: DelphiString; StartIndex: Integer; Count: Integer): Integer;
 begin
   {$IF COOPER}
-  result := PlatformString(fData).lastIndexOf(Value, (StartIndex - Count));
+  result := PlatformString(fData).lastIndexOf(Value, StartIndex);
+  if result < (StartIndex - Count) + 1 then
+    result := -1;
   {$ELSEIF ECHOES}
   result := PlatformString(fData).LastIndexOf(Value, StartIndex, Count);
   {$ELSEIF TOFFEE}
@@ -882,7 +882,7 @@ method DelphiString.Remove(StartIndex: Integer; Count: Integer): DelphiString;
 begin
   {$IF COOPER}
   var lSb := new StringBuilder(fData);
-  lSb.delete(StartIndex, Count);
+  lSb.delete(StartIndex, StartIndex + Count);
   fData := lSb.toString;
   {$ELSEIF ECHOES}
   fData := PlatformString(fData).Remove(StartIndex, Count);
@@ -999,13 +999,20 @@ end;
 method DelphiString.Split(Separator: array of Char; Count: Integer; Options: TStringSplitOptions): array of DelphiString;
 begin
   {$IF COOPER}
-  if Options = TStringSplitOptions.ExcludeEmpty then begin
-    var lSep := ArrayToSplitRegex(Separator);
-    var lArray := PlatformString(fData).split(lSep, 0);
-    result := PlatformArrayToStringArray(lArray, Count);
-  end
-  else
-    result := Split(Separator, Count);
+  var lSep := ArrayToSplitRegex(Separator);
+  var lArray := PlatformString(fData).split(lSep, Count);
+  if Options = TStringSplitOptions.ExcludeEmpty then begin   
+    var lList: java.util.List := new java.util.ArrayList;    
+    for i: Integer := 0 to lArray.Length - 1 do begin
+      if (i = Count - 2) and (DelphiString(lArray[i + 1]).IndexOfAny(Separator) = 0) then
+          lArray[i + 1] := lArray[i + 1].substring(1);
+
+        if lArray[i] <> '' then
+          lList.add(lArray[i])
+      end;
+    lArray := lList.ToArray(new PlatformString[0]);
+  end;
+  result := PlatformArrayToStringArray(lArray, Count);
   {$ELSEIF ECHOES}
   var lArray: array of PlatformString;  
   var lCount := if Count = -1 then Sugar.Consts.MaxInteger else Count;
@@ -1049,7 +1056,7 @@ begin
   result := Split(Separator, -1, Options);
 end;
 
-{$IF TOFFEE}
+{$IF TOFFEE OR COOPER}
 method DelphiString.InternalIndexOfAny(Value: array of DelphiString; StartIndex: Integer; var CurrentLength: Integer): Integer;
 begin
   result := -1;
@@ -1061,7 +1068,9 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
+{$IF TOFFEE}
 method DelphiString.NSArrayToStringArray(Value: NSArray; Count: Integer): array of DelphiString;
 begin
   var lTotal: Integer;
@@ -1079,13 +1088,23 @@ end;
 method DelphiString.Split(Separator: array of DelphiString; Count: Integer; Options: TStringSplitOptions): array of DelphiString;
 begin
   {$IF COOPER}
-  if Options = TStringSplitOptions.ExcludeEmpty then begin
-    var lSep := ArrayToSplitRegex(Separator);
-    var lArray := PlatformString(fData).split(lSep, 0);
-    result := PlatformArrayToStringArray(lArray, Count);
-  end
-  else
-    result := Split(Separator, Count);
+  var lSep := ArrayToSplitRegex(Separator);
+  var lArray := PlatformString(fData).split(lSep, Count);
+  
+  if Options = TStringSplitOptions.ExcludeEmpty then begin   
+    var lCurrentLength := 0;
+    var lList: java.util.List := new java.util.ArrayList;    
+    for i: Integer := 0 to lArray.Length - 1 do begin
+      if (i = Count - 2) and (DelphiString(lArray[i + 1]).InternalIndexOfAny(Separator, 0, var lCurrentLength) = 0) then
+        lArray[i + 1] := lArray[i + 1].substring(lCurrentLength);
+
+      if not lArray[i].isEmpty then
+        lList.add(lArray[i]);
+    end;
+    lArray := lList.ToArray(new PlatformString[0]);
+  end;
+  
+  result := PlatformArrayToStringArray(lArray, Count);
   {$ELSEIF ECHOES}
   var lArray: array of PlatformString;
   var lSep := StringArrayToPlatformArray(Separator);
@@ -1301,13 +1320,6 @@ end;
 class method DelphiString.InternalCompare(StrA: DelphiString; IndexA: Integer; StrB: DelphiString; IndexB: Integer; LengthA: Integer; LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer;
 begin
   {$IF COOPER}
-  var lTotalChars: Integer;
-
-  if StrA.Length <= StrB.Length then
-    lTotalChars := StrA.Length
-  else
-    lTotalChars := StrB.Length;
-
   var Lcollator := java.text.Collator.getInstance; // TODO locale
 
   if ([TCompareOption.coLingIgnoreCase] in Options) or ([TCompareOption.coIgnoreCase] in Options) then
@@ -1316,7 +1328,32 @@ begin
   if [TCompareOption.coLingIgnoreDiacritic] in Options then
    Lcollator.setStrength(java.text.Collator.PRIMARY);
 
-  result := Lcollator.compare(StrA.SubString(IndexA, lTotalChars), StrB.SubString(IndexB, lTotalChars));
+  { create new strings only if needed }
+  var lStrA: PlatformString;
+  if (IndexA <> 0) or (LengthA <> StrA.Length) then begin
+    var lLastA: Integer := IndexA + LengthA;
+    if lLastA > StrA.Length then
+      lLastA := StrA.Length
+    else
+      inc(lLastA);
+    lStrA := PlatformString(StrA.fData).substring(0, lLastA);
+  end
+  else
+    lStrA := StrA.fData;
+    
+  var lStrB: PlatformString;
+  if (IndexB <> 0) or (LengthB <> StrB.Length) then begin
+    var lLastB: Integer := (IndexB + LengthB);
+    if  lLastB > StrB.Length then
+      lLastB := StrB.Length
+    else
+      inc(lLastB);
+    lStrB := PlatformString(StrB.fData).substring(0, lLastB);
+  end
+  else
+    lStrB := StrB.fData;
+
+  result := Lcollator.compare(lStrA, lStrB);
   {$ELSEIF ECHOES}
   var LOptions: System.Globalization.CompareOptions := 0;
   var LTotalChars: Integer;
