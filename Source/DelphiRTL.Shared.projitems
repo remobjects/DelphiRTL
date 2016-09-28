@@ -14,4 +14,7 @@
         <Compile Include="$(MSBuildThisFileDirectory)Aliases.pas"/>
         <Compile Include="$(MSBuildThisFileDirectory)String.pas"/>
     </ItemGroup>
+    <ItemGroup>
+        <Folder Include="$(MSBuildThisFileDirectory)Test Cases"/>
+    </ItemGroup>
 </Project>

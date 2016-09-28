@@ -1,54 +1,57 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
-  <PropertyGroup>
-    <RootNamespace>DelphiRTL.Tests</RootNamespace>
-    <ProjectGuid>8494A862-244E-4913-B62F-B848D8709A01</ProjectGuid>
-    <OutputType>executable</OutputType>
-    <AssemblyName>DelphiRTL.Tests.Toffee.macOS</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
-    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-    <SDK>macOS</SDK>
-    <EntitlementsFile>Entitlements.entitlements</EntitlementsFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <GenerateDebugInfo>True</GenerateDebugInfo>
-    <DefineConstants>DEBUG;TRACE;</DefineConstants>
-    <CaptureConsoleOutput>False</CaptureConsoleOutput>
-    <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <Optimize>true</Optimize>
-    <OutputPath>.\bin\Release</OutputPath>
-    <GenerateDebugInfo>True</GenerateDebugInfo>
-    <EnableAsserts>False</EnableAsserts>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <CaptureConsoleOutput>False</CaptureConsoleOutput>
-    <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Foundation" />
-    <Reference Include="libEUnit" />
-    <Reference Include="libSugar" />
-    <Reference Include="libxml2" />
-    <Reference Include="libToffee" />
-    <Reference Include="rtl" />
-    <Reference Include="libDelphi">
-      <HintPath>../Bin/Debug/macOS/libDelphi.fx</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
-  <Import Project="DelphiRTL.Tests.Shared.projitems" Label="Shared" />
-  <PropertyGroup>
-    <PreBuildEvent />
-  </PropertyGroup>
+    <PropertyGroup>
+        <RootNamespace>DelphiRTL.Tests</RootNamespace>
+        <ProjectGuid>8494A862-244E-4913-B62F-B848D8709A01</ProjectGuid>
+        <OutputType>executable</OutputType>
+        <AssemblyName>DelphiRTL.Tests.Toffee.macOS</AssemblyName>
+        <AllowGlobals>False</AllowGlobals>
+        <AllowLegacyWith>False</AllowLegacyWith>
+        <AllowLegacyOutParams>False</AllowLegacyOutParams>
+        <AllowLegacyCreate>False</AllowLegacyCreate>
+        <AllowUnsafeCode>False</AllowUnsafeCode>
+        <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+        <SDK>macOS</SDK>
+        <EntitlementsFile>Entitlements.entitlements</EntitlementsFile>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <Optimize>False</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <GenerateDebugInfo>True</GenerateDebugInfo>
+        <DefineConstants>DEBUG;TRACE;</DefineConstants>
+        <CaptureConsoleOutput>False</CaptureConsoleOutput>
+        <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <Optimize>true</Optimize>
+        <OutputPath>.\bin\Release</OutputPath>
+        <GenerateDebugInfo>True</GenerateDebugInfo>
+        <EnableAsserts>False</EnableAsserts>
+        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+        <CaptureConsoleOutput>False</CaptureConsoleOutput>
+        <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="Foundation"/>
+        <Reference Include="libEUnit"/>
+        <Reference Include="libSugar"/>
+        <Reference Include="libxml2"/>
+        <Reference Include="libToffee"/>
+        <Reference Include="rtl"/>
+        <Reference Include="libDelphi">
+            <HintPath>../Bin/Debug/macOS/libDelphi.fx</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup/>
+    <ItemGroup>
+        <Folder Include="Properties\"/>
+    </ItemGroup>
+    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets"/>
+    <Import Project="DelphiRTL.Tests.Shared.projitems" Label="Shared"/>
+    <PropertyGroup>
+        <PreBuildEvent/>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Program.pas"/>
+    </ItemGroup>
 </Project>

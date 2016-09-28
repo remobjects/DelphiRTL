@@ -9,7 +9,9 @@
         <Import_RootNamespace>DelphiRTL.Tests.Shared</Import_RootNamespace>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="$(MSBuildThisFileDirectory)Program.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)String.Manipulations.pas"/>
+        <Compile Include="$(MSBuildThisFileDirectory)Test Cases\String.Manipulations.pas"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="$(MSBuildThisFileDirectory)Test Cases"/>
     </ItemGroup>
 </Project>
