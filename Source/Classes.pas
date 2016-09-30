@@ -123,7 +123,7 @@ type
     fOwnsObject: Boolean;
     fOnChange: TNotifyEvent;
     fOnChanging: TNotifyEvent;
-    procedure Init;
+    procedure Setup;
     method SetSorted(Value: Boolean);
     method SetCaseSensitive(const Value: Boolean);
   protected
@@ -196,7 +196,7 @@ begin
 
 end;
 
-method TStringList.Init;
+method TStringList.Setup;
 begin
   fList := new Sugar.Collections.List<TInternalItem>;
 end;
@@ -319,25 +319,25 @@ end;
 
 constructor TStringList;
 begin
-  Init;
+  Setup;
 end;
 
 constructor TStringList(aOwnsObject: Boolean);
 begin
-  Init;
+  Setup;
   fOwnsObject := aOwnsObject;
 end;
 
 constructor TStringList(aQuoteChar: Char; aDelimiter: Char);
 begin
-  Init;
+  Setup;
   QuoteChar := aQuoteChar;
   Delimiter := aDelimiter;
 end;
 
 constructor TStringList(aQuoteChar: Char; aDelimiter: Char; aOptions: TStringsOptions);
 begin
-  Init;
+  Setup;
   QuoteChar := aQuoteChar;
   Delimiter := aDelimiter;
   Options := aOptions;
@@ -345,7 +345,7 @@ end;
 
 constructor TStringList(aDuplicates: TDuplicates; aSorted: Boolean; aCaseSensitive: Boolean);
 begin
-  Init;
+  Setup;
   Duplicates := aDuplicates;
   Sorted := aSorted;
   CaseSensitive := aCaseSensitive;
