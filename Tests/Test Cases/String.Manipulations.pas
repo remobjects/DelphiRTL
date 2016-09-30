@@ -543,5 +543,31 @@ type
       Assert.AreEqual(DelphiString.Compare(x, 'DO NOT TOUCH', false) <> 0, true, 'Compare 4');
       Assert.AreEqual(DelphiString.Compare(x, 2, 'DO NOT TOUCH', 2, 6, true), 0, 'Compare 5');
     end;
+
+    method ToLowerTests;
+    begin
+      var x: DelphiString := 'SMALL STRING';
+      Assert.AreEqual(x.ToLower, 'small string');
+
+      x := 'NIÑO';
+      Assert.AreEqual(x.ToLower(TLanguages.GetLocaleIDFromLocaleName('es-es')), 'niño');
+    end;
+
+    method ToUpperTests;
+    begin
+      var x: DelphiString := 'small string';
+      Assert.AreEqual(x.ToUpper, 'SMALL STRING');
+
+      x := 'niño';
+      Assert.AreEqual(x.ToUpper(TLanguages.GetLocaleIDFromLocaleName('es-es')), 'NIÑO');
+    end;
+    
+    method LanguagesTests;
+    begin
+      var lTmp := TLanguages.UserDefaultLocale;
+      Assert.AreEqual(lTmp.Identifier <> '', true);
+      lTmp := TLanguages.GetLocaleIDFromLocaleName('en-us');
+      Assert.AreEqual(lTmp.Identifier <> '', true);
+    end;
   end; 
 end.

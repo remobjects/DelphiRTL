@@ -10,12 +10,8 @@ type
   TLocaleOptions = public (loInvariantLocale, loUserLocale);
   TReplaceFlags = public set of (rfReplaceAll, rfIgnoreCase);
   TArray<T> = array of T;
-  TStringSplitOptions = public (None, ExcludeEmpty);
-  
-  TLocaleID = public class
-  private
-    fWrap: Sugar.Locale;
-  end;
+  TStringSplitOptions = public (None, ExcludeEmpty);  
+  TLocaleID = public Sugar.Locale;
 
   [assembly:DefaultStringType("Elements.RTL.Delphi", typeOf(Elements.RTL.Delphi.WideString))]
 
@@ -188,10 +184,10 @@ type
     method ToCharArray: array of Char; 
     method ToCharArray(StartIndex: Integer; ALength: Integer): array of Char; 
     method ToLower: DelphiString; 
-    //method ToLower(LocaleID: TLocaleID): DelphiString; overload;
+    method ToLower(LocaleID: TLocaleID): DelphiString;
     method ToLowerInvariant: DelphiString; 
     method ToUpper: DelphiString; 
-    //method ToUpper(LocaleID: TLocaleID): DelphiString; overload;
+    method ToUpper(LocaleID: TLocaleID): DelphiString;
     method ToUpperInvariant: DelphiString; 
     method Trim: DelphiString; 
     method TrimLeft: DelphiString; 
@@ -204,6 +200,16 @@ type
     property Chars[Index: Integer]: Char read GetChar write SetChar;
     property Character[Index: Integer]: Char read GetOffsetChar write SetOffsetChar; default;
     property Length: Integer read GetLength;
+  end;
+
+  TLanguages = public class
+  private
+    class method GetInvariantLocale: TLocaleID;
+    class method GetUserDefaultLocale: TLocaleID;
+  public
+    class function GetLocaleIDFromLocaleName(const LocaleName: DelphiString): TLocaleID;
+    class property UserDefaultLocale: TLocaleID read GetUserDefaultLocale;
+    class property InvariantLocale: TLocaleID read GetInvariantLocale;
   end;
 
 implementation
@@ -230,7 +236,7 @@ end;
 
 class method DelphiString.Compare(const StrA: DelphiString; const StrB: DelphiString): Integer;
 begin
-  result := InternalCompare(StrA, 0, StrB, 0, StrA.Length, StrB.Length, [], nil); // TODO locale
+  result := InternalCompare(StrA, 0, StrB, 0, StrA.Length, StrB.Length, [], TLanguages.UserDefaultLocale);
 end;
 
 class method DelphiString.Compare(const StrA: DelphiString; const StrB: DelphiString; LocaleID: TLocaleID): Integer;
@@ -241,9 +247,9 @@ end;
 class method DelphiString.Compare(const StrA: DelphiString; const StrB: DelphiString; IgnoreCase: Boolean): Integer;
 begin
   if IgnoreCase then
-    result := InternalCompare(StrA, 0, StrB, 0, StrA.Length, StrB.Length, [TCompareOptions.coIgnoreCase], nil)  // TODO locale
+    result := InternalCompare(StrA, 0, StrB, 0, StrA.Length, StrB.Length, [TCompareOptions.coIgnoreCase], TLanguages.UserDefaultLocale)  
   else
-    result := InternalCompare(StrA, 0, StrB, 0, StrA.Length, StrB.Length, [], nil)  // TODO locale
+    result := InternalCompare(StrA, 0, StrB, 0, StrA.Length, StrB.Length, [], TLanguages.UserDefaultLocale)
 end;
 
 class method DelphiString.Compare(const StrA: DelphiString; const StrB: DelphiString; IgnoreCase: Boolean; LocaleID: TLocaleID): Integer;
@@ -253,7 +259,7 @@ end;
 
 class method DelphiString.Compare(const StrA: DelphiString; const StrB: DelphiString; Options: TCompareOptions): Integer;
 begin
-  result := InternalCompare(StrA, 0, StrB, 0, StrA.Length, StrB.Length, Options, nil); // TODO locale
+  result := InternalCompare(StrA, 0, StrB, 0, StrA.Length, StrB.Length, Options, TLanguages.UserDefaultLocale);
 end;
 
 class method DelphiString.Compare(const StrA: DelphiString; const StrB: DelphiString; Options: TCompareOptions; LocaleID: TLocaleID): Integer;
@@ -263,17 +269,17 @@ end;
 
 class method DelphiString.Compare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer): Integer;
 begin
-  result := InternalCompare(StrA, IndexA, StrB, IndexB, ALength, ALength, False, nil); // TODO locale
+  result := InternalCompare(StrA, IndexA, StrB, IndexB, ALength, ALength, False, TLanguages.UserDefaultLocale);
 end;
 
 class method DelphiString.Compare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer; LocaleID: TLocaleID): Integer;
 begin
-  result := InternalCompare(StrA, IndexA, StrB, IndexB, ALength, ALength, False, nil); // TODO locale
+  result := InternalCompare(StrA, IndexA, StrB, IndexB, ALength, ALength, False, TLanguages.UserDefaultLocale);
 end;
 
 class method DelphiString.Compare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer; IgnoreCase: Boolean): Integer;
 begin
-  result := InternalCompare(StrA, IndexA, StrB, IndexB, ALength, ALength, IgnoreCase, nil); // TODO locale
+  result := InternalCompare(StrA, IndexA, StrB, IndexB, ALength, ALength, IgnoreCase, TLanguages.UserDefaultLocale);
 end;
 
 class method DelphiString.Compare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer; IgnoreCase: Boolean; LocaleID: TLocaleID): Integer;
@@ -283,7 +289,7 @@ end;
 
 class method DelphiString.Compare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer; Options: TCompareOptions): Integer;
 begin
-  result := InternalCompare(StrA, IndexA, StrB, IndexB, ALength, ALength, Options, nil); // TODO locale
+  result := InternalCompare(StrA, IndexA, StrB, IndexB, ALength, ALength, Options, TLanguages.UserDefaultLocale);
 end;
 
 class method DelphiString.Compare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer;
@@ -1320,7 +1326,7 @@ end;
 class method DelphiString.InternalCompare(StrA: DelphiString; IndexA: Integer; StrB: DelphiString; IndexB: Integer; LengthA: Integer; LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer;
 begin
   {$IF COOPER}
-  var Lcollator := java.text.Collator.getInstance; // TODO locale
+  var Lcollator := java.text.Collator.getInstance(LocaleID);
 
   if ([TCompareOption.coLingIgnoreCase] in Options) or ([TCompareOption.coIgnoreCase] in Options) then
     Lcollator.setStrength(java.text.Collator.TERTIARY);
@@ -1382,7 +1388,7 @@ begin
   else
     LTotalChars := StrB.Length;
 
-  result := System.String.Compare(StrA, IndexA, StrB, IndexB, LTotalChars, System.Globalization.CultureInfo.CurrentCulture, LOptions);
+  result := System.String.Compare(StrA, IndexA, StrB, IndexB, LTotalChars, LocaleID, LOptions);
   {$ELSEIF TOFFEE}
   var lOptions: Foundation.NSStringCompareOptions := 0;
   var lTotalChars: Integer;
@@ -1416,7 +1422,7 @@ begin
   else
     lTotalChars := lStrB.length;
 
-  result := lStrA.compare(lStrB) options(lOptions) range(Foundation.NSMakeRange(0, lTotalChars));
+  result := lStrA.compare(lStrB) options(lOptions) range(Foundation.NSMakeRange(0, lTotalChars)) locale(LocaleID);
   {$ENDIF}
 end;
 
@@ -1442,6 +1448,37 @@ end;
 class method DelphiString.CompareText(StrA: DelphiString; StrB: DelphiString): Integer;
 begin
   result := StrA.fData.CompareToIgnoreCase(StrB.fData);
+end;
+
+method DelphiString.ToLower(LocaleID: TLocaleID): DelphiString;
+begin
+  result := fData.ToLower(LocaleID);
+end;
+
+method DelphiString.ToUpper(LocaleID: TLocaleID): DelphiString;
+begin
+  result := fData.ToUpper(LocaleID);
+end;
+
+class method TLanguages.GetLocaleIDFromLocaleName(LocaleName: DelphiString): TLocaleID;
+begin
+  {$IF COOPER}
+  result := new java.util.Locale(LocaleName);
+  {$ELSEIF ECHOES}
+  result := new System.Globalization.CultureInfo(LocaleName);
+  {$ELSEIF TOFFEE}
+  result := NSLocale.localeWithLocaleIdentifier(NSLocale.canonicalLanguageIdentifierFromString(LocaleName));
+  {$ENDIF}
+end;
+
+class method TLanguages.GetUserDefaultLocale: TLocaleID;
+begin
+  result := Sugar.Locale.Current;
+end;
+
+class method TLanguages.GetInvariantLocale: TLocaleID;
+begin
+  result := Sugar.Locale.Invariant;
 end;
 
 end.
