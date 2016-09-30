@@ -3,15 +3,13 @@
 interface
 
 type
-  TCompareOption = public (coLingIgnoreCase, coLingIgnoreDiacritic, coIgnoreCase,
-    coIgnoreKanatype, coIgnoreNonSpace, coIgnoreSymbols, coIgnoreWidth,
-    coLingCasing, coDigitAsNumbers, coStringSort) of Integer;
+  TCompareOption = public enum(coLingIgnoreCase, coLingIgnoreDiacritic, coIgnoreCase,
+                               coIgnoreKanatype, coIgnoreNonSpace, coIgnoreSymbols, coIgnoreWidth,
+                               coLingCasing, coDigitAsNumbers, coStringSort) of Integer;
   TCompareOptions = public set of TCompareOption;
-  TLocaleOptions = public (loInvariantLocale, loUserLocale);
   TReplaceFlags = public set of (rfReplaceAll, rfIgnoreCase);
   TArray<T> = array of T;
   TStringSplitOptions = public (None, ExcludeEmpty);  
-  TLocaleID = public Sugar.Locale;
 
   [assembly:DefaultStringType("Elements.RTL.Delphi", typeOf(Elements.RTL.Delphi.WideString))]
 

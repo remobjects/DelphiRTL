@@ -3,6 +3,10 @@
 interface
 
 type
+  TLocaleOptions = public enum (loInvariantLocale, loUserLocale);
+  
+  TLocaleID = public Sugar.Locale;
+
   TLanguages = public class
   private
     class method GetInvariantLocale: TLocaleID;

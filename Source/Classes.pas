@@ -3,12 +3,12 @@
 interface
 
 type
-  TStringsOption = public (soStrictDelimiter, soWriteBOM, soTrailingLineBreak, soUseLocale) of Integer;
+  TStringsOption = public enum (soStrictDelimiter, soWriteBOM, soTrailingLineBreak, soUseLocale) of Integer;
   TStringsOptions = public set of TStringsOption;
   TDuplicates = public (dupIgnore, dupAccept, dupError);
   TInternalItem = tuple of (DelphiString, TObject);
   TStringListSortCompare = public block(x: TInternalItem; y: TInternalItem): Integer;
-  TNotifyEvent = public procedure(Sender: TObject) of object;
+  TNotifyEvent = public block(Sender: TObject);
 
   TPersistent = public class(TObject)
   private
@@ -49,7 +49,7 @@ type
     method SetTextStr(const Value: DelphiString); virtual;*/
     method SetUpdateState(Updating: Boolean); virtual;
     method CompareStrings(const S1, S2: DelphiString): Integer; virtual;
-    property UpdateCount: Integer read FUpdateCount;
+    property UpdateCount: Integer read fUpdateCount;
   public
 /*    constructor;
     //destructor Destroy; override; */
@@ -93,14 +93,14 @@ type
     property CommaText: DelphiString read GetCommaText write SetCommaText; */
     property Count: Integer read GetCount;
     /*property DefaultEncoding: TEncoding read FDefaultEncoding write SetDefaultEncoding; */
-    property Delimiter: Char read FDelimiter write FDelimiter;
+    property Delimiter: Char read fDelimiter write fDelimiter;
     /*property DelimitedText: DelphiString read GetDelimitedText write SetDelimitedText;
     property Encoding: TEncoding read FEncoding;
     property LineBreak: DelphiString read FLineBreak write FLineBreak;
     property Names[Index: Integer]: DelphiString read GetName;
     property KeyNames[Index: Integer]: DelphiString read GetKeyName;*/
     property Objects[aIndex: Integer]: TObject read GetObject write PutObject;
-    property QuoteChar: Char read FQuoteChar write FQuoteChar;
+    property QuoteChar: Char read fQuoteChar write fQuoteChar;
     /*property Values[const Name: DelphiString]: DelphiString read GetValue write SetValue;
     property ValueFromIndex[Index: Integer]: DelphiString read GetValueFromIndex write SetValueFromIndex;
     property NameValueSeparator: Char read FNameValueSeparator write FNameValueSeparator;
@@ -111,7 +111,7 @@ type
     property WriteBOM: Boolean read GetWriteBOM write SetWriteBOM;
     property TrailingLineBreak: Boolean read GetTrailingLineBreak write SetTrailingLineBreak;*/
     property UseLocale: Boolean read GetUseLocale write SetUseLocale;
-    property Options: TStringsOptions read FOptions write FOptions;
+    property Options: TStringsOptions read fOptions write fOptions;
   end;
 
   TStringList = public class(TStrings)
@@ -137,7 +137,7 @@ type
     method SetCapacity(NewCapacity: Integer); override;
     method SetUpdateState(Updating: Boolean); override;
     method CompareStrings(const S1, S2: DelphiString): Integer; override;
-    method InsertItem(aIndex: Integer; const S: DelphiString; AObject: TObject); virtual;
+    method InsertItem(aIndex: Integer; const S: DelphiString; aObject: TObject); virtual;
   public
     constructor;
     constructor(aOwnsObject: Boolean);
@@ -161,8 +161,8 @@ type
     property Duplicates: TDuplicates read fDuplicates write fDuplicates;
     property Sorted: Boolean read fSorted write SetSorted;
     property CaseSensitive: Boolean read fCaseSensitive write SetCaseSensitive;
-    property OnChange: TNotifyEvent read FOnChange write FOnChange;
-    property OnChanging: TNotifyEvent read FOnChanging write FOnChanging;
+    property OnChange: TNotifyEvent read fOnChange write fOnChange;
+    property OnChanging: TNotifyEvent read fOnChanging write fOnChanging;
     property OwnsObjects: Boolean read fOwnsObject write fOwnsObject;
   end;
 
@@ -224,13 +224,13 @@ end;
 
 method TStringList.Changed;
 begin
-  if (UpdateCount = 0) and Assigned(fOnChange) then
+  if (UpdateCount = 0) and assigned(fOnChange) then
     fOnChange(self);
 end;
 
 method TStringList.Changing;
 begin
-  if (UpdateCount = 0) and Assigned(fOnChanging) then
+  if (UpdateCount = 0) and assigned(fOnChanging) then
     fOnChanging(self);
 end;
 
@@ -310,7 +310,7 @@ begin
       result := DelphiString.CompareText(S1, S2);
 end;
 
-method TStringList.InsertItem(aIndex: Integer; S: DelphiString; AObject: TObject);
+method TStringList.InsertItem(aIndex: Integer; S: DelphiString; aObject: TObject);
 begin
   Changing;
   fList.insert(aIndex, (S, aObject));
@@ -382,7 +382,7 @@ end;
 
 method TStringList.Clear;
 begin
-  fList.clear;
+  fList.Clear;
 end;
 
 method TStringList.Delete(aIndex: Integer);
@@ -411,7 +411,7 @@ begin
   while l <= h do
   begin
     var i := (l + h) shr 1;
-    var c := CompareStrings(fList[I][0], S);
+    var c := CompareStrings(fList[i][0], S);
     if c < 0 then l := i + 1 else
     begin
       h := i - 1;
@@ -476,7 +476,7 @@ begin
   PutObject(result, aObject);
 end;
 
-method TStrings.PutObject(aIndex: Integer; AObject: TObject);
+method TStrings.PutObject(aIndex: Integer; aObject: TObject);
 begin
   // Empty method
 end;
@@ -553,7 +553,7 @@ end;
 
 method TStrings.IndexOf(const S: DelphiString): Integer;
 begin
-  for i: integer := 0 to GetCount - 1 do
+  for i: Integer := 0 to GetCount - 1 do
     if CompareStrings(Get(i), S) = 0 then 
       exit(i);
   result := -1;
@@ -572,9 +572,9 @@ end;
 method TStrings.SetUseLocale(Value: Boolean);
 begin
   if Value then
-    FOptions := fOptions + [TStringsOption.soUseLocale]
+    fOptions := fOptions + [TStringsOption.soUseLocale]
   else
-    FOptions := fOptions - [TStringsOption.soUseLocale];
+    fOptions := fOptions - [TStringsOption.soUseLocale];
 end;
 
 end.
