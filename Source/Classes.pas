@@ -2,6 +2,9 @@
 
 interface
 
+uses
+  Sugar;
+
 type
   TStringsOption = public enum (soStrictDelimiter, soWriteBOM, soTrailingLineBreak, soUseLocale) of Integer;
   TStringsOptions = public set of TStringsOption;
@@ -25,91 +28,104 @@ type
 
   TStrings = public abstract class(TPersistent)
   private
-    fDelimiter: Char;
+    fUpdateCount: Integer;
     fQuoteChar: Char;
     fOptions: TStringsOptions;
-    fUpdateCount: Integer;
     function GetUseLocale: Boolean;
-    procedure SetUseLocale(Value: Boolean);
+    procedure SetUseLocale(aValue: Boolean);
+    method GetUpdating: Boolean;
+    method GetName(aIndex: Integer): DelphiString;
+    method GetKeyName(aIndex: Integer): DelphiString;
+    method GetValue(aName: DelphiString): DelphiString;
+    method SetValue(aName: DelphiString; aValue: DelphiString);
+    method GetValueFromIndex(aIndex: Integer): DelphiString;
+    method SetValueFromIndex(aIndex: Integer; Value: DelphiString);    
+    method GetCommaText: DelphiString;
+    method SetCommaText(aValue: DelphiString);
+    method GetDelimitedText: DelphiString;
+    method SetDelimitedText(aValue: DelphiString);
+    method GetStrictDelimiter: Boolean;
+    method SetStrictDelimiter(aValue: Boolean);
+    method GetTrailingLineBreak: Boolean; inline;
+    method SetTrailingLineBreak(aValue: Boolean);
+    method GetDelimitedTextWithChars(aDelimiter: Char; aQuote: Char): DelphiString;
+    method SetDelimitedTextWithChars(aValue: DelphiString; aDelimiter: Char; aQuote: Char);
+    method IndexOfDelimiter(aString: DelphiString; aDelimiter: Char; aQuote: Char): Integer;
   protected
-    /*
-    method Error(const Msg: DelphiString; Data: Integer); 
-    method Error(Msg: PResDelphiStringRec; Data: Integer); 
+    method Error(const Msg: DelphiString; Data: Integer);
     method ExtractName(const S: DelphiString): DelphiString;  inline;
-    method ExtractName(const S: DelphiString; AllNames: Boolean): DelphiString; */
+    method ExtractName(const S: DelphiString; AllNames: Boolean): DelphiString; 
     method Get(aIndex: Integer): DelphiString; virtual; abstract;
     method GetCapacity: Integer; virtual;
     method GetCount: Integer; virtual; abstract;
-    method GetObject(Index: Integer): TObject; virtual;
-    /*method GetTextStr: DelphiString; virtual;*/
+    method GetObject(aIndex: Integer): TObject; virtual;
+    method GetTextStr: DelphiString; virtual;
     method Put(aIndex: Integer; const S: DelphiString); virtual;
     method PutObject(aIndex: Integer; aObject: TObject); virtual;
-    method SetCapacity(NewCapacity: Integer); virtual;
-    /*method SetEncoding(const Value: TEncoding); virtual;
-    method SetTextStr(const Value: DelphiString); virtual;*/
-    method SetUpdateState(Updating: Boolean); virtual;
+    method SetCapacity(aNewCapacity: Integer); virtual;
+    /*method SetEncoding(const Value: TEncoding); virtual;*/
+    method SetTextStr(const aValue: DelphiString); virtual;
+    method SetUpdateState(aUpdating: Boolean); virtual;
     method CompareStrings(const S1, S2: DelphiString): Integer; virtual;
     property UpdateCount: Integer read fUpdateCount;
   public
 /*    constructor;
-    //destructor Destroy; override; */
+    destructor Destroy; override; */
     method &Add(const S: DelphiString): Integer; virtual;
-    /*method AddPair(const Name, Value: DelphiString): TDelphiStrings; 
-    method AddPair(const Name, Value: DelphiString; AObject: TObject): TDelphiStrings;*/
+    method AddPair(const aName: DelphiString; aValue: DelphiString): TStrings;
+    method AddPair(const aName: DelphiString; aValue: DelphiString; aObject: TObject): TStrings;
     method AddObject(const S: DelphiString; aObject: TObject): Integer; virtual;
-    /*method Append(const S: DelphiString);
-    method AddDelphiStrings(DelphiStrings: TDelphiStrings);  virtual;
-    method AddDelphiStrings(const DelphiStrings: TArray<DelphiString>); 
-    method AddDelphiStrings(const DelphiStrings: TArray<DelphiString>; const Objects: TArray<TObject>); 
-    method Assign(Source: TPersistent); override;
-    method SetDelphiStrings(Source: TStrings);*/
+    method Append(const S: DelphiString); inline;
+    method AddStrings(aStrings: TStrings);  virtual;
+    method AddStrings(const aStrings: array of DelphiString); 
+    method AddStrings(const aStrings: array of DelphiString; const aObjects: array of TObject); 
+    method Assign(aSource: TPersistent); override;
+    method SetStrings(aSource: TStrings);
     method BeginUpdate;
     method Clear; virtual; abstract;
-    method Delete(Index: Integer); virtual; abstract;
+    method Delete(aIndex: Integer); virtual; abstract;
     method EndUpdate;
-    /*method Equals(DelphiStrings: TStrings): Boolean; reintroduce;*/
-    method Exchange(Index1, Index2: Integer); virtual;
-    /*method GetEnumerator: TDelphiStringsEnumerator;
-    method GetText: PChar; virtual; */
+    method &Equals(aStrings: TStrings): Boolean;
+    method Exchange(aIndex1, aIndex2: Integer); virtual;
+    /*method GetEnumerator: TStringsEnumerator; */
     method IndexOf(const S: DelphiString): Integer; virtual;
-    /*method IndexOfName(const Name: DelphiString): Integer; virtual;
-    method IndexOfObject(AObject: TObject): Integer; virtual;*/
+    method IndexOfName(const aName: DelphiString): Integer; virtual;
+    method IndexOfObject(aObject: TObject): Integer; virtual;
     method Insert(aIndex: Integer; const S: DelphiString); virtual; abstract;
     method InsertObject(aIndex: Integer; const S: DelphiString; aObject: TObject); virtual;
     /*method LoadFromFile(const FileName: DelphiString);  virtual;
     method LoadFromFile(const FileName: DelphiString; Encoding: TEncoding);  virtual;
     method LoadFromStream(Stream: TStream);  virtual;
-    method LoadFromStream(Stream: TStream; Encoding: TEncoding);  virtual;
-    method Move(CurIndex, NewIndex: Integer); virtual;
-    method SaveToFile(const FileName: DelphiString);  virtual;
+    method LoadFromStream(Stream: TStream; Encoding: TEncoding);  virtual;*/
+    method Move(aCurIndex, aNewIndex: Integer); virtual;
+    /*method SaveToFile(const FileName: DelphiString);  virtual;
     method SaveToFile(const FileName: DelphiString; Encoding: TEncoding);  virtual;
     method SaveToStream(Stream: TStream);  virtual;
-    method SaveToStream(Stream: TStream; Encoding: TEncoding);  virtual;
-    method SetText(Text: PChar); virtual;
-    method ToDelphiStringArray: TArray<DelphiString>;
-    method ToObjectArray: TArray<TObject>;
+    method SaveToStream(Stream: TStream; Encoding: TEncoding);  virtual; */
+    method ToDelphiStringArray: array of DelphiString;
+    method ToObjectArray: array of TObject;
     property Updating: Boolean read GetUpdating;
-    property Capacity: Integer read GetCapacity write SetCapacity;
-    property CommaText: DelphiString read GetCommaText write SetCommaText; */
+    property Capacity: Integer read GetCapacity;
+    property CommaText: DelphiString read GetCommaText write SetCommaText;
     property Count: Integer read GetCount;
     /*property DefaultEncoding: TEncoding read FDefaultEncoding write SetDefaultEncoding; */
-    property Delimiter: Char read fDelimiter write fDelimiter;
-    /*property DelimitedText: DelphiString read GetDelimitedText write SetDelimitedText;
-    property Encoding: TEncoding read FEncoding;
-    property LineBreak: DelphiString read FLineBreak write FLineBreak;
+    property Delimiter: Char;
+    property DelimitedText: DelphiString read GetDelimitedText write SetDelimitedText;
+    /*property Encoding: TEncoding read FEncoding;*/
+    property LineBreak: DelphiString;
     property Names[Index: Integer]: DelphiString read GetName;
-    property KeyNames[Index: Integer]: DelphiString read GetKeyName;*/
+    property KeyNames[Index: Integer]: DelphiString read GetKeyName;
     property Objects[aIndex: Integer]: TObject read GetObject write PutObject;
     property QuoteChar: Char read fQuoteChar write fQuoteChar;
-    /*property Values[const Name: DelphiString]: DelphiString read GetValue write SetValue;
+    property Values[const Name: DelphiString]: DelphiString read GetValue write SetValue;
     property ValueFromIndex[Index: Integer]: DelphiString read GetValueFromIndex write SetValueFromIndex;
-    property NameValueSeparator: Char read FNameValueSeparator write FNameValueSeparator;
-    property StrictDelimiter: Boolean read GetStrictDelimiter write SetStrictDelimiter;*/
+    property NameValueSeparator: Char;
+    property StrictDelimiter: Boolean read GetStrictDelimiter write SetStrictDelimiter;
     property Strings[aIndex: Integer]: DelphiString read Get write Put; default;
-    /*property Text: DelphiString read GetTextStr write SetTextStr;
-    property DelphiStringsAdapter: IDelphiStringsAdapter read FAdapter write SetDelphiStringsAdapter;
-    property WriteBOM: Boolean read GetWriteBOM write SetWriteBOM;
-    property TrailingLineBreak: Boolean read GetTrailingLineBreak write SetTrailingLineBreak;*/
+    property Text: DelphiString read GetTextStr write SetTextStr;
+    /*property DelphiStringsAdapter: IDelphiStringsAdapter read FAdapter write SeTStringsAdapter;
+    property WriteBOM: Boolean read GetWriteBOM write SetWriteBOM;*/
+    property TrailingLineBreak: Boolean read GetTrailingLineBreak write SetTrailingLineBreak;
     property UseLocale: Boolean read GetUseLocale write SetUseLocale;
     property Options: TStringsOptions read fOptions write fOptions;
   end;
@@ -130,12 +146,11 @@ type
     method Changed; virtual;
     method Changing; virtual;
     method Get(aIndex: Integer): DelphiString; override;
-    method GetCapacity: Integer; override;
     method GetObject(aIndex: Integer): TObject; override;
     method Put(aIndex: Integer; const S: DelphiString); override;
     method PutObject(aIndex: Integer; aObject: TObject); override;
-    method SetCapacity(NewCapacity: Integer); override;
-    method SetUpdateState(Updating: Boolean); override;
+    method SetCapacity(aNewCapacity: Integer); override;
+    method SetUpdateState(aUpdating: Boolean); override;
     method CompareStrings(const S1, S2: DelphiString): Integer; override;
     method InsertItem(aIndex: Integer; const S: DelphiString; aObject: TObject); virtual;
   public
@@ -145,18 +160,19 @@ type
     constructor(aQuoteChar: Char; aDelimiter: Char; aOptions: TStringsOptions);
     constructor(aDuplicates: TDuplicates; aSorted: Boolean; aCaseSensitive: Boolean);
     //destructor Destroy; override;
+    method GetCapacity: Integer; override;
     method &Add(const S: DelphiString): Integer; override;
     method AddObject(const S: DelphiString; aObject: TObject): Integer; override;
-    method Assign(Source: TPersistent); override;
+    method Assign(aSource: TPersistent); override;
     method Clear; override;
     method Delete(aIndex: Integer); override;
-    method Exchange(Index1, Index2: Integer); override;
+    method Exchange(aIndex1, aIndex2: Integer); override;
     method Find(const S: DelphiString; var aIndex: Integer): Boolean; virtual;
     method IndexOf(const S: DelphiString): Integer; override;
-    method Insert(aIndex: Integer; const S: DelphiString); override; inline;
+    method Insert(aIndex: Integer; const S: DelphiString); override;
     method InsertObject(aIndex: Integer; const S: DelphiString; aObject: TObject); override;
     method Sort; virtual;
-    method CustomSort(Compare: TStringListSortCompare); virtual;
+    method CustomSort(aCompare: TStringListSortCompare); virtual;
     method GetCount: Integer; override;
     property Duplicates: TDuplicates read fDuplicates write fDuplicates;
     property Sorted: Boolean read fSorted write SetSorted;
@@ -170,7 +186,7 @@ implementation
 
 method TPersistent.AssignError(Source: TPersistent);
 begin
-
+  raise new Sugar.SugarException('Can not assign');
 end;
 
 method TPersistent.AssignTo(Dest: TPersistent);
@@ -282,14 +298,14 @@ begin
   Changed;
 end;
 
-method TStringList.SetCapacity(NewCapacity: Integer);
+method TStringList.SetCapacity(aNewCapacity: Integer);
 begin
   //NO OP, for compatibility
 end;
 
-method TStringList.SetUpdateState(Updating: Boolean);
+method TStringList.SetUpdateState(aUpdating: Boolean);
 begin
-  if Updating then
+  if aUpdating then
     Changing 
   else
     Changed;
@@ -370,14 +386,14 @@ begin
   InsertItem(result, S, aObject);
 end;
 
-method TStringList.Assign(Source: TPersistent);
+method TStringList.Assign(aSource: TPersistent);
 begin
-  if Source is TStringList then begin
-    fDuplicates := TStringList(Source).fDuplicates;
-    fSorted := TStringList(Source).fSorted;
-    fCaseSensitive := TStringList(Source).fCaseSensitive;
+  if aSource is TStringList then begin
+    fDuplicates := TStringList(aSource).fDuplicates;
+    fSorted := TStringList(aSource).fSorted;
+    fCaseSensitive := TStringList(aSource).fCaseSensitive;
   end;
-  inherited Assign(Source);
+  inherited Assign(aSource);
 end;
 
 method TStringList.Clear;
@@ -393,14 +409,14 @@ begin
   fList.removeAt(aIndex);
 end;
 
-method TStringList.Exchange(Index1: Integer; Index2: Integer);
+method TStringList.Exchange(aIndex1: Integer; aIndex2: Integer);
 begin
-  if (Index1 >= Count) or (Index1 < 0) or (Index2 >= Count) or (Index2 < 0) then
+  if (aIndex1 >= Count) or (aIndex1 < 0) or (aIndex2 >= Count) or (aIndex2 < 0) then
     raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "Exchange Index1 Index2");
 
-  var lItem := fList[Index1];
-  fList[Index1] := fList[Index2];
-  fList[Index2] := lItem;
+  var lItem := fList[aIndex1];
+  fList[aIndex1] := fList[aIndex2];
+  fList[aIndex2] := lItem;
 end;
 
 method TStringList.Find(S: DelphiString; var aIndex: Integer): Boolean;
@@ -455,16 +471,16 @@ begin
   CustomSort((x, y) -> begin result := CompareStrings(x[0], y[0]) end);
 end;
 
-method TStringList.CustomSort(Compare: TStringListSortCompare);
+method TStringList.CustomSort(aCompare: TStringListSortCompare);
 begin
   if not Sorted then begin
     Changing;
-    fList.Sort((x, y) -> Compare(x, y));
+    fList.Sort((x, y) -> aCompare(x, y));
     Changed;
   end;
 end;
 
-method TStrings.&Add(S: DelphiString): Integer;
+method TStrings.&Add(const S: DelphiString): Integer;
 begin
   result := GetCount;
   Insert(result, S);
@@ -481,18 +497,18 @@ begin
   // Empty method
 end;
 
-method TStrings.Exchange(Index1: Integer; Index2: Integer);
+method TStrings.Exchange(aIndex1: Integer; aIndex2: Integer);
 begin
   var lTempObject: TObject;
   var lTempString: String;
   BeginUpdate;
   try
-    lTempString := Strings[Index1];
-    lTempObject := Objects[Index1];
-    Strings[Index1] := Strings[Index2];
-    Objects[Index1] := Objects[Index2];
-    Strings[Index2] := lTempString;
-    Objects[Index2] := lTempObject; 
+    lTempString := Strings[aIndex1];
+    lTempObject := Objects[aIndex1];
+    Strings[aIndex1] := Strings[aIndex2];
+    Objects[aIndex1] := Objects[aIndex2];
+    Strings[aIndex2] := lTempString;
+    Objects[aIndex2] := lTempObject; 
 
   finally
     EndUpdate;
@@ -513,12 +529,12 @@ begin
     SetUpdateState(false);
 end;
 
-method TStrings.SetUpdateState(Updating: Boolean);
+method TStrings.SetUpdateState(aUpdating: Boolean);
 begin
   // Empty method
 end;
 
-method TStrings.GetObject(&Index: Integer): TObject;
+method TStrings.GetObject(aIndex: Integer): TObject;
 begin
   result := nil;
 end;
@@ -559,7 +575,7 @@ begin
   result := -1;
 end;
 
-method TStrings.SetCapacity(NewCapacity: Integer);
+method TStrings.SetCapacity(aNewCapacity: Integer);
 begin
   // Empty method
 end;
@@ -569,12 +585,358 @@ begin
   result := TStringsOption.soUseLocale in Options;
 end;
 
-method TStrings.SetUseLocale(Value: Boolean);
+method TStrings.SetUseLocale(aValue: Boolean);
 begin
-  if Value then
+  if aValue then
     fOptions := fOptions + [TStringsOption.soUseLocale]
   else
     fOptions := fOptions - [TStringsOption.soUseLocale];
+end;
+
+method TStrings.ExtractName(S: DelphiString): DelphiString;
+begin
+  result := ExtractName(S, False);
+end;
+
+method TStrings.ExtractName(S: DelphiString; AllNames: Boolean): DelphiString;
+begin
+  var lPos := S.IndexOf(NameValueSeparator);
+  if lPos >=0 then
+    result := S.SubString(0, lPos - 1)
+  else
+    if AllNames then
+      result := S
+    else
+      result := '';
+end;
+
+method TStrings.AddPair(aName: DelphiString; aValue: DelphiString): TStrings;
+begin
+  &Add(aName + NameValueSeparator + aValue);
+  result := self;
+end;
+
+method TStrings.AddPair(aName: DelphiString; aValue: DelphiString; aObject: TObject): TStrings;
+begin
+  AddObject(aName + NameValueSeparator + aValue, aObject);
+  result := self;
+end;
+
+
+method TStrings.Append(S: DelphiString);
+begin
+  &Add(S);
+end;
+
+method TStrings.AddStrings(aStrings: TStrings);
+begin
+  BeginUpdate;
+  try
+    for i: Integer := 0 to aStrings.GetCount - 1 do
+      AddObject(aStrings[i], aStrings.Objects[i]);
+  finally
+    EndUpdate;
+  end;
+end;
+
+method TStrings.AddStrings(aStrings: array of DelphiString);
+begin
+  BeginUpdate;
+  try
+    for i: Integer := 0 to aStrings.length - 1 do
+      &Add(aStrings[i]);
+  finally
+    EndUpdate;
+  end;
+end;
+
+method TStrings.AddStrings(aStrings: array of DelphiString; aObjects: array of TObject);
+begin
+  if aStrings.length <> aObjects.length then
+    raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "AddStrings aStrings aObjects");
+  
+  BeginUpdate;
+  try
+    for i: Integer := 0 to aStrings.length - 1 do
+      AddObject(aStrings[i], aObjects[i]);
+  finally
+    EndUpdate;
+  end;
+end;
+
+method TStrings.Assign(aSource: TPersistent);
+begin
+  // TODO
+end;
+
+method TStrings.SetStrings(aSource: TStrings);
+begin
+  BeginUpdate;
+  try
+    Clear;
+    AddStrings(aSource);
+  finally
+    EndUpdate;
+  end;
+end;
+
+method TStrings.IndexOfName(aName: DelphiString): Integer;
+begin
+  for i: Integer := 0 to Count - 1 do begin 
+    var lPos := Strings[i].IndexOf(NameValueSeparator);
+    if (lPos >= 0) and (DelphiString.Compare(Strings[i].SubString(0, lPos - 1), aName) = 0) then
+        exit i;
+  end;
+  result := -1;
+end;
+
+method TStrings.IndexOfObject(aObject: TObject): Integer;
+begin
+  for i: Integer := 0 to Count - 1 do
+    if Objects[i] = aObject then
+      exit i;
+
+  result := -1;
+end;
+
+method TStrings.ToDelphiStringArray: array of DelphiString;
+begin
+  result := new DelphiString[Count];
+  for i: Integer := 0 to Count - 1 do
+    result[i] := Strings[i];
+end;
+
+method TStrings.ToObjectArray: array of TObject;
+begin
+  result := new TObject[Count];
+  for i: Integer := 0 to Count - 1 do
+    result[i] := Objects[i];
+end;
+
+method TStrings.GetUpdating: Boolean;
+begin
+  result := UpdateCount > 0;
+end;
+
+method TStrings.GetName(aIndex: Integer): DelphiString;
+begin
+  result := ExtractName(Strings[aIndex], false);
+end;
+
+method TStrings.GetKeyName(aIndex: Integer): DelphiString;
+begin
+  result := ExtractName(Strings[aIndex], true);
+end;
+
+method TStrings.GetValue(aName: DelphiString): DelphiString;
+begin
+  var lIndex := IndexOfName(aName);
+  if lIndex >= 0 then
+    result := Strings[lIndex].SubString(aName.Length + 2)
+  else
+    result := '';
+end;
+
+method TStrings.SetValue(aName: DelphiString; aValue: DelphiString);
+begin
+  var lIndex := IndexOfName(aName);
+  if aValue <> '' then begin
+    if lIndex < 0 then
+      &Add(aName + NameValueSeparator + aValue)
+    else
+      Put(lIndex, aName + NameValueSeparator + aValue);
+  end
+  else
+    if lIndex >= 0 then
+      Delete(lIndex);
+end;
+
+method TStrings.GetValueFromIndex(aIndex: Integer): DelphiString;
+begin
+  var lPos := Strings[aIndex].IndexOf(NameValueSeparator);
+  if lPos >= 0 then
+    result := Strings[aIndex].SubString(lPos + 1)
+  else
+    result := '';
+end;
+
+method TStrings.SetValueFromIndex(aIndex: Integer; Value: DelphiString);
+begin
+  if Value = '' then
+    Delete(aIndex)
+  else begin
+    var lPos := Strings[aIndex].IndexOf(NameValueSeparator);
+    if lPos >= 0 then
+    Put(aIndex, Strings[aIndex].SubString(0, lPos) + NameValueSeparator + Value);    
+  end;
+end;
+
+method TStrings.Equals(aStrings: TStrings): Boolean;
+begin
+  if aStrings.Count <> Count then
+    exit false;
+  for i: Integer := 0 to Count - 1 do
+    if aStrings[i] <> Strings[i] then
+      exit false;
+
+  result := true;
+end;
+
+method TStrings.GetTextStr: DelphiString;
+begin
+  var lSb := new StringBuilder;
+  for i: Integer := 0 to Count - 1 do begin
+    lSb.Append(Strings[i]);
+    if (i <> Count - 1) or ((i = Count - 1) and TrailingLineBreak) then
+      lSb.Append(LineBreak);
+  end;
+  result := lSb.ToString;
+end;
+
+method TStrings.SetTextStr(aValue: DelphiString);
+begin
+  BeginUpdate;
+  try
+    Clear;
+    var lArray := aValue.Split([LineBreak]);
+    AddStrings(lArray);
+
+  finally
+    EndUpdate;
+  end;    
+end;
+
+method TStrings.GetCommaText: DelphiString;
+begin
+  result := GetDelimitedTextWithChars(',', '"');
+end;
+
+method TStrings.SetCommaText(aValue: DelphiString);
+begin
+  SetDelimitedTextWithChars(aValue, ',', '"');
+end;
+
+method TStrings.GetDelimitedText: DelphiString;
+begin
+  result := GetDelimitedTextWithChars(Delimiter, QuoteChar);
+end;
+
+method TStrings.SetDelimitedText(aValue: DelphiString);
+begin
+  SetDelimitedTextWithChars(aValue, Delimiter, QuoteChar);
+end;
+
+method TStrings.GetStrictDelimiter: Boolean;
+begin
+  result := TStringsOption.soStrictDelimiter in Options;
+end;
+
+method TStrings.SetStrictDelimiter(aValue: Boolean);
+begin
+  if aValue then
+    fOptions := fOptions + [TStringsOption.soStrictDelimiter]
+  else
+    fOptions := fOptions - [TStringsOption.soStrictDelimiter];
+end;
+
+method TStrings.GetTrailingLineBreak: Boolean;
+begin
+  result := TStringsOption.soTrailingLineBreak in Options;
+end;
+
+method TStrings.SetTrailingLineBreak(aValue: Boolean);
+begin
+  if aValue then
+    fOptions := fOptions + [TStringsOption.soTrailingLineBreak]
+  else
+    fOptions := fOptions - [TStringsOption.soTrailingLineBreak];
+end;
+
+method TStrings.IndexOfDelimiter(aString: DelphiString; aDelimiter: Char; aQuote: Char): Integer;
+begin
+  for j: Integer := 0 to aString.Length - 1 do begin
+    var lChar := aString.Chars[j];
+    if ((StrictDelimiter) and ( lChar in [aDelimiter, Char(#0), aQuote])) or
+     ((not StrictDelimiter) and (lChar > ' ') and (lChar <> aDelimiter) and (lChar <> aQuote))  then
+      exit j;
+  end;
+  result := -1;
+end;
+
+method TStrings.GetDelimitedTextWithChars(aDelimiter: Char; aQuote: Char): DelphiString;
+begin
+  var lSb := new StringBuilder;
+  for i: Integer := 0 to Count - 1 do begin
+    var lTmp := Strings[i];    
+    if IndexOfDelimiter(lTmp, aDelimiter, aQuote) >= 0 then
+      lTmp := lTmp.QuotedString(aQuote);
+    lSb.Append(lTmp);
+    if i < Count - 1 then
+     lSb.Append(aDelimiter);    
+  end;
+  result := lSb.ToString;
+end;
+
+method TStrings.SetDelimitedTextWithChars(aValue: DelphiString; aDelimiter: Char; aQuote: Char);
+begin
+  Clear;
+  try
+    var i := 0;
+    var j := 0;
+    var lTmp: DelphiString := '';
+    while i <= aValue.Length - 1 do begin
+      case aValue.Chars[i] of
+        aQuote: begin
+          var lInQuote := false;
+          j := i + 1;
+          while j <= aValue.Length - 1 do begin
+            if (aValue.Chars[j] = aQuote) then
+              lInQuote := not lInQuote
+            else begin
+              if (aValue.Chars[j] = aDelimiter) and (not lInQuote) then
+                break;
+              lInQuote := false;
+            end;
+            inc(j);
+          end;
+            lTmp := aValue.SubString(i, j - i).DeQuotedString(aQuote); 
+        end;
+
+        else begin
+          j := i + 1;
+          while (j <= aValue.Length) and (IndexOfDelimiter(aValue[j], aDelimiter, aQuote) < 0) do
+            inc(j);        
+          lTmp := aValue.SubString(i, j - i);
+        end;
+        &Add(lTmp);
+        i := j + 1;
+      end;
+    end;
+
+  finally
+    EndUpdate;
+  end;
+end;
+
+method TStrings.Move(aCurIndex: Integer; aNewIndex: Integer);
+begin
+  if aCurIndex <> aNewIndex then
+  begin
+    BeginUpdate;
+    try
+      var lString := Strings[aCurIndex];
+      var lObject := Objects[aCurIndex];
+      Delete(aCurIndex);
+      InsertObject(aNewIndex, lString, lObject);
+    finally
+      EndUpdate;
+    end;
+  end;
+end;
+
+method TStrings.Error(Msg: DelphiString; Data: Integer);
+begin
+  raise new Sugar.SugarException(Msg);
 end;
 
 end.

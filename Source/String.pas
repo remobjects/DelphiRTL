@@ -67,6 +67,7 @@ type
     //class operator &Add(Value1: DelphiString; Value2: Object): not nullable DelphiString;
     //class operator &Add(Value1: Object; Value2: DelphiString): not nullable DelphiString;
     class operator Equal(Value1, Value2: DelphiString): Boolean;
+    class operator NotEqual(Value1, Value2: DelphiString): Boolean;
     class property Offset: Integer read fOffset write SetOffset;
     
     [ToString]
@@ -499,6 +500,11 @@ end;
 operator DelphiString.Equal(Value1: DelphiString; Value2: DelphiString): Boolean;
 begin
   result := Value1.fData = Value2.fData;
+end;
+
+class operator DelphiString.NotEqual(Value1, Value2: DelphiString): Boolean;
+begin
+  result := Value1.fData <> Value2.fData;
 end;
 
 class method DelphiString.PlatformArrayToStringArray(Value: array of PlatformString; Count: Integer := -1): array of DelphiString;
