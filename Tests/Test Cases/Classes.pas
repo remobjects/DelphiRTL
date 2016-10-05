@@ -69,8 +69,84 @@ type
       Assert.AreEqual(lList[2], 'One');
     end;
 
+    method FindTests;
+    begin
+      var lList := new TStringList;
+      lList.Add('A string on a list');
+      lList.Add('test string');
+      lList.Add('on the road');
+
+      var lIndex: Integer;
+      var lRes: Boolean;
+      lRes := lList.Find('test string', var lIndex);
+      Assert.AreEqual(lRes, true);
+      Assert.AreEqual(lIndex, 1);
+      lList.CaseSensitive := true;
+      lIndex := -1;
+      lRes := lList.Find('Test String', var lIndex);
+      Assert.AreEqual(lRes, false);
+
+      lList.CaseSensitive := false;
+      lIndex := -1;
+      lRes := lList.Find('Test String', var lIndex);
+      Assert.AreEqual(lRes, true);
+      Assert.AreEqual(lIndex, 1);
+    end;
+
+    method IndexOfTests;
+    begin
+      var lList := new TStringList;
+      lList.Add('A string on a list');
+      lList.Add('test string');
+      lList.Add('on the road');
+ 
+      var lIndex := lList.IndexOf('test string');
+      Assert.AreEqual(lIndex, 1);
+
+      lIndex := lList.IndexOf('on the road');
+      Assert.AreEqual(lIndex, 2);
+    end;
+
+    method InsertTests;
+    begin
+      var lList := new TStringList;
+      lList.Add('One');
+      lList.Add('Two');
+      lList.Add('Three');
+
+      lList.Insert(1, 'One.Five');
+      Assert.AreEqual(lList.Count, 4);
+      Assert.AreEqual(lList[1], 'One.Five');
+
+      lList.Insert(0, 'Zero');
+      Assert.AreEqual(lList[0], 'Zero');
+      Assert.AreEqual(lList[1], 'One');
+    end;
+
+    method InsertObjectTests;
+    begin
+      var lList := new TStringList;
+      lList.Add('One');
+      lList.Add('Two');
+      lList.Add('Three');
+      
+      lList.InsertObject(1, 'One.Five', lList);
+      Assert.AreEqual(lList[1], 'One.Five');
+      Assert.AreEqual(lList.Objects[1], lList);
+    end;
+
+    method SortTests;
+    begin
+      var lList := new TStringList;
+      lList.Add('Zero');
+      lList.Add('More');
+      lList.Add('About');
+
+      lList.Sort;
+      Assert.AreEqual(lList[0], 'About');
+      Assert.AreEqual(lList[1], 'More');
+      Assert.AreEqual(lList[2], 'Zero');
+    end;
   end;
-
-
 
 end.
