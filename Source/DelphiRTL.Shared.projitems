@@ -9,7 +9,7 @@
     <Import_RootNamespace>DelphiRTL.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Classes.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes.StringList.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)TObject.pas" />
@@ -18,5 +18,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Test Cases" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Classes.Persistent.pas" />
   </ItemGroup>
 </Project>

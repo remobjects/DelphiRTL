@@ -1,7 +1,7 @@
 ﻿namespace Elements.RTL.Delphi;
 
 type
-  TObject = Object;
+  TObject = public Object;
   
   Object__Delphi = public extension class(Object)
   public

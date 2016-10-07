@@ -2,11 +2,21 @@
 
 uses
   RemObjects.Elements.EUnit,
-   Elements.RTL.Delphi;
+  Elements.RTL.Delphi;
 
 type
   StringListUsage = public class(Test)
+  private
+    fList: TStringList;
   public
+    method Setup; override;
+    begin
+      fList := new TStringList;
+      fList.AddObject('One', fList);
+      fList.AddObject('Two', fList);
+      fList.AddObject('Three', fList);
+    end;
+
     method AddTests;
     begin
       var lList := new TStringList;
@@ -59,14 +69,9 @@ type
 
     method ExchangeTests;
     begin
-      var lList := new TStringList;
-      lList.AddObject('One', lList);
-      lList.AddObject('Two', lList);
-      lList.AddObject('Three', lList);
-
-      lList.Exchange(0, 2);
-      Assert.AreEqual(lList[0], 'Three');
-      Assert.AreEqual(lList[2], 'One');
+      fList.Exchange(0, 2);
+      Assert.AreEqual(fList[0], 'Three');
+      Assert.AreEqual(fList[2], 'One');
     end;
 
     method FindTests;
@@ -109,30 +114,20 @@ type
 
     method InsertTests;
     begin
-      var lList := new TStringList;
-      lList.Add('One');
-      lList.Add('Two');
-      lList.Add('Three');
+      fList.Insert(1, 'One.Five');
+      Assert.AreEqual(fList.Count, 4);
+      Assert.AreEqual(fList[1], 'One.Five');
 
-      lList.Insert(1, 'One.Five');
-      Assert.AreEqual(lList.Count, 4);
-      Assert.AreEqual(lList[1], 'One.Five');
-
-      lList.Insert(0, 'Zero');
-      Assert.AreEqual(lList[0], 'Zero');
-      Assert.AreEqual(lList[1], 'One');
+      fList.Insert(0, 'Zero');
+      Assert.AreEqual(fList[0], 'Zero');
+      Assert.AreEqual(fList[1], 'One');
     end;
 
     method InsertObjectTests;
     begin
-      var lList := new TStringList;
-      lList.Add('One');
-      lList.Add('Two');
-      lList.Add('Three');
-      
-      lList.InsertObject(1, 'One.Five', lList);
-      Assert.AreEqual(lList[1], 'One.Five');
-      Assert.AreEqual(lList.Objects[1], lList);
+      fList.InsertObject(1, 'One.Five', fList);
+      Assert.AreEqual(fList[1], 'One.Five');
+      Assert.AreEqual(fList.Objects[1], fList);
     end;
 
     method SortTests;
@@ -146,6 +141,65 @@ type
       Assert.AreEqual(lList[0], 'About');
       Assert.AreEqual(lList[1], 'More');
       Assert.AreEqual(lList[2], 'Zero');
+    end;
+  end;
+
+  StringsUsage = public class(Test)
+  private
+    fList: TStringList;
+    fLastIndex: Integer;
+  public
+    method Setup; override;
+    begin
+      fList := new TStringList;
+      fLastIndex := 0;
+    end;
+
+    method AddPairTests;
+    begin
+      fList.AddPair('Ford', 'Focus');
+      fList.AddPair('Honda', 'Civic');
+      fList.AddPair('Chevrolet', 'Impala');
+
+      Assert.AreEqual(fList.Values['Ford'], 'Focus');
+      Assert.AreEqual(fList.Values['Chevrolet'], 'Impala');
+      fList.AddPair('Dodge', 'Viper', fList);
+      Assert.AreEqual(FList.Objects[fLastIndex + 3], FList);
+    end;
+
+    method AppendTests;
+    begin
+      fList.Append('One string');
+      Assert.AreEqual(fList[fLastIndex], 'One string');
+    end;
+
+    method AddStringsTests;
+    begin
+      var lAnother := new TStringList;
+      lAnother.Add('One');
+      lAnother.Add('Two');
+
+      fList.AddStrings(lAnother);
+      Assert.AreEqual(lAnother[fLastIndex + 1], 'Two');
+
+      var lArray := new DelphiString[3];
+      lArray[0] := 'First One';
+      lArray[1] := 'Second One';
+      lArray[2] := 'Third One';
+      fList.AddStrings(lArray);
+      Assert.AreEqual(fList[fLastIndex + 4], 'Third One');
+
+      var lArray2 := new DelphiString[3];
+      lArray2[0] := 'Ferrari';
+      lArray2[1] := 'Porsche';
+      lArray2[2] := 'Tesla';
+      var lObjects := new TObject[3];
+      lObjects[0] := fList;
+      lObjects[1] := fList;
+      lObjects[2] := fList;
+
+      fList.AddStrings(lArray2, lObjects);
+      Assert.AreEqual(fList[fLastIndex + 7], 'Tesla');
     end;
   end;
 

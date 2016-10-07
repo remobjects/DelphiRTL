@@ -13,19 +13,6 @@ type
   TStringListSortCompare = public block(x: TInternalItem; y: TInternalItem): Integer;
   TNotifyEvent = public block(Sender: TObject);
 
-  TPersistent = public class(TObject)
-  private
-    method AssignError(Source: TPersistent);
-  protected
-    method AssignTo(Dest: TPersistent); virtual;
-    //method DefineProperties(Filer: TFiler); virtual;
-    method GetOwner: TPersistent; virtual;
-  public
-    //destructor Destroy; override;
-    method Assign(Source: TPersistent); virtual;
-    method GetNamePath: DelphiString; virtual;
-  end;
-
   TStrings = public abstract class(TPersistent)
   private
     fUpdateCount: Integer;
@@ -183,34 +170,6 @@ type
   end;
 
 implementation
-
-method TPersistent.AssignError(Source: TPersistent);
-begin
-  raise new Sugar.SugarException('Can not assign');
-end;
-
-method TPersistent.AssignTo(Dest: TPersistent);
-begin
-  Dest.AssignError(Self);
-end;
-
-method TPersistent.GetOwner: TPersistent;
-begin
-  result := nil;
-end;
-
-method TPersistent.Assign(Source: TPersistent);
-begin
-  if Source <> nil then 
-    Source.AssignTo(Self) 
-  else 
-    AssignError(nil);
-end;
-
-method TPersistent.GetNamePath: DelphiString;
-begin
-
-end;
 
 method TStringList.Setup;
 begin
@@ -732,7 +691,7 @@ method TStrings.GetValue(aName: DelphiString): DelphiString;
 begin
   var lIndex := IndexOfName(aName);
   if lIndex >= 0 then
-    result := Strings[lIndex].SubString(aName.Length + 2)
+    result := Strings[lIndex].SubString(aName.Length + 1)
   else
     result := '';
 end;
