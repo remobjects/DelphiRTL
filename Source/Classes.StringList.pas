@@ -89,7 +89,7 @@ type
     method SaveToFile(const FileName: DelphiString; Encoding: TEncoding);  virtual;
     method SaveToStream(Stream: TStream);  virtual;
     method SaveToStream(Stream: TStream; Encoding: TEncoding);  virtual; */
-    method ToDelphiStringArray: array of DelphiString;
+    method ToStringArray: array of DelphiString;
     method ToObjectArray: array of TObject;
     property Updating: Boolean read GetUpdating;
     property Capacity: Integer read GetCapacity;
@@ -561,7 +561,7 @@ method TStrings.ExtractName(S: DelphiString; AllNames: Boolean): DelphiString;
 begin
   var lPos := S.IndexOf(NameValueSeparator);
   if lPos >=0 then
-    result := S.SubString(0, lPos - 1)
+    result := S.SubString(0, lPos)
   else
     if AllNames then
       result := S
@@ -625,7 +625,23 @@ end;
 
 method TStrings.Assign(aSource: TPersistent);
 begin
-  // TODO
+  if aSource is TStrings then begin
+    BeginUpdate;
+    try
+      Clear;
+      var lSource := TStrings(aSource);
+      LineBreak := lSource.LineBreak;
+      Delimiter := lSource.Delimiter;
+      QuoteChar := lSource.QuoteChar;
+      NameValueSeparator := lSource.NameValueSeparator;
+      Options := lSource.Options;
+      AddStrings(lSource);
+    finally
+      EndUpdate;
+    end;
+    exit;
+  end;
+  inherited Assign(aSource);
 end;
 
 method TStrings.SetStrings(aSource: TStrings);
@@ -658,7 +674,7 @@ begin
   result := -1;
 end;
 
-method TStrings.ToDelphiStringArray: array of DelphiString;
+method TStrings.ToStringArray: array of DelphiString;
 begin
   result := new DelphiString[Count];
   for i: Integer := 0 to Count - 1 do
@@ -815,8 +831,8 @@ method TStrings.IndexOfDelimiter(aString: DelphiString; aDelimiter: Char; aQuote
 begin
   for j: Integer := 0 to aString.Length - 1 do begin
     var lChar := aString.Chars[j];
-    if ((StrictDelimiter) and ( lChar in [aDelimiter, Char(#0), aQuote])) or
-     ((not StrictDelimiter) and (lChar > ' ') and (lChar <> aDelimiter) and (lChar <> aQuote))  then
+    if ((StrictDelimiter) and ((lChar = aDelimiter) or (lChar = aQuote))) or
+     ((not StrictDelimiter) and (lChar < ' ') or ((lChar = aDelimiter) or (lChar = aQuote)))  then
       exit j;
   end;
   result := -1;

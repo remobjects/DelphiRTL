@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Classes.StringList.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Generics.Collections.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)TObject.pas" />

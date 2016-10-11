@@ -8,7 +8,7 @@ type
                                coLingCasing, coDigitAsNumbers, coStringSort) of Integer;
   TCompareOptions = public set of TCompareOption;
   TReplaceFlags = public set of (rfReplaceAll, rfIgnoreCase);
-  TArray<T> = array of T;
+  //TArray<T> = array of T;
   TStringSplitOptions = public (None, ExcludeEmpty);  
 
   [assembly:DefaultStringType("Elements.RTL.Delphi", typeOf(Elements.RTL.Delphi.WideString))]
