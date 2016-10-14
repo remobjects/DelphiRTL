@@ -1,4 +1,4 @@
-﻿namespace Elements.RTL.Delphi;
+namespace Elements.RTL.Delphi;
 
 interface
 
@@ -571,7 +571,7 @@ begin
   {$ELSEIF ECHOES}
   result := System.String.Copy(Str.fData);
   {$ELSEIF TOFFEE}
-  result := Str.fData;
+  result := Str.fData as DelphiString;
   {$ENDIF}
 end;
 
