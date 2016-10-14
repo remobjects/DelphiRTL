@@ -1,4 +1,4 @@
-namespace Elements.RTL.Delphi;
+﻿namespace Elements.RTL.Delphi;
 
 interface
 
@@ -566,13 +566,7 @@ end;
 
 class method DelphiString.Copy(Str: DelphiString): DelphiString;
 begin
-  {$IF COOPER}
-  result := java.lang.String(Str.fData);
-  {$ELSEIF ECHOES}
-  result := System.String.Copy(Str.fData);
-  {$ELSEIF TOFFEE}
   result := Str.fData as DelphiString;
-  {$ENDIF}
 end;
 
 method DelphiString.CopyTo(SourceIndex: Integer; var destination: array of Char; DestinationIndex: Integer; Count: Integer);
