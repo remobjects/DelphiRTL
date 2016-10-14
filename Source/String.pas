@@ -894,6 +894,7 @@ begin
   {$IF COOPER OR ECHOES}
   result := Replace(PlatformString(OldChar), PlatformString(NewChar), ReplaceFlags);
   {$ELSEIF TOFFEE}
+  //76424: Toffee: cannot cast char to string — once fixed, the above should work for all platforms.
   result := Replace(Foundation.NSString.stringWithFormat("%c", OldChar), Foundation.NSString.stringWithFormat("%c", NewChar), ReplaceFlags); 
   {$ENDIF}
 end;
