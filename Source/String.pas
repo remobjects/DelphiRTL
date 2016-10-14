@@ -566,13 +566,7 @@ end;
 
 class method DelphiString.Copy(Str: DelphiString): DelphiString;
 begin
-  {$IF COOPER}
-  result := java.lang.String(Str.fData);
-  {$ELSEIF ECHOES}
-  result := System.String.Copy(Str.fData);
-  {$ELSEIF TOFFEE}
-  result := new Foundation.NSString(Foundation.NSString(Str.fData));
-  {$ENDIF}
+  result := Str.fData as DelphiString;
 end;
 
 method DelphiString.CopyTo(SourceIndex: Integer; var destination: array of Char; DestinationIndex: Integer; Count: Integer);
@@ -710,7 +704,7 @@ begin
   {$ELSEIF ECHOES}
   fData := PlatformString(fData).Insert(StartIndex, Value);
   {$ELSEIF TOFFEE}
-  var lString := new NSMutableString(fData.Length);
+  var lString := new NSMutableString withCapacity(fData.Length);
   lString.setString(fData);
   lString.insertString(Value) atIndex(StartIndex);
   fData := lString;
@@ -887,7 +881,7 @@ begin
   {$ELSEIF ECHOES}
   fData := PlatformString(fData).Remove(StartIndex, Count);
   {$ELSEIF TOFFEE}
-  var lString := new NSMutableString(fData.Length);
+  var lString := new NSMutableString withCapacity(fData.Length);
   lString.setString(fData);
   lString.deleteCharactersInRange(NSMakeRange(StartIndex, Count));
   fData := lString;
