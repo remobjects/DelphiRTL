@@ -571,7 +571,7 @@ begin
   {$ELSEIF ECHOES}
   result := System.String.Copy(Str.fData);
   {$ELSEIF TOFFEE}
-  result := new Foundation.NSString(Foundation.NSString(Str.fData));
+  result := Str.fData;
   {$ENDIF}
 end;
 
@@ -710,7 +710,7 @@ begin
   {$ELSEIF ECHOES}
   fData := PlatformString(fData).Insert(StartIndex, Value);
   {$ELSEIF TOFFEE}
-  var lString := new NSMutableString(fData.Length);
+  var lString := new NSMutableString withCapacity(fData.Length);
   lString.setString(fData);
   lString.insertString(Value) atIndex(StartIndex);
   fData := lString;
@@ -887,7 +887,7 @@ begin
   {$ELSEIF ECHOES}
   fData := PlatformString(fData).Remove(StartIndex, Count);
   {$ELSEIF TOFFEE}
-  var lString := new NSMutableString(fData.Length);
+  var lString := new NSMutableString withCapacity(fData.Length);
   lString.setString(fData);
   lString.deleteCharactersInRange(NSMakeRange(StartIndex, Count));
   fData := lString;
