@@ -13,7 +13,7 @@ type
     function Compare(const Left, Right: T): Integer;
   end;
 
-  IEnumerator = interface
+/*  IEnumerator = interface
     function GetCurrent: TObject;
     function MoveNext: Boolean;
     procedure Reset;
@@ -24,12 +24,26 @@ type
     function GetCurrent: T;
     property Current: T read;
   end;
+  */
 
-  IEnumerable = interface
+  IEnumerator<T> = interface
+    function MoveNext: Boolean;
+    procedure Reset;
+    //function GetCurrent: T;
+    property Current: T read;
+  end;
+
+
+/*  IEnumerable = interface
     function GetEnumerator: IEnumerator;
   end;
 
   IEnumerable<T> = interface(IEnumerable)
+    function GetEnumerator: IEnumerator<T>;
+  end;
+  */
+  
+  IEnumerable<T> = interface
     function GetEnumerator: IEnumerator<T>;
   end;
 
@@ -82,7 +96,7 @@ type
     class method Create(const AComparer: IComparer<T>): TList<T>;
     class method Create(const Collection: TEnumerable<T>): TList<T>;
     //destructor Destroy; override;
-    class method Error(const Msg: string; Data: Integer); virtual;
+    class method Error(const Msg: String; Data: Integer); virtual;
     method &Add(const Value: T): Integer;
     method AddRange(const Values: array of T);
     method AddRange(const Collection: IEnumerable<T>);
@@ -99,8 +113,8 @@ type
     method DeleteRange(aIndex, aCount: Integer);
     method ExtractItem(const Value: T; Direction: TDirection): T;
     method Extract(const Value: T): T; inline;
-    method Exchange(Index1, Index2: Integer); inline;
-    method Move(CurIndex, NewIndex: Integer); inline;
+    method Exchange(Index1, Index2: Integer); 
+    method Move(CurIndex, NewIndex: Integer);
     method First: T;
     method Last: T;
     method Clear;
@@ -109,7 +123,7 @@ type
     method IndexOf(const Value: T): Integer;
     method IndexOfItem(const Value: T; Direction: TDirection): Integer;
     method LastIndexOf(const Value: T): Integer;
-    method &Reverse; inline;
+    method &Reverse;
     method Sort;
     method Sort(const AComparer: IComparer<T>);
     method BinarySearch(const Item: T; out Index: Integer): Boolean;
@@ -221,24 +235,34 @@ end;
 
 method TList<T>.InsertRange(aIndex: Integer; Collection: IEnumerable<T>);
 begin
-  for lItem in Collection do begin
-    fList.Insert(aIndex, lItem);
-    inc(aIndex);
-  end;
+  var lEnumerator := Collection.GetEnumerator;
+  if lEnumerator.Current <> nil then begin
+    repeat  
+      fList.Insert(aIndex, lEnumerator.Current);
+      inc(aIndex);
+    until not lEnumerator.MoveNext;
 
-  for lItem in Collection do
-    &Notify(lItem, TCollectionNotification.cnAdded);
+    lEnumerator.Reset;
+    repeat  
+     &Notify(lEnumerator.Current, TCollectionNotification.cnAdded);
+    until not lEnumerator.MoveNext;
+  end;
 end;
 
 method TList<T>.InsertRange(aIndex: Integer; Collection: TEnumerable<T>);
 begin
-  for lItem in Collection do begin
-    fList.Insert(aIndex, lItem);
-    inc(aIndex);
-  end;
+  var lEnumerator := Collection.GetEnumerator;
+  if lEnumerator.Current <> nil then begin
+    repeat
+      fList.Insert(aIndex, lEnumerator.Current);
+      inc(aIndex);
+    until not lEnumerator.MoveNext;
 
-  for lItem in Collection do
-    &Notify(lItem, TCollectionNotification.cnAdded);
+    lEnumerator := Collection.GetEnumerator;
+    repeat
+      &Notify(lEnumerator.Current, TCollectionNotification.cnAdded);
+    until not lEnumerator.MoveNext;
+  end;
 end;
 
 method TList<T>.Pack;
@@ -274,13 +298,13 @@ end;
 
 method TList<T>.DeleteRange(aIndex: Integer; aCount: Integer);
 begin
-  var lArray: array of T := new T[aCount];
+  var lTmp: Sugar.Collections.List<T>;
   for i: Integer := 0 to aCount - 1 do
-    lArray[i] := fList[aIndex + i];
+    lTmp.add(fList[aIndex + i]);
 
-  fList.RemoveRange(AIndex, aCount);
+  fList.RemoveRange(aIndex, aCount);
 
-  for lItem in lArray do
+  for lItem in lTmp do
     &Notify(lItem, TCollectionNotification.cnRemoved);
 end;
 
@@ -303,12 +327,18 @@ end;
 
 method TList<T>.Exchange(Index1: Integer; Index2: Integer);
 begin
-
+  var lTmp: T;
+  lTmp := fList[Index1];
+  fList[Index1] := fList[Index2];
+  fList[Index2] := lTmp;
 end;
 
 method TList<T>.Move(CurIndex: Integer; NewIndex: Integer);
 begin
-
+  fList.Insert(NewIndex, fList[CurIndex]);
+  if NewIndex <= CurIndex then 
+    inc(CurIndex);
+  fList.RemoveAt(CurIndex);
 end;
 
 method TList<T>.First: T;
@@ -353,12 +383,15 @@ end;
 
 method TList<T>.Reverse;
 begin
-
+  var lTmp := new Sugar.Collections.List<T>;
+  for i: Integer := Count - 1 downto 0 do
+    lTmp[Count - 1 - i];
+  fList := lTmp;
 end;
 
 method TList<T>.Sort;
 begin
-
+  
 end;
 
 method TList<T>.Sort(AComparer: IComparer<T>);
@@ -386,12 +419,12 @@ begin
   result := fList.ToArray;
 end;
 
-method TList<T>.SetCapacity(value: Integer);
+method TList<T>.SetCapacity(Value: Integer);
 begin
   // NO OP, for compatibility
 end;
 
-method TList<T>.SetCount(value: Integer);
+method TList<T>.SetCount(Value: Integer);
 begin
   // NO OP, for compatibility
 end;
