@@ -746,7 +746,7 @@ begin
   var lArray := StringArrayToPlatformArray(Values);
   result := System.String.Join(Separator, lArray, StartIndex, Count);
   {$ELSEIF TOFFEE}
-  var lArray := new NSMutableArray(Values.length);
+  var lArray := new NSMutableArray withCapacity(Values.length);
   for i: Integer := StartIndex to (StartIndex + Count) - 1 do
     lArray.addObject(Values[i].fData);
 
@@ -1113,7 +1113,7 @@ begin
   {$ELSEIF TOFFEE}
   var lTotal := 0;
   var lIndex := -1;
-  var lArray := new NSMutableArray(10);
+  var lArray := new NSMutableArray withCapacity(10);
   var lCurrentLength := 0;
   var lStartIndex := 0;
   var lStr: DelphiString := '';
