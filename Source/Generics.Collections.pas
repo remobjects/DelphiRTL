@@ -3,7 +3,8 @@
 interface
 
 uses
-  Sugar;
+  Sugar,
+  Sugar.Linq;
 
 type
   TArray<T> = class
@@ -13,57 +14,59 @@ type
     function Compare(const Left, Right: T): Integer;
   end;
 
-/*  IEnumerator = interface
-    function GetCurrent: TObject;
-    function MoveNext: Boolean;
-    procedure Reset;
-    property Current: TObject read;
-  end;
+  //IEnumerable = public ISequence<Object>;
+  IEnumerable<T> = public ISequence<T>;
 
-  IEnumerator<T> = interface(IEnumerator)
-    function GetCurrent: T;
-    property Current: T read;
-  end;
-  */
-
-  IEnumerator<T> = interface
-    function MoveNext: Boolean;
-    procedure Reset;
-    //function GetCurrent: T;
-    property Current: T read;
-  end;
-
-
-/*  IEnumerable = interface
-    function GetEnumerator: IEnumerator;
-  end;
-
-  IEnumerable<T> = interface(IEnumerable)
-    function GetEnumerator: IEnumerator<T>;
-  end;
-  */
-  
-  IEnumerable<T> = interface
-    function GetEnumerator: IEnumerator<T>;
-  end;
-
-  TEnumerator<T> = abstract class
-  protected
-    method DoGetCurrent: T; virtual; abstract;
-    method DoMoveNext: Boolean; virtual; abstract;
-  public
-    property Current: T read DoGetCurrent;
-    method MoveNext: Boolean;
-  end;
-
-  TEnumerable<T> = abstract class
+  TEnumerable<T> = abstract class(ISequence<T>)
   private
     method ToArrayImpl(Count: Integer): TArray<T>;
   protected
-    method DoGetEnumerator: TEnumerator<T>; virtual; abstract;
+
+    method GetSequence: ISequence<T>; virtual; abstract;
+
+    // Temporary workaround for 74077: Allow GetSequence() to actually be used to implement ISequence
+    {$IF COOPER}
+    method &iterator: java.util.Iterator<T>;
+    begin
+      result := Iterable<T>(GetSequence()).iterator;
+    end;
+    {$ELSEIF ECHOES}
+    method GetNonGenericEnumerator: System.Collections.IEnumerator; implements System.Collections.IEnumerable.GetEnumerator;
+    begin
+      result := GetEnumerator();
+    end;
+    method GetEnumerator: System.Collections.Generic.IEnumerator<T>; //implements System.Collections.Generic.IEnumerable<T>.GetEnumerator<T>;
+    begin  
+      exit System.Collections.Generic.IEnumerable<T>(GetSequence()).GetEnumerator;
+    end;
+    {$ELSEIF TOFFEE}
+    method countByEnumeratingWithState(aState: ^NSFastEnumerationState) objects(aStackbuf: ^T) count(len: NSUInteger): NSUInteger;
+    begin
+      var currentSequence: NSArray<T>;
+      if aState^.state = 0 then begin
+        currentSequence := GetSequence().array;
+        aState^.extra[0] := NSInteger(bridge<CFArrayRef>(currentSequence));
+      end
+      else begin
+        currentSequence := bridge<NSArray>(^Void(aState^.extra[0]));
+      end;
+
+      var i := 0;
+      var count := currentSequence.count;
+      while (aState^.state+i < count) and (i < len) do begin
+        aStackbuf[i] := currentSequence[aState^.state+i];
+        inc(i);
+      end;
+      
+      aState^.state := aState^.state+i;
+      aState^.itemsPtr := ^id(aStackbuf);
+      result := i;
+    end;
+    {$ENDIF}
+
   public
     //destructor Destroy; override;
-    method GetEnumerator: TEnumerator<T>;
+    //method GetEnumerator: TEnumerator<T>;
     method ToArray: array of T; virtual;
   end;
 
@@ -86,7 +89,7 @@ type
     method Initialize;
   protected
     method ItemValue(const Item: T): Integer;
-    method DoGetEnumerator: TEnumerator<T>; override;
+    method GetSequence: ISequence<T>; override;
     method &Notify(const Item: T; Action: TCollectionNotification); virtual;
   public
     constructor; 
@@ -104,7 +107,7 @@ type
     method Insert(aIndex: Integer; const Value: T);
     method InsertRange(aIndex: Integer; const Values: array of T);
     method InsertRange(aIndex: Integer; const Collection: IEnumerable<T>);
-    method InsertRange(aIndex: Integer; const Collection: TEnumerable<T>);
+    //method InsertRange(aIndex: Integer; const Collection: TEnumerable<T>);  what;'s the point? TEnumerable<T> is IEnumerable<T>
     method Pack;
     method Pack(const IsEmpty: TEmptyFunc<T>);
     method &Remove(const Value: T): Integer; inline;
@@ -143,19 +146,13 @@ type
 
 implementation
 
-method TEnumerator<T>.MoveNext: Boolean;
-begin
-  result := DoMoveNext;
-end;
-
-method TEnumerable<T>.GetEnumerator: TEnumerator<T>;
-begin
-  result := DoGetEnumerator;
-end;
-
 method TEnumerable<T>.ToArray: array of T;
 begin
-
+  {$IF COOPER}
+  result := (ToList() as Sugar.Collections.List<T>).ToArray();
+  {$ELSE}
+  result := ToList().ToArray();
+  {$ENDIF}
 end;
 
 method TEnumerable<T>.ToArrayImpl(Count: Integer): TArray<T>;
@@ -168,9 +165,9 @@ begin
 
 end;
 
-method TList<T>.DoGetEnumerator: TEnumerator<T>;
+method TList<T>.GetSequence: ISequence<T>;
 begin
-
+  result := fList;
 end;
 
 method TList<T>.&Notify(Item: T; Action: TCollectionNotification);
@@ -235,33 +232,13 @@ end;
 
 method TList<T>.InsertRange(aIndex: Integer; Collection: IEnumerable<T>);
 begin
-  var lEnumerator := Collection.GetEnumerator;
-  if lEnumerator.Current <> nil then begin
-    repeat  
-      fList.Insert(aIndex, lEnumerator.Current);
-      inc(aIndex);
-    until not lEnumerator.MoveNext;
-
-    lEnumerator.Reset;
-    repeat  
-     &Notify(lEnumerator.Current, TCollectionNotification.cnAdded);
-    until not lEnumerator.MoveNext;
+  var lList := Collection.ToList; // we don't want to enum it twice?
+  for each i in lList do begin
+    fList.Insert(aIndex, i);
+    inc(aIndex);
   end;
-end;
-
-method TList<T>.InsertRange(aIndex: Integer; Collection: TEnumerable<T>);
-begin
-  var lEnumerator := Collection.GetEnumerator;
-  if lEnumerator.Current <> nil then begin
-    repeat
-      fList.Insert(aIndex, lEnumerator.Current);
-      inc(aIndex);
-    until not lEnumerator.MoveNext;
-
-    lEnumerator := Collection.GetEnumerator;
-    repeat
-      &Notify(lEnumerator.Current, TCollectionNotification.cnAdded);
-    until not lEnumerator.MoveNext;
+  for each i in lList do begin
+     &Notify(i, TCollectionNotification.cnAdded);
   end;
 end;
 
