@@ -14,10 +14,15 @@ type
     function Compare(const Left, Right: T): Integer;
   end;
 
+  IEqualityComparer<T> = public interface
+    function &Equals(const Left, Right: T): Boolean;
+    function GetHashCode(const Value: T): Integer;
+  end;
+
   //IEnumerable = public ISequence<Object>;
   IEnumerable<T> = public ISequence<T>;
 
-  TEnumerable<T> = abstract class(ISequence<T>)
+  TEnumerable<T> = public abstract class(ISequence<T>)
   private
     method ToArrayImpl(Count: Integer): TArray<T>;
   protected
@@ -98,7 +103,6 @@ type
     class method Create: TList<T>;
     class method Create(const AComparer: IComparer<T>): TList<T>;
     class method Create(const Collection: TEnumerable<T>): TList<T>;
-    //destructor Destroy; override;
     class method Error(const Msg: String; Data: Integer); virtual;
     method &Add(const Value: T): Integer;
     method AddRange(const Values: array of T);
@@ -121,7 +125,7 @@ type
     method First: T;
     method Last: T;
     method Clear;
-    method Expand: TList<T>; inline;
+    method Expand: TList<T>;
     method Contains(const Value: T): Boolean;
     method IndexOf(const Value: T): Integer;
     method IndexOfItem(const Value: T; Direction: TDirection): Integer;
@@ -139,8 +143,6 @@ type
     property List: array of T read GetItems;
 
     property OnNotify: TCollectionNotifyEvent<T> read fOnNotify write fOnNotify;
-
-    //method GetEnumerator: TEnumerator;
   end;
 
 
@@ -443,6 +445,5 @@ method TList<T>.Initialize;
 begin
   fList := new Sugar.Collections.List<T>;
 end;
-
 
 end.
