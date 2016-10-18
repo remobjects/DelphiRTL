@@ -11,7 +11,7 @@ type
     method Initialize;
   protected
     method &Notify(const Item: T; Action: TCollectionNotification); virtual;
-    method GetSequence: ISequence<T>; override;
+    method GetSequence: ISequence<T>; override; iterator;
   public
     constructor;
     constructor(const Collection: TEnumerable<T>);
@@ -44,7 +44,9 @@ end;
 
 method TStack<T>.GetSequence: ISequence<T>;
 begin
-  //result := fStack;
+  var lArray := fStack.ToArray;
+  for lItem in lArray do
+    yield lItem;
 end;
 
 constructor TStack<T>;
@@ -75,13 +77,13 @@ begin
   fStack.Clear;
 
   for lItem in lArray do
-    &&Notify(lItem, TCollectionNotification.cnRemoved);
+    &Notify(lItem, TCollectionNotification.cnRemoved);
 end;
 
 method TStack<T>.Push(Value: T);
 begin
   fStack.Push(Value);
-  &&Notify(Value, TCollectionNotification.cnAdded);
+  &Notify(Value, TCollectionNotification.cnAdded);
 end;
 
 method TStack<T>.Pop: T;

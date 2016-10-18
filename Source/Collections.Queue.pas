@@ -11,7 +11,7 @@ type
     method Initialize;
   protected
     method &Notify(const Item: T; Action: TCollectionNotification); virtual;
-    method GetSequence: ISequence<T>; override;
+    method GetSequence: ISequence<T>; override; iterator;
   public
     constructor;
     constructor(Collection: TEnumerable<T>);
@@ -39,7 +39,9 @@ end;
 
 method TQueue<T>.GetSequence: ISequence<T>;
 begin
-  //result := fQueue;
+  var lArray := fQueue.ToArray;
+  for lItem in lArray do
+    yield lItem;
 end;
 
 constructor TQueue<T>;
