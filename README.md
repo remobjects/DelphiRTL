@@ -1,3 +1,5 @@
+<img src="https://docs.elementscompiler.com/API/DelphiRTL/DelphiRTL-256.png" width="128" align="right" />
+
 # DelphiRTL
 
 Part of the RTL2 project, this is a Delphi-compatible RTL and non-visual VCL library implementation for the Elements compiler (and more specifically, the Oxygene language).
@@ -25,4 +27,10 @@ Community contributions, pull requests and other feedback are highly welcome.
 ## Requirements
 
 As of this writing, the Delphi RTL library requires the latest Elements 8.4 compiler to be built and to be used.
+
+## See Also
+
+* [RemObjects Elements Homepage](http://www.elementscompiler.com/)
+* [RemObjects Elements Docs](http://docs.elementscompiler.com/)
+* [Delphi RTL](http://docs.elementscompiler.com/API/DelphiRTL/) on docs.elementscompiler.com
 
