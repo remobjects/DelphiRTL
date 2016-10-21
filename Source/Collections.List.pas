@@ -10,7 +10,7 @@ type
   TArray<T> = class
   end;
 
-  IComparer<T> = interface
+  IComparer<T> = public interface
     function Compare(const Left, Right: T): Integer;
   end;
 
@@ -81,7 +81,7 @@ type
   TCollectionNotification = public enum (cnAdded, cnRemoved, cnExtracted) of Integer;
   TCollectionNotifyEvent<T> = public block(Sender: TObject; const Item: T; Action: TCollectionNotification);
  
-  TList<T> = class(TEnumerable<T>)
+  TList<T> = public class(TEnumerable<T>)
   private
     fList: Sugar.Collections.List<T>;
     fComparer: IComparer<T>;
@@ -114,7 +114,7 @@ type
     //method InsertRange(aIndex: Integer; const Collection: TEnumerable<T>);  what;'s the point? TEnumerable<T> is IEnumerable<T>
     method Pack;
     method Pack(const IsEmpty: TEmptyFunc<T>);
-    method &Remove(const Value: T): Integer; inline;
+    method &Remove(const Value: T): Integer; //inline; T76473
     method RemoveItem(const Value: T; Direction: TDirection): Integer;
     method Delete(aIndex: Integer);
     method DeleteRange(aIndex, aCount: Integer);
@@ -277,7 +277,7 @@ end;
 
 method TList<T>.DeleteRange(aIndex: Integer; aCount: Integer);
 begin
-  var lTmp: Sugar.Collections.List<T>;
+  var lTmp := new Sugar.Collections.List<T>;
   for i: Integer := 0 to aCount - 1 do
     lTmp.add(fList[aIndex + i]);
 
@@ -315,7 +315,7 @@ end;
 method TList<T>.Move(CurIndex: Integer; NewIndex: Integer);
 begin
   fList.Insert(NewIndex, fList[CurIndex]);
-  if NewIndex <= CurIndex then 
+  if CurIndex <= NewIndex then 
     inc(CurIndex);
   fList.RemoveAt(CurIndex);
 end;
@@ -364,7 +364,8 @@ method TList<T>.Reverse;
 begin
   var lTmp := new Sugar.Collections.List<T>;
   for i: Integer := Count - 1 downto 0 do
-    lTmp[Count - 1 - i];
+    lTmp.&Add(fList[i]);
+
   fList := lTmp;
 end;
 

@@ -3,7 +3,7 @@
 interface
 
 type
-  TPair<TKey, TValue> = tuple of (TKey, TValue);
+  TPair<TKey, TValue> = public tuple of (TKey, TValue);
   TDictionary<TKey,TValue> = public class(TEnumerable<TPair<TKey,TValue>>)
   private
     fDict: Sugar.Collections.Dictionary<TKey, TValue>;
@@ -89,12 +89,11 @@ end;
 
 method TDictionary<TKey,TValue>.DoRemove(aKey: TKey; aAction: TCollectionNotification): TValue;
 begin
-  var lValue: TValue;
-  if not TryGetValue(aKey, out lValue) then
-    exit(nil);
+  if not TryGetValue(aKey, out result) then
+    exit(default(TValue));
   fDict.Remove(aKey);
   KeyNotify(aKey, aAction);
-  ValueNotify(lValue, aAction);
+  ValueNotify(result, aAction);
 end;
 
 method TDictionary<TKey,TValue>.Remove(Key: TKey);
@@ -153,8 +152,10 @@ method TDictionary<TKey,TValue>.ToArray: array of TPair<TKey,TValue>;
 begin
   result := new TPair<TKey,TValue>[fDict.Count];
   var i := 0;
-  for each lKey in fDict.Keys do 
+  for each lKey in fDict.Keys do begin
     result[i] := (lKey, fDict.Item[lKey]);
+    inc(i);
+  end;
 end;
 
 method TDictionary<TKey,TValue>.GetItem(aKey: TKey): TValue;

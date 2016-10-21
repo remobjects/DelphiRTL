@@ -10,6 +10,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Classes.StringList.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Collections.Dictionary.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Collections.List.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Collections.Queue.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Collections.Stack.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\String.Manipulations.pas" />
   </ItemGroup>
   <ItemGroup>
