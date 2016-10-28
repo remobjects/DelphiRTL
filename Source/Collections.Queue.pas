@@ -90,7 +90,7 @@ end;
 
 method TQueue<T>.Clear;
 begin
-  var lArray := ToArray;
+  var lArray := fQueue.ToArray;
   fQueue.Clear;
   for lItem in lArray do
     &Notify(lItem, TCollectionNotification.cnRemoved);
@@ -113,7 +113,7 @@ end;
 
 method TQueue<T>.ToArray: array of T;
 begin
-  result := fQueue.ToArray;
+  raise new Exception("Not implemented.");
 end;
 
 method TQueue<T>.Initialize;

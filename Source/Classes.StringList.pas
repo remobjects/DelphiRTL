@@ -8,7 +8,7 @@ uses
 type
   TStringsOption = public enum (soStrictDelimiter, soWriteBOM, soTrailingLineBreak, soUseLocale) of Integer;
   TStringsOptions = public set of TStringsOption;
-  TDuplicates = public (dupIgnore, dupAccept, dupError);
+  TDuplicates = public enum (dupIgnore, dupAccept, dupError) of Integer;
   TInternalItem = tuple of (DelphiString, TObject);
   TStringListSortCompare = public block(x: TInternalItem; y: TInternalItem): Integer;
   TNotifyEvent = public block(Sender: TObject);
@@ -16,7 +16,6 @@ type
   TStrings = public abstract class(TPersistent)
   private
     fUpdateCount: Integer;
-    fQuoteChar: Char;
     fOptions: TStringsOptions;
     function GetUseLocale: Boolean;
     procedure SetUseLocale(aValue: Boolean);
@@ -56,8 +55,8 @@ type
     method CompareStrings(const S1, S2: DelphiString): Integer; virtual;
     property UpdateCount: Integer read fUpdateCount;
   public
-/*    constructor;
-    destructor Destroy; override; */
+    /*constructor;
+    destructor Destroy; override;*/
     method &Add(const S: DelphiString): Integer; virtual;
     method AddPair(const aName: DelphiString; aValue: DelphiString): TStrings;
     method AddPair(const aName: DelphiString; aValue: DelphiString; aObject: TObject): TStrings;
@@ -96,17 +95,17 @@ type
     property CommaText: DelphiString read GetCommaText write SetCommaText;
     property Count: Integer read GetCount;
     /*property DefaultEncoding: TEncoding read FDefaultEncoding write SetDefaultEncoding; */
-    property Delimiter: Char;
+    property Delimiter: Char := ',';
     property DelimitedText: DelphiString read GetDelimitedText write SetDelimitedText;
     /*property Encoding: TEncoding read FEncoding;*/
     property LineBreak: DelphiString;
     property Names[Index: Integer]: DelphiString read GetName;
     property KeyNames[Index: Integer]: DelphiString read GetKeyName;
     property Objects[aIndex: Integer]: TObject read GetObject write PutObject;
-    property QuoteChar: Char read fQuoteChar write fQuoteChar;
+    property QuoteChar: Char := '"';
     property Values[const Name: DelphiString]: DelphiString read GetValue write SetValue;
     property ValueFromIndex[Index: Integer]: DelphiString read GetValueFromIndex write SetValueFromIndex;
-    property NameValueSeparator: Char;
+    property NameValueSeparator: Char :='=';
     property StrictDelimiter: Boolean read GetStrictDelimiter write SetStrictDelimiter;
     property Strings[aIndex: Integer]: DelphiString read Get write Put; default;
     property Text: DelphiString read GetTextStr write SetTextStr;
@@ -659,7 +658,7 @@ method TStrings.IndexOfName(aName: DelphiString): Integer;
 begin
   for i: Integer := 0 to Count - 1 do begin 
     var lPos := Strings[i].IndexOf(NameValueSeparator);
-    if (lPos >= 0) and (DelphiString.Compare(Strings[i].SubString(0, lPos - 1), aName) = 0) then
+    if (lPos >= 0) and (DelphiString.Compare(Strings[i].SubString(0, lPos), aName) = 0) then
         exit i;
   end;
   result := -1;

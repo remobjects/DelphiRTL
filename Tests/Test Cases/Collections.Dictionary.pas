@@ -18,8 +18,10 @@ type
     method CreateTests;
     begin
       var lTmp := new TList<TPair<DelphiString, Integer>>;
-      lTmp.Add(('One', 1));
-      lTmp.Add(('Two', 2));
+      var lPair := new Sugar.collections.KeyValuePair<DelphiString, Integer>('One', 1);
+      lTmp.Add(lPair);
+      var lPair2 := new Sugar.collections.KeyValuePair<DelphiString, Integer>('Two', 2);
+      lTmp.Add(lPair2);
       var lDict := new TDictionary<DelphiString, Integer>(lTmp);
       Assert.AreEqual(lDict.Count, 2);
     end;
@@ -35,14 +37,16 @@ type
 
     method RemoveTests;
     begin
-      fDict.Add('One', 1);
-      fDict.Add('Two', 2);
+      var lOne: DelphiString := 'One';
+      var lTwo: DelphiString := 'Two';
+      fDict.Add(lOne, 1);
+      fDict.Add(lTwo, 2);
       Assert.AreEqual(fDict.Count, 2);
-      fDict.Remove('One');
+      fDict.Remove(lOne);
       Assert.AreEqual(fDict.Count, 1);
-      fDict.Remove('One');
+      fDict.Remove(lOne);
       Assert.AreEqual(fDict.Count, 1);
-      fDict.Remove('Two');
+      fDict.Remove(lTwo);
       Assert.AreEqual(fDict.Count, 0);
     end;
 
@@ -51,8 +55,8 @@ type
       fDict.Add('One', 1);
       fDict.Add('Two', 2);
       var lItem := fDict.ExtractPair('One');
-      Assert.AreEqual(lItem[0], 'One');
-      Assert.AreEqual(lItem[1], 1);      
+      Assert.AreEqual(lItem.Key, 'One');
+      Assert.AreEqual(lItem.Value, 1);      
     end;
 
     method ClearTests;
@@ -109,12 +113,18 @@ type
       fDict.Add('One', 1);
       fDict.Add('Two', 2);
       var lArray := fDict.ToArray;
-      var lItem := lArray[0];
-      Assert.AreEqual(lItem[0], 'One');
-      Assert.AreEqual(lItem[1], 1);
-      lItem := lArray[1];
-      Assert.AreEqual(lItem[0], 'Two');
-      Assert.AreEqual(lItem[1], 2);
+      Assert.AreEqual(lArray.length, 2);
+      var lOneFound := false;
+      var lTwoFound := false;
+      for lItem in lArray do begin
+        if lItem.Key.CompareTo('One') = 0 then
+        //if lItem.Key = 'One' then  // TODO error on cooper
+          lOneFound := true;
+        if lItem.Key.CompareTo('Two') = 0 then
+          lTwoFound := true;
+      end;
+      Assert.AreEqual(lOneFound, true);
+      Assert.AreEqual(lTwoFound, true);
     end;
   end;
 

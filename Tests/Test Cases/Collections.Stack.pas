@@ -46,19 +46,22 @@ type
     begin
       fStack.Push('One string');
       fStack.Push('Another string');
-      var lItem := fStack.Peek;
+      var lItem: DelphiString := fStack.Peek;
       Assert.AreEqual(fStack.Count, 2);
       Assert.AreEqual(lItem, 'Another string');
     end;
 
+/*
     method ToArrayTests;
     begin
       fStack.Push('One string');
       fStack.Push('Another string');
+
       var lArray := fStack.ToArray;
       Assert.AreEqual(lArray[0], 'Another string');
       Assert.AreEqual(lArray[1], 'One string');
     end;
+*/
 
     {$IF ECHOES OR COOPER} // TODO review for TOFFEE
     method CreateTests;

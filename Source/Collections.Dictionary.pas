@@ -3,7 +3,7 @@
 interface
 
 type
-  TPair<TKey, TValue> = public tuple of (TKey, TValue);
+  TPair<T, U> = public Sugar.Collections.KeyValuePair<T, U>;
   TDictionary<TKey,TValue> = public class(TEnumerable<TPair<TKey,TValue>>)
   private
     fDict: Sugar.Collections.Dictionary<TKey, TValue>;
@@ -66,7 +66,7 @@ end;
 method TDictionary<TKey,TValue>.GetSequence: ISequence<TPair<TKey,TValue>>;
 begin
   for each lKey in fDict.Keys do 
-    yield (lKey, fDict.Item[lKey]);
+    yield new Sugar.Collections.KeyValuePair<TKey,TValue>(lKey, fDict.Item[lKey]);
 end;
 
 constructor TDictionary<TKey,TValue>(aCapacity: Integer := 0);
@@ -103,7 +103,7 @@ end;
 
 method TDictionary<TKey,TValue>.ExtractPair(Key: TKey): TPair<TKey,TValue>;
 begin
-  result := (Key, DoRemove(Key, TCollectionNotification.cnExtracted));
+  result := new Sugar.Collections.KeyValuePair<TKey, TValue>(Key, DoRemove(Key, TCollectionNotification.cnExtracted));
 end;
 
 method TDictionary<TKey,TValue>.Clear;
@@ -111,8 +111,8 @@ begin
   var lArray := ToArray;
   fDict.Clear;
   for lItem in lArray do begin
-    KeyNotify(lItem[0], TCollectionNotification.cnRemoved);
-    ValueNotify(lItem[1], TCollectionNotification.cnRemoved);
+    KeyNotify(lItem.Key, TCollectionNotification.cnRemoved);
+    ValueNotify(lItem.Value, TCollectionNotification.cnRemoved);
   end;
 end;
 
@@ -153,7 +153,7 @@ begin
   result := new TPair<TKey,TValue>[fDict.Count];
   var i := 0;
   for each lKey in fDict.Keys do begin
-    result[i] := (lKey, fDict.Item[lKey]);
+    result[i] := new Sugar.Collections.KeyValuePair<TKey, TValue>(lKey, fDict.Item[lKey]);
     inc(i);
   end;
 end;
@@ -186,7 +186,7 @@ end;
 method TDictionary<TKey,TValue>.AddCollection(aCollection: TEnumerable<TPair<TKey,TValue>>);
 begin
   for lItem in aCollection do
-    AddOrSetValue(lItem[0], lItem[1]);
+    AddOrSetValue(lItem.Key, lItem.Value);
 end;
 
 class method TDictionary<TKey,TValue>.Create(aCapacity: Integer := 0): TDictionary<TKey,TValue>;

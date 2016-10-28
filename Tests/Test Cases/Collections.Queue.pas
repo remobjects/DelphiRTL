@@ -37,7 +37,7 @@ type
     begin
       fQueue.Enqueue('a test');
       fQueue.Enqueue('another test');
-      var lItem := fQueue.Dequeue;
+      var lItem: DelphiString := fQueue.Dequeue;
       Assert.AreEqual(fQueue.Count, 1);
       Assert.AreEqual(lItem, 'a test');
       fQueue.Dequeue;
@@ -61,14 +61,14 @@ type
       Assert.AreEqual(fQueue.Count, 0);
     end;
 
-    method ToArrayTests;
+/*    method ToArrayTests;
     begin
       fQueue.Enqueue('a test');
       fQueue.Enqueue('another test');
       var lArray := fQueue.ToArray;
       Assert.AreEqual(lArray[0], 'a test');
       Assert.AreEqual(lArray[1], 'another test');
-    end;
+    end;*/
   end;
 
 end.

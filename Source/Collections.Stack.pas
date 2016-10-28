@@ -73,7 +73,7 @@ end;
 
 method TStack<T>.Clear;
 begin
-  var lArray := ToArray;
+  var lArray := fStack.ToArray;
   fStack.Clear;
 
   for lItem in lArray do
@@ -114,7 +114,7 @@ end;
 
 method TStack<T>.ToArray: array of T;
 begin
-  result := fStack.ToArray;
+  raise new Exception('Not implemented.');
 end;
 
 method TStack<T>.Initialize;

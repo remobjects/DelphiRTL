@@ -396,7 +396,7 @@ end;
 
 method TList<T>.ToArray: array of T;
 begin
-  result := fList.ToArray;
+  raise new Exception('Not implemented.');
 end;
 
 method TList<T>.SetCapacity(Value: Integer);

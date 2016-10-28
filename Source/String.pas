@@ -68,6 +68,10 @@ type
     //class operator &Add(Value1: Object; Value2: DelphiString): not nullable DelphiString;
     class operator Equal(Value1, Value2: DelphiString): Boolean;
     class operator NotEqual(Value1, Value2: DelphiString): Boolean;
+    class operator Greater(Value1, Value2: DelphiString): Boolean;
+    class operator Less(Value1, Value2: DelphiString): Boolean;
+    class operator GreaterOrEqual(Value1, Value2: DelphiString): Boolean;
+    class operator LessOrEqual(Value1, Value2: DelphiString): Boolean;
     class property Offset: Integer read fOffset write SetOffset;
     
     [ToString]
@@ -106,6 +110,8 @@ type
     class method LowerCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; static; partial; empty;
     class method UpperCase(const S: DelphiString): DelphiString; static;
     class method UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; static; partial; empty;
+    method {$IF COOPER}hashCode: Integer{$ELSEIF ECHOES}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF}; {$IF COOPER OR ECHOES} override;{$ENDIF}
+    method {$IF TOFFEE}isEqual(Obj: id){$ELSE}&Equals(Obj: Object){$ENDIF}: Boolean;{$IF COOPER OR ECHOES} override;{$ENDIF}
     method CompareTo(const strB: DelphiString): Integer;
     method Contains(const Value: DelphiString): Boolean;
     class method &Copy(const Str: DelphiString): DelphiString; static;
@@ -116,8 +122,8 @@ type
     // method EndsText(const ASubText, AText: DelphiString): Boolean; static;  // TODO    
     method EndsWith(const Value: DelphiString): Boolean; inline;
     method EndsWith(const Value: DelphiString; IgnoreCase: Boolean): Boolean;
-    method Equals(const Value: DelphiString): Boolean;  
-    class method Equals(const a: DelphiString; const b: DelphiString): Boolean; static;
+    method &Equals(const Value: DelphiString): Boolean;  
+    class method &Equals(Value1, Value2: DelphiString): Boolean;
     //method Format(const Format: DelphiString; const args: array of const): DelphiString; overload; static; // TODO    
     method IndexOf(Value: Char): Integer;
     method IndexOf(const Value: DelphiString): Integer;
@@ -317,9 +323,9 @@ begin
   result := self.fData = Value.fData;
 end;
 
-class method DelphiString.Equals(const a: DelphiString; const b: DelphiString): Boolean;
+class method DelphiString.Equals(Value1, Value2: DelphiString): Boolean;
 begin
-  result := a = b;
+  result := Value1 = Value2;
 end;
 
 method DelphiString.QuotedString: DelphiString;
@@ -485,19 +491,19 @@ begin
 end;
 
 /*
-operator DelphiString.Add(Value1: DelphiString; Value2: Object): not nullable DelphiString;
+class operator DelphiString.Add(Value1: DelphiString; Value2: Object): not nullable DelphiString;
 begin
   //result := Value1 + Value2.ToString;  // TODO compiler error
   result := Value1;
 end;
 
-operator DelphiString.Add(Value1: Object; Value2: DelphiString): not nullable DelphiString;
+class operator DelphiString.Add(Value1: Object; Value2: DelphiString): not nullable DelphiString;
 begin
  //result := Value1.ToString + Value2;  // TODO compiler error
 end;
 */
 
-operator DelphiString.Equal(Value1: DelphiString; Value2: DelphiString): Boolean;
+class operator DelphiString.Equal(Value1: DelphiString; Value2: DelphiString): Boolean;
 begin
   result := Value1.fData = Value2.fData;
 end;
@@ -505,6 +511,26 @@ end;
 class operator DelphiString.NotEqual(Value1, Value2: DelphiString): Boolean;
 begin
   result := Value1.fData <> Value2.fData;
+end;
+
+class operator DelphiString.Greater(Value1, Value2: DelphiString): Boolean;
+begin
+  result := Value1.fData > Value2.fData;
+end;
+
+class operator DelphiString.Less(Value1, Value2: DelphiString): Boolean;
+begin
+  result := Value1.fData < Value2.fData;  
+end;
+
+class operator DelphiString.GreaterOrEqual(Value1, Value2: DelphiString): Boolean;
+begin
+  result := Value1.fData >= Value2.fData;
+end;
+
+class operator DelphiString.LessOrEqual(Value1, Value2: DelphiString): Boolean;
+begin
+  result := Value1.fData <= Value2.fData;
 end;
 
 class method DelphiString.PlatformArrayToStringArray(Value: array of PlatformString; Count: Integer := -1): array of DelphiString;
@@ -1448,5 +1474,28 @@ method DelphiString.ToUpper(LocaleID: TLocaleID): DelphiString;
 begin
   result := fData.ToUpper(LocaleID);
 end;
+
+method DelphiString.{$IF COOPER}hashCode: Integer{$ELSEIF ECHOES}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF};
+begin
+  {$IF COOPER}
+  result := fData.hashCode;
+  {$ELSEIF ECHOES}
+  result := fData.GetHashCode;
+  {$ELSEIF TOFFEE}
+  result := fData.hash;
+  {$ENDIF}
+end;
+
+ method DelphiString.{$IF TOFFEE}isEqual(Obj: id){$ELSE}&Equals(Obj: Object){$ENDIF}: Boolean;
+ begin
+  if Obj = nil then
+    exit false;
+
+  if not (Obj is DelphiString) then
+    exit false;
+
+   var lItem := DelphiString(Obj);
+   result := &Equals(lItem);
+ end;
 
 end.
