@@ -131,9 +131,9 @@ type
     method IndexOf(const Value: DelphiString; StartIndex: Integer): Integer;
     method IndexOf(Value: Char; StartIndex: Integer; Count: Integer): Integer;
     method IndexOf(const Value: DelphiString; StartIndex: Integer; Count: Integer): Integer;
-    method IndexOfAny(const AnyOf: array of Char): Integer; 
-    method IndexOfAny(const AnyOf: array of Char; StartIndex: Integer): Integer; 
-    method IndexOfAny(const AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer; 
+    method IndexOfAny(AnyOf: array of Char): Integer; 
+    method IndexOfAny(AnyOf: array of Char; StartIndex: Integer): Integer; 
+    method IndexOfAny(AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer; 
     method Insert(StartIndex: Integer; const Value: DelphiString): DelphiString; 
     //method IsDelimiter(const Delimiters: DelphiString; Index: Integer): Boolean; partial; empty;
     method IsEmpty: Boolean; 
