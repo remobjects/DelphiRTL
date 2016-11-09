@@ -131,9 +131,9 @@ type
     method IndexOf(const Value: DelphiString; StartIndex: Integer): Integer;
     method IndexOf(Value: Char; StartIndex: Integer; Count: Integer): Integer;
     method IndexOf(const Value: DelphiString; StartIndex: Integer; Count: Integer): Integer;
-    method IndexOfAny(AnyOf: array of Char): Integer; 
-    method IndexOfAny(AnyOf: array of Char; StartIndex: Integer): Integer; 
-    method IndexOfAny(AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer; 
+    method IndexOfAny(const AnyOf: array of Char): Integer; 
+    method IndexOfAny(const AnyOf: array of Char; StartIndex: Integer): Integer; 
+    method IndexOfAny(      AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer; 
     method Insert(StartIndex: Integer; const Value: DelphiString): DelphiString; 
     //method IsDelimiter(const Delimiters: DelphiString; Index: Integer): Boolean; partial; empty;
     method IsEmpty: Boolean; 
@@ -153,7 +153,7 @@ type
     method LastIndexOf(const Value: DelphiString; StartIndex: Integer; Count: Integer): Integer; 
     method LastIndexOfAny(const AnyOf: array of Char): Integer; 
     method LastIndexOfAny(const AnyOf: array of Char; StartIndex: Integer): Integer; 
-    method LastIndexOfAny(const AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer; 
+    method LastIndexOfAny(      AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer; 
     method PadLeft(TotalWidth: Integer): DelphiString; 
     method PadLeft(TotalWidth: Integer; PaddingChar: Char): DelphiString; 
     method PadRight(TotalWidth: Integer): DelphiString; 
@@ -170,7 +170,7 @@ type
     method Split(const Separator: array of Char): array of DelphiString; inline; 
     method Split(const Separator: array of Char; Count: Integer): array of DelphiString; inline; 
     method Split(const Separator: array of Char; Options: TStringSplitOptions): array of DelphiString; inline; 
-    method Split(const Separator: array of Char; Count: Integer; Options: TStringSplitOptions): array of DelphiString; 
+    method Split(      Separator: array of Char; Count: Integer; Options: TStringSplitOptions): array of DelphiString; 
     method Split(const Separator: array of DelphiString): array of DelphiString; inline;
     method Split(const Separator: array of DelphiString; Count: Integer): array of DelphiString; 
     method Split(const Separator: array of DelphiString; Options: TStringSplitOptions): array of DelphiString; 
