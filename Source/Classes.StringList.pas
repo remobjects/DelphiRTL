@@ -379,25 +379,26 @@ end;
 
 method TStringList.Find(S: DelphiString; var aIndex: Integer): Boolean;
 begin
-  result := False;
-  var l := 0;
-  var h := Count - 1;
-  while l <= h do
+  result := false;
+  var lLow := 0;
+  var lHigh := Count - 1;
+  while lLow <= lHigh do
   begin
-    var i := (l + h) shr 1;
-    var c := CompareStrings(fList[i][0], S);
-    if c < 0 then l := i + 1 else
-    begin
-      h := i - 1;
-      if c = 0 then
+    var i := (lLow + lHigh) shr 1;
+    var lRes := CompareStrings(fList[i][0], S);
+    if lRes < 0 then
+      lLow := i + 1
+    else begin
+      lHigh := i - 1;
+      if lRes = 0 then
       begin
         result := true;
         if Duplicates <> TDuplicates.dupAccept then
-          l := i;
+          lLow := i;
       end;
     end;
   end;
-  aIndex := l;
+  aIndex := lLow;
 end;
 
 method TStringList.IndexOf(S: DelphiString): Integer;

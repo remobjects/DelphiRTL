@@ -3,7 +3,7 @@
 interface
 
 type
-  TQueue<T> = public class(TEnumerable<T>)
+  TQueue<T> = public class(TEnumerable<T>){$IF TOFFEE}where T is class;{$ENDIF}
   private
     fQueue: Sugar.Collections.Queue<T>;
     method GetCapacity: Integer;

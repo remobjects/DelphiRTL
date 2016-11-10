@@ -15,7 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Collections.Stack.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Collections.List.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)SysUtils.pas" />
+    <None Include="$(MSBuildThisFileDirectory)SysUtils.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)TObject.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Aliases.pas" />

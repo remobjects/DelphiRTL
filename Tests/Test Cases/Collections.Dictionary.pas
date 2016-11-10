@@ -4,6 +4,7 @@ uses
   RemObjects.Elements.EUnit,
   Elements.RTL.Delphi;
 
+{$IF COOPER OR ECHOES}
 type
   DictionaryUsage = public class(Test)
   private
@@ -127,5 +128,5 @@ type
       Assert.AreEqual(lTwoFound, true);
     end;
   end;
-
+{$ENDIF}
 end.

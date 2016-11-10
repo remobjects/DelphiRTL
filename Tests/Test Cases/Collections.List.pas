@@ -4,6 +4,7 @@ uses
   RemObjects.Elements.EUnit,
   Elements.RTL.Delphi;
 
+{$IF COOPER OR ECHOES}
 type
   ListUsage = public class(Test)
   private
@@ -279,5 +280,5 @@ type
       Assert.AreEqual(fList[1], 'Renault');      
     end;
   end;
-
+{$ENDIF}
 end.

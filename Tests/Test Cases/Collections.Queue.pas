@@ -4,6 +4,7 @@ uses
   RemObjects.Elements.EUnit,
   Elements.RTL.Delphi;
 
+{$IF COOPER OR ECHOES}
 type
   QueueUsage = public class(Test)
   private
@@ -70,5 +71,5 @@ type
       Assert.AreEqual(lArray[1], 'another test');
     end;*/
   end;
-
+{$ENDIF}
 end.

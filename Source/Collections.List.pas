@@ -19,7 +19,6 @@ type
     function GetHashCode(const Value: T): Integer;
   end;
 
-  //IEnumerable = public ISequence<Object>;
   IEnumerable<T> = public ISequence<T>;
 
   TEnumerable<T> = public abstract class(ISequence<T>)
@@ -70,8 +69,6 @@ type
     {$ENDIF}
 
   public
-    //destructor Destroy; override;
-    //method GetEnumerator: TEnumerator<T>;
     method ToArray: array of T; virtual;
   end;
 
@@ -81,7 +78,7 @@ type
   TCollectionNotification = public enum (cnAdded, cnRemoved, cnExtracted) of Integer;
   TCollectionNotifyEvent<T> = public block(Sender: TObject; const Item: T; Action: TCollectionNotification);
  
-  TList<T> = public class(TEnumerable<T>)
+  TList<T> = public class(TEnumerable<T>){$IF TOFFEE}where T is class;{$ENDIF}
   private
     fList: Sugar.Collections.List<T>;
     fComparer: IComparer<T>;
@@ -111,7 +108,6 @@ type
     method Insert(aIndex: Integer; const Value: T);
     method InsertRange(aIndex: Integer; const Values: array of T);
     method InsertRange(aIndex: Integer; const Collection: IEnumerable<T>);
-    //method InsertRange(aIndex: Integer; const Collection: TEnumerable<T>);  what;'s the point? TEnumerable<T> is IEnumerable<T>
     method Pack;
     method Pack(const IsEmpty: TEmptyFunc<T>);
     method &Remove(const Value: T): Integer; //inline; T76473

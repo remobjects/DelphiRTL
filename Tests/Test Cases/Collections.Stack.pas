@@ -4,6 +4,7 @@ uses
   RemObjects.Elements.EUnit,
   Elements.RTL.Delphi;
 
+{$IF COOPER OR ECHOES}
 type
   StackUsage = public class(Test)
   private
@@ -74,4 +75,5 @@ type
     end;
     {$ENDIF}
   end;
+{$ENDIF}
 end.

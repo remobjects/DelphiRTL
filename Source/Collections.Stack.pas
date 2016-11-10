@@ -3,7 +3,7 @@
 interface
 
 type
-  TStack<T> = public class(TEnumerable<T>)
+  TStack<T> = public class(TEnumerable<T>){$IF TOFFEE}where T is class;{$ENDIF}
   private
     fStack: Sugar.Collections.Stack<T>;
     method GetCapacity: Integer;
