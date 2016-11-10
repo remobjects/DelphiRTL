@@ -7,8 +7,8 @@ type
   TDictionary<TKey,TValue> = public class(TEnumerable<TPair<TKey,TValue>>)
   private
     fDict: Sugar.Collections.Dictionary<TKey, TValue>;
-    method GetItem(aKey: TKey): TValue;
-    method SetItem(aKey: TKey; aValue: TValue);
+    method GetItem(const aKey: TKey): TValue;
+    method SetItem(const aKey: TKey; aValue: TValue);
     method GetKeys: ISequence<TKey>;
     method GetValues: ISequence<TValue>;
     method Initialize(aCapacity: Integer := 0);
@@ -51,13 +51,13 @@ type
 
 implementation
 
-method TDictionary<TKey,TValue>.KeyNotify(Key: TKey; Action: TCollectionNotification);
+method TDictionary<TKey,TValue>.KeyNotify(const Key: TKey; Action: TCollectionNotification);
 begin
   if OnKeyNotify <> nil then
     OnKeyNotify(self, Key, Action);
 end;
 
-method TDictionary<TKey,TValue>.ValueNotify(Value: TValue; Action: TCollectionNotification);
+method TDictionary<TKey,TValue>.ValueNotify(const Value: TValue; Action: TCollectionNotification);
 begin
   if OnValueNotify <> nil then
     OnValueNotify(self, Value, Action);
@@ -74,13 +74,13 @@ begin
   Initialize(aCapacity);
 end;
 
-constructor TDictionary<TKey,TValue>(Collection: TEnumerable<TPair<TKey,TValue>>);
+constructor TDictionary<TKey,TValue>(const Collection: TEnumerable<TPair<TKey,TValue>>);
 begin
   Initialize;
   AddCollection(Collection);
 end;
 
-method TDictionary<TKey,TValue>.Add(Key: TKey; Value: TValue);
+method TDictionary<TKey,TValue>.Add(const Key: TKey; const Value: TValue);
 begin
   fDict.Add(Key, Value);
   KeyNotify(Key, TCollectionNotification.cnAdded);
@@ -96,12 +96,12 @@ begin
   ValueNotify(result, aAction);
 end;
 
-method TDictionary<TKey,TValue>.Remove(Key: TKey);
+method TDictionary<TKey,TValue>.Remove(const Key: TKey);
 begin
   DoRemove(Key, TCollectionNotification.cnRemoved);
 end;
 
-method TDictionary<TKey,TValue>.ExtractPair(Key: TKey): TPair<TKey,TValue>;
+method TDictionary<TKey,TValue>.ExtractPair(const Key: TKey): TPair<TKey,TValue>;
 begin
   result := new Sugar.Collections.KeyValuePair<TKey, TValue>(Key, DoRemove(Key, TCollectionNotification.cnExtracted));
 end;
@@ -121,12 +121,12 @@ begin
   // NO OP
 end;
 
-method TDictionary<TKey,TValue>.TryGetValue(Key: TKey; out Value: TValue): Boolean;
+method TDictionary<TKey,TValue>.TryGetValue(const Key: TKey; out Value: TValue): Boolean;
 begin
   result := fDict.TryGetValue(Key, out Value);
 end;
 
-method TDictionary<TKey,TValue>.AddOrSetValue(Key: TKey; Value: TValue);
+method TDictionary<TKey,TValue>.AddOrSetValue(const Key: TKey; const Value: TValue);
 begin
   if ContainsKey(Key) then begin
     var lOldValue := Items[Key];
@@ -138,12 +138,12 @@ begin
     &Add(Key, Value);
 end;
 
-method TDictionary<TKey,TValue>.ContainsKey(Key: TKey): Boolean;
+method TDictionary<TKey,TValue>.ContainsKey(const Key: TKey): Boolean;
 begin
   result := fDict.ContainsKey(Key);
 end;
 
-method TDictionary<TKey,TValue>.ContainsValue(Value: TValue): Boolean;
+method TDictionary<TKey,TValue>.ContainsValue(const Value: TValue): Boolean;
 begin
   result := fDict.ContainsValue(Value);
 end;
@@ -158,12 +158,12 @@ begin
   end;
 end;
 
-method TDictionary<TKey,TValue>.GetItem(aKey: TKey): TValue;
+method TDictionary<TKey,TValue>.GetItem(const aKey: TKey): TValue;
 begin
   result := fDict.Item[aKey];
 end;
 
-method TDictionary <TKey,TValue>.SetItem(aKey: TKey; aValue: TValue);
+method TDictionary <TKey,TValue>.SetItem(const aKey: TKey; aValue: TValue);
 begin
   fDict[aKey] := aValue;
 end;

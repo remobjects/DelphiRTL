@@ -36,7 +36,7 @@ begin
   result := fStack.Count;
 end;
 
-method TStack<T>.Notify(Item: T; Action: TCollectionNotification);
+method TStack<T>.Notify(const Item: T; Action: TCollectionNotification);
 begin
  if OnNotify <> nil then
    OnNotify(self, Item, Action);
@@ -54,7 +54,7 @@ begin
   Initialize;
 end;
 
-constructor TStack<T>(Collection: TEnumerable<T>);
+constructor TStack<T>(const Collection: TEnumerable<T>);
 begin
   Initialize;
   for lItem in Collection do
@@ -66,7 +66,7 @@ begin
   result := new TStack<T>;
 end;
 
-class method TStack<T>.Create(Collection: TEnumerable<T>): TStack<T>;
+class method TStack<T>.Create(const Collection: TEnumerable<T>): TStack<T>;
 begin
   result := new TStack<T>(Collection);
 end;
@@ -80,7 +80,7 @@ begin
     &Notify(lItem, TCollectionNotification.cnRemoved);
 end;
 
-method TStack<T>.Push(Value: T);
+method TStack<T>.Push(const Value: T);
 begin
   fStack.Push(Value);
   &Notify(Value, TCollectionNotification.cnAdded);

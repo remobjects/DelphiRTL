@@ -19,7 +19,7 @@ type
 
 implementation
 
-class method TLanguages.GetLocaleIDFromLocaleName(LocaleName: DelphiString): TLocaleID;
+class method TLanguages.GetLocaleIDFromLocaleName(const LocaleName: DelphiString): TLocaleID;
 begin
   {$IF COOPER}
   result := new java.util.Locale(LocaleName);

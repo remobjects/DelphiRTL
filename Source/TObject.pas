@@ -70,7 +70,7 @@ type
 
     class method NewInstance: TObject; {virtual;}
     begin
-      result := new self; {$HINT is this valid? can't imagine it would be}
+      result := new self;
     end;
     
     procedure FreeInstance; {virtual;}

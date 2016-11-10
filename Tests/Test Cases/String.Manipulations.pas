@@ -542,6 +542,15 @@ type
       Assert.AreEqual(DelphiString.Compare(x, 'DO NOT TOUCH', true), 0, 'Compare 3');
       Assert.AreEqual(DelphiString.Compare(x, 'DO NOT TOUCH', false) <> 0, true, 'Compare 4');
       Assert.AreEqual(DelphiString.Compare(x, 2, 'DO NOT TOUCH', 2, 6, true), 0, 'Compare 5');
+      var y: DelphiString := 'Do not go';
+      Assert.AreEqual(DelphiString.Compare(x, y) <> 0, true, 'Compare 6');
+      Assert.AreEqual(DelphiString.Compare(x, 0, y, 0, 6), 0, 'Compare 7');
+      Assert.AreEqual(DelphiString.Compare(x, 2, y, 2, 4), 0, 'Compare 8');
+      Assert.AreEqual(DelphiString.Compare(x, 2, y, 2, 6) <> 0, true, 'Compare 9');
+      Assert.AreEqual(DelphiString.Compare(x, 0, y, 0, 8) <> 0, true, 'Compare 10');
+      x := 'do not';
+      y := 'do not touch';
+      Assert.AreEqual(DelphiString.Compare(x, y) <> 0, true, 'Compare 11');
     end;
 
     method ToLowerTests;
@@ -560,6 +569,40 @@ type
 
       x := 'niño';
       Assert.AreEqual(x.ToUpper(TLanguages.GetLocaleIDFromLocaleName('es-es')), 'NIÑO');
+    end;
+
+    method CreateFromArrayTests;
+    begin
+      var lArray := new Char[5];
+      lArray := ['H', 'E', 'L', 'L', 'O'];
+      var x: DelphiString := DelphiString.Create(lArray);
+      Assert.AreEqual(x, 'HELLO');
+      x := DelphiString.Create(lArray, 2, 3);
+      Assert.AreEqual(x, 'LLO');
+    end;
+
+    method LastIndexOfAnyTests;
+    begin
+      var lToFind := new Char[5];
+      var x: DelphiString := '';
+      lToFind := ['a', 'z', '&', '(', ')'];
+      
+      x := 'string one z';
+      Assert.AreEqual(x.LastIndexOfAny(lToFind), 11, 'LastIndexOfAny 1');
+      x := 'z string';
+      Assert.AreEqual(x.LastIndexOfAny(lToFind), 0, 'LastIndexOfAny 2');
+      x := 'string&street';
+      Assert.AreEqual(x.LastIndexOfAny(lToFind), 6, 'LastIndexOfAny 3');
+      x := '(string)';
+      Assert.AreEqual(x.LastIndexOfAny(lToFind), 7, 'LastIndexOfAny 4');
+    
+      x := 'string a';
+      Assert.AreEqual(x.LastIndexOfAny(lToFind, 6), -1, 'LastIndexOfAny 5');
+      x := 'a string';
+      Assert.AreEqual(x.LastIndexOfAny(lToFind, 7), 0, 'LastIndexOfAny 6');
+      x := 'a string(12';
+      Assert.AreEqual(x.LastIndexOfAny(lToFind, 10, 2), -1, 'LastIndexOfAny 7');
+      Assert.AreEqual(x.LastIndexOfAny(lToFind, 10, 3), 8, 'LastIndexOfAny 8');
     end;
     
     method LanguagesTests;

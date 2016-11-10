@@ -16,7 +16,7 @@ type
     constructor;
     constructor(Collection: TEnumerable<T>);
     class method Create: TQueue<T>;
-    class method Create(Collection: TEnumerable<T>): TQueue<T>;
+    class method Create(const Collection: TEnumerable<T>): TQueue<T>;
     method Enqueue(const Value: T);
     method Dequeue: T;
     method Extract: T; inline;
@@ -31,7 +31,7 @@ type
 
 implementation
 
-method TQueue<T>.Notify(Item: T; Action: TCollectionNotification);
+method TQueue<T>.Notify(const Item: T; Action: TCollectionNotification);
 begin
   if OnNotify <> nil then
     OnNotify(self, Item, Action);
@@ -61,12 +61,12 @@ begin
   result := new TQueue<T>;
 end;
 
-class method TQueue<T>.Create(Collection: TEnumerable<T>): TQueue<T>;
+class method TQueue<T>.Create(const Collection: TEnumerable<T>): TQueue<T>;
 begin
   result := new TQueue<T>(Collection);
 end;
 
-method TQueue<T>.Enqueue(Value: T);
+method TQueue<T>.Enqueue(const Value: T);
 begin
   fQueue.Enqueue(Value);
   &Notify(Value, TCollectionNotification.cnAdded);

@@ -38,7 +38,7 @@ type
     
     method GetLength: Integer; 
     class method CreateWithChars(Char: Char; Count: Integer): DelphiString; static;
-    class method CreateFromArray(const Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString; static;
+    class method CreateFromArray(Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString; static;
     class method PlatformArrayToStringArray(Value: array of PlatformString; Count: Integer := -1): array of DelphiString; static;
     class method StringArrayToPlatformArray(Value: array of DelphiString): array of PlatformString; static;
     {$IF COOPER}
@@ -96,10 +96,10 @@ type
     class method CompareOrdinal(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer): Integer; static;
     class method CompareText(const StrA: DelphiString; const StrB: DelphiString): Integer; static;
     
-    class method Parse(const Value: Integer): DelphiString; static;
-    class method Parse(const Value: Int64): DelphiString; static; 
-    class method Parse(const Value: Boolean): DelphiString; static; 
-    class method Parse(const Value: Extended): DelphiString; static; 
+    class method Parse(Value: Integer): DelphiString; static;
+    class method Parse(Value: Int64): DelphiString; static; 
+    class method Parse(Value: Boolean): DelphiString; static; 
+    class method Parse(Value: Extended): DelphiString; static; 
     class method ToBoolean(const S: DelphiString): Boolean; static; 
     class method ToInteger(const S: DelphiString): Integer; static; 
     class method ToInt64(const S: DelphiString): Int64; static; 
@@ -176,8 +176,8 @@ type
     method Split(const Separator: array of DelphiString; Options: TStringSplitOptions): array of DelphiString; 
     method Split(const Separator: array of DelphiString; Count: Integer; Options: TStringSplitOptions): array of DelphiString; 
 
-    method StartsWith(Value: DelphiString): Boolean; 
-    method StartsWith(Value: DelphiString; IgnoreCase: Boolean): Boolean; 
+    method StartsWith(const Value: DelphiString): Boolean; 
+    method StartsWith(const Value: DelphiString; IgnoreCase: Boolean): Boolean; 
     method SubString(StartIndex: Integer): DelphiString; 
     method SubString(StartIndex: Integer; ALength: Integer): DelphiString; 
     method ToBoolean: Boolean; 
@@ -351,7 +351,7 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.Replace(OldValue: DelphiString; NewValue: DelphiString): DelphiString;
+method DelphiString.Replace(const OldValue: DelphiString; const NewValue: DelphiString): DelphiString;
 begin
   result := Replace(OldValue, NewValue, [TReplaceFlags.rfReplaceAll]);
 end;
@@ -376,32 +376,32 @@ begin
   result := Sugar.Convert.ToString(Value);
 end;
 
-class method DelphiString.ToBoolean(S: DelphiString): Boolean;
+class method DelphiString.ToBoolean(const S: DelphiString): Boolean;
 begin
   result := Sugar.Convert.ToBoolean(S);
 end;
 
-class method DelphiString.ToInteger(S: DelphiString): Integer;
+class method DelphiString.ToInteger(const S: DelphiString): Integer;
 begin
   result := Sugar.Convert.ToInt32(S);
 end;
 
-class method DelphiString.ToInt64(S: DelphiString): Int64;
+class method DelphiString.ToInt64(const S: DelphiString): Int64;
 begin
   result := Sugar.Convert.ToInt64(S);
 end;
 
-class method DelphiString.ToSingle(S: DelphiString): Double;
+class method DelphiString.ToSingle(const S: DelphiString): Double;
 begin
   result := Sugar.Convert.ToDoubleInvariant(S);
 end;
 
-class method DelphiString.ToDouble(S: DelphiString): Double;
+class method DelphiString.ToDouble(const S: DelphiString): Double;
 begin
   result := Sugar.Convert.ToDoubleInvariant(S);
 end;
 
-class method DelphiString.ToExtended(S: DelphiString): Double;
+class method DelphiString.ToExtended(const S: DelphiString): Double;
 begin
   result := Sugar.Convert.ToDoubleInvariant(S);
 end;
@@ -570,27 +570,27 @@ begin
   result := fData.Length;
 end;
 
-class method DelphiString.LowerCase(S: DelphiString): DelphiString;
+class method DelphiString.LowerCase(const S: DelphiString): DelphiString;
 begin
   result := S.fData.ToLower;
 end;
 
-class method DelphiString.UpperCase(S: DelphiString): DelphiString;
+class method DelphiString.UpperCase(const S: DelphiString): DelphiString;
 begin
   result := S.fData.ToUpper;
 end;
 
-method DelphiString.CompareTo(strB: DelphiString): Integer;
+method DelphiString.CompareTo(const strB: DelphiString): Integer;
 begin
   result := fData.CompareTo(strB);
 end;
 
-method DelphiString.Contains(Value: DelphiString): Boolean;
+method DelphiString.Contains(const Value: DelphiString): Boolean;
 begin
   result := fData.Contains(Value.fData);
 end;
 
-class method DelphiString.Copy(Str: DelphiString): DelphiString;
+class method DelphiString.Copy(const Str: DelphiString): DelphiString;
 begin
   result := Str.fData as DelphiString;
 end;
@@ -607,7 +607,7 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.DeQuotedString(QuoteChar: Char): DelphiString;
+method DelphiString.DeQuotedString(const QuoteChar: Char): DelphiString;
 begin
   if (fData.Length >= 2) and (fData.Chars[0] = QuoteChar) and (fData.Chars[fData.Length - 1] = QuoteChar) then begin
     var lSb := new Char[fData.Length - 2];
@@ -637,7 +637,7 @@ begin
     result := self;
 end;
 
-method DelphiString.EndsWith(Value: DelphiString; IgnoreCase: Boolean): Boolean;
+method DelphiString.EndsWith(const Value: DelphiString; IgnoreCase: Boolean): Boolean;
 begin
   result := fData.EndsWith(Value, IgnoreCase);
 end;
@@ -647,7 +647,7 @@ begin
   result := fData.IndexOf(Value);
 end;
 
-method DelphiString.IndexOf(Value: DelphiString): Integer;
+method DelphiString.IndexOf(const Value: DelphiString): Integer;
 begin
   result := fData.IndexOf(Value);
 end;
@@ -657,7 +657,7 @@ begin
   result := fData.IndexOf(Value, StartIndex);
 end;
 
-method DelphiString.IndexOf(Value: DelphiString; StartIndex: Integer): Integer;
+method DelphiString.IndexOf(const Value: DelphiString; StartIndex: Integer): Integer;
 begin
   result := fData.IndexOf(Value, StartIndex);
 end;
@@ -674,7 +674,7 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.IndexOf(Value: DelphiString; StartIndex: Integer; Count: Integer): Integer;
+method DelphiString.IndexOf(const Value: DelphiString; StartIndex: Integer; Count: Integer): Integer;
 begin
   {$IF COOPER}
   var lIndex := PlatformString(fData).indexOf(Value, StartIndex);
@@ -687,12 +687,12 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.IndexOfAny(AnyOf: array of Char): Integer;
+method DelphiString.IndexOfAny(const AnyOf: array of Char): Integer;
 begin
   result := fData.IndexOfAny(AnyOf);
 end;
 
-method DelphiString.IndexOfAny(AnyOf: array of Char; StartIndex: Integer): Integer;
+method DelphiString.IndexOfAny(const AnyOf: array of Char; StartIndex: Integer): Integer;
 begin
   result := fData.IndexOfAny(AnyOf, StartIndex);
 end;
@@ -721,7 +721,7 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.Insert(StartIndex: Integer; Value: DelphiString): DelphiString;
+method DelphiString.Insert(StartIndex: Integer; const Value: DelphiString): DelphiString;
 begin
   {$IF COOPER}
   var sb := new StringBuilder(fData);
@@ -743,12 +743,12 @@ begin
   result := fData.Length = 0;
 end;
 
-class method DelphiString.IsNullOrEmpty(Value: DelphiString): Boolean;
+class method DelphiString.IsNullOrEmpty(const Value: DelphiString): Boolean;
 begin
   result := Sugar.String.IsNullOrEmpty(Value.fData);
 end;
 
-class method DelphiString.IsNullOrWhiteSpace(Value: DelphiString): Boolean;
+class method DelphiString.IsNullOrWhiteSpace(const Value: DelphiString): Boolean;
 begin
   result := Sugar.String.IsNullOrWhiteSpace(Value);
 end;
@@ -785,7 +785,7 @@ begin
   result := fData.LastIndexOf(Value);
 end;
 
-method DelphiString.LastIndexOf(Value: DelphiString): Integer;
+method DelphiString.LastIndexOf(const Value: DelphiString): Integer;
 begin
   result := fData.LastIndexOf(Value);
 end;
@@ -795,7 +795,7 @@ begin
   result := fData.LastIndexOf(Value, StartIndex);
 end;
 
-method DelphiString.LastIndexOf(Value: DelphiString; StartIndex: Integer): Integer;
+method DelphiString.LastIndexOf(const Value: DelphiString; StartIndex: Integer): Integer;
 begin
   result := fData.LastIndexOf(Value, StartIndex);
 end;
@@ -813,7 +813,7 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.LastIndexOf(Value: DelphiString; StartIndex: Integer; Count: Integer): Integer;
+method DelphiString.LastIndexOf(const Value: DelphiString; StartIndex: Integer; Count: Integer): Integer;
 begin
   {$IF COOPER}
   result := PlatformString(fData).lastIndexOf(Value, StartIndex);
@@ -827,7 +827,7 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.LastIndexOfAny(AnyOf: array of Char): Integer;
+method DelphiString.LastIndexOfAny(const AnyOf: array of Char): Integer;
 begin
   {$IF COOPER OR TOFFEE}
   result := LastIndexOfAny(AnyOf, fData.Length - 1, fData.Length); 
@@ -836,7 +836,7 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.LastIndexOfAny(AnyOf: array of Char; StartIndex: Integer): Integer;
+method DelphiString.LastIndexOfAny(const AnyOf: array of Char; StartIndex: Integer): Integer;
 begin
   {$IF COOPER OR TOFFEE}
   result := LastIndexOfAny(AnyOf, StartIndex, StartIndex + 1);
@@ -868,7 +868,7 @@ begin
   result := PlatformString(fData).LastIndexOfAny(AnyOf, StartIndex, Count);
   {$ELSEIF TOFFEE}
   var lChars := Foundation.NSCharacterSet.characterSetWithCharactersInString(new Foundation.NSString withCharacters(@AnyOf) length(AnyOf.length));
-  var lRange := PlatformString(fData).rangeOfCharacterFromSet(lChars) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange(StartIndex, Count));
+  var lRange := PlatformString(fData).rangeOfCharacterFromSet(lChars) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange((StartIndex - Count) + 1, Count));
   result := if lRange.location <> NSNotFound then lRange.location else -1;
   {$ENDIF}
 end;
@@ -925,7 +925,7 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.Replace(OldValue: DelphiString; NewValue: DelphiString; ReplaceFlags: TReplaceFlags): DelphiString;
+method DelphiString.Replace(const OldValue: DelphiString; const NewValue: DelphiString; ReplaceFlags: TReplaceFlags): DelphiString;
 begin
   {$IF COOPER}
   var lPattern: DelphiString := java.util.regex.Pattern.quote(OldValue);
@@ -1002,17 +1002,17 @@ begin
 end;
 {$ENDIF}
 
-method DelphiString.Split(Separator: array of Char): array of DelphiString;
+method DelphiString.Split(const Separator: array of Char): array of DelphiString;
 begin
   result := Split(Separator, -1, TStringSplitOptions.None);
 end;
 
-method DelphiString.Split(Separator: array of Char; Count: Integer): array of DelphiString;
+method DelphiString.Split(const Separator: array of Char; Count: Integer): array of DelphiString;
 begin
   result := Split(Separator, Count, TStringSplitOptions.None);
 end;
 
-method DelphiString.Split(Separator: array of Char; Options: TStringSplitOptions): array of DelphiString;
+method DelphiString.Split(const Separator: array of Char; Options: TStringSplitOptions): array of DelphiString;
 begin
   result := Split(Separator, -1, Options);
 end;
@@ -1062,17 +1062,17 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.Split(Separator: array of DelphiString): array of DelphiString;
+method DelphiString.Split(const Separator: array of DelphiString): array of DelphiString;
 begin
   result := Split(Separator, -1, TStringSplitOptions.None);
 end;
 
-method DelphiString.Split(Separator: array of DelphiString; Count: Integer): array of DelphiString;
+method DelphiString.Split(const Separator: array of DelphiString; Count: Integer): array of DelphiString;
 begin
   result := Split(Separator, Count, TStringSplitOptions.None);
 end;
 
-method DelphiString.Split(Separator: array of DelphiString; Options: TStringSplitOptions): array of DelphiString;
+method DelphiString.Split(const Separator: array of DelphiString; Options: TStringSplitOptions): array of DelphiString;
 begin
   result := Split(Separator, -1, Options);
 end;
@@ -1106,7 +1106,7 @@ begin
 end;
 {$ENDIF}
 
-method DelphiString.Split(Separator: array of DelphiString; Count: Integer; Options: TStringSplitOptions): array of DelphiString;
+method DelphiString.Split(const Separator: array of DelphiString; Count: Integer; Options: TStringSplitOptions): array of DelphiString;
 begin
   {$IF COOPER}
   var lSep := ArrayToSplitRegex(Separator);
@@ -1167,12 +1167,12 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.StartsWith(Value: DelphiString): Boolean;
+method DelphiString.StartsWith(const Value: DelphiString): Boolean;
 begin
   result := fData.StartsWith(Value.fData);
 end;
 
-method DelphiString.StartsWith(Value: DelphiString; IgnoreCase: Boolean): Boolean;
+method DelphiString.StartsWith(const Value: DelphiString; IgnoreCase: Boolean): Boolean;
 begin
   result := fData.StartsWith(Value.fData, IgnoreCase);
 end;
@@ -1244,27 +1244,27 @@ begin
   result := fData.TrimEnd;
 end;
 
-method DelphiString.Trim(TrimChars: array of Char): DelphiString;
+method DelphiString.Trim(const TrimChars: array of Char): DelphiString;
 begin
   result := fData.Trim(TrimChars);
 end;
 
-method DelphiString.TrimLeft(TrimChars: array of Char): DelphiString;
+method DelphiString.TrimLeft(const TrimChars: array of Char): DelphiString;
 begin
   result := fData.TrimStart(TrimChars);
 end;
 
-method DelphiString.TrimRight(TrimChars: array of Char): DelphiString;
+method DelphiString.TrimRight(const TrimChars: array of Char): DelphiString;
 begin
   result := fData.TrimEnd(TrimChars);
 end;
 
-method DelphiString.TrimEnd(TrimChars: array of Char): DelphiString;
+method DelphiString.TrimEnd(const TrimChars: array of Char): DelphiString;
 begin
   result := fData.TrimEnd(TrimChars);
 end;
 
-method DelphiString.TrimStart(TrimChars: array of Char): DelphiString;
+method DelphiString.TrimStart(const TrimChars: array of Char): DelphiString;
 begin
   result := fData.TrimStart(TrimChars);
 end;
@@ -1338,7 +1338,7 @@ begin
   {$ENDIF}
 end;
 
-class method DelphiString.InternalCompare(StrA: DelphiString; IndexA: Integer; StrB: DelphiString; IndexB: Integer; LengthA: Integer; LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer;
+class method DelphiString.InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; LengthA: Integer; LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer;
 begin
   {$IF COOPER}
   var Lcollator := java.text.Collator.getInstance(LocaleID);
@@ -1398,10 +1398,10 @@ begin
   if TCompareOption.coStringSort in Options then
     LOptions := LOptions or System.Globalization.CompareOptions.StringSort;
 
-  if StrA.Length <= StrB.Length then
-    LTotalChars := StrA.Length
+  if LengthA <= LengthB then
+    LTotalChars := LengthB
   else
-    LTotalChars := StrB.Length;
+    LTotalChars := LengthA;
 
   result := System.String.Compare(StrA, IndexA, StrB, IndexB, LTotalChars, LocaleID, LOptions);
   {$ELSEIF TOFFEE}
@@ -1441,12 +1441,12 @@ begin
   {$ENDIF}
 end;
 
-class method DelphiString.CompareOrdinal(StrA: DelphiString; StrB: DelphiString): Integer;
+class method DelphiString.CompareOrdinal(const StrA: DelphiString; const StrB: DelphiString): Integer;
 begin
   result := StrA.fData.CompareTo(StrB.fData);
 end;
 
-class method DelphiString.CompareOrdinal(StrA: DelphiString; IndexA: Integer; StrB: DelphiString; IndexB: Integer; ALength: Integer): Integer;
+class method DelphiString.CompareOrdinal(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB: Integer; ALength: Integer): Integer;
 begin
   {$IF COOPER}
   var lStrA := StrA.fData.substring(IndexA, ALength);
@@ -1460,7 +1460,7 @@ begin
   {$ENDIF}
 end;
 
-class method DelphiString.CompareText(StrA: DelphiString; StrB: DelphiString): Integer;
+class method DelphiString.CompareText(const StrA: DelphiString; const StrB: DelphiString): Integer;
 begin
   result := StrA.fData.CompareToIgnoreCase(StrB.fData);
 end;

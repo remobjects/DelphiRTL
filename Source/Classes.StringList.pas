@@ -58,8 +58,8 @@ type
     /*constructor;
     destructor Destroy; override;*/
     method &Add(const S: DelphiString): Integer; virtual;
-    method AddPair(const aName: DelphiString; aValue: DelphiString): TStrings;
-    method AddPair(const aName: DelphiString; aValue: DelphiString; aObject: TObject): TStrings;
+    method AddPair(const aName: DelphiString; const aValue: DelphiString): TStrings;
+    method AddPair(const aName: DelphiString; const aValue: DelphiString; aObject: TObject): TStrings;
     method AddObject(const S: DelphiString; aObject: TObject): Integer; virtual;
     method Append(const S: DelphiString); inline;
     method AddStrings(aStrings: TStrings);  virtual;
@@ -232,7 +232,7 @@ begin
   result := fList[aIndex][1];
 end;
 
-method TStringList.Put(aIndex: Integer; S: DelphiString);
+method TStringList.Put(aIndex: Integer; const S: DelphiString);
 begin
   if Sorted then
     raise new Sugar.SugarException("Can not modify a sorted string");
@@ -269,7 +269,7 @@ begin
     Changed;
 end;
 
-method TStringList.CompareStrings(S1: DelphiString; S2: DelphiString): Integer;
+method TStringList.CompareStrings(const S1: DelphiString; const S2: DelphiString): Integer;
 begin
   if UseLocale then begin
     if CaseSensitive then
@@ -284,7 +284,7 @@ begin
       result := DelphiString.CompareText(S1, S2);
 end;
 
-method TStringList.InsertItem(aIndex: Integer; S: DelphiString; aObject: TObject);
+method TStringList.InsertItem(aIndex: Integer; const S: DelphiString; aObject: TObject);
 begin
   Changing;
   fList.insert(aIndex, (S, aObject));
@@ -325,12 +325,12 @@ begin
   CaseSensitive := aCaseSensitive;
 end;
 
-method TStringList.&Add(S: DelphiString): Integer;
+method TStringList.&Add(const S: DelphiString): Integer;
 begin
   result := AddObject(S, nil);
 end;
 
-method TStringList.AddObject(S: DelphiString; aObject: TObject): Integer;
+method TStringList.AddObject(const S: DelphiString; aObject: TObject): Integer;
 begin
   if not Sorted then
     result := Count
@@ -377,7 +377,7 @@ begin
   fList[aIndex2] := lItem;
 end;
 
-method TStringList.Find(S: DelphiString; var aIndex: Integer): Boolean;
+method TStringList.Find(const S: DelphiString; var aIndex: Integer): Boolean;
 begin
   result := false;
   var lLow := 0;
@@ -401,7 +401,7 @@ begin
   aIndex := lLow;
 end;
 
-method TStringList.IndexOf(S: DelphiString): Integer;
+method TStringList.IndexOf(const S: DelphiString): Integer;
 begin
   if not Sorted then 
     result := inherited IndexOf(S)
@@ -410,12 +410,12 @@ begin
       result := -1;
 end;
 
-method TStringList.Insert(aIndex: Integer; S: DelphiString);
+method TStringList.Insert(aIndex: Integer; const S: DelphiString);
 begin
   InsertObject(aIndex, S, nil);
 end;
 
-method TStringList.InsertObject(aIndex: Integer; S: DelphiString; aObject: TObject);
+method TStringList.InsertObject(aIndex: Integer; const S: DelphiString; aObject: TObject);
 begin
   if Sorted then
     raise new Sugar.SugarException("Can not insert in a sorted list");
@@ -445,7 +445,7 @@ begin
   Insert(result, S);
 end;
 
-method TStrings.AddObject(S: DelphiString; aObject: TObject): Integer;
+method TStrings.AddObject(const S: DelphiString; aObject: TObject): Integer;
 begin
   result := &Add(S);
   PutObject(result, aObject);
@@ -498,7 +498,7 @@ begin
   result := nil;
 end;
 
-method TStrings.Put(aIndex: Integer; S: DelphiString);
+method TStrings.Put(aIndex: Integer; const S: DelphiString);
 var
   TempObject: TObject;
 begin
@@ -552,12 +552,12 @@ begin
     fOptions := fOptions - [TStringsOption.soUseLocale];
 end;
 
-method TStrings.ExtractName(S: DelphiString): DelphiString;
+method TStrings.ExtractName(const S: DelphiString): DelphiString;
 begin
   result := ExtractName(S, False);
 end;
 
-method TStrings.ExtractName(S: DelphiString; AllNames: Boolean): DelphiString;
+method TStrings.ExtractName(const S: DelphiString; AllNames: Boolean): DelphiString;
 begin
   var lPos := S.IndexOf(NameValueSeparator);
   if lPos >=0 then
@@ -569,20 +569,20 @@ begin
       result := '';
 end;
 
-method TStrings.AddPair(aName: DelphiString; aValue: DelphiString): TStrings;
+method TStrings.AddPair(const aName: DelphiString; const aValue: DelphiString): TStrings;
 begin
   &Add(aName + NameValueSeparator + aValue);
   result := self;
 end;
 
-method TStrings.AddPair(aName: DelphiString; aValue: DelphiString; aObject: TObject): TStrings;
+method TStrings.AddPair(const aName: DelphiString; const aValue: DelphiString; aObject: TObject): TStrings;
 begin
   AddObject(aName + NameValueSeparator + aValue, aObject);
   result := self;
 end;
 
 
-method TStrings.Append(S: DelphiString);
+method TStrings.Append(const S: DelphiString);
 begin
   &Add(S);
 end;
@@ -598,7 +598,7 @@ begin
   end;
 end;
 
-method TStrings.AddStrings(aStrings: array of DelphiString);
+method TStrings.AddStrings(const aStrings: array of DelphiString);
 begin
   BeginUpdate;
   try
@@ -609,7 +609,7 @@ begin
   end;
 end;
 
-method TStrings.AddStrings(aStrings: array of DelphiString; aObjects: array of TObject);
+method TStrings.AddStrings(const aStrings: array of DelphiString; const aObjects: array of TObject);
 begin
   if aStrings.length <> aObjects.length then
     raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "AddStrings aStrings aObjects");
@@ -655,7 +655,7 @@ begin
   end;
 end;
 
-method TStrings.IndexOfName(aName: DelphiString): Integer;
+method TStrings.IndexOfName(const aName: DelphiString): Integer;
 begin
   for i: Integer := 0 to Count - 1 do begin 
     var lPos := Strings[i].IndexOf(NameValueSeparator);
@@ -768,7 +768,7 @@ begin
   result := lSb.ToString;
 end;
 
-method TStrings.SetTextStr(aValue: DelphiString);
+method TStrings.SetTextStr(const aValue: DelphiString);
 begin
   BeginUpdate;
   try
@@ -909,7 +909,7 @@ begin
   end;
 end;
 
-method TStrings.Error(Msg: DelphiString; Data: Integer);
+method TStrings.Error(const Msg: DelphiString; Data: Integer);
 begin
   raise new Sugar.SugarException(Msg);
 end;

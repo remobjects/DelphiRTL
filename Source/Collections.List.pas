@@ -98,9 +98,9 @@ type
     constructor(const aComparer: IComparer<T>);
     constructor(const aCollection: TEnumerable<T>);
     class method Create: TList<T>;
-    class method Create(const AComparer: IComparer<T>): TList<T>;
-    class method Create(const Collection: TEnumerable<T>): TList<T>;
-    class method Error(const Msg: String; Data: Integer); virtual;
+    class method Create(const aComparer: IComparer<T>): TList<T>;
+    class method Create(const aCollection: TEnumerable<T>): TList<T>;
+    class method Error(const aMsg: DelphiString; Data: Integer); virtual;
     method &Add(const Value: T): Integer;
     method AddRange(const Values: array of T);
     method AddRange(const Collection: IEnumerable<T>);
@@ -158,7 +158,7 @@ begin
   
 end;
 
-method TList<T>.ItemValue(Item: T): Integer;
+method TList<T>.ItemValue(const Item: T): Integer;
 begin
 
 end;
@@ -168,7 +168,7 @@ begin
   result := fList;
 end;
 
-method TList<T>.&Notify(Item: T; Action: TCollectionNotification);
+method TList<T>.&Notify(const Item: T; Action: TCollectionNotification);
 begin
   if fOnNotify <> nil then
     fOnNotify(Self, Item, Action);
@@ -179,56 +179,56 @@ begin
   Initialize;
 end;
 
-constructor TList<T>(aComparer: IComparer<T>);
+constructor TList<T>(const aComparer: IComparer<T>);
 begin
   Initialize;
   fComparer := aComparer;
 end;
 
-constructor TList<T>(aCollection: TEnumerable<T>);
+constructor TList<T>(const aCollection: TEnumerable<T>);
 begin
   Initialize;
   AddRange(aCollection);
 end;
 
-class method TList<T>.Error(Msg: String; Data: Integer);
+class method TList<T>.Error(const aMsg: DelphiString; Data: Integer);
 begin
 
 end;
 
-method TList<T>.Add(Value: T): Integer;
+method TList<T>.Add(const Value: T): Integer;
 begin
   fList.Add(Value);
   &Notify(Value, TCollectionNotification.cnAdded);
   result := fList.Count - 1;
 end;
 
-method TList<T>.AddRange(Values: array of T);
+method TList<T>.AddRange(const Values: array of T);
 begin
   fList.AddRange(Values);
 end;
 
-method TList<T>.AddRange(Collection: IEnumerable<T>);
+method TList<T>.AddRange(const Collection: IEnumerable<T>);
 begin
   InsertRange(fList.Count, Collection);  
 end;
 
-method TList<T>.AddRange(Collection: TEnumerable<T>);
+method TList<T>.AddRange(const Collection: TEnumerable<T>);
 begin
   InsertRange(fList.Count, Collection);  
 end;
 
-method TList<T>.Insert(aIndex: Integer; Value: T);
+method TList<T>.Insert(aIndex: Integer; const Value: T);
 begin
   fList.Insert(aIndex, Value);
 end;
 
-method TList<T>.InsertRange(aIndex: Integer; Values: array of T);
+method TList<T>.InsertRange(aIndex: Integer; const Values: array of T);
 begin
   fList.InsertRange(aIndex, Values);
 end;
 
-method TList<T>.InsertRange(aIndex: Integer; Collection: IEnumerable<T>);
+method TList<T>.InsertRange(aIndex: Integer; const Collection: IEnumerable<T>);
 begin
   var lList := Collection.ToList; // we don't want to enum it twice?
   for each i in lList do begin
@@ -245,17 +245,17 @@ begin
   // NO OP
 end;
 
-method TList<T>.Pack(IsEmpty: TEmptyFunc<T>);
+method TList<T>.Pack(const IsEmpty: TEmptyFunc<T>);
 begin
   // NO OP
 end;
 
-method TList<T>.Remove(Value: T): Integer;
+method TList<T>.Remove(const Value: T): Integer;
 begin
   result := RemoveItem(Value, TDirection.FromBeginning);
 end;
 
-method TList<T>.RemoveItem(Value: T; Direction: TDirection): Integer;
+method TList<T>.RemoveItem(const Value: T; Direction: TDirection): Integer;
 begin
   result := IndexOfItem(Value, Direction);
   if result >= 0 then begin
@@ -283,7 +283,7 @@ begin
     &Notify(lItem, TCollectionNotification.cnRemoved);
 end;
 
-method TList<T>.ExtractItem(Value: T; Direction: TDirection): T;
+method TList<T>.ExtractItem(const Value: T; Direction: TDirection): T;
 begin
   var lIndex := IndexOfItem(Value, Direction);
   if lIndex >= 0 then begin
@@ -295,7 +295,7 @@ begin
     result := nil;
 end;
 
-method TList<T>.Extract(Value: T): T;
+method TList<T>.Extract(const Value: T): T;
 begin
   result := ExtractItem(Value, TDirection.FromBeginning);
 end;
@@ -336,22 +336,22 @@ begin
   // NO OP
 end;
 
-method TList<T>.Contains(Value: T): Boolean;
+method TList<T>.Contains(const Value: T): Boolean;
 begin
   result := fList.Contains(Value);
 end;
 
-method TList<T>.IndexOf(Value: T): Integer;
+method TList<T>.IndexOf(const Value: T): Integer;
 begin
   result := fList.IndexOf(Value);
 end;
 
-method TList<T>.IndexOfItem(Value: T; Direction: TDirection): Integer;
+method TList<T>.IndexOfItem(const Value: T; Direction: TDirection): Integer;
 begin
   result := if Direction = TDirection.FromBeginning then fList.IndexOf(Value) else fList.LastIndexOf(Value);
 end;
 
-method TList<T>.LastIndexOf(Value: T): Integer;
+method TList<T>.LastIndexOf(const Value: T): Integer;
 begin
   result := fList.LastIndexOf(Value);
 end;
@@ -370,17 +370,17 @@ begin
   
 end;
 
-method TList<T>.Sort(AComparer: IComparer<T>);
+method TList<T>.Sort(const AComparer: IComparer<T>);
 begin
 
 end;
 
-method TList<T>.BinarySearch(Item: T; out &Index: Integer): Boolean;
+method TList<T>.BinarySearch(const Item: T; out &Index: Integer): Boolean;
 begin
 
 end;
 
-method TList<T>.BinarySearch(Item: T; out &Index: Integer; AComparer: IComparer<T>): Boolean;
+method TList<T>.BinarySearch(const Item: T; out &Index: Integer; AComparer: IComparer<T>): Boolean;
 begin
 
 end;
@@ -423,14 +423,14 @@ begin
   result := new TList<T>;
 end;
 
-class method TList<T>.Create(AComparer: IComparer<T>): TList<T>;
+class method TList<T>.Create(const aComparer: IComparer<T>): TList<T>;
 begin
-  result := new TList<T>(AComparer);
+  result := new TList<T>(aComparer);
 end;
 
-class method TList<T>.Create(Collection: TEnumerable<T>): TList<T>;
+class method TList<T>.Create(const aCollection: TEnumerable<T>): TList<T>;
 begin
-  result := new TList<T>(Collection);
+  result := new TList<T>(aCollection);
 end;
 
 method TList<T>.GetItems: array of T;
