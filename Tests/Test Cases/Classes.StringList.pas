@@ -2,7 +2,7 @@
 
 uses
   RemObjects.Elements.EUnit,
-  Elements.RTL.Delphi;
+  RemObjects.Elements.RTL;
 
 type
   StringListUsage = public class(Test)

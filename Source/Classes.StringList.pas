@@ -1,4 +1,4 @@
-﻿namespace Elements.RTL.Delphi;
+﻿namespace RemObjects.Elements.RTL;
 
 interface
 

@@ -1,4 +1,4 @@
-﻿namespace Elements.RTL.Delphi;
+﻿namespace RemObjects.Elements.RTL;
 
 interface
 
@@ -9,9 +9,9 @@ type
   TCompareOptions = public set of TCompareOption;
   TReplaceFlags = public set of (rfReplaceAll, rfIgnoreCase);
   //TArray<T> = array of T;
-  TStringSplitOptions = public (None, ExcludeEmpty);  
+  TStringSplitOptions = public (None, ExcludeEmpty);
 
-  [assembly:DefaultStringType("Elements.RTL.Delphi", typeOf(Elements.RTL.Delphi.WideString))]
+  [assembly:DefaultStringType("Elements.RTL.Delphi", typeOf(RemObjects.Elements.RTL.WideString))]
 
   WideString = public DelphiString;
   PlatformString = public {$IF ECHOES}System.String{$ELSEIF TOFFEE}Foundation.NSString{$ELSEIF COOPER}java.lang.String{$ELSEIF ISLAND}RemObjects.Elements.System.String{$ENDIF};
