@@ -8,7 +8,7 @@
         <AllowLegacyCreate>False</AllowLegacyCreate>
         <AllowLegacyOutParams>False</AllowLegacyOutParams>
         <AssemblyName>delphi</AssemblyName>
-        <RootNamespace>Elements.RTL.Delphi</RootNamespace>
+        <RootNamespace>RemObjects.Elements.RTL.Delphi</RootNamespace>
         <CrossPlatform>True</CrossPlatform>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
