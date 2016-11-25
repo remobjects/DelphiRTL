@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
     <PropertyGroup>
         <ProductVersion>3.5</ProductVersion>
-        <RootNamespace>RTL2.Delphi</RootNamespace>
+        <RootNamespace>RemObjects.Elements.RTL.Delphi</RootNamespace>
         <ProjectGuid>EADD178D-DD01-4F3A-B93D-FDD263D7A19D</ProjectGuid>
         <OutputType>library</OutputType>
         <AssemblyName>Delphi</AssemblyName>
@@ -15,41 +15,41 @@
         <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Target)' == 'Echoes' ">
-    	<Mode>Echoes</Mode>
+        <Mode>Echoes</Mode>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Target)' == 'Cooper' ">
-    	<Mode>Cooper</Mode>
+        <Mode>Cooper</Mode>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Target)' == 'Island.Windows.32bit' ">
-    	<Mode>Island</Mode>
-    	<SubMode>Windows</SubMode>
-    	<Architecture>i386</Architecture>
+        <Mode>Island</Mode>
+        <SubMode>Windows</SubMode>
+        <Architecture>i386</Architecture>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Target)' == 'Island.Windows.64bit' ">
-    	<Mode>Island</Mode>
-    	<SubMode>Windows</SubMode>
-    	<Architecture>x86_64</Architecture>
+        <Mode>Island</Mode>
+        <SubMode>Windows</SubMode>
+        <Architecture>x86_64</Architecture>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Target)' == 'Island.Linux' ">
-    	<Mode>Island</Mode>
-    	<SubMode>Linux</SubMode>
-    	<Architecture>x86_64</Architecture>
+        <Mode>Island</Mode>
+        <SubMode>Linux</SubMode>
+        <Architecture>x86_64</Architecture>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Target)' == 'Toffee.iOS' ">
-    	<Mode>Toffee</Mode>
-    	<SDK>iOS</SDK>
+        <Mode>Toffee</Mode>
+        <SDK>iOS</SDK>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Target)' == 'Toffee.macOS' ">
-    	<Mode>Toffee</Mode>
-    	<SDK>macOS</SDK>
+        <Mode>Toffee</Mode>
+        <SDK>macOS</SDK>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Target)' == 'Toffee.tvOS' ">
-    	<Mode>Toffee</Mode>
-    	<SDK>tvOS</SDK>
+        <Mode>Toffee</Mode>
+        <SDK>tvOS</SDK>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Target)' == 'Toffee.watchOS' ">
-    	<Mode>Toffee</Mode>
-    	<SDK>watchOS</SDK>
+        <Mode>Toffee</Mode>
+        <SDK>watchOS</SDK>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Optimize>false</Optimize>
@@ -89,131 +89,130 @@
     <ItemGroup>
         <Reference Include="Gotham"/>
         <Reference Include="mscorlib">
-        	<Target>Echoes</Target>
+            <Target>Echoes</Target>
         </Reference>
         <Reference Include="System">
-        	<Target>Echoes</Target>
+            <Target>Echoes</Target>
         </Reference>
         <Reference Include="System.Xml">
-        	<Target>Echoes</Target>
+            <Target>Echoes</Target>
         </Reference>
         <Reference Include="System.Core">
-        	<Target>Echoes</Target>
+            <Target>Echoes</Target>
         </Reference>
         <Reference Include="System.Xml.Linq">
-        	<Target>Echoes</Target>
+            <Target>Echoes</Target>
         </Reference>
         <Reference Include="System.Data.DataSetExtensions">
-        	<Target>Echoes</Target>
+            <Target>Echoes</Target>
         </Reference>
         <Reference Include="Echoes">
-        	<Target>Echoes</Target>
+            <Target>Echoes</Target>
             <Private>True</Private>
         </Reference>
         <Reference Include="Sugar">
-        	<Target>Echoes</Target>
+            <Target>Echoes</Target>
             <Private>True</Private>
         </Reference>
         <Reference Include="rt">
-        	<Target>Cooper</Target>
+            <Target>Cooper</Target>
         </Reference>
         <Reference Include="cooper">
-        	<Target>Cooper</Target>
+            <Target>Cooper</Target>
             <Private>True</Private>
         </Reference>
         <Reference Include="sugar">
-        	<Target>Cooper</Target>
+            <Target>Cooper</Target>
             <Private>True</Private>
         </Reference>
         <Reference Include="rtl">
-        	<Target>Island.Windows.64bit</Target>
+            <Target>Island.Windows.64bit</Target>
         </Reference>
         <Reference Include="gc">
-        	<Target>Island.Windows.64bit</Target>
+            <Target>Island.Windows.64bit</Target>
         </Reference>
         <Reference Include="Island">
-        	<Target>Island.Windows.64bit</Target>
+            <Target>Island.Windows.64bit</Target>
         </Reference>
         <Reference Include="rtl">
-        	<Target>Island.Windows.32bit</Target>
+            <Target>Island.Windows.32bit</Target>
         </Reference>
         <Reference Include="gc">
-        	<Target>Island.Windows.32bit</Target>
+            <Target>Island.Windows.32bit</Target>
         </Reference>
         <Reference Include="Island">
-        	<Target>Island.Windows.32bit</Target>
+            <Target>Island.Windows.32bit</Target>
         </Reference>
         <Reference Include="rtl">
-        	<Target>Island.Linux</Target>
+            <Target>Island.Linux</Target>
         </Reference>
         <Reference Include="gc">
-        	<Target>Island.Linux</Target>
+            <Target>Island.Linux</Target>
         </Reference>
         <Reference Include="Island">
-        	<Target>Island.Linux</Target>
+            <Target>Island.Linux</Target>
         </Reference>
         <Reference Include="Foundation">
-        	<Target>Toffee.iOS</Target>
+            <Target>Toffee.iOS</Target>
         </Reference>
         <Reference Include="rtl">
-        	<Target>Toffee.iOS</Target>
+            <Target>Toffee.iOS</Target>
         </Reference>
         <Reference Include="libToffee">
-        	<Target>Toffee.iOS</Target>
+            <Target>Toffee.iOS</Target>
         </Reference>
         <Reference Include="libSugar">
-        	<Target>Toffee.iOS</Target>
+            <Target>Toffee.iOS</Target>
         </Reference>
         <Reference Include="libxml2">
-        	<Target>Toffee.iOS</Target>
+            <Target>Toffee.iOS</Target>
         </Reference>
         <Reference Include="Foundation">
-        	<Target>Toffee.macOS</Target>
+            <Target>Toffee.macOS</Target>
         </Reference>
         <Reference Include="rtl">
-        	<Target>Toffee.macOS</Target>
+            <Target>Toffee.macOS</Target>
         </Reference>
         <Reference Include="libToffee">
-        	<Target>Toffee.macOS</Target>
+            <Target>Toffee.macOS</Target>
         </Reference>
         <Reference Include="libSugar">
-        	<Target>Toffee.macOS</Target>
+            <Target>Toffee.macOS</Target>
         </Reference>
         <Reference Include="libxml2">
-        	<Target>Toffee.macOS</Target>
+            <Target>Toffee.macOS</Target>
         </Reference>
         <Reference Include="Foundation">
-        	<Target>Toffee.tvOS</Target>
+            <Target>Toffee.tvOS</Target>
         </Reference>
         <Reference Include="rtl">
-        	<Target>Toffee.tvOS</Target>
+            <Target>Toffee.tvOS</Target>
         </Reference>
         <Reference Include="libToffee">
-        	<Target>Toffee.tvOS</Target>
+            <Target>Toffee.tvOS</Target>
         </Reference>
         <Reference Include="libSugar">
-        	<Target>Toffee.tvOS</Target>
+            <Target>Toffee.tvOS</Target>
         </Reference>
         <Reference Include="libxml2">
-        	<Target>Toffee.tvOS</Target>
+            <Target>Toffee.tvOS</Target>
         </Reference>
         <Reference Include="Foundation">
-        	<Target>Toffee.watchOS</Target>
+            <Target>Toffee.watchOS</Target>
         </Reference>
         <Reference Include="rtl">
-        	<Target>Toffee.watchOS</Target>
+            <Target>Toffee.watchOS</Target>
         </Reference>
         <Reference Include="libToffee">
-        	<Target>Toffee.watchOS</Target>
+            <Target>Toffee.watchOS</Target>
         </Reference>
         <Reference Include="libSugar">
-        	<Target>Toffee.watchOS</Target>
+            <Target>Toffee.watchOS</Target>
         </Reference>
         <Reference Include="libxml2">
-        	<Target>Toffee.watchOS</Target>
+            <Target>Toffee.watchOS</Target>
         </Reference>
     </ItemGroup>
-    <ItemGroup/>
     <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Gotham.targets"/>
     <Import Project="DelphiRTL.Shared.projitems" Label="Shared"/>
 </Project>

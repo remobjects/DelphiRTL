@@ -11,5 +11,4 @@ type
   PInterfaceTable = Pointer;
   HResult = Int64;
   
-  
 end.

@@ -19,9 +19,7 @@ uses
 [assembly: NeutralResourcesLanguage('')]
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile('')]
-[assembly: AssemblyKeyName('')]
+[assembly: AssemblyKeyName('RemObjectsSoftware')]
 
 implementation
 
