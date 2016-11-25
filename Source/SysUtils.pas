@@ -74,9 +74,9 @@ function BoolToStr(B: Boolean; UseBoolStrs: Boolean := False): DelphiString;
 
 
 function FileOpen(const FileName: DelphiString; Mode: Cardinal): THandle;
-function FileCreate(const FileName: string): THandle;
-function FileCreate(const FileName: string; Rights: Integer): THandle;
-function FileCreate(const FileName: string; Mode: Cardinal; Rights: Integer): THandle;
+function FileCreate(const FileName: String): THandle;
+function FileCreate(const FileName: String; Rights: Integer): THandle;
+function FileCreate(const FileName: String; Mode: Cardinal; Rights: Integer): THandle;
 /*function FileSystemAttributes(const Path: string): TFileSystemAttributes;
 
 function FileRead(Handle: THandle; var Buffer; Count: Cardinal): Integer;
@@ -493,18 +493,18 @@ begin
   result := TInternalFileHandles.Allocate(lHandle);
 end;
 
-function FileCreate(const FileName: string): THandle;
+function FileCreate(const FileName: String): THandle;
 begin
   var lHandle := new Sugar.IO.FileHandle(FileName, Sugar.IO.FileOpenMode.Create);
   result := TInternalFileHandles.Allocate(lHandle);
 end;
 
-function FileCreate(const FileName: string; Rights: Integer): THandle;
+function FileCreate(const FileName: String; Rights: Integer): THandle;
 begin
   result := FileCreate(FileName);
 end;
 
-function FileCreate(const FileName: string; Mode: Cardinal; Rights: Integer): THandle;
+function FileCreate(const FileName: String; Mode: Cardinal; Rights: Integer): THandle;
 begin
   result := FileCreate(FileName);
 end;
