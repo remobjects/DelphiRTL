@@ -1,4 +1,4 @@
-﻿namespace RemObjects.Elements.RTL;
+﻿namespace RemObjects.Elements.RTL.Delphi;
 
 interface
 
@@ -79,9 +79,9 @@ type
     method IndexOfObject(aObject: TObject): Integer; virtual;
     method Insert(aIndex: Integer; const S: DelphiString); virtual; abstract;
     method InsertObject(aIndex: Integer; const S: DelphiString; aObject: TObject); virtual;
-    /*method LoadFromFile(const FileName: DelphiString);  virtual;
-    method LoadFromFile(const FileName: DelphiString; Encoding: TEncoding);  virtual;
-    method LoadFromStream(Stream: TStream);  virtual;
+    method LoadFromFile(const aFileName: DelphiString); virtual;
+    method LoadFromFile(const aFileName: DelphiString; aEncoding: TEncoding);  virtual;
+    /*method LoadFromStream(Stream: TStream);  virtual;
     method LoadFromStream(Stream: TStream; Encoding: TEncoding);  virtual;*/
     method Move(aCurIndex, aNewIndex: Integer); virtual;
     /*method SaveToFile(const FileName: DelphiString);  virtual;
@@ -912,6 +912,32 @@ end;
 method TStrings.Error(const Msg: DelphiString; Data: Integer);
 begin
   raise new Sugar.SugarException(Msg);
+end;
+
+method TStrings.LoadFromFile(const aFileName: DelphiString);
+begin
+  LoadFromFile(aFileName, TEncoding.Default);
+end;
+
+method TStrings.LoadFromFile(const aFileName: DelphiString; aEncoding: TEncoding);
+begin
+  var lHandle := new Sugar.IO.FileHandle(aFileName, Sugar.IO.FileOpenMode.ReadOnly);
+  var lBuffer := new Byte[lHandle.Length];
+  lHandle.Read(lBuffer, lHandle.Length);
+  var lStr := aEncoding.GetString(lBuffer);
+  var i := 0;
+  var lFrom := 0;
+  while i < lStr.Length do begin
+    lFrom := i;
+    while (lStr[i] in [#13, #10]) and (i < lStr.Length) do
+      inc(i);
+    &Add(lStr.SubString(lFrom, (i - lFrom)));
+    if lStr[i] = #13 then begin
+      inc(i);
+      if lStr[i] = #10 then
+        inc(i)
+    end;
+  end;  
 end;
 
 end.

@@ -2,7 +2,7 @@
 
 uses
   RemObjects.Elements.EUnit,
-  RemObjects.Elements.RTL;
+  RemObjects.Elements.RTL.Delphi;
 
 {$IF COOPER OR ECHOES}
 type

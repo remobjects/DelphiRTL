@@ -1,11 +1,11 @@
-﻿namespace RemObjects.Elements.RTL;
+﻿namespace RemObjects.Elements.RTL.Delphi;
 
 interface
 
 {$GLOBALS ON}
 
 type
-  THandle = NativeUInt;
+  THandle = Int64; // Since native types are not supported on Java, THandle stores a 64 bit integer always
   TArray<T> = array of T;
 
 function Pos(SubStr: DelphiString; S: DelphiString; aOffset: Integer := 1): Integer;

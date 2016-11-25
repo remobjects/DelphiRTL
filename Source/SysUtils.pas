@@ -1,4 +1,4 @@
-﻿namespace RemObjects.Elements.RTL;
+﻿namespace RemObjects.Elements.RTL.Delphi;
 
 interface
 {$GLOBALS ON}
@@ -17,6 +17,7 @@ const
 
 type
   TBytes = public TArray<Byte>;
+  TEncoding = Sugar.Encoding;
 
 function UpperCase(const S: DelphiString): DelphiString;
 function UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; inline;
@@ -72,16 +73,16 @@ function BoolToStr(B: Boolean; UseBoolStrs: Boolean := False): DelphiString;
 // File functions
 
 
-function FileOpen(const FileName: DelphiString; Mode: LongWord): THandle;
+function FileOpen(const FileName: DelphiString; Mode: Cardinal): THandle;
 function FileCreate(const FileName: string): THandle;
 function FileCreate(const FileName: string; Rights: Integer): THandle;
-function FileCreate(const FileName: string; Mode: LongWord; Rights: Integer): THandle;
+function FileCreate(const FileName: string; Mode: Cardinal; Rights: Integer): THandle;
 /*function FileSystemAttributes(const Path: string): TFileSystemAttributes;
 
-function FileRead(Handle: THandle; var Buffer; Count: LongWord): Integer;
-function FileWrite(Handle: THandle; const Buffer; Count: LongWord): Integer; overload;*/
-function FileRead(Handle: THandle; var Buffer: TBytes; Offset, Count: LongWord): Integer; 
-function FileWrite(Handle: THandle; const Buffer:TBytes; Offset, Count: LongWord): Integer; 
+function FileRead(Handle: THandle; var Buffer; Count: Cardinal): Integer;
+function FileWrite(Handle: THandle; const Buffer; Count: Cardinal): Integer; overload;*/
+function FileRead(Handle: THandle; var Buffer: TBytes; Offset, Count: Cardinal): Integer; 
+function FileWrite(Handle: THandle; const Buffer:TBytes; Offset, Count: Cardinal): Integer; 
 function FileSeek(Handle: THandle; Offset, Origin: Integer): Integer;
 function FileSeek(Handle: THandle; const Offset: Int64; Origin: Integer): Int64;
 procedure FileClose(Handle: THandle);
@@ -147,9 +148,9 @@ private
   class var fFirstEmpty: Integer := 0; 
   class var fFirstFree: Integer := -1;
 public
-  class method Allocate(aValue: Object): NativeInt;
+  class method Allocate(aValue: Object): Int64;
   begin 
-    if aValue = nil then raise new ArgumentException('Invalid object value');
+    //if aValue = nil then raise new ArgumentException('Invalid object value');
     locking fLock do begin 
       if (fFirstFree = -1) and (fFirstEmpty >= length(fSlots)) then begin 
         var lNewArray := new Object[length(fSlots) + 1024];
@@ -163,9 +164,9 @@ public
       end;
       if fFirstFree <> -1 then begin 
         result := fFirstFree;
-        var lFirstFree := NativeInt(fSlots[result]);
-        assert((lFirstFree and 1) <> 0);
-        fFirstFree := lFirstFree shr 1;
+        var lFirstFree := Int64(fSlots[result]);
+        //assert((lFirstFree and 1) <> 0);
+        fFirstFree := lFirstFree;
         fSlots[result] := aValue;
         inc(result);
         exit;
@@ -173,25 +174,25 @@ public
     end;
   end;
     
-  class method Get(aValue: NativeInt): Object;
+  class method Get(aValue: Int64): Object;
   begin
-    if aValue = 0 then raise new ArgumentException('Invalid GC Handle'); // not valid
+    //if aValue = 0 then raise new ArgumentException('Invalid GC Handle'); // not valid
     dec(aValue);
-    if aValue >= length(fSlots) then raise new ArgumentException('Invalid GC Handle');
+    //if aValue >= length(fSlots) then raise new ArgumentException('Invalid GC Handle');
     // we shouldn't need a lock as the value can't *update* underneath us
     result := fSlots[aValue];
-    if (NativeInt(result) = 0) or ((NativeInt(result) and 1) <> 0) then raise new ArgumentException('Invalid GC Handle'); // not valid
+    //if (NativeInt(result) = 0) or ((NativeInt(result) and 1) <> 0) then raise new ArgumentException('Invalid GC Handle'); // not valid
   end;
 
-  class method Free(aValue: NativeInt);
+  class method Free(aValue: Int64);
   begin 
-    if aValue = 0 then raise new ArgumentException('Invalid GC Handle'); // not valid
+    //if aValue = 0 then raise new ArgumentException('Invalid GC Handle'); // not valid
     dec(aValue);
-    if aValue >= length(fSlots) then raise new ArgumentException('Invalid GC Handle');
+    //if aValue >= length(fSlots) then raise new ArgumentException('Invalid GC Handle');
     locking fLock do begin 
       var lValue := fSlots[aValue];
-      if (NativeInt(lValue) = 0) or ((NativeInt(lValue) and 1) <> 0) then raise new ArgumentException('Invalid GC Handle');
-      //fSlots[aValue] := Object(^Void((fFirstFree shl 1) or 1)); TODO
+      //if (NativeInt(lValue) = 0) or ((NativeInt(lValue) and 1) <> 0) then raise new ArgumentException('Invalid GC Handle');
+      fSlots[aValue] := fFirstFree;
       fFirstFree := aValue;
     end;
   end;
@@ -480,7 +481,7 @@ begin
   end;
 end;
 
-function FileOpen(const FileName: DelphiString; Mode: LongWord): THandle;
+function FileOpen(const FileName: DelphiString; Mode: Cardinal): THandle;
 begin
   var lMode: Sugar.IO.FileOpenMode;
   if Mode = fmOpenRead then
@@ -503,18 +504,18 @@ begin
   result := FileCreate(FileName);
 end;
 
-function FileCreate(const FileName: string; Mode: LongWord; Rights: Integer): THandle;
+function FileCreate(const FileName: string; Mode: Cardinal; Rights: Integer): THandle;
 begin
   result := FileCreate(FileName);
 end;
 
-function FileRead(Handle: THandle; var Buffer: TBytes; Offset, Count: LongWord): Integer; 
+function FileRead(Handle: THandle; var Buffer: TBytes; Offset, Count: Cardinal): Integer; 
 begin
   var lHandle := Sugar.IO.FileHandle(TInternalFileHandles.Get(Handle));
   result := lHandle.Read(Buffer, Offset, Count);
 end;
 
-function FileWrite(Handle: THandle; const Buffer:TBytes; Offset, Count: LongWord): Integer; 
+function FileWrite(Handle: THandle; const Buffer:TBytes; Offset, Count: Cardinal): Integer; 
 begin
   var lHandle := Sugar.IO.FileHandle(TInternalFileHandles.Get(Handle));
   lHandle.Write(Buffer, Offset, Count);
