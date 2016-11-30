@@ -145,7 +145,11 @@ type
     constructor(aQuoteChar: Char; aDelimiter: Char);
     constructor(aQuoteChar: Char; aDelimiter: Char; aOptions: TStringsOptions);
     constructor(aDuplicates: TDuplicates; aSorted: Boolean; aCaseSensitive: Boolean);
-    //destructor Destroy; override;
+    class method Create: TStringList;
+    class method Create(aOwnsObject: Boolean): TStringList;
+    class method Create(aQuoteChar: Char; aDelimiter: Char): TStringList;
+    class method Create(aQuoteChar: Char; aDelimiter: Char; aOptions: TStringsOptions): TStringList;
+    class method Create(aDuplicates: TDuplicates; aSorted: Boolean; aCaseSensitive: Boolean): TStringList;
     method GetCapacity: Integer; override;
     method &Add(const S: DelphiString): Integer; override;
     method AddObject(const S: DelphiString; aObject: TObject): Integer; override;
@@ -437,6 +441,31 @@ begin
     fList.Sort((x, y) -> aCompare(x, y));
     Changed;
   end;
+end;
+
+class method TStringList.Create: TStringList;
+begin
+  result := new TStringList();
+end;
+
+class method TStringList.Create(aOwnsObject: Boolean): TStringList;
+begin
+  result := new TStringList(aOwnsObject);
+end;
+
+class method TStringList.Create(aQuoteChar: Char; aDelimiter: Char): TStringList;
+begin
+  result := new TStringList(aQuoteChar, aDelimiter);
+end;
+
+class method TStringList.Create(aQuoteChar: Char; aDelimiter: Char; aOptions: TStringsOptions): TStringList;
+begin
+  result := new TStringList(aQuoteChar, aDelimiter, aOptions);
+end;
+
+class method TStringList.Create(aDuplicates: TDuplicates; aSorted: Boolean; aCaseSensitive: Boolean): TStringList;
+begin
+  result := new TStringList(aDuplicates, aSorted, aCaseSensitive);
 end;
 
 method TStrings.&Add(const S: DelphiString): Integer;

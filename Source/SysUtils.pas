@@ -81,8 +81,8 @@ function FileCreate(const FileName: String; Mode: Cardinal; Rights: Integer): TH
 
 function FileRead(Handle: THandle; var Buffer; Count: Cardinal): Integer;
 function FileWrite(Handle: THandle; const Buffer; Count: Cardinal): Integer; overload;*/
-function FileRead(Handle: THandle; var Buffer: TBytes; Offset, Count: Cardinal): Integer; 
-function FileWrite(Handle: THandle; const Buffer:TBytes; Offset, Count: Cardinal): Integer; 
+function FileRead(Handle: THandle; var Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
+function FileWrite(Handle: THandle; const Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
 function FileSeek(Handle: THandle; Offset, Origin: Integer): Integer;
 function FileSeek(Handle: THandle; const Offset: Int64; Origin: Integer): Int64;
 procedure FileClose(Handle: THandle);
@@ -147,14 +147,19 @@ private
   class var fSlots: array of Object;
   class var fFirstEmpty: Integer := 0; 
   class var fFirstFree: Integer := -1;
+  class method CopyArray(oldArray: array of Object; var newArray: array of Object);
+  begin
+    for i: Integer := 0 to length(oldArray) - 1 do
+      newArray[i] := oldArray[i];
+  end;
 public
   class method Allocate(aValue: Object): Int64;
   begin 
     //if aValue = nil then raise new ArgumentException('Invalid object value');
     locking fLock do begin 
       if (fFirstFree = -1) and (fFirstEmpty >= length(fSlots)) then begin 
-        var lNewArray := new Object[length(fSlots) + 1024];
-        &Array.Copy(fSlots, lNewArray, length(fSlots));
+        var lNewArray := new Object[length(fSlots) + 128];        
+        CopyArray(fSlots, var lNewArray);
         fSlots := lNewArray;
       end;
       if fFirstEmpty < length(fSlots) then begin
@@ -509,13 +514,13 @@ begin
   result := FileCreate(FileName);
 end;
 
-function FileRead(Handle: THandle; var Buffer: TBytes; Offset, Count: Cardinal): Integer; 
+function FileRead(Handle: THandle; var Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
 begin
   var lHandle := Sugar.IO.FileHandle(TInternalFileHandles.Get(Handle));
   result := lHandle.Read(Buffer, Offset, Count);
 end;
 
-function FileWrite(Handle: THandle; const Buffer:TBytes; Offset, Count: Cardinal): Integer; 
+function FileWrite(Handle: THandle; const Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
 begin
   var lHandle := Sugar.IO.FileHandle(TInternalFileHandles.Get(Handle));
   lHandle.Write(Buffer, Offset, Count);
