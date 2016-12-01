@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
     <PropertyGroup>
-        <RootNamespace>Elements.RTL.Delphi</RootNamespace>
+        <RootNamespace>RemObjects.Elements.RTL.Delphi</RootNamespace>
         <ProjectGuid>632E0AD5-142E-4DB0-A8AC-2AB8E2D29BC4</ProjectGuid>
         <OutputType>StaticLibrary</OutputType>
         <AssemblyName>Delphi</AssemblyName>

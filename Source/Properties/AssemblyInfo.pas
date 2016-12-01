@@ -1,5 +1,7 @@
 ﻿namespace Elements.RTL.Delphi;
 
+interface
+
 uses
   System.Reflection,
   System.Resources,
@@ -18,5 +20,7 @@ uses
 [assembly: ComVisible(false)]
 
 [assembly: AssemblyKeyName('RemObjectsSoftware')]
+
+implementation
 
 end.

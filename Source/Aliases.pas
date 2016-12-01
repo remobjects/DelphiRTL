@@ -1,4 +1,4 @@
-﻿namespace Elements.RTL.Delphi;
+﻿namespace RemObjects.Elements.RTL.Delphi;
 
 type
   TClass = Sugar.Reflection.Type;
@@ -10,6 +10,5 @@ type
   PInterfaceEntry = Pointer;
   PInterfaceTable = Pointer;
   HResult = Int64;
-  
   
 end.

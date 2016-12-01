@@ -1,4 +1,4 @@
-﻿namespace Elements.RTL.Delphi;
+﻿namespace RemObjects.Elements.RTL.Delphi;
 
 interface
 
@@ -7,8 +7,8 @@ uses
   Sugar.Linq;
 
 type
-  TArray<T> = class
-  end;
+  //TArray<T> = class
+  //end;
 
   IComparer<T> = public interface
     function Compare(const Left, Right: T): Integer;

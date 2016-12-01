@@ -2,7 +2,7 @@
 
 uses
   RemObjects.Elements.EUnit,
-  Elements.RTL.Delphi;
+  RemObjects.Elements.RTL.Delphi;
 
 type
   StringManipulations = public class(Test)
@@ -10,11 +10,11 @@ type
 
     method DefaultStringTypeTests();
     begin
-      var x {: DelphiString} := 'hello';
-      Assert.IsTrue(x is Elements.RTL.Delphi.DelphiString);      
+      var x : DelphiString := 'hello';
+      Assert.IsTrue(x is DelphiString);      
     
-      var ds: Elements.RTL.Delphi.DelphiString := 'hello';
-      Assert.IsTrue(ds is Elements.RTL.Delphi.DelphiString);      
+      var ds: DelphiString := 'hello';
+      Assert.IsTrue(ds is DelphiString);      
     
       //var ws: WideString := 'hello';
       //Assert.IsTrue(ws is DelphiString);  // Invalid IL code in DelphiRTL.Tests.Shared.StringManipulations:DefaultStringTypeTests (): IL_006c: isinst    0x01000002
@@ -25,7 +25,7 @@ type
     
     method IndexerTests();
     begin
-      var x: Elements.RTL.Delphi.DelphiString := 'house';
+      var x: DelphiString := 'house';
       x[1] := 'm';
       Assert.AreEqual(x, 'mouse');
     
@@ -38,7 +38,7 @@ type
     
     method IndexOfTests;
     begin
-      var x: Elements.RTL.Delphi.DelphiString := '';
+      var x: DelphiString := '';
       x := 'Mack';
       Assert.AreEqual(x.IndexOf('', 2), 0, 'IndexOf 1');
       Assert.AreEqual(x.IndexOf('', 10), 0, 'IndexOf 2');
@@ -65,7 +65,7 @@ type
     method IndexOfAnyTests;
     begin
       var lToFind := new Char[5];
-      var x: Elements.RTL.Delphi.DelphiString := '';
+      var x: DelphiString := '';
       lToFind := ['a', 'z', '&', '(', ')'];
       
       x := 'a string in the street';
@@ -91,7 +91,7 @@ type
     
     method LastIndexOfTests;
     begin
-      var x: Elements.RTL.Delphi.DelphiString := '';
+      var x: DelphiString := '';
       x := 'Done';
       Assert.AreEqual(x.LastIndexOf('x', 2), -1, 'LastIndexOf 1');
       Assert.AreEqual(x.LastIndexOf('e'), 3, 'LastIndexOf 2');
@@ -117,7 +117,7 @@ type
     
     method PadLeftTests;
     begin
-      var x: Elements.RTL.Delphi.DelphiString := '';
+      var x: DelphiString := '';
       x := 'A string';
       Assert.AreEqual(x.PadLeft(10), '  A string');
       Assert.AreEqual(x.PadLeft(10, 'x'), 'xxA string');
@@ -127,7 +127,7 @@ type
     
     method PadRightTests;
     begin
-      var x: Elements.RTL.Delphi.DelphiString := '';
+      var x: DelphiString := '';
       x := 'A string';
       Assert.AreEqual(x.PadRight(10), 'A string  ');
       Assert.AreEqual(x.PadRight(10, 'x'), 'A stringxx');
@@ -138,7 +138,7 @@ type
     method TrimTests;
     begin
       var lToTrim := new Char[4];
-      var x: Elements.RTL.Delphi.DelphiString := '';
+      var x: DelphiString := '';
       lToTrim := ['&', '(', '[', '<'];
       x := 'String functions';
       Assert.AreEqual(x.Trim, 'String functions');
@@ -153,7 +153,7 @@ type
     method TrimLeftTests;
     begin
       var lToTrim := new Char[4];
-      var x: Elements.RTL.Delphi.DelphiString := '';
+      var x: DelphiString := '';
       lToTrim := ['&', '(', '[', '<'];
       x := 'String functions';
       Assert.AreEqual(x.TrimLeft(lToTrim), 'String functions');
@@ -170,7 +170,7 @@ type
     method TrimRightTests;
     begin
       var lToTrim := new Char[4];
-      var x: Elements.RTL.Delphi.DelphiString := '';
+      var x: DelphiString := '';
       lToTrim := ['&', '(', '[', '<'];
       x := 'String functions1';
       Assert.AreEqual(x.TrimRight(lToTrim), 'String functions1');
@@ -186,7 +186,7 @@ type
     
     method StartsWithTests;
     begin
-      var x: Elements.RTL.Delphi.DelphiString := '';
+      var x: DelphiString := '';
       x := 'String in the street';
       Assert.AreEqual(x.StartsWith('String'), true, 'StartsWith 1');
       Assert.AreEqual(x.StartsWith('string'), false, 'StartsWith');
@@ -198,7 +198,7 @@ type
     
     method EndsWithTests;
     begin
-      var x: Elements.RTL.Delphi.DelphiString := '';
+      var x: DelphiString := '';
       x := 'This is an string';
       Assert.AreEqual(x.EndsWith('string'), true, 'EndsWith 1');
       Assert.AreEqual(x.EndsWith('g'), true, 'EndsWith 2'); // Stack overflow
@@ -603,6 +603,13 @@ type
       x := 'a string(12';
       Assert.AreEqual(x.LastIndexOfAny(lToFind, 10, 2), -1, 'LastIndexOfAny 7');
       Assert.AreEqual(x.LastIndexOfAny(lToFind, 10, 3), 8, 'LastIndexOfAny 8');
+    end;
+
+    method LoadFromFileTests;
+    begin
+      var lString := TStringList.Create;
+      lString.LoadFromFile('..\..\Test.INI');
+      Assert.AreEqual(lString.Count > 0, true);
     end;
     
     method LanguagesTests;

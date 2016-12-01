@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
     <PropertyGroup>
         <ProductVersion>3.5</ProductVersion>
-        <RootNamespace>Elements.RTL.Delphi</RootNamespace>
+        <RootNamespace>RemObjects.Elements.RTL.Delphi</RootNamespace>
         <ProjectGuid>A3390279-D9EC-4511-899A-AEDEBBF4CF71</ProjectGuid>
         <OutputType>StaticLibrary</OutputType>
         <AssemblyName>Delphi</AssemblyName>
@@ -61,5 +61,4 @@
     <PropertyGroup>
         <PreBuildEvent/>
     </PropertyGroup>
-    <ItemGroup/>
 </Project>
