@@ -45,7 +45,7 @@ type
   end;
 
   TIniSectionsPair = TPair<String, TStringList>;
-  TMemIniFile = class(TCustomIniFile)
+  TMemIniFile = public class(TCustomIniFile)
   private
     fEncoding: TEncoding;
     fModified: Boolean;
@@ -77,9 +77,9 @@ type
     property AutoSave: Boolean read fAutoSave write fAutoSave;
   end;
 
-  TIniFile = class(TMemIniFile)
+  TIniFile = public class(TMemIniFile)
   public
-    constructor(const FileName: DelphiString; const Encoding: TEncoding; CaseSensitive: Boolean); override;
+    constructor(const aFileName: DelphiString; const aEncoding: TEncoding; aCaseSensitive: Boolean); override;
   end;
 
 implementation
@@ -102,7 +102,7 @@ end;
 
 constructor TCustomIniFile(const aFileName: DelphiString);
 begin
-  FFileName := FileName;
+  fFileName := aFileName;
 end;
 
 method TCustomIniFile.SectionExists(aSection: DelphiString): Boolean;
@@ -136,7 +136,7 @@ method TCustomIniFile.ReadBool(aSection: DelphiString; aIdent: DelphiString; aDe
 begin
   var lStr := ReadString(aSection, aIdent, '');
   if lStr <> '' then begin
-    result := StrToBool(lStr);
+    result := StrToInt(lStr) <> 0;
   end
   else
     result := aDefault;
@@ -144,7 +144,11 @@ end;
 
 method TCustomIniFile.WriteBool(aSection: DelphiString; aIdent: DelphiString; aValue: Boolean);
 begin
-  var lStr := aValue.ToString;
+  var lStr: DelphiString;
+  if aValue then
+    lStr := '1'
+  else
+    lStr := '0';
   WriteString(aSection, aIdent, lStr);
 end;
 
@@ -212,7 +216,7 @@ end;
 method TCustomIniFile.ValueExists(aSection: DelphiString; aIdent: DelphiString): Boolean;
 begin
   var lValues := TStringList.Create;
-  ReadSectionValues(aSection, lValues);
+  ReadSection(aSection, lValues);
   result := lValues.IndexOf(aIdent) >= 0;
 end;
 
@@ -247,11 +251,14 @@ end;
 
 method TMemIniFile.DeleteKey(aSection: DelphiString; aIdent: DelphiString);
 begin
-  var lIndex := IndexOfSection(aSection);
-  if lIndex >= 0 then begin
-    var lIdentIndex := fData[lIndex].Value.IndexOf(aIdent);
-    if lIdentIndex >= 0 then
-      fData[lIndex].Value.Delete(lIdentIndex);
+  var lSectionIndex := IndexOfSection(aSection);
+  if lSectionIndex >= 0 then begin
+    var lValues := TStringList.Create;
+    lValues.CaseSensitive := CaseSensitive;
+    ReadSection(aSection, lValues);
+    var lIndex := lValues.IndexOf(aIdent);
+    if lIndex >= 0 then
+      fData[lSectionIndex].Value.Delete(lIndex);
   end;
 end;
 
@@ -285,7 +292,7 @@ begin
     if lIndex >= 0 then begin
       var lStrings := fData[lIndex].Value;
       for i: Integer := 0 to lStrings.Count - 1 do
-        aStrings.Add(lStrings[i]);
+        aStrings.Add(lStrings.Names[i]);
     end;
   finally
     aStrings.EndUpdate;
@@ -342,16 +349,16 @@ begin
     if (lStr.Length > 0) and (lStr.Chars[0] <> ';') then begin  // avoid comments and empty lines
       if lStr.Chars[0] = '[' then begin
         var lTitle := lStr.SubString(1, lStr.Length - 2);
-        var lSectionValues := TStringList.Create;
-        lSectionValues.CaseSensitive := CaseSensitive;
-        fData.Add(new TIniSectionsPair(lTitle, lSectionValues));
+        lCurrentSection := TStringList.Create;
+        lCurrentSection.CaseSensitive := CaseSensitive;
+        fData.Add(new TIniSectionsPair(lTitle, lCurrentSection));
       end
       else begin
         var lPos: Integer;
         if lCurrentSection <> nil then begin
           lPos := lStr.IndexOf('=');
           if lPos > 0 then
-            lCurrentSection.Add(lStr.SubString(0, lPos - 1).Trim + '=' + lStr.SubString(lPos + 1).Trim)
+            lCurrentSection.Add(lStr.SubString(0, lPos).Trim + '=' + lStr.SubString(lPos + 1).Trim)
           else
             lCurrentSection.Add(lStr);
         end;           
@@ -394,8 +401,9 @@ begin
   result := -1;
 end;
 
-constructor TIniFile(FileName: DelphiString; Encoding: TEncoding; CaseSensitive: Boolean);
+constructor TIniFile(aFileName: DelphiString; aEncoding: TEncoding; aCaseSensitive: Boolean);
 begin
+  inherited constructor(aFileName, aEncoding, aCaseSensitive);
   AutoSave := true;
 end;
 

@@ -17,7 +17,7 @@ const
 
 type
   TBytes = public TArray<Byte>;
-  TEncoding = Sugar.Encoding;
+  TEncoding = public Sugar.Encoding;
 
 function UpperCase(const S: DelphiString): DelphiString;
 function UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; inline;
@@ -27,9 +27,6 @@ function CompareStr(const S1, S2: DelphiString): Integer; inline;
 function CompareStr(const S1, S2: DelphiString; LocaleOptions: TLocaleOptions): Integer;
 function SameStr(const S1, S2: DelphiString): Boolean; inline;
 function SameStr(const S1, S2: DelphiString; LocaleOptions: TLocaleOptions): Boolean;
-/*
-function CompareMem(P1, P2: Pointer; Length: Integer): Boolean;
-*/
 function CompareText(const S1, S2: DelphiString): Integer; 
 function CompareText(const S1, S2: DelphiString; LocaleOptions: TLocaleOptions): Integer; 
 function SameText(const S1, S2: DelphiString): Boolean; inline;
@@ -71,7 +68,6 @@ function StrToBool(const S: DelphiString): Boolean;
 function BoolToStr(B: Boolean; UseBoolStrs: Boolean := False): DelphiString;
 
 // File functions
-
 
 function FileOpen(const FileName: DelphiString; Mode: Cardinal): THandle;
 function FileCreate(const FileName: String): THandle;
@@ -155,7 +151,6 @@ private
 public
   class method Allocate(aValue: Object): Int64;
   begin 
-    //if aValue = nil then raise new ArgumentException('Invalid object value');
     locking fLock do begin 
       if (fFirstFree = -1) and (fFirstEmpty >= length(fSlots)) then begin 
         var lNewArray := new Object[length(fSlots) + 128];        
@@ -170,7 +165,6 @@ public
       if fFirstFree <> -1 then begin 
         result := fFirstFree;
         var lFirstFree := Int64(fSlots[result]);
-        //assert((lFirstFree and 1) <> 0);
         fFirstFree := lFirstFree;
         fSlots[result] := aValue;
         inc(result);
@@ -181,22 +175,14 @@ public
     
   class method Get(aValue: Int64): Object;
   begin
-    //if aValue = 0 then raise new ArgumentException('Invalid GC Handle'); // not valid
     dec(aValue);
-    //if aValue >= length(fSlots) then raise new ArgumentException('Invalid GC Handle');
-    // we shouldn't need a lock as the value can't *update* underneath us
     result := fSlots[aValue];
-    //if (NativeInt(result) = 0) or ((NativeInt(result) and 1) <> 0) then raise new ArgumentException('Invalid GC Handle'); // not valid
   end;
 
   class method Free(aValue: Int64);
   begin 
-    //if aValue = 0 then raise new ArgumentException('Invalid GC Handle'); // not valid
     dec(aValue);
-    //if aValue >= length(fSlots) then raise new ArgumentException('Invalid GC Handle');
     locking fLock do begin 
-      var lValue := fSlots[aValue];
-      //if (NativeInt(lValue) = 0) or ((NativeInt(lValue) and 1) <> 0) then raise new ArgumentException('Invalid GC Handle');
       fSlots[aValue] := fFirstFree;
       fFirstFree := aValue;
     end;
@@ -266,7 +252,6 @@ begin
   else
     result := DelphiString.Compare(S1, S2, TLanguages.UserDefaultLocale) = 0;
 end;
-
 
 function CompareText(const S1, S2: DelphiString): Integer; 
 begin
@@ -526,14 +511,6 @@ begin
   lHandle.Write(Buffer, Offset, Count);
   result := Count;
 end;
-
-{ FileSeek changes the current position of the file given by Handle to be
-  Offset bytes relative to the point given by Origin. Origin = 0 means that
-  Offset is relative to the beginning of the file, Origin = 1 means that
-  Offset is relative to the current position, and Origin = 2 means that
-  Offset is relative to the end of the file. The return value is the new
-  current position, relative to the beginning of the file, or -1 if an error
-  occurred. }
 
 function FileSeek(Handle: THandle; Offset, Origin: Integer): Integer; 
 begin

@@ -10,7 +10,7 @@ type
 
     method DefaultStringTypeTests();
     begin
-      var x {: DelphiString} := 'hello';
+      var x : DelphiString := 'hello';
       Assert.IsTrue(x is DelphiString);      
     
       var ds: DelphiString := 'hello';
@@ -603,6 +603,13 @@ type
       x := 'a string(12';
       Assert.AreEqual(x.LastIndexOfAny(lToFind, 10, 2), -1, 'LastIndexOfAny 7');
       Assert.AreEqual(x.LastIndexOfAny(lToFind, 10, 3), 8, 'LastIndexOfAny 8');
+    end;
+
+    method LoadFromFileTests;
+    begin
+      var lString := TStringList.Create;
+      lString.LoadFromFile('..\..\Test.INI');
+      Assert.AreEqual(lString.Count > 0, true);
     end;
     
     method LanguagesTests;

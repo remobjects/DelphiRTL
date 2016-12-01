@@ -80,7 +80,7 @@ type
     method Insert(aIndex: Integer; const S: DelphiString); virtual; abstract;
     method InsertObject(aIndex: Integer; const S: DelphiString; aObject: TObject); virtual;
     method LoadFromFile(const aFileName: DelphiString); virtual;
-    method LoadFromFile(const aFileName: DelphiString; aEncoding: TEncoding);  virtual;
+    method LoadFromFile(const aFileName: DelphiString; aEncoding: TEncoding); virtual;
     /*method LoadFromStream(Stream: TStream);  virtual;
     method LoadFromStream(Stream: TStream; Encoding: TEncoding);  virtual;*/
     method Move(aCurIndex, aNewIndex: Integer); virtual;
@@ -366,7 +366,7 @@ end;
 method TStringList.Delete(aIndex: Integer);
 begin
   if (aIndex >= Count) or (aIndex < 0) then
-    raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "Exchange Index1 Index2");
+    raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "Delete Index");
 
   fList.removeAt(aIndex);
 end;
@@ -958,13 +958,15 @@ begin
   var lFrom := 0;
   while i < lStr.Length do begin
     lFrom := i;
-    while (lStr[i] in [#13, #10]) and (i < lStr.Length) do
+    while (i < lStr.Length) and (not (lStr[i] in [#13, #10])) do
       inc(i);
     &Add(lStr.SubString(lFrom, (i - lFrom)));
-    if lStr[i] = #13 then begin
-      inc(i);
-      if lStr[i] = #10 then
-        inc(i)
+    if i < lStr.Length then begin
+      if lStr[i] = #13 then begin
+        inc(i);
+        if lStr[i] = #10 then
+          inc(i);
+      end;
     end;
   end;  
 end;
