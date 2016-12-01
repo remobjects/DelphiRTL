@@ -2,6 +2,9 @@
 
 interface
 
+uses
+  Sugar;
+
 type
 
   TCustomIniFile = public abstract class(TObject)
