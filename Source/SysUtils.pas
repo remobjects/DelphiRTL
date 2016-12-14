@@ -215,6 +215,7 @@ function TryStrToDateTime(const S: DelphiString; out aValue: TDateTime): Boolean
 function TryStrToDateTime(const S: DelphiString; out aValue: TDateTime; aFormatSettings: TFormatSettings): Boolean;
 function TryEncodeDate(aYear, aMonth, aDay: Word; out aDate: TDateTime): Boolean;
 function TryEncodeTime(aHour, aMin, aSec, aMSec: Word; out aTime: TDateTime): Boolean;
+function TryEncodeDateTime(const AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond: Word; out Value: TDateTime): Boolean;
 
 function DateTimeToTimeStamp(aDateTime: TDateTime): TTimeStamp;
 function TimeStampToDateTime(const TimeStamp: TTimeStamp): TDateTime;
@@ -248,15 +249,15 @@ function TrySystemTimeToDateTime(const SystemTime: TSystemTime; out DateTime: TD
 {$ENDIF}
 */
 
-// Peding DateTime funcs
-/*
 function DayOfWeek(const DateTime: TDateTime): Word;
 function Date: TDateTime;
 function Time: TDateTime;
 function Now: TDateTime;
 function CurrentYear: Word;
-function IncMonth(const DateTime: TDateTime; NumberOfMonths: Integer = 1): TDateTime;
-procedure IncAMonth(var Year, Month, Day: Word; NumberOfMonths: Integer = 1);
+
+// Peding DateTime funcs
+/*function IncMonth(const DateTime: TDateTime; NumberOfMonths: Integer := 1): TDateTime;
+procedure IncAMonth(var Year, Month, Day: Word; NumberOfMonths: Integer := 1);
 procedure ReplaceTime(var DateTime: TDateTime; const NewTime: TDateTime);
 procedure ReplaceDate(var DateTime: TDateTime; const NewDate: TDateTime);
 function DateToStr(const DateTime: TDateTime): string;  inline;
@@ -896,6 +897,8 @@ end;
 function DecodeDateFully(const DateTime: TDateTime; var Year, Month, Day, DOW: Word): Boolean;
 begin
   DecodeDate(DateTime, var Year, var Month, var Day);
+  var lTmp := DateTimeToTimeStamp(DateTime);
+  DOW := lTmp.Date mod 7 + 1;
 end;
 
 procedure DecodeTime(const DateTime: TDateTime; var Hour, Min, Sec, MSec: Word);
@@ -910,5 +913,33 @@ begin
   MSec := lRem mod MSecsPerSec;
 end;
 
+function DayOfWeek(const DateTime: TDateTime): Word;
+begin
+  var lYear, lMonth, lDay: Word;
+  DecodeDateFully(DateTime, var lYear, var lMonth, var lDay, var result);
+end;
+
+function Date: TDateTime;
+begin
+  var lTmp := DateTime.Today.Date;
+  result := EncodeDate(lTmp.Year, lTmp.Month, lTmp.Day);
+end;
+
+function Time: TDateTime;
+begin
+  var lTmp := DateTime.Today;
+  result := EncodeTime(lTmp.Hour, lTmp.Minute, lTmp.Second, 0); // TODO miliseconds?
+end;
+
+function Now: TDateTime;
+begin
+  var lTmp := DateTime.Today;
+  TryEncodeDateTime(lTmp.Year, lTmp.Month, lTmp.Day, lTmp.Hour, lTmp.Minute, lTmp.Second, 0, out result); 
+end;
+
+function CurrentYear: Word;
+begin
+  result := DateTime.Today.Year;
+end;
 
 end.
