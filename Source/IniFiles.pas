@@ -23,15 +23,15 @@ type
     method ReadBool(const aSection, aIdent: DelphiString; aDefault: Boolean): Boolean; virtual;
     method WriteBool(const aSection, aIdent: DelphiString; aValue: Boolean); virtual;
     //method ReadBinaryStream(const Section, Name: DelphiString; Value: TStream): Integer; virtual;
-    //method ReadDate(const Section, Name: DelphiString; Default: TDateTime): TDateTime; virtual;
-    //method ReadDateTime(const Section, Name: DelphiString; Default: TDateTime): TDateTime; virtual;
+    method ReadDate(const Section, Name: DelphiString; Default: TDateTime): TDateTime; virtual;
+    method ReadDateTime(const Section, Name: DelphiString; Default: TDateTime): TDateTime; virtual;
     method ReadFloat(const aSection, aName: DelphiString; aDefault: Double): Double; virtual;
-    //method ReadTime(const Section, Name: DelphiString; Default: TDateTime): TDateTime; virtual;
+    method ReadTime(const Section, Name: DelphiString; Default: TDateTime): TDateTime; virtual;
     //method WriteBinaryStream(const Section, Name: DelphiString; Value: TStream); virtual;
-    //method WriteDate(const Section, Name: DelphiString; Value: TDateTime); virtual;
-    //method WriteDateTime(const Section, Name: DelphiString; Value: TDateTime); virtual;
+    method WriteDate(const Section, Name: DelphiString; Value: TDateTime); virtual;
+    method WriteDateTime(const Section, Name: DelphiString; Value: TDateTime); virtual;
     method WriteFloat(const aSection, aName: DelphiString; aValue: Double); virtual;
-    //method WriteTime(const Section, Name: DelphiString; Value: TDateTime); virtual;
+    method WriteTime(const Section, Name: DelphiString; Value: TDateTime); virtual;
     method ReadSection(const Section: DelphiString; DelphiStrings: TStrings); virtual; abstract;
     method ReadSections(DelphiStrings: TStrings); virtual; abstract;
     method ReadSections(const aSection: DelphiString; aStrings: TStrings); virtual;
@@ -152,7 +152,7 @@ begin
   WriteString(aSection, aIdent, lStr);
 end;
 
-/*method TCustomIniFile.ReadDate(Section: DelphiString; Name: DelphiString; &Default: TDateTime): TDateTime;
+method TCustomIniFile.ReadDate(Section: DelphiString; Name: DelphiString; &Default: TDateTime): TDateTime;
 begin
 
 end;
@@ -161,7 +161,6 @@ method TCustomIniFile.ReadDateTime(Section: DelphiString; Name: DelphiString; &D
 begin
 
 end;
-*/
 
 method TCustomIniFile.ReadFloat(aSection: DelphiString; aName: DelphiString; aDefault: Double): Double;
 begin
@@ -177,7 +176,7 @@ begin
     result := aDefault;
 end;
 
-/*method TCustomIniFile.ReadTime(Section: DelphiString; Name: DelphiString; &Default: TDateTime): TDateTime;
+method TCustomIniFile.ReadTime(Section: DelphiString; Name: DelphiString; &Default: TDateTime): TDateTime;
 begin
 
 end;
@@ -190,7 +189,7 @@ end;
 method TCustomIniFile.WriteDateTime(Section: DelphiString; Name: DelphiString; Value: TDateTime);
 begin
 
-end;*/
+end;
 
 method TCustomIniFile.WriteFloat(aSection: DelphiString; aName: DelphiString; aValue: Double);
 begin
@@ -198,10 +197,10 @@ begin
   WriteString(aSection, aName, lStr);
 end;
 
-/*method TCustomIniFile.WriteTime(Section: DelphiString; Name: DelphiString; Value: TDateTime);
+method TCustomIniFile.WriteTime(Section: DelphiString; Name: DelphiString; Value: TDateTime);
 begin
 
-end;*/
+end;
 
 method TCustomIniFile.ReadSections(aSection: DelphiString; aStrings: TStrings);
 begin

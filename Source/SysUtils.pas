@@ -1,6 +1,10 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
 interface
+
+uses 
+  Sugar;
+
 {$GLOBALS ON}
 
 const
@@ -15,9 +19,68 @@ const
   fmShareDenyRead = $0030;
   fmShareDenyNone = $0040;
 
+  HoursPerDay   = 24;
+  MinsPerHour   = 60;
+  SecsPerMin    = 60;
+  MSecsPerSec   = 1000;
+  MinsPerDay    = HoursPerDay * MinsPerHour;
+  SecsPerDay    = MinsPerDay * SecsPerMin;
+  SecsPerHour   = SecsPerMin * MinsPerHour;
+  MSecsPerDay   = SecsPerDay * MSecsPerSec;  
+  DateDelta = 693594;
+
 type
   TBytes = public TArray<Byte>;
   TEncoding = public Sugar.Encoding;
+
+  TSysLocale = public record
+  public
+    DefaultLCID: TLocaleID;
+    PriLangID: Integer;
+    SubLangID: Integer;
+    FarEast: Boolean;
+    MiddleEast: Boolean;
+  end;
+
+  TTimeStamp = public record
+    Time: Integer;      
+    Date: Integer;      
+  end;
+
+  TFormatSettings = public record
+  public
+    CurrencyString: String;
+    CurrencyFormat: Byte;
+    CurrencyDecimals: Byte;
+    DateSeparator: Char;
+    TimeSeparator: Char;
+    ListSeparator: Char;
+    ShortDateFormat: String;
+    LongDateFormat: String;
+    TimeAMString: String;
+    TimePMString: String;
+    ShortTimeFormat: String;
+    LongTimeFormat: String;
+/*    ShortMonthNames: array[1..12] of string;
+    LongMonthNames: array[1..12] of string;
+    ShortDayNames: array[1..7] of string;
+    LongDayNames: array[1..7] of string;*/
+    //EraInfo: array of TEraInfo;
+    ThousandSeparator: Char;
+    DecimalSeparator: Char;
+    TwoDigitYearCenturyWindow: Word;
+    NegCurrFormat: Byte;
+    NormalizedLocaleName: String;
+    //class function Create: TFormatSettings; static; inline;
+    //class function Create(Locale: TLocaleID): TFormatSettings; static;
+    //class function Create(const LocaleName: string): TFormatSettings; static;
+    //class function Invariant: TFormatSettings; static;
+    class constructor;
+  end;
+
+var  
+  FormatSettings: TFormatSettings;
+  SysLocale: TSysLocale;
 
 function UpperCase(const S: DelphiString): DelphiString;
 function UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; inline;
@@ -37,14 +100,14 @@ function AnsiCompareStr(const S1, S2: DelphiString): Integer; inline;
 function AnsiSameStr(const S1, S2: DelphiString): Boolean; inline;
 function AnsiCompareText(const S1, S2: DelphiString): Integer; inline;
 function AnsiSameText(const S1, S2: DelphiString): Boolean; inline;
-//function AnsiLastChar(const S: UnicodeString): PWideChar; overload;
+//function AnsiLastChar(const S: UnicodeString): PWideChar; 
 function Trim(const S: DelphiString): DelphiString;
 function TrimLeft(const S: DelphiString): DelphiString;
 function TrimRight(const S: DelphiString): DelphiString;
 function QuotedStr(const S: DelphiString): DelphiString;
 function AnsiQuotedStr(const S: DelphiString; Quote: Char): DelphiString;
 function AnsiDequotedStr(const S: DelphiString; aQuote: Char): DelphiString;
-//function AdjustLineBreaks(const S: string; Style: TTextLineBreakStyle = tlbsCRLF): string; overload;
+//function AdjustLineBreaks(const S: string; Style: TTextLineBreakStyle = tlbsCRLF): string; 
 //function IsValidIdent(const Ident: string; AllowDots: Boolean = False): Boolean;
 function IntToStr(Value: Integer): DelphiString;
 function IntToStr(Value: Int64): DelphiString;
@@ -54,17 +117,17 @@ function IntToHex(Value: Integer; Digits: Integer := sizeOf(Integer) * 2): Delph
 function IntToHex(Value: Int64; Digits: Integer := sizeOf(Int64) * 2): DelphiString;
 function IntToHex(Value: UInt64; Digits: Integer := sizeOf(UInt64) * 2): DelphiString;
 function StrToInt(const S: DelphiString): Integer;
-//function StrToIntDef(const S: string; Default: Integer): Integer; overload;
-//function TryStrToInt(const S: string; out Value: Integer): Boolean; overload;
+//function StrToIntDef(const S: string; Default: Integer): Integer; 
+//function TryStrToInt(const S: string; out Value: Integer): Boolean; 
 function StrToInt64(const S: DelphiString): Int64;
-//function StrToInt64Def(const S: string; const Default: Int64): Int64; overload;
-//function TryStrToInt64(const S: string; out Value: Int64): Boolean; overload;
+//function StrToInt64Def(const S: string; const Default: Int64): Int64; 
+//function TryStrToInt64(const S: string; out Value: Int64): Boolean; 
 function StrToUInt64(const S: DelphiString): UInt64;
-//function StrToUInt64Def(const S: string; const Default: UInt64): UInt64; overload;
-//function TryStrToUInt64(const S: string; out Value: UInt64): Boolean; overload;
+//function StrToUInt64Def(const S: string; const Default: UInt64): UInt64; 
+//function TryStrToUInt64(const S: string; out Value: UInt64): Boolean; 
 function StrToBool(const S: DelphiString): Boolean;
-//function StrToBoolDef(const S: string; const Default: Boolean): Boolean; overload;
-//function TryStrToBool(const S: string; out Value: Boolean): Boolean; overload;
+//function StrToBoolDef(const S: string; const Default: Boolean): Boolean; 
+//function TryStrToBool(const S: string; out Value: Boolean): Boolean; 
 function BoolToStr(B: Boolean; UseBoolStrs: Boolean := False): DelphiString;
 
 // File functions
@@ -76,14 +139,14 @@ function FileCreate(const FileName: String; Mode: Cardinal; Rights: Integer): TH
 /*function FileSystemAttributes(const Path: string): TFileSystemAttributes;
 
 function FileRead(Handle: THandle; var Buffer; Count: Cardinal): Integer;
-function FileWrite(Handle: THandle; const Buffer; Count: Cardinal): Integer; overload;*/
+function FileWrite(Handle: THandle; const Buffer; Count: Cardinal): Integer; */
 function FileRead(Handle: THandle; var Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
 function FileWrite(Handle: THandle; const Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
 function FileSeek(Handle: THandle; Offset, Origin: Integer): Integer;
 function FileSeek(Handle: THandle; const Offset: Int64; Origin: Integer): Int64;
 procedure FileClose(Handle: THandle);
 /*function FileAge(const FileName: string; out FileDateTime: TDateTime;
-  FollowLink: Boolean = True): Boolean; overload;
+  FollowLink: Boolean = True): Boolean; 
 */
 function FileExists(const FileName: DelphiString; FollowLink: Boolean := true): Boolean;
 function DirectoryExists(const Directory: DelphiString; FollowLink: Boolean := true): Boolean;
@@ -97,9 +160,9 @@ procedure FindClose(var F: TSearchRec);
 function FileGetDate(Handle: THandle): LongInt;
 function FileGetDateTimeInfo(const FileName: string;
   out DateTime: TDateTimeInfoRec; FollowLink: Boolean = True): Boolean;
-function FileSetDate(const FileName: string; Age: LongInt): Integer; overload;
+function FileSetDate(const FileName: string; Age: LongInt): Integer; 
 
-function FileSetDate(Handle: THandle; Age: Integer): Integer; overload; platform;
+function FileSetDate(Handle: THandle; Age: Integer): Integer;  platform;
 function FileGetAttr(const FileName: string; FollowLink: Boolean = True): Integer; platform;
 
 function FileSetAttr(const FileName: string; Attr: Integer; FollowLink: Boolean = True): Integer; platform;
@@ -110,20 +173,20 @@ function DeleteFile(const FileName: DelphiString): Boolean;
 function RenameFile(const OldName, NewName: DelphiString): Boolean;
 function ChangeFileExt(const FileName, aExtension: DelphiString): DelphiString; 
 /*
-function ChangeFilePath(const FileName, Path: string): string; overload;
-function ExtractFilePath(const FileName: string): string; overload;
-function ExtractFileDir(const FileName: string): string; overload;
-function ExtractFileDrive(const FileName: string): string; overload;
+function ChangeFilePath(const FileName, Path: string): string; 
+function ExtractFilePath(const FileName: string): string; 
+function ExtractFileDir(const FileName: string): string; 
+function ExtractFileDrive(const FileName: string): string; 
 */
 function ExtractFileName(const FileName: DelphiString): DelphiString;
 function ExtractFileExt(const FileName: DelphiString): DelphiString;
 function GetHomePath: DelphiString;
 function ExpandFileName(const FileName: DelphiString): DelphiString;
 /*
-function ExpandUNCFileName(const FileName: string): string; overload;
-function ExtractRelativePath(const BaseName, DestName: string): string; overload;
+function ExpandUNCFileName(const FileName: string): string; 
+function ExtractRelativePath(const BaseName, DestName: string): string; 
 function IsRelativePath(const Path: string): Boolean;
-function ExtractShortPathName(const FileName: string): string; overload;
+function ExtractShortPathName(const FileName: string): string; 
 function FileSearch(const Name, DirList: string): string;
 function DiskFree(Drive: Byte): Int64;
 function DiskSize(Drive: Byte): Int64;
@@ -133,6 +196,104 @@ function GetCurrentDir: DelphiString;
 //function SetCurrentDir(const Dir: string): Boolean;
 function CreateDir(const Dir: DelphiString): Boolean;
 function RemoveDir(const Dir: DelphiString): Boolean;
+
+// Datetime functions
+type
+  TDayTable = array[0..11] of Word;
+
+const
+  MonthDays: array [Boolean] of TDayTable =
+    [[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+     [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]];
+
+function IsLeapYear(Year: Word): Boolean;
+function StrToDateTime(const S: DelphiString): TDateTime; inline;
+function StrToDateTime(const S: DelphiString; aFormatSettings: TFormatSettings): TDateTime; 
+function StrToDateTimeDef(const S: DelphiString; aDefault: TDateTime): TDateTime; inline;
+function StrToDateTimeDef(const S: DelphiString; const aDefault: TDateTime; aFormatSettings: TFormatSettings): TDateTime;
+function TryStrToDateTime(const S: DelphiString; out aValue: TDateTime): Boolean; inline;
+function TryStrToDateTime(const S: DelphiString; out aValue: TDateTime; aFormatSettings: TFormatSettings): Boolean;
+function TryEncodeDate(aYear, aMonth, aDay: Word; out aDate: TDateTime): Boolean;
+function TryEncodeTime(aHour, aMin, aSec, aMSec: Word; out aTime: TDateTime): Boolean;
+
+function DateTimeToTimeStamp(aDateTime: TDateTime): TTimeStamp;
+function TimeStampToDateTime(const TimeStamp: TTimeStamp): TDateTime;
+function MSecsToTimeStamp(MSecs: Int64): TTimeStamp;
+function TimeStampToMSecs(const TimeStamp: TTimeStamp): Int64;
+
+function EncodeDate(Year, Month, Day: Word): TDateTime;
+function EncodeTime(Hour, Min, Sec, MSec: Word): TDateTime;
+
+procedure DecodeDate(const DateTime: TDateTime; var Year, Month, Day: Word);
+function DecodeDateFully(const DateTime: TDateTime; var Year, Month, Day, DOW: Word): Boolean;
+procedure DecodeTime(const DateTime: TDateTime; var Hour, Min, Sec, MSec: Word);
+
+/*
+//{$IFDEF MSWINDOWS}
+{ DateTimeToSystemTime converts a date and time from Delphi's TDateTime
+  format into the Win32 API's TSystemTime format. }
+
+procedure DateTimeToSystemTime(const DateTime: TDateTime; var SystemTime: TSystemTime);
+
+{ SystemTimeToDateTime converts a date and time from the Win32 API's
+  TSystemTime format into Delphi's TDateTime format. }
+
+function SystemTimeToDateTime(const SystemTime: TSystemTime): TDateTime;
+
+{ TrySystemTimeToDateTime converts a date and time from the Win32 API's
+  TSystemTime format into Delphi's TDateTime format without raising an
+  EConvertError exception. }
+
+function TrySystemTimeToDateTime(const SystemTime: TSystemTime; out DateTime: TDateTime): Boolean;
+{$ENDIF}
+*/
+
+// Peding DateTime funcs
+/*
+function DayOfWeek(const DateTime: TDateTime): Word;
+function Date: TDateTime;
+function Time: TDateTime;
+function Now: TDateTime;
+function CurrentYear: Word;
+function IncMonth(const DateTime: TDateTime; NumberOfMonths: Integer = 1): TDateTime;
+procedure IncAMonth(var Year, Month, Day: Word; NumberOfMonths: Integer = 1);
+procedure ReplaceTime(var DateTime: TDateTime; const NewTime: TDateTime);
+procedure ReplaceDate(var DateTime: TDateTime; const NewDate: TDateTime);
+function DateToStr(const DateTime: TDateTime): string;  inline;
+function DateToStr(const DateTime: TDateTime; const AFormatSettings: TFormatSettings): string;  inline;
+function TimeToStr(const DateTime: TDateTime): string;  inline;
+function TimeToStr(const DateTime: TDateTime; const AFormatSettings: TFormatSettings): string;  inline;
+function DateTimeToStr(const DateTime: TDateTime): string;  inline;
+function DateTimeToStr(const DateTime: TDateTime; const AFormatSettings: TFormatSettings): string;  inline;
+function StrToDate(const S: string): TDateTime;  inline;
+function StrToDate(const S: string; const AFormatSettings: TFormatSettings): TDateTime; 
+function StrToDateDef(const S: string; const Default: TDateTime): TDateTime;  inline;
+function StrToDateDef(const S: string; const Default: TDateTime; const AFormatSettings: TFormatSettings): TDateTime; 
+function TryStrToDate(const S: string; out Value: TDateTime): Boolean;  inline;
+function TryStrToDate(const S: string; out Value: TDateTime; const AFormatSettings: TFormatSettings): Boolean; 
+function StrToTime(const S: string): TDateTime;  inline;
+function StrToTime(const S: string; const AFormatSettings: TFormatSettings): TDateTime; 
+function StrToTimeDef(const S: string; const Default: TDateTime): TDateTime;  inline;
+function StrToTimeDef(const S: string; const Default: TDateTime; const AFormatSettings: TFormatSettings): TDateTime; 
+function TryStrToTime(const S: string; out Value: TDateTime): Boolean;  inline;
+function TryStrToTime(const S: string; out Value: TDateTime; const AFormatSettings: TFormatSettings): Boolean; 
+function StrToDateTime(const S: string): TDateTime;  inline;
+function StrToDateTime(const S: string; const AFormatSettings: TFormatSettings): TDateTime; 
+function StrToDateTimeDef(const S: string; const Default: TDateTime): TDateTime;  inline;
+function StrToDateTimeDef(const S: string; const Default: TDateTime; const AFormatSettings: TFormatSettings): TDateTime; 
+function TryStrToDateTime(const S: string; out Value: TDateTime): Boolean;  inline;
+function TryStrToDateTime(const S: string; out Value: TDateTime; const AFormatSettings: TFormatSettings): Boolean; 
+function FormatDateTime(const Format: string; DateTime: TDateTime): string;  inline;
+function FormatDateTime(const Format: string; DateTime: TDateTime; const AFormatSettings: TFormatSettings): string; 
+procedure DateTimeToString(var Result: string; const Format: string; DateTime: TDateTime);  inline;
+procedure DateTimeToString(var Result: string; const Format: string; DateTime: TDateTime; const AFormatSettings: TFormatSettings); 
+const
+  MinDateTime: TDateTime = -657434.0;      
+  MaxDateTime: TDateTime =  2958465.99999; 
+function FloatToDateTime(const Value: Extended): TDateTime;
+function TryFloatToDateTime(const Value: Extended; out AResult: TDateTime): Boolean;
+*/
+
 
 implementation
 
@@ -552,6 +713,201 @@ begin
   except
     result := false;
   end;
+end;
+
+// Datetime functions
+
+class constructor TFormatSettings;
+begin
+  SysLocale.DefaultLCID := Sugar.Locale.Current;
+
+end;
+
+function TryEncodeDateTime(const AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond: Word; out Value: TDateTime): Boolean;
+begin
+  var lDate: TDateTime;
+  var lTime: TDateTime;
+  result := TryEncodeDate(AYear, AMonth, ADay, out lDate);
+  if result then
+  begin
+    result := TryEncodeTime(AHour, AMinute, ASecond, AMilliSecond, out lTime);
+    if result then
+      if lTime >= 0 then
+        Value := lDate + lTime
+      else
+        Value := lDate - lTime
+  end;
+end;
+
+function TryEncodeDate(aYear, aMonth, aDay: Word; out aDate: TDateTime): Boolean;
+begin
+  var lIsLeap := IsLeapYear(aYear);
+  if (aDay >= 1) and (aDay <= MonthDays[lIsLeap, aMonth - 1]) and (aMonth >= 1) and (aMonth <= 12) and (aYear >= 1) and (aYear <= 12) then begin
+    var lDays := (aYear - 1) * 365 + (aYear - 1) div 4 - (aYear - 1) div 100 + (aYear - 1) div 400;
+    for i: Integer := 1 to aMonth - 1 do
+      inc(lDays, MonthDays[lIsLeap, i - 1]);
+    aDate := lDays + aDay - DateDelta;
+    result := true;
+  end
+  else 
+     result := false;  
+end;
+
+function TryEncodeTime(aHour, aMin, aSec, aMSec: Word; out aTime: TDateTime): Boolean;
+begin
+  if (aHour < HoursPerDay) and (aMin < MinsPerDay) and (aSec < SecsPerMin) and (aMSec < MSecsPerSec) then begin
+    var lTime := (aHour * (MinsPerHour * SecsPerMin * MSecsPerSec)) + (aMin * (SecsPerMin * MSecsPerSec)) + (aSec * MSecsPerSec) + aMSec;
+    aTime := lTime / MSecsPerDay;
+    result := true;
+  end
+  else
+     result := false;
+end;
+
+function DateTimeToTimeStamp(aDateTime: TDateTime): TTimeStamp;
+begin
+  var lTmp := aDateTime - Math.Floor(aDateTime);
+  result.Time := Math.Round(Math.Abs(lTmp) * MSecsPerDay);
+  //result.Time := Math.Round(Math.Abs(Math.Frac(aDateTime)) * MSecsPerDay);
+  result.Date := Integer(Math.Truncate(aDateTime)) + DateDelta;
+end;
+
+function TimeStampToDateTime(const TimeStamp: TTimeStamp): TDateTime;
+begin
+  var lTmp := (TimeStamp.Date - DateDelta) * MSecsPerDay;
+
+  dec(lTmp, DateDelta);
+  lTmp := lTmp * MSecsPerDay;
+  if lTmp >= 0 then
+    inc(lTmp, TimeStamp.Time)
+  else
+    dec(lTmp, TimeStamp.Time);
+  result := lTmp / MSecsPerDay;
+end;
+
+function MSecsToTimeStamp(MSecs: Int64): TTimeStamp;
+begin
+  if MSecs <= 0 then
+    raise new Exception("Wrong msec value");
+
+  result.Date := MSecs div MSecsPerDay;
+  result.Time := MSecs mod MSecsPerDay;
+end;
+
+function TimeStampToMSecs(const TimeStamp: TTimeStamp): Int64;
+begin
+  result := (TimeStamp.Date * MSecsPerDay) + TimeStamp.Time;  
+end;
+
+function IsLeapYear(Year: Word): Boolean;
+begin
+  result := (Year mod 4 = 0) and ((Year mod 100 <> 0) or (Year mod 400 = 0));
+end;
+
+function StrToDateTime(const S: DelphiString): TDateTime;
+begin
+  TryStrToDateTime(S, out result);
+end;
+
+function StrToDateTime(const S: DelphiString; aFormatSettings: TFormatSettings): TDateTime; 
+begin
+  TryStrToDateTime(S, out result, aFormatSettings);
+end;
+
+function StrToDateTimeDef(const S: DelphiString; aDefault: TDateTime): TDateTime;
+begin
+  if not TryStrToDateTime(S, out result) then
+    result := aDefault;
+end;
+
+function StrToDateTimeDef(const S: DelphiString; const aDefault: TDateTime; aFormatSettings: TFormatSettings): TDateTime;
+begin
+  if not TryStrToDateTime(S, out result, aFormatSettings) then
+    result := aDefault;
+end;
+
+function TryStrToDateTime(const S: DelphiString; out aValue: TDateTime): Boolean;
+begin
+  result := TryStrToDateTime(S, out aValue, FormatSettings);
+end;
+
+function TryStrToDateTime(const S: DelphiString; out aValue: TDateTime; aFormatSettings: TFormatSettings): Boolean;
+begin
+  {$IF COOPER}
+  var lFormat := new java.text.SimpleDateFormat;
+  var lDateTime := lFormat.parse(S);
+  var lCal := java.util.Calendar.getInstance;
+  lCal.setTime(lDateTime);
+  result := TryEncodeDateTime(lCal.get(java.util.Calendar.YEAR), lCal.get(java.util.Calendar.MONTH), lCal.get(java.util.Calendar.DAY_OF_MONTH),
+    lCal.get(java.util.Calendar.HOUR), lCal.get(java.util.Calendar.MINUTE), lCal.get(java.util.Calendar.SECOND), lCal.get(java.util.Calendar.MILLISECOND), out aValue);
+  {$ELSEIF ECHOES}
+  var lDateTime := System.DateTime.Parse(S, SysLocale.DefaultLCID);
+  result := TryEncodeDateTime(lDateTime.Year, lDateTime.Month, lDateTime.Day, lDateTime.Hour, lDateTime.Minute, lDateTime.Second, lDateTime.Millisecond, out aValue);
+  {$ELSEIF TOFFEE}
+  var lDateFormatter := new NSDateFormatter;
+  var lDateTime := lDateFormatter.dateFromString(NSString(S));
+  var lCalendar := NSCalendar.currentCalendar;
+  var lComponents := lCalendar.components(NSCalendarUnit.CalendarUnitYear or NSCalendarUnit.CalendarUnitMonth or NSCalendarUnit.CalendarUnitDay or 
+    NSCalendarUnit.CalendarUnitHour or NSCalendarUnit.CalendarUnitMinute or NSCalendarUnit.CalendarUnitSecond or NSCalendarUnit.NSCalendarUnitNanosecond) fromDate(lDateTime);
+  result := TryEncodeDateTime(lComponents.year, lComponents.month, lComponents.day, lComponents.hour, lComponents.minute, lComponents.second, (lComponents.nanosecond / 1000), out aValue);
+  {$ENDIF}
+end;
+
+function EncodeDate(Year, Month, Day: Word): TDateTime;
+begin
+  if not TryEncodeDate(Year, Month, Day, out result) then
+    raise new Exception("Date encode Error");
+end;
+
+function EncodeTime(Hour, Min, Sec, MSec: Word): TDateTime;
+begin
+  if not TryEncodeTime(Hour, Min, Sec, MSec, out result) then
+    raise new Exception("Time encode Error");
+end;
+
+procedure DecodeDate(const DateTime: TDateTime; var Year, Month, Day: Word);
+begin
+  var lTotal := Integer(Math.Truncate(DateTime));
+  var lDays := 1;
+  Year := 1900;
+  var lLastDays := 0;
+  while lDays < lTotal do begin
+    lLastDays := lDays;
+    if IsLeapYear(Year) then
+      inc(lDays, 366)
+    else
+      inc(lDays, 365);
+    if lDays < lTotal then
+      inc(Year);
+  end;
+
+  Month := 1;
+  lLastDays := lTotal - lLastDays;
+  while lLastDays > 0 do
+  begin
+    if lLastDays > MonthDays[IsLeapYear(Year)][Month] then
+      dec(lLastDays, MonthDays[IsLeapYear(Year)][Month])
+    else
+      Break;
+    inc(Month);
+  end;
+end;
+
+function DecodeDateFully(const DateTime: TDateTime; var Year, Month, Day, DOW: Word): Boolean;
+begin
+  DecodeDate(DateTime, var Year, var Month, var Day);
+end;
+
+procedure DecodeTime(const DateTime: TDateTime; var Hour, Min, Sec, MSec: Word);
+begin
+  var lTmp := DateTime - Math.Floor(DateTime);
+  var lNumber := Math.Round(lTmp * MSecsPerDay);
+  Hour := lNumber div (MinsPerHour * SecsPerMin * MSecsPerSec);
+  var lRem := lNumber mod (MinsPerHour * SecsPerMin * MSecsPerSec);
+  Min := lRem div (SecsPerMin * MSecsPerSec);
+  lRem := lRem mod (SecsPerMin * MSecsPerSec);
+  Sec := lRem div MSecsPerSec;
+  MSec := lRem mod MSecsPerSec;
 end;
 
 
