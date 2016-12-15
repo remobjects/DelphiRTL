@@ -254,13 +254,12 @@ function Date: TDateTime;
 function Time: TDateTime;
 function Now: TDateTime;
 function CurrentYear: Word;
-
-// Peding DateTime funcs
-/*function IncMonth(const DateTime: TDateTime; NumberOfMonths: Integer := 1): TDateTime;
+function IncMonth(const DateTime: TDateTime; NumberOfMonths: Integer := 1): TDateTime;
 procedure IncAMonth(var Year, Month, Day: Word; NumberOfMonths: Integer := 1);
 procedure ReplaceTime(var DateTime: TDateTime; const NewTime: TDateTime);
 procedure ReplaceDate(var DateTime: TDateTime; const NewDate: TDateTime);
-function DateToStr(const DateTime: TDateTime): string;  inline;
+// Peding DateTime funcs
+/*function DateToStr(const DateTime: TDateTime): string;  inline;
 function DateToStr(const DateTime: TDateTime; const AFormatSettings: TFormatSettings): string;  inline;
 function TimeToStr(const DateTime: TDateTime): string;  inline;
 function TimeToStr(const DateTime: TDateTime; const AFormatSettings: TFormatSettings): string;  inline;
@@ -278,12 +277,6 @@ function StrToTimeDef(const S: string; const Default: TDateTime): TDateTime;  in
 function StrToTimeDef(const S: string; const Default: TDateTime; const AFormatSettings: TFormatSettings): TDateTime; 
 function TryStrToTime(const S: string; out Value: TDateTime): Boolean;  inline;
 function TryStrToTime(const S: string; out Value: TDateTime; const AFormatSettings: TFormatSettings): Boolean; 
-function StrToDateTime(const S: string): TDateTime;  inline;
-function StrToDateTime(const S: string; const AFormatSettings: TFormatSettings): TDateTime; 
-function StrToDateTimeDef(const S: string; const Default: TDateTime): TDateTime;  inline;
-function StrToDateTimeDef(const S: string; const Default: TDateTime; const AFormatSettings: TFormatSettings): TDateTime; 
-function TryStrToDateTime(const S: string; out Value: TDateTime): Boolean;  inline;
-function TryStrToDateTime(const S: string; out Value: TDateTime; const AFormatSettings: TFormatSettings): Boolean; 
 function FormatDateTime(const Format: string; DateTime: TDateTime): string;  inline;
 function FormatDateTime(const Format: string; DateTime: TDateTime; const AFormatSettings: TFormatSettings): string; 
 procedure DateTimeToString(var Result: string; const Format: string; DateTime: TDateTime);  inline;
@@ -940,6 +933,41 @@ end;
 function CurrentYear: Word;
 begin
   result := DateTime.Today.Year;
+end;
+
+function IncMonth(const DateTime: TDateTime; NumberOfMonths: Integer := 1): TDateTime;
+begin
+  var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
+  DecodeDate(DateTime, var lYear, var lMonth, var lDay);
+  DecodeTime(DateTime, var lHour, var lMin, var lSec, var lMSec);
+  IncAMonth(var lYear, var lMonth, var lDay, NumberOfMonths);
+  TryEncodeDateTime(lYear, lMonth, lDay, lHour, lMin, lSec, lMSec, out result);
+end;
+
+procedure IncAMonth(var Year, Month, Day: Word; NumberOfMonths: Integer := 1);
+begin
+  var lDate := new DateTime(Year, Month, Day);
+  lDate.AddMonths(NumberOfMonths);
+  Year := lDate.Year;
+  Month := lDate.Month;
+  Day := lDate.Day;
+end;
+
+procedure ReplaceTime(var DateTime: TDateTime; const NewTime: TDateTime);
+begin
+  DateTime := Math.Truncate(DateTime);
+  var lNewTime := NewTime - Math.Truncate(NewTime);
+  if DateTime >= 0 then
+    DateTime := DateTime + Math.Abs(lNewTime)
+  else
+    DateTime := DateTime - Math.Abs(lNewTime);
+end;
+
+procedure ReplaceDate(var DateTime: TDateTime; const NewDate: TDateTime);
+begin
+  var lTmp := NewDate;
+  ReplaceTime(var lTmp, DateTime);
+  DateTime := lTmp;
 end;
 
 end.

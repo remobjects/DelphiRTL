@@ -24,7 +24,7 @@ type
     method WriteBool(const aSection, aIdent: DelphiString; aValue: Boolean); virtual;
     //method ReadBinaryStream(const Section, Name: DelphiString; Value: TStream): Integer; virtual;
     method ReadDate(const Section, Name: DelphiString; Default: TDateTime): TDateTime; virtual;
-    method ReadDateTime(const Section, Name: DelphiString; Default: TDateTime): TDateTime; virtual;
+    method ReadDateTime(const aSection, aName: DelphiString; aDefault: TDateTime): TDateTime; virtual;
     method ReadFloat(const aSection, aName: DelphiString; aDefault: Double): Double; virtual;
     method ReadTime(const Section, Name: DelphiString; Default: TDateTime): TDateTime; virtual;
     //method WriteBinaryStream(const Section, Name: DelphiString; Value: TStream); virtual;
@@ -157,9 +157,15 @@ begin
 
 end;
 
-method TCustomIniFile.ReadDateTime(Section: DelphiString; Name: DelphiString; &Default: TDateTime): TDateTime;
+method TCustomIniFile.ReadDateTime(aSection: DelphiString; aName: DelphiString; aDefault: TDateTime): TDateTime;
 begin
-
+  var lStr := ReadString(aSection, aName, '');
+    if lStr <> '' then begin
+      if not TryStrToDateTime(lStr, out result) then
+        result := aDefault;
+    end
+    else
+       result := aDefault;
 end;
 
 method TCustomIniFile.ReadFloat(aSection: DelphiString; aName: DelphiString; aDefault: Double): Double;
