@@ -23,10 +23,10 @@ type
     method ReadBool(const aSection, aIdent: DelphiString; aDefault: Boolean): Boolean; virtual;
     method WriteBool(const aSection, aIdent: DelphiString; aValue: Boolean); virtual;
     //method ReadBinaryStream(const Section, Name: DelphiString; Value: TStream): Integer; virtual;
-    method ReadDate(const Section, Name: DelphiString; Default: TDateTime): TDateTime; virtual;
+    method ReadDate(const aSection, aName: DelphiString; aDefault: TDateTime): TDateTime; virtual;
     method ReadDateTime(const aSection, aName: DelphiString; aDefault: TDateTime): TDateTime; virtual;
     method ReadFloat(const aSection, aName: DelphiString; aDefault: Double): Double; virtual;
-    method ReadTime(const Section, Name: DelphiString; Default: TDateTime): TDateTime; virtual;
+    method ReadTime(const aSection, aName: DelphiString; aDefault: TDateTime): TDateTime; virtual;
     //method WriteBinaryStream(const Section, Name: DelphiString; Value: TStream); virtual;
     method WriteDate(const Section, Name: DelphiString; Value: TDateTime); virtual;
     method WriteDateTime(const Section, Name: DelphiString; Value: TDateTime); virtual;
@@ -152,9 +152,15 @@ begin
   WriteString(aSection, aIdent, lStr);
 end;
 
-method TCustomIniFile.ReadDate(Section: DelphiString; Name: DelphiString; &Default: TDateTime): TDateTime;
+method TCustomIniFile.ReadDate(aSection: DelphiString; aName: DelphiString; aDefault: TDateTime): TDateTime;
 begin
-
+  var lStr := ReadString(aSection, aName, '');
+    if lStr <> '' then begin
+      if not TryStrToDate(lStr, out result) then
+        result := aDefault;
+    end
+    else
+       result := aDefault;
 end;
 
 method TCustomIniFile.ReadDateTime(aSection: DelphiString; aName: DelphiString; aDefault: TDateTime): TDateTime;
@@ -182,9 +188,15 @@ begin
     result := aDefault;
 end;
 
-method TCustomIniFile.ReadTime(Section: DelphiString; Name: DelphiString; &Default: TDateTime): TDateTime;
+method TCustomIniFile.ReadTime(aSection: DelphiString; aName: DelphiString; aDefault: TDateTime): TDateTime;
 begin
-
+  var lStr := ReadString(aSection, aName, '');
+    if lStr <> '' then begin
+      if not TryStrToTime(lStr, out result) then
+        result := aDefault;
+    end
+    else
+       result := aDefault;
 end;
 
 method TCustomIniFile.WriteDate(Section: DelphiString; Name: DelphiString; Value: TDateTime);
