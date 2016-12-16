@@ -229,26 +229,6 @@ procedure DecodeDate(const DateTime: TDateTime; var Year, Month, Day: Word);
 function DecodeDateFully(const DateTime: TDateTime; var Year, Month, Day, DOW: Word): Boolean;
 procedure DecodeTime(const DateTime: TDateTime; var Hour, Min, Sec, MSec: Word);
 
-/*
-//{$IFDEF MSWINDOWS}
-{ DateTimeToSystemTime converts a date and time from Delphi's TDateTime
-  format into the Win32 API's TSystemTime format. }
-
-procedure DateTimeToSystemTime(const DateTime: TDateTime; var SystemTime: TSystemTime);
-
-{ SystemTimeToDateTime converts a date and time from the Win32 API's
-  TSystemTime format into Delphi's TDateTime format. }
-
-function SystemTimeToDateTime(const SystemTime: TSystemTime): TDateTime;
-
-{ TrySystemTimeToDateTime converts a date and time from the Win32 API's
-  TSystemTime format into Delphi's TDateTime format without raising an
-  EConvertError exception. }
-
-function TrySystemTimeToDateTime(const SystemTime: TSystemTime; out DateTime: TDateTime): Boolean;
-{$ENDIF}
-*/
-
 function DayOfWeek(const DateTime: TDateTime): Word;
 function Date: TDateTime;
 function Time: TDateTime;
