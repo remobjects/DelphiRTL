@@ -85,37 +85,38 @@ function MinuteOfTheWeek(const aValue: TDateTime): Word;
 function SecondOfTheWeek(const aValue: TDateTime): Cardinal;
 function MilliSecondOfTheWeek(const aValue: TDateTime): Cardinal;
 
-//Pending funcs
-/*function HourOfTheDay(const AValue: TDateTime): Word; inline;
-function MinuteOfTheDay(const AValue: TDateTime): Word;
-function SecondOfTheDay(const AValue: TDateTime): Cardinal;
-function MilliSecondOfTheDay(const AValue: TDateTime): Cardinal;
-function MinuteOfTheHour(const AValue: TDateTime): Word; inline;
-function SecondOfTheHour(const AValue: TDateTime): Word;
-function MilliSecondOfTheHour(const AValue: TDateTime): Cardinal;
-function SecondOfTheMinute(const AValue: TDateTime): Word; inline;
-function MilliSecondOfTheMinute(const AValue: TDateTime): Cardinal;
-function MilliSecondOfTheSecond(const AValue: TDateTime): Word; inline;
+function HourOfTheDay(const aValue: TDateTime): Word; inline;
+function MinuteOfTheDay(const aValue: TDateTime): Word;
+function SecondOfTheDay(const aValue: TDateTime): Cardinal;
+function MilliSecondOfTheDay(const aValue: TDateTime): Cardinal;
+function MinuteOfTheHour(const aValue: TDateTime): Word; inline;
+function SecondOfTheHour(const aValue: TDateTime): Word;
+function MilliSecondOfTheHour(const aValue: TDateTime): Cardinal;
+function SecondOfTheMinute(const aValue: TDateTime): Word; inline;
+function MilliSecondOfTheMinute(const aValue: TDateTime): Cardinal;
+function MilliSecondOfTheSecond(const aValue: TDateTime): Word; inline;
 
-function WithinPastYears(const ANow, AThen: TDateTime; const AYears: Integer): Boolean; inline;
-function WithinPastMonths(const ANow, AThen: TDateTime; const AMonths: Integer): Boolean; inline;
-function WithinPastWeeks(const ANow, AThen: TDateTime; const AWeeks: Integer): Boolean; inline;
-function WithinPastDays(const ANow, AThen: TDateTime; const ADays: Integer): Boolean; inline;
-function WithinPastHours(const ANow, AThen: TDateTime; const AHours: Int64): Boolean; inline;
-function WithinPastMinutes(const ANow, AThen: TDateTime; const AMinutes: Int64): Boolean; inline;
-function WithinPastSeconds(const ANow, AThen: TDateTime; const ASeconds: Int64): Boolean; inline;
-function WithinPastMilliSeconds(const ANow, AThen: TDateTime; const AMilliSeconds: Int64): Boolean; inline;
+function DateTimeToMilliseconds(const aDateTime: TDateTime): Int64;
 
-function YearsBetween(const ANow, AThen: TDateTime): Integer;
-function MonthsBetween(const ANow, AThen: TDateTime): Integer;
-function WeeksBetween(const ANow, AThen: TDateTime): Integer;
-function DaysBetween(const ANow, AThen: TDateTime): Integer;
-function HoursBetween(const ANow, AThen: TDateTime): Int64;
-function MinutesBetween(const ANow, AThen: TDateTime): Int64;
-function SecondsBetween(const ANow, AThen: TDateTime): Int64;
-function MilliSecondsBetween(const ANow, AThen: TDateTime): Int64;
+function WithinPastYears(const aNow, aThen: TDateTime; const aYears: Integer): Boolean; inline;
+function WithinPastMonths(const aNow, aThen: TDateTime; const aMonths: Integer): Boolean; inline;
+function WithinPastWeeks(const aNow, aThen: TDateTime; const aWeeks: Integer): Boolean; inline;
+function WithinPastDays(const aNow, aThen: TDateTime; const aDays: Integer): Boolean; inline;
+function WithinPastHours(const aNow, aThen: TDateTime; const aHours: Int64): Boolean; inline;
+function WithinPastMinutes(const aNow, aThen: TDateTime; const aMinutes: Int64): Boolean; inline;
+function WithinPastSeconds(const aNow, aThen: TDateTime; const aSeconds: Int64): Boolean; inline;
+function WithinPastMilliSeconds(const aNow, aThen: TDateTime; const aMilliSeconds: Int64): Boolean; inline;
 
-function DateTimeInRange(ADateTime: TDateTime; AStartDateTime, AEndDateTime: TDateTime; aInclusive: Boolean := True): Boolean;
+function YearsBetween(const aNow, aThen: TDateTime): Integer;
+function MonthsBetween(const aNow, aThen: TDateTime): Integer;
+function WeeksBetween(const aNow, aThen: TDateTime): Integer;
+function DaysBetween(const aNow, aThen: TDateTime): Integer;
+function HoursBetween(const aNow, aThen: TDateTime): Int64;
+function MinutesBetween(const aNow, aThen: TDateTime): Int64;
+function SecondsBetween(const aNow, aThen: TDateTime): Int64;
+function MilliSecondsBetween(const aNow, aThen: TDateTime): Int64;
+
+/*function DateTimeInRange(ADateTime: TDateTime; AStartDateTime, AEndDateTime: TDateTime; aInclusive: Boolean := True): Boolean;
 function DateInRange(ADate: TDate; AStartDate, AEndDate: TDate; AInclusive: Boolean := True): Boolean;
 function TimeInRange(ATime: TTime; AStartTime, AEndTime: TTime; AInclusive: Boolean := True): Boolean;
 
@@ -140,13 +141,13 @@ function IncMilliSecond(const AValue: TDateTime; const ANumberOfMilliSeconds: In
 
 function EncodeDateTime(const AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond: Word): TDateTime;
 procedure DecodeDateTime(const AValue: TDateTime; out AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond: Word);
+*/
+//function EncodeDateWeek(const AYear, AWeekOfYear: Word; {ISO 8601} const ADayOfWeek: Word := 1): TDateTime;
+//procedure DecodeDateWeek(const AValue: TDateTime; out AYear, {ISO 8601} AWeekOfYear, ADayOfWeek: Word);
 
-function EncodeDateWeek(const AYear, AWeekOfYear: Word; {ISO 8601} const ADayOfWeek: Word := 1): TDateTime;
-procedure DecodeDateWeek(const AValue: TDateTime; out AYear, {ISO 8601} AWeekOfYear, ADayOfWeek: Word);
-
-function EncodeDateDay(const AYear, ADayOfYear: Word): TDateTime;
-procedure DecodeDateDay(const AValue: TDateTime; out AYear, ADayOfYear: Word);
-
+function EncodeDateDay(const aYear, aDayOfYear: Word): TDateTime;
+procedure DecodeDateDay(const aValue: TDateTime; out aYear, aDayOfYear: Word);
+/*
 function EncodeDateMonthWeek(const AYear, AMonth, AWeekOfMonth, {ISO 8601x} ADayOfWeek: Word): TDateTime;
 procedure DecodeDateMonthWeek(const AValue: TDateTime; {ISO 8601x} out AYear, AMonth, AWeekOfMonth, ADayOfWeek: Word);
 
@@ -197,7 +198,7 @@ function TryModifiedJulianDateToDateTime(const AValue: Double; out ADateTime: TD
 
 function DateTimeToUnix(const AValue: TDateTime; AInputIsUTC: Boolean := True): Int64;
 function UnixToDateTime(const AValue: Int64; AReturnUTC: Boolean := True): TDateTime;
-
+*/
 const
   DaysPerWeek = 7;
   WeeksPerFortnight = 2;
@@ -234,13 +235,13 @@ const
 
   EpochAsJulianDate = 2415018.5;
   EpochAsUnixDate   = -2209161600;
-  DaysPerYear: array [Boolean] of Word = (365, 366);
-  RecodeLeaveFieldAsIs = High(Word);
+  //DaysPerYear: array [Boolean] of Word = (365, 366);
+  RecodeLeaveFieldAsIs = high(Word);
 
 var
   ApproxDaysPerMonth: Double := 30.4375;
   ApproxDaysPerYear: Double  := 365.25;
-
+/*
 type
   ELocalTimeInvalid = class(Exception);
   EDateTimeException = class(Exception);
@@ -499,36 +500,32 @@ end;
 
 function StartOfTheWeek(const aValue: TDateTime): TDateTime;
 begin
-  var lYear, lMonth, lDay: Word;
-  DecodeDate(aValue, var lYear, var lMonth, var lDay);
-  
+  // TODO
 end;
 
 function EndOfTheWeek(const aValue: TDateTime): TDateTime;
 begin
-  var lYear, lMonth, lDay: Word;
-  DecodeDate(aValue, var lYear, var lMonth, var lDay);
-
+  // TODO
 end;
 
 function StartOfAWeek(const aYear, aWeekOfYear: Word; const aDayOfWeek: Word := 1): TDateTime;
 begin
-
+  // TODO
 end;
 
 function EndOfAWeek(const aYear, aWeekOfYear: Word; const aDayOfWeek: Word := 7): TDateTime;
 begin
-
+  // TODO
 end;
 
 function StartOfTheDay(const aValue: TDateTime): TDateTime;
 begin
-
+  // TODO
 end;
 
 function EndOfTheDay(const aValue: TDateTime): TDateTime;
 begin
-
+  // TODO
 end;
 
 function StartOfADay(const aYear, aMonth, aDay: Word): TDateTime; 
@@ -543,12 +540,12 @@ end;
 
 function StartOfADay(const aYear, aDayOfYear: Word): TDateTime; 
 begin
-
+  // TODO
 end;
 
 function EndOfADay(const aYear, aDayOfYear: Word): TDateTime; 
 begin
-
+  // TODO
 end;
 
 function MonthOfTheYear(const aValue: TDateTime): Word;
@@ -563,7 +560,9 @@ end;
 
 function WeekOfTheYear(const aValue: TDateTime; var aYear: Word): Word; 
 begin
- 
+  var lMonth, lDay, lDOW: Word;
+  DecodeDateFully(aValue, var aYear, var lMonth, var lDay, var lDOW);
+  result := WeekOfTheYear(aValue);
 end;
 
 function DayOfTheYear(const aValue: TDateTime): Word;
@@ -573,82 +572,238 @@ end;
 
 function HourOfTheYear(const aValue: TDateTime): Word;
 begin
-
+  var lHour, lMin, lSec, lMSec: Word;
+  DecodeTime(aValue, var lHour, var lMin, var lSec, var lMSec);
+  result := (DayOfTheYear(aValue)  - 1) * HoursPerDay + lHour;
 end;
 
 function MinuteOfTheYear(const aValue: TDateTime): Cardinal;
 begin
-
+  var lHour, lMin, lSec, lMSec: Word;
+  DecodeTime(aValue, var lHour, var lMin, var lSec, var lMSec);
+  result := HourOfTheYear(aValue) * MinsPerHour + lMin;
 end;
 
 function SecondOfTheYear(const aValue: TDateTime): Cardinal;
 begin
-
+  var lHour, lMin, lSec, lMSec: Word;
+  DecodeTime(aValue, var lHour, var lMin, var lSec, var lMSec);
+  result := MinuteOfTheYear(aValue) * SecsPerMin + lSec;
 end;
 
 function MilliSecondOfTheYear(const aValue: TDateTime): Int64;
 begin
-
+  var lHour, lMin, lSec, lMSec: Word;
+  DecodeTime(aValue, var lHour, var lMin, var lSec, var lMSec);
+  result := SecondOfTheYear(aValue) * MSecsPerSec + lMSec;
 end;
 
 function WeekOfTheMonth(const aValue: TDateTime): Word;
 begin
-  
+  // TODO  
 end;
 
 function WeekOfTheMonth(const aValue: TDateTime; var aYear, aMonth: Word): Word; 
 begin
-
+  // TODO
 end;
 
 function DayOfTheMonth(const aValue: TDateTime): Word; 
 begin
-
+  result := DayOf(aValue);
 end;
 
 function HourOfTheMonth(const aValue: TDateTime): Word;
 begin
-
+  result := (DayOfTheMonth(aValue) - 1) * HoursPerDay + HourOf(aValue);
 end;
 
 function MinuteOfTheMonth(const aValue: TDateTime): Word;
 begin
-
+  result := HourOfTheMonth(aValue) * MinsPerHour + MinuteOf(aValue);
 end;
 
 function SecondOfTheMonth(const aValue: TDateTime): Cardinal;
 begin
-
+  result := MinuteOfTheMonth(aValue) * SecsPerMin + SecondOf(aValue);
 end;
 
 function MilliSecondOfTheMonth(const aValue: TDateTime): Cardinal;
 begin
-
+  result := SecondOfTheMonth(aValue) * MSecsPerSec + MilliSecondOf(aValue);
 end;
 
 function DayOfTheWeek(const aValue: TDateTime): Word;
 begin
-
+  result := (Integer(Math.Truncate(aValue)) + DateDelta  - 1) mod 7 + 1;
 end;
 
 function HourOfTheWeek(const aValue: TDateTime): Word;
 begin
-
+  result := (DayOfTheWeek(aValue) - 1) * HoursPerDay + HourOf(aValue);
 end;
 
 function MinuteOfTheWeek(const aValue: TDateTime): Word;
 begin
-
+  result := HourOfTheWeek(aValue) * MinsPerHour + MinuteOf(aValue);
 end;
 
 function SecondOfTheWeek(const aValue: TDateTime): Cardinal;
 begin
-
+  result := MinuteOfTheWeek(aValue) * SecsPerMin + SecondOf(aValue);
 end;
 
 function MilliSecondOfTheWeek(const aValue: TDateTime): Cardinal;
 begin
+  result := SecondOfTheWeek(aValue) * MSecsPerSec + MilliSecondOf(aValue);
+end;
 
+function HourOfTheDay(const aValue: TDateTime): Word;
+begin
+  result := HourOf(aValue)
+end;
+
+function MinuteOfTheDay(const aValue: TDateTime): Word;
+begin
+  var lHour, lMin, lSec, lMSec: Word;
+  DecodeTime(aValue, var lHour, var lMin, var lSec, var lMSec);
+  result := lHour * MinsPerHour + lMin;
+end;
+
+function SecondOfTheDay(const aValue: TDateTime): Cardinal;
+begin
+  var lHour, lMin, lSec, lMSec: Word;
+  DecodeTime(aValue, var lHour, var lMin, var lSec, var lMSec);
+  result := (lHour * MinsPerHour + lMin) * SecsPerMin + lSec;
+end;
+
+function MilliSecondOfTheDay(const aValue: TDateTime): Cardinal;
+begin
+  var lHour, lMin, lSec, lMSec: Word;
+  DecodeTime(aValue, var lHour, var lMin, var lSec, var lMSec);
+  result := ((lHour * MinsPerHour + lMin) * SecsPerMin + lSec) * MSecsPerSec + lMSec;
+end;
+
+function MinuteOfTheHour(const aValue: TDateTime): Word;
+begin
+  result := MinuteOf(aValue);
+end;
+
+function SecondOfTheHour(const aValue: TDateTime): Word;
+begin
+  var lHour, lMin, lSec, lMSec: Word;
+  DecodeTime(aValue, var lHour, var lMin, var lSec, var lMSec);
+  result := lMin * SecsPerMin + lSec;
+end;
+
+function MilliSecondOfTheHour(const aValue: TDateTime): Cardinal;
+begin
+  var lHour, lMin, lSec, lMSec: Word;
+  DecodeTime(aValue, var lHour, var lMin, var lSec, var lMSec);
+  result := (lMin * SecsPerMin + lSec) * MSecsPerSec + lMSec;
+end;
+
+function SecondOfTheMinute(const aValue: TDateTime): Word;
+begin
+  result := SecondOf(aValue);
+end;
+
+function MilliSecondOfTheMinute(const aValue: TDateTime): Cardinal;
+begin
+  var lHour, lMin, lSec, lMSec: Word;
+  DecodeTime(aValue, var lHour, var lMin, var lSec, var lMSec);
+  result := lSec * MSecsPerSec + lMSec;
+end;
+
+function MilliSecondOfTheSecond(const aValue: TDateTime): Word;
+begin
+  result := MilliSecondOf(aValue);
+end;
+
+function WithinPastYears(const aNow, aThen: TDateTime; const aYears: Integer): Boolean;
+begin
+  result := YearsBetween(aNow, aThen) <= aYears;
+end;
+
+function WithinPastMonths(const aNow, aThen: TDateTime; const aMonths: Integer): Boolean;
+begin
+  result := MonthsBetween(aNow, aThen) <= aMonths;
+end;
+
+function WithinPastWeeks(const aNow, aThen: TDateTime; const aWeeks: Integer): Boolean;
+begin
+  result := WeeksBetween(aNow, aThen) <= aWeeks;
+end;
+
+function WithinPastDays(const aNow, aThen: TDateTime; const aDays: Integer): Boolean;
+begin
+  result := DaysBetween(aNow, aThen) <= aDays;
+end;
+
+function WithinPastHours(const aNow, aThen: TDateTime; const aHours: Int64): Boolean;
+begin
+  result := HoursBetween(aNow, aThen) <= aHours;
+end;
+
+function WithinPastMinutes(const aNow, aThen: TDateTime; const aMinutes: Int64): Boolean;
+begin
+  result := MinutesBetween(aNow, aThen) <= aMinutes;
+end;
+
+function WithinPastSeconds(const aNow, aThen: TDateTime; const aSeconds: Int64): Boolean;
+begin
+  result := SecondsBetween(aNow, aThen) <= aSeconds;
+end;
+
+function WithinPastMilliSeconds(const aNow, aThen: TDateTime; const aMilliSeconds: Int64): Boolean;
+begin
+  result := MilliSecondsBetween(aNow, aThen) <= aMilliSeconds;
+end;
+
+function YearsBetween(const aNow, aThen: TDateTime): Integer;
+begin
+  result := Integer(Math.Truncate(Math.Abs(Integer(Math.Truncate(aNow - aThen))) / ApproxDaysPerYear));
+end;
+
+function MonthsBetween(const aNow, aThen: TDateTime): Integer;
+begin
+  result := Integer(Math.Truncate(Math.Abs(Integer(Math.Truncate(aNow - aThen))) / ApproxDaysPerMonth));
+end;
+
+function WeeksBetween(const aNow, aThen: TDateTime): Integer;
+begin
+  result := Integer(Math.Truncate(Math.Abs(Integer(Math.Truncate(aNow - aThen))) / DaysPerWeek));
+end;
+
+function DaysBetween(const aNow, aThen: TDateTime): Integer;
+begin
+  result := Math.Abs(Integer(Math.Truncate(aNow - aThen)));
+end;
+
+function DateTimeToMilliseconds(const aDateTime: TDateTime): Int64;
+begin
+  var lTimeStamp := DateTimeToTimeStamp(aDateTime);
+  result := lTimeStamp.Date * MSecsPerDay + lTimeStamp.Time;
+end;
+
+function HoursBetween(const aNow, aThen: TDateTime): Int64;
+begin
+  result := Math.Abs(DateTimeToMilliseconds(aNow) - DateTimeToMilliseconds(aThen)) div (MSecsPerSec * SecsPerMin * MinsPerHour);
+end;
+
+function MinutesBetween(const aNow, aThen: TDateTime): Int64;
+begin
+  result := Math.Abs(DateTimeToMilliseconds(aNow) - DateTimeToMilliseconds(aThen)) div (MSecsPerSec * SecsPerMin);
+end;
+
+function SecondsBetween(const aNow, aThen: TDateTime): Int64;
+begin
+  result := Math.Abs(DateTimeToMilliseconds(aNow) - DateTimeToMilliseconds(aThen)) div MSecsPerSec;
+end;
+
+function MilliSecondsBetween(const aNow, aThen: TDateTime): Int64;
+begin
+  Result := Math.Abs(DateTimeToMilliseconds(aNow) - DateTimeToMilliseconds(aThen));
 end;
 
 function IncDay(const aValue: TDateTime; const aNumberOfDays: Integer := 1): TDateTime;
@@ -657,6 +812,17 @@ begin
   var lTime := aValue - lDays;
   lDays := lDays + aNumberOfDays;
   result := lDays + lTime;
+end;
+
+function EncodeDateDay(const aYear, aDayOfYear: Word): TDateTime;
+begin
+  result := StartOfAYear(aYear) + aDayOfYear - 1;
+end;
+
+procedure DecodeDateDay(const aValue: TDateTime; out aYear, aDayOfYear: Word);
+begin
+  aYear := YearOf(aValue);
+  aDayOfYear := DayOfTheYear(aValue);
 end;
 
 end.
