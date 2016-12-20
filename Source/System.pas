@@ -8,6 +8,9 @@ type
   THandle = Int64; // Since native types are not supported on Java, THandle stores a 64 bit integer always
   TArray<T> = array of T;
   TDateTime = public Double;
+  TDate = public TDateTime;
+  TTime = public TDateTime;
+
 
 function Pos(SubStr: DelphiString; S: DelphiString; aOffset: Integer := 1): Integer;
 procedure Insert(aSource: DelphiString; var aTarget: DelphiString; aOffset: Integer);
