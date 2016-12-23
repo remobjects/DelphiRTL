@@ -5,7 +5,7 @@ interface
 {$GLOBALS ON}
 
 uses
-  Sugar;
+  RemObjects.Elements.RTL;
 
 type
   TDayTable = array[0..11] of Word;

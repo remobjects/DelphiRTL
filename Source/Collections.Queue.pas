@@ -2,10 +2,13 @@
 
 interface
 
+uses
+  RemObjects.Elements.RTL;
+
 type
   TQueue<T> = public class(TEnumerable<T>){$IF TOFFEE}where T is class;{$ENDIF}
   private
-    fQueue: Sugar.Collections.Queue<T>;
+    fQueue: Queue<T>;
     method GetCapacity: Integer;
     method SetCapacity(aCount: Integer);
     method Initialize;

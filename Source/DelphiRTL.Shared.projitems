@@ -11,8 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Classes.StringList.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Collections.Dictionary.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Collections.Queue.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Collections.Stack.pas" />
+    <None Include="$(MSBuildThisFileDirectory)Collections.Queue.pas" />
+    <None Include="$(MSBuildThisFileDirectory)Collections.Stack.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Collections.List.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)DateUtils.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)IniFiles.pas" />

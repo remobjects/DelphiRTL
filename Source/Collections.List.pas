@@ -3,8 +3,8 @@
 interface
 
 uses
-  Sugar,
-  Sugar.Linq;
+  RemObjects.Elements.RTL;
+  //Sugar.Linq;
 
 type
   //TArray<T> = class
@@ -80,7 +80,7 @@ type
  
   TList<T> = public class(TEnumerable<T>){$IF TOFFEE}where T is class;{$ENDIF}
   private
-    fList: Sugar.Collections.List<T>;
+    fList: List<T>;
     fComparer: IComparer<T>;
     fOnNotify: TCollectionNotifyEvent<T>;
     method GetItems: array of T;
@@ -147,7 +147,7 @@ implementation
 method TEnumerable<T>.ToArray: array of T;
 begin
   {$IF COOPER}
-  result := (ToList() as Sugar.Collections.List<T>).ToArray();
+  result := (ToList() as List<T>).ToArray();
   {$ELSE}
   result := ToList().ToArray();
   {$ENDIF}
@@ -205,7 +205,8 @@ end;
 
 method TList<T>.AddRange(const Values: array of T);
 begin
-  fList.AddRange(Values);
+  //fList.AddRange(Values);
+  fList.Add(Values);
 end;
 
 method TList<T>.AddRange(const Collection: IEnumerable<T>);
@@ -273,7 +274,7 @@ end;
 
 method TList<T>.DeleteRange(aIndex: Integer; aCount: Integer);
 begin
-  var lTmp := new Sugar.Collections.List<T>;
+  var lTmp := new List<T>;
   for i: Integer := 0 to aCount - 1 do
     lTmp.add(fList[aIndex + i]);
 
@@ -328,7 +329,7 @@ end;
 
 method TList<T>.Clear;
 begin
-  fList.Clear;
+  fList.RemoveAll;
 end;
 
 method TList<T>.Expand: TList<T>;
@@ -358,7 +359,7 @@ end;
 
 method TList<T>.Reverse;
 begin
-  var lTmp := new Sugar.Collections.List<T>;
+  var lTmp := new List<T>;
   for i: Integer := Count - 1 downto 0 do
     lTmp.&Add(fList[i]);
 
@@ -440,7 +441,7 @@ end;
 
 method TList<T>.Initialize;
 begin
-  fList := new Sugar.Collections.List<T>;
+  fList := new List<T>;
 end;
 
 end.

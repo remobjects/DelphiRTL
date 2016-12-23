@@ -2,10 +2,13 @@
 
 interface
 
+uses
+  RemObjects.Elements.RTL;
+
 type
   TLocaleOptions = public enum (loInvariantLocale, loUserLocale);
   
-  TLocaleID = public Sugar.Locale;
+  TLocaleID = public Locale;
 
   TLanguages = public class
   private
@@ -32,12 +35,12 @@ end;
 
 class method TLanguages.GetUserDefaultLocale: TLocaleID;
 begin
-  result := Sugar.Locale.Current;
+  result := Locale.Current;
 end;
 
 class method TLanguages.GetInvariantLocale: TLocaleID;
 begin
-  result := Sugar.Locale.Invariant;
+  result := Locale.Invariant;
 end;
 
 end.

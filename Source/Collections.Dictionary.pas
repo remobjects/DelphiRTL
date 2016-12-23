@@ -2,11 +2,14 @@
 
 interface
 
+uses
+  RemObjects.Elements.RTL;
+
 type
-  TPair<T, U> = public Sugar.Collections.KeyValuePair<T, U>;
+  TPair<T, U> = public KeyValuePair<T, U>;
   TDictionary<TKey,TValue> = public class(TEnumerable<TPair<TKey,TValue>>)
   private
-    fDict: Sugar.Collections.Dictionary<TKey, TValue>;
+    fDict: Dictionary<TKey, TValue>;
     method GetItem(const aKey: TKey): TValue;
     method SetItem(const aKey: TKey; aValue: TValue);
     method GetKeys: ISequence<TKey>;
@@ -66,7 +69,7 @@ end;
 method TDictionary<TKey,TValue>.GetSequence: ISequence<TPair<TKey,TValue>>;
 begin
   for each lKey in fDict.Keys do 
-    yield new Sugar.Collections.KeyValuePair<TKey,TValue>(lKey, fDict.Item[lKey]);
+    yield new KeyValuePair<TKey,TValue>(lKey, fDict.Item[lKey]);
 end;
 
 constructor TDictionary<TKey,TValue>(aCapacity: Integer := 0);
@@ -103,13 +106,13 @@ end;
 
 method TDictionary<TKey,TValue>.ExtractPair(const Key: TKey): TPair<TKey,TValue>;
 begin
-  result := new Sugar.Collections.KeyValuePair<TKey, TValue>(Key, DoRemove(Key, TCollectionNotification.cnExtracted));
+  result := new KeyValuePair<TKey, TValue>(Key, DoRemove(Key, TCollectionNotification.cnExtracted));
 end;
 
 method TDictionary<TKey,TValue>.Clear;
 begin
   var lArray := ToArray;
-  fDict.Clear;
+  fDict.RemoveAll;
   for lItem in lArray do begin
     KeyNotify(lItem.Key, TCollectionNotification.cnRemoved);
     ValueNotify(lItem.Value, TCollectionNotification.cnRemoved);
@@ -123,7 +126,9 @@ end;
 
 method TDictionary<TKey,TValue>.TryGetValue(const Key: TKey; out Value: TValue): Boolean;
 begin
-  result := fDict.TryGetValue(Key, out Value);
+  result := fDict.ContainsKey(Key);
+  if result then
+    Value := Items[Key];
 end;
 
 method TDictionary<TKey,TValue>.AddOrSetValue(const Key: TKey; const Value: TValue);
@@ -153,7 +158,7 @@ begin
   result := new TPair<TKey,TValue>[fDict.Count];
   var i := 0;
   for each lKey in fDict.Keys do begin
-    result[i] := new Sugar.Collections.KeyValuePair<TKey, TValue>(lKey, fDict.Item[lKey]);
+    result[i] := new KeyValuePair<TKey, TValue>(lKey, fDict.Item[lKey]);
     inc(i);
   end;
 end;
@@ -180,7 +185,7 @@ end;
 
 method TDictionary<TKey,TValue>.Initialize(aCapacity: Integer);
 begin
-  fDict := new Sugar.Collections.Dictionary<TKey,TValue>(aCapacity);
+  fDict := new Dictionary<TKey,TValue>(aCapacity);
 end;
 
 method TDictionary<TKey,TValue>.AddCollection(aCollection: TEnumerable<TPair<TKey,TValue>>);

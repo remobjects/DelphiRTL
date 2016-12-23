@@ -3,10 +3,9 @@
 interface
 
 uses
-  Sugar;
+  RemObjects.Elements.RTL;
 
 type
-
   TCustomIniFile = public abstract class(TObject)
   private
     fFileName: DelphiString;
@@ -116,7 +115,7 @@ method TCustomIniFile.ReadInteger(aSection: DelphiString; aIdent: DelphiString; 
 begin
   var lStr := ReadString(aSection, aIdent, '');
   if lStr <> '' then begin
-    var lInt := Sugar.Convert.TryToInt32(lStr); // TODO
+    var lInt := Convert.TryToInt32(lStr); // TODO
     if lInt <> nil then
       result := lInt
     else
@@ -178,7 +177,7 @@ method TCustomIniFile.ReadFloat(aSection: DelphiString; aName: DelphiString; aDe
 begin
   var lStr := ReadString(aSection, aName, '');
   if lStr <> '' then begin
-    var lDouble := Sugar.Convert.TryToDoubleInvariant(lStr); // TODO
+    var lDouble := Convert.TryToDoubleInvariant(lStr); // TODO
     if lDouble <> nil then
       result := lDouble
     else
