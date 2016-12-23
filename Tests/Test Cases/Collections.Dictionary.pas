@@ -2,6 +2,7 @@
 
 uses
   RemObjects.Elements.EUnit,
+  RemObjects.Elements.RTL,
   RemObjects.Elements.RTL.Delphi;
 
 {$IF COOPER OR ECHOES}
@@ -19,9 +20,9 @@ type
     method CreateTests;
     begin
       var lTmp := new TList<TPair<DelphiString, Integer>>;
-      var lPair := new Sugar.collections.KeyValuePair<DelphiString, Integer>('One', 1);
+      var lPair := new KeyValuePair<DelphiString, Integer>('One', 1);
       lTmp.Add(lPair);
-      var lPair2 := new Sugar.collections.KeyValuePair<DelphiString, Integer>('Two', 2);
+      var lPair2 := new KeyValuePair<DelphiString, Integer>('Two', 2);
       lTmp.Add(lPair2);
       var lDict := new TDictionary<DelphiString, Integer>(lTmp);
       Assert.AreEqual(lDict.Count, 2);

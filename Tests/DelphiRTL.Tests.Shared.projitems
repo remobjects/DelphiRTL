@@ -12,8 +12,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Classes.StringList.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Collections.Dictionary.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Collections.List.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Collections.Queue.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Collections.Stack.pas" />
+    <None Include="$(MSBuildThisFileDirectory)Test Cases\Collections.Queue.pas" />
+    <None Include="$(MSBuildThisFileDirectory)Test Cases\Collections.Stack.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\IniFiles.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\String.Manipulations.pas" />
   </ItemGroup>
