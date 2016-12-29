@@ -121,7 +121,7 @@ end;
 
 method TQueue<T>.Initialize;
 begin
-  fQueue := new Sugar.Collections.Queue<T>;
+  fQueue := new Queue<T>;
 end;
 
 

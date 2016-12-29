@@ -2,10 +2,13 @@
 
 interface
 
+uses
+  RemObjects.Elements.RTL;
+
 type
   TStack<T> = public class(TEnumerable<T>){$IF TOFFEE}where T is class;{$ENDIF}
   private
-    fStack: Sugar.Collections.Stack<T>;
+    fStack: Stack<T>;
     method GetCapacity: Integer;
     method SetCapacity(aValue: Integer);
     method Initialize;
@@ -119,7 +122,7 @@ end;
 
 method TStack<T>.Initialize;
 begin
-  fStack := new Sugar.Collections.Stack<T>;
+  fStack := new Stack<T>;
 end;
 
 end.
