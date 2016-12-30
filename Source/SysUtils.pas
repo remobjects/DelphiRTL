@@ -346,7 +346,7 @@ end;
 function FileExists(const FileName: DelphiString; FollowLink: Boolean := true): Boolean;
 begin
   try
-    FileUtils.Delete(FileName);
+    result := FileUtils.Exists(FileName);
   except
     result := false;
   end;
