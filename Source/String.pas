@@ -2,6 +2,9 @@
 
 interface
 
+uses
+  RemObjects.Elements.RTL;
+
 type
   TCompareOption = public enum(coLingIgnoreCase, coLingIgnoreDiacritic, coIgnoreCase,
                                coIgnoreKanatype, coIgnoreNonSpace, coIgnoreSymbols, coIgnoreWidth,
@@ -15,10 +18,10 @@ type
 
   WideString = public DelphiString;
   PlatformString = public {$IF ECHOES}System.String{$ELSEIF TOFFEE}Foundation.NSString{$ELSEIF COOPER}java.lang.String{$ELSEIF ISLAND}RemObjects.Elements.System.String{$ENDIF};
-
+  
   DelphiString = public partial record
   private
-    fData: Sugar.String;
+    fData: String;
     class method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer; static;
     class method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; IgnoreCase: Boolean; LocaleID: TLocaleID): Integer; static;
 
@@ -60,7 +63,7 @@ type
     class method Create(const Value: array of Char): DelphiString; static;
     class operator Implicit(Value: Char): DelphiString;
     class operator Implicit(Value: PlatformString): DelphiString;
-    class operator Implicit(Value: DelphiString): Sugar.String;
+    class operator Implicit(Value: DelphiString): String;
     class operator &Add(Value1: DelphiString; Value2: Char): DelphiString;
     class operator &Add(Value1: Char; Value2: DelphiString): DelphiString;
     class operator &Add(Value1: DelphiString; Value2: DelphiString): not nullable DelphiString;
@@ -358,82 +361,82 @@ end;
 
 class method DelphiString.Parse(Value: Integer): DelphiString;
 begin
-  result := Sugar.Convert.ToString(Value);
+  result := Convert.ToString(Value);
 end;
 
 class method DelphiString.Parse(Value: Int64): DelphiString;
 begin
-  result := Sugar.Convert.ToString(Value);
+  result := Convert.ToString(Value);
 end;
 
 class method DelphiString.Parse(Value: Boolean): DelphiString;
 begin
-  result := Sugar.Convert.ToString(Value);
+  result := Convert.ToString(Value);
 end;
 
 class method DelphiString.Parse(Value: Extended): DelphiString;
 begin
-  result := Sugar.Convert.ToString(Value);
+  result := Convert.ToString(Value);
 end;
 
 class method DelphiString.ToBoolean(const S: DelphiString): Boolean;
 begin
-  result := Sugar.Convert.ToBoolean(S);
+  result := Convert.ToBoolean(S);
 end;
 
 class method DelphiString.ToInteger(const S: DelphiString): Integer;
 begin
-  result := Sugar.Convert.ToInt32(S);
+  result := Convert.ToInt32(S);
 end;
 
 class method DelphiString.ToInt64(const S: DelphiString): Int64;
 begin
-  result := Sugar.Convert.ToInt64(S);
+  result := Convert.ToInt64(S);
 end;
 
 class method DelphiString.ToSingle(const S: DelphiString): Double;
 begin
-  result := Sugar.Convert.ToDoubleInvariant(S);
+  result := Convert.ToDoubleInvariant(S);
 end;
 
 class method DelphiString.ToDouble(const S: DelphiString): Double;
 begin
-  result := Sugar.Convert.ToDoubleInvariant(S);
+  result := Convert.ToDoubleInvariant(S);
 end;
 
 class method DelphiString.ToExtended(const S: DelphiString): Double;
 begin
-  result := Sugar.Convert.ToDoubleInvariant(S);
+  result := Convert.ToDoubleInvariant(S);
 end;
 
 method DelphiString.ToBoolean: Boolean;
 begin
-  result := Sugar.Convert.ToBoolean(self);
+  result := Convert.ToBoolean(self);
 end;
 
 method DelphiString.ToInteger: Integer;
 begin
-  result := Sugar.Convert.ToInt32(self);
+  result := Convert.ToInt32(self);
 end;
 
 method DelphiString.ToInt64: Int64;
 begin
-  result := Sugar.Convert.ToInt64(self);
+  result := Convert.ToInt64(self);
 end;
 
 method DelphiString.ToSingle: Double;
 begin
-  result := Sugar.Convert.ToDoubleInvariant(self);
+  result := Convert.ToDoubleInvariant(self);
 end;
 
 method DelphiString.ToDouble: Double;
 begin
-  result := Sugar.Convert.ToDoubleInvariant(self);
+  result := Convert.ToDoubleInvariant(self);
 end;
 
 method DelphiString.ToExtended: Double;
 begin
-  result := Sugar.Convert.ToDoubleInvariant(self);
+  result := Convert.ToDoubleInvariant(self);
 end;
 
 class operator DelphiString.Implicit(Value: PlatformString): DelphiString;
@@ -441,7 +444,7 @@ begin
   result := new DelphiString(Value);
 end;
 
-class operator DelphiString.Implicit(Value: DelphiString): Sugar.String;
+class operator DelphiString.Implicit(Value: DelphiString): String;
 begin
   result := Value.fData;
 end;
@@ -490,7 +493,7 @@ begin
  {$ENDIF}
 end;
 
-/*
+(*
 class operator DelphiString.Add(Value1: DelphiString; Value2: Object): not nullable DelphiString;
 begin
   //result := Value1 + Value2.ToString;  // TODO compiler error
@@ -501,7 +504,7 @@ class operator DelphiString.Add(Value1: Object; Value2: DelphiString): not nulla
 begin
  //result := Value1.ToString + Value2;  // TODO compiler error
 end;
-*/
+*)
 
 class operator DelphiString.Equal(Value1: DelphiString; Value2: DelphiString): Boolean;
 begin
@@ -745,12 +748,12 @@ end;
 
 class method DelphiString.IsNullOrEmpty(const Value: DelphiString): Boolean;
 begin
-  result := Sugar.String.IsNullOrEmpty(Value.fData);
+  result := String.IsNullOrEmpty(Value.fData);
 end;
 
 class method DelphiString.IsNullOrWhiteSpace(const Value: DelphiString): Boolean;
 begin
-  result := Sugar.String.IsNullOrWhiteSpace(Value);
+  result := String.IsNullOrWhiteSpace(Value);
 end;
 
 class method DelphiString.Join(Separator: DelphiString; Values: array of DelphiString): DelphiString;
@@ -1036,7 +1039,7 @@ begin
   result := PlatformArrayToStringArray(lArray, Count);
   {$ELSEIF ECHOES}
   var lArray: array of PlatformString;  
-  var lCount := if Count = -1 then Sugar.Consts.MaxInteger else Count;
+  var lCount := if Count = -1 then Consts.MaxInt32 else Count;
   if Options = TStringSplitOptions.ExcludeEmpty then
     lArray := PlatformString(fData).Split(Separator, lCount, [StringSplitOptions.RemoveEmptyEntries])
   else
@@ -1129,7 +1132,7 @@ begin
   {$ELSEIF ECHOES}
   var lArray: array of PlatformString;
   var lSep := StringArrayToPlatformArray(Separator);
-  var lCount := if Count = -1 then Sugar.Consts.MaxInteger else Count;
+  var lCount := if Count = -1 then Consts.MaxInt32 else Count;
   if Options = TStringSplitOptions.ExcludeEmpty then
     lArray := PlatformString(fData).Split(lSep, lCount, [StringSplitOptions.RemoveEmptyEntries])
   else
@@ -1143,7 +1146,7 @@ begin
   var lCurrentLength := 0;
   var lStartIndex := 0;
   var lStr: DelphiString := '';
-  var lCount := if Count = -1 then Sugar.Consts.MaxInteger else Count;
+  var lCount := if Count = -1 then Consts.MaxInt32 else Count;
 
   lIndex := InternalIndexOfAny(Separator, lStartIndex, var lCurrentLength);
   while (lIndex >= 0) and (lTotal < lCount) do

@@ -1,5 +1,8 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+uses
+  RemObjects.Elements.RTL;
+
 type
   TObject = public Object;
   
@@ -22,37 +25,37 @@ type
     
     class method MethodAddress(const Name: ShortString): Pointer;
     begin
-      raise new Sugar.SugarNotSupportedException("TObject.MethodAddress");
+      raise new NotSupportedException("TObject.MethodAddress");
     end;
     
     class method MethodName(Address: Pointer): ShortString;
     begin
-      raise new Sugar.SugarNotSupportedException("TObject.MethodName");
+      raise new NotSupportedException("TObject.MethodName");
     end;
 
     method FieldAddress(const Name: ShortString): Pointer;
     begin
-      raise new Sugar.SugarNotSupportedException("TObject.FieldAddress");
+      raise new NotSupportedException("TObject.FieldAddress");
     end;
 
     method GetInterface(const IID: TGUID; out Obj): Boolean;
     begin
-      raise new Sugar.SugarNotSupportedException("TObject.GetInterface");
+      raise new NotSupportedException("TObject.GetInterface");
     end;
     
     class method GetInterfaceEntry(const IID: TGUID): PInterfaceEntry;
     begin
-      raise new Sugar.SugarNotSupportedException("TObject.GetInterfaceEntry");
+      raise new NotSupportedException("TObject.GetInterfaceEntry");
     end;
 
     class method GetInterfaceTable: PInterfaceTable;
     begin
-      raise new Sugar.SugarNotSupportedException("TObject.GetInterfaceTable");
+      raise new NotSupportedException("TObject.GetInterfaceTable");
     end;
 
     method SafeCallException(ExceptObject: TObject; ExceptAddr: Pointer): HResult;
     begin
-      raise new Sugar.SugarNotSupportedException("TObject.SafeCallException");
+      raise new NotSupportedException("TObject.SafeCallException");
     end;
 
     procedure AfterConstruction; {virtual;} empty;
@@ -60,12 +63,12 @@ type
     
     procedure Dispatch(var Message); {virtual;}
     begin
-      raise new Sugar.SugarNotSupportedException("TObject.Dispatch");
+      raise new NotSupportedException("TObject.Dispatch");
     end;
 
     procedure DefaultHandler(var Message); {virtual;}
     begin
-      raise new Sugar.SugarNotSupportedException("TObject.DefaultHandler");
+      raise new NotSupportedException("TObject.DefaultHandler");
     end;
 
     class method NewInstance: TObject; {virtual;}

@@ -3,7 +3,7 @@
 interface
 
 uses
-  Sugar;
+  RemObjects.Elements.RTL;
 
 type
   TStringsOption = public enum (soStrictDelimiter, soWriteBOM, soTrailingLineBreak, soUseLocale) of Integer;
@@ -118,7 +118,7 @@ type
 
   TStringList = public class(TStrings)
   private
-    fList: Sugar.Collections.List<TInternalItem>;
+    fList: List<TInternalItem>;
     fDuplicates: TDuplicates;
     fSorted: Boolean;
     fCaseSensitive: Boolean;
@@ -176,7 +176,7 @@ implementation
 
 method TStringList.Setup;
 begin
-  fList := new Sugar.Collections.List<TInternalItem>;
+  fList := new List<TInternalItem>;
 end;
 
 method TStringList.SetSorted(Value: Boolean);
@@ -215,7 +215,7 @@ end;
 method TStringList.Get(aIndex: Integer): DelphiString;
 begin
   if aIndex >= Count then
-    raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "Get aIndex");
+    raise new ArgumentOutOfRangeException("Get aIndex");
   result := fList[aIndex][0];
 end;
 
@@ -232,16 +232,16 @@ end;
 method TStringList.GetObject(aIndex: Integer): TObject;
 begin
   if aIndex >= Count then
-    raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "GetObject aIndex");
+    raise new ArgumentOutOfRangeException("GetObject aIndex");
   result := fList[aIndex][1];
 end;
 
 method TStringList.Put(aIndex: Integer; const S: DelphiString);
 begin
   if Sorted then
-    raise new Sugar.SugarException("Can not modify a sorted string");
+    raise new Exception("Can not modify a sorted string");
   if aIndex >= Count then
-    raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "Put aIndex");
+    raise new ArgumentOutOfRangeException("Put aIndex");
 
   Changing;
   var lObject := fList[aIndex][1];
@@ -252,7 +252,7 @@ end;
 method TStringList.PutObject(aIndex: Integer; aObject: TObject);
 begin
   if aIndex >= Count then
-    raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "Put aIndex");
+    raise new ArgumentOutOfRangeException("Put aIndex");
 
   Changing;
   var lString := fList[aIndex][0];
@@ -342,7 +342,7 @@ begin
     if Find(S, var result) then
       case Duplicates of
         TDuplicates.dupIgnore: exit;
-        TDuplicates.dupError: raise new Sugar.SugarException("Duplicates not allowed");
+        TDuplicates.dupError: raise new Exception("Duplicates not allowed");
       end;
 
   InsertItem(result, S, aObject);
@@ -360,13 +360,13 @@ end;
 
 method TStringList.Clear;
 begin
-  fList.Clear;
+  fList.RemoveAll;
 end;
 
 method TStringList.Delete(aIndex: Integer);
 begin
   if (aIndex >= Count) or (aIndex < 0) then
-    raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "Delete Index");
+    raise new ArgumentOutOfRangeException("Delete Index");
 
   fList.removeAt(aIndex);
 end;
@@ -374,7 +374,7 @@ end;
 method TStringList.Exchange(aIndex1: Integer; aIndex2: Integer);
 begin
   if (aIndex1 >= Count) or (aIndex1 < 0) or (aIndex2 >= Count) or (aIndex2 < 0) then
-    raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "Exchange Index1 Index2");
+    raise new ArgumentOutOfRangeException("Exchange Index1 Index2");
 
   var lItem := fList[aIndex1];
   fList[aIndex1] := fList[aIndex2];
@@ -422,9 +422,9 @@ end;
 method TStringList.InsertObject(aIndex: Integer; const S: DelphiString; aObject: TObject);
 begin
   if Sorted then
-    raise new Sugar.SugarException("Can not insert in a sorted list");
+    raise new Exception("Can not insert in a sorted list");
   if aIndex >= Count then
-    raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "InsertObject aIndex");
+    raise new ArgumentOutOfRangeException("InsertObject aIndex");
   
   InsertItem(aIndex, S, aObject);
 end;
@@ -641,7 +641,7 @@ end;
 method TStrings.AddStrings(const aStrings: array of DelphiString; const aObjects: array of TObject);
 begin
   if aStrings.length <> aObjects.length then
-    raise new Sugar.SugarArgumentOutOfRangeException(Sugar.ErrorMessage.ARG_OUT_OF_RANGE_ERROR, "AddStrings aStrings aObjects");
+    raise new ArgumentOutOfRangeException("AddStrings aStrings aObjects");
   
   BeginUpdate;
   try
@@ -940,7 +940,7 @@ end;
 
 method TStrings.Error(const Msg: DelphiString; Data: Integer);
 begin
-  raise new Sugar.SugarException(Msg);
+  raise new Exception(Msg);
 end;
 
 method TStrings.LoadFromFile(const aFileName: DelphiString);
@@ -950,7 +950,7 @@ end;
 
 method TStrings.LoadFromFile(const aFileName: DelphiString; aEncoding: TEncoding);
 begin
-  var lHandle := new Sugar.IO.FileHandle(aFileName, Sugar.IO.FileOpenMode.ReadOnly);
+  var lHandle := new FileHandle(aFileName, FileOpenMode.ReadOnly);
   var lBuffer := new Byte[lHandle.Length];
   lHandle.Read(lBuffer, lHandle.Length);
   var lStr := aEncoding.GetString(lBuffer);

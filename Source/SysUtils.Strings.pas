@@ -5,7 +5,7 @@ interface
 {$GLOBALS ON}
 
 uses
-  Sugar;
+  RemObjects.Elements.RTL;
 
 function UpperCase(const S: DelphiString): DelphiString;
 function UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; inline;
@@ -209,37 +209,37 @@ end;
 
 function IntToStr(Value: Integer): DelphiString;
 begin
-  result := Sugar.Convert.ToString(Value);
+  result := Convert.ToString(Value);
 end;
 
 function IntToStr(Value: Int64): DelphiString;
 begin
-  result := Sugar.Convert.ToString(Value);
+  result := Convert.ToString(Value);
 end;
 
 function UIntToStr(Value: Cardinal): DelphiString;
 begin
-  result := Sugar.Convert.ToString(Value);
+  result := Convert.ToString(Value);
 end;
 
 function UIntToStr(Value: UInt64): DelphiString;
 begin
-  result := Sugar.Convert.ToString(Int64(Value));
+  result := Convert.ToString(Int64(Value));
 end;
 
 function IntToHex(Value: Integer; Digits: Integer): DelphiString;
 begin
-  result := Sugar.Convert.ToHexString(Value, Digits);
+  result := Convert.ToHexString(Value, Digits);
 end;
 
 function IntToHex(Value: Int64; Digits: Integer): DelphiString;
 begin
-  result := Sugar.Convert.ToHexString(Value, Digits);
+  result := Convert.ToHexString(Value, Digits);
 end;
 
 function IntToHex(Value: UInt64; Digits: Integer := sizeOf(UInt64) * 2): DelphiString;
 begin
-  result := Sugar.Convert.ToHexString(Value, Digits);
+  result := Convert.ToHexString(Value, Digits);
 end;
 
 function StrToInt(const S: DelphiString): Integer;
@@ -264,7 +264,7 @@ end;
 
 function BoolToStr(B: Boolean; UseBoolStrs: Boolean := False): DelphiString;
 begin
-  result := Sugar.Convert.ToString(B);  
+  result := Convert.ToString(B);  
 end;
 
 

@@ -21,7 +21,7 @@ implementation
 
 method TPersistent.AssignError(Source: TPersistent);
 begin
-  raise new Sugar.SugarException('Can not assign');
+  raise new Exception('Can not assign');
 end;
 
 method TPersistent.AssignTo(Dest: TPersistent);

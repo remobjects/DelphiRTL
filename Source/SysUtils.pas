@@ -3,7 +3,7 @@
 interface
 
 uses 
-  Sugar;
+  RemObjects.Elements.RTL;
 
 {$GLOBALS ON}
 
@@ -31,7 +31,7 @@ const
 
 type
   TBytes = public TArray<Byte>;
-  TEncoding = public Sugar.Encoding;
+  TEncoding = public Encoding;
 
   TSysLocale = public record
   public
@@ -213,7 +213,7 @@ function DeleteFile(const FileName: DelphiString): Boolean;
 begin
   result := true;
   try
-    Sugar.IO.FileUtils.Delete(FileName);
+    FileUtils.Delete(FileName);
   except
     result := false;
   end;
@@ -223,7 +223,7 @@ function RenameFile(const OldName, NewName: DelphiString): Boolean;
 begin
   result := true;
   try
-    Sugar.IO.FileUtils.Move(OldName, NewName);
+    FileUtils.Move(OldName, NewName);
   except
     result := false;
   end;
@@ -231,39 +231,39 @@ end;
 
 function ChangeFileExt(const FileName, aExtension: DelphiString): DelphiString;
 begin
-  result := Sugar.IO.Path.ChangeExtension(FileName, aExtension);
+  result := Path.ChangeExtension(FileName, aExtension);
 end;
 
 function ExtractFileName(const FileName: DelphiString): DelphiString;
 begin
-  result := Sugar.IO.Path.GetFileName(FileName);
+  result := Path.GetFileName(FileName);
 end;
 
 function ExtractFileExt(const FileName: DelphiString): DelphiString;
 begin
-  result := Sugar.IO.Path.GetExtension(FileName);
+  result := Path.GetExtension(FileName);
 end;
 
 function GetHomePath: DelphiString;
 begin
-  result := Sugar.IO.Folder.UserHomeFolder.FullPath;
+  result := Environment.UserHomeFolder.FullPath;
 end;
 
 function ExpandFileName(const FileName: DelphiString): DelphiString;
 begin
-  result := Sugar.IO.Path.GetFullPath(FileName);
+  result := Path.GetFullPath(FileName);
 end;
 
 function GetCurrentDir: DelphiString;
 begin
-  result := Sugar.Environment.CurrentDirectory;
+  result := Environment.CurrentDirectory;
 end;
 
 function CreateDir(const Dir: DelphiString): Boolean;
 begin
   result := true;
   try
-    Sugar.IO.Folder.Create(Dir);
+    Folder.Create(Dir);
   except
     result := false;
   end;
@@ -273,7 +273,7 @@ function RemoveDir(const Dir: DelphiString): Boolean;
 begin
   result := true;
   try
-    Sugar.IO.Folder.Delete(Dir);
+    Folder.Delete(Dir);
   except
     result := false;
   end;
@@ -281,19 +281,19 @@ end;
 
 function FileOpen(const FileName: DelphiString; Mode: Cardinal): THandle;
 begin
-  var lMode: Sugar.IO.FileOpenMode;
+  var lMode: FileOpenMode;
   if Mode = fmOpenRead then
-    lMode := Sugar.IO.FileOpenMode.ReadOnly;
+    lMode := FileOpenMode.ReadOnly;
   if ((Mode and fmOpenWrite) <> 0) or ((Mode and fmOpenReadWrite) <> 0) then
-    lMode := Sugar.IO.FileOpenMode.ReadWrite;
+    lMode := FileOpenMode.ReadWrite;
 
-  var lHandle := new Sugar.IO.FileHandle(FileName, lMode);
+  var lHandle := new FileHandle(FileName, lMode);
   result := TInternalFileHandles.Allocate(lHandle);
 end;
 
 function FileCreate(const FileName: String): THandle;
 begin
-  var lHandle := new Sugar.IO.FileHandle(FileName, Sugar.IO.FileOpenMode.Create);
+  var lHandle := new FileHandle(FileName, FileOpenMode.Create);
   result := TInternalFileHandles.Allocate(lHandle);
 end;
 
@@ -309,13 +309,13 @@ end;
 
 function FileRead(Handle: THandle; var Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
 begin
-  var lHandle := Sugar.IO.FileHandle(TInternalFileHandles.Get(Handle));
+  var lHandle := FileHandle(TInternalFileHandles.Get(Handle));
   result := lHandle.Read(Buffer, Offset, Count);
 end;
 
 function FileWrite(Handle: THandle; const Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
 begin
-  var lHandle := Sugar.IO.FileHandle(TInternalFileHandles.Get(Handle));
+  var lHandle := FileHandle(TInternalFileHandles.Get(Handle));
   lHandle.Write(Buffer, Offset, Count);
   result := Count;
 end;
@@ -327,12 +327,12 @@ end;
 
 function FileSeek(Handle: THandle; const Offset: Int64; Origin: Integer): Int64;
 begin
-  var lHandle := Sugar.IO.FileHandle(TInternalFileHandles.Get(Handle));
-  var lOrigin: Sugar.IO.SeekOrigin;
+  var lHandle := FileHandle(TInternalFileHandles.Get(Handle));
+  var lOrigin: SeekOrigin;
   case Origin of
-    0: lOrigin := Sugar.IO.SeekOrigin.Begin;
-    1: lOrigin := Sugar.IO.SeekOrigin.Current;
-    2: lOrigin := Sugar.IO.SeekOrigin.End;
+    0: lOrigin := SeekOrigin.Begin;
+    1: lOrigin := SeekOrigin.Current;
+    2: lOrigin := SeekOrigin.End;
   end;
   lHandle.Seek(Offset, lOrigin);
   result := lHandle.Position;
@@ -346,7 +346,7 @@ end;
 function FileExists(const FileName: DelphiString; FollowLink: Boolean := true): Boolean;
 begin
   try
-    Sugar.IO.FileUtils.Delete(FileName);
+    result := FileUtils.Exists(FileName);
   except
     result := false;
   end;
@@ -356,7 +356,7 @@ function DirectoryExists(const Directory: DelphiString; FollowLink: Boolean := t
 begin
   result := true;
   try
-    result := Sugar.IO.Folder.Exists(Directory);    
+    result := Folder.Exists(Directory);    
   except
     result := false;
   end;
@@ -364,7 +364,7 @@ end;
 
 class constructor TFormatSettings;
 begin
-  SysLocale.DefaultLCID := Sugar.Locale.Current;
+  SysLocale.DefaultLCID := Locale.Current;
 
 end;
 

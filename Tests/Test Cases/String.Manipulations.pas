@@ -2,6 +2,7 @@
 
 uses
   RemObjects.Elements.EUnit,
+  RemObjects.Elements.RTL,
   RemObjects.Elements.RTL.Delphi;
 
 type
@@ -510,8 +511,8 @@ type
       Assert.AreEqual(DelphiString.Parse(0), '0');
       Assert.AreEqual(DelphiString.Parse(123456), '123456');
       Assert.AreEqual(DelphiString.Parse(-123456), '-123456');
-      Assert.AreEqual(DelphiString.Parse(123456.123), Sugar.Convert.ToString(123456.123));  // Locale changes '.' and ','
-      Assert.AreEqual(DelphiString.Parse(-123456.123), Sugar.Convert.ToString(-123456.123));
+      Assert.AreEqual(DelphiString.Parse(123456.123), Convert.ToString(123456.123));  // Locale changes '.' and ','
+      Assert.AreEqual(DelphiString.Parse(-123456.123), Convert.ToString(-123456.123));
     end;
 
     method CompareTextTests;

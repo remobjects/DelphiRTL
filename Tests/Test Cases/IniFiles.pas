@@ -2,6 +2,7 @@
 
 uses
   RemObjects.Elements.EUnit,
+  RemObjects.Elements.RTL,
   RemObjects.Elements.RTL.Delphi;
 
 type
@@ -11,7 +12,11 @@ type
   public
     method Setup; override;
     begin
+      {$IF COOPER} // TODO
+      fData := new TIniFile('..\..\Test.INI',  Encoding.Default, false);
+      {$ELSE}
       fData := new TIniFile('..\..\Test.INI', TEncoding.Default, false);
+      {$ENDIF}
     end;
 
     method ReadSectionsTests;
