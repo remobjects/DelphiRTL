@@ -47,6 +47,7 @@
         <Reference Include="gc.fx"/>
         <Reference Include="Island.fx"/>
         <Reference Include="rtl.fx"/>
+        <Reference Include="Elements"/>
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Properties\"/>

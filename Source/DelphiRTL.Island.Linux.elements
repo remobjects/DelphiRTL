@@ -52,6 +52,7 @@
         <Reference Include="rtl"/>
         <Reference Include="gc"/>
         <Reference Include="Island"/>
+        <Reference Include="Elements"/>
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Properties\"/>
