@@ -3,6 +3,9 @@
 interface
 
 uses
+{$IF ISLAND}
+  RemObjects.Elements.System;
+{$ENDIF}
   RemObjects.Elements.RTL;
 
 type
@@ -113,7 +116,7 @@ type
     class method LowerCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; static; partial; empty;
     class method UpperCase(const S: DelphiString): DelphiString; static;
     class method UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; static; partial; empty;
-    method {$IF COOPER}hashCode: Integer{$ELSEIF ECHOES}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF}; {$IF COOPER OR ECHOES} override;{$ENDIF}
+    method {$IF COOPER}hashCode: Integer{$ELSEIF ECHOES OR ISLAND}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF}; {$IF COOPER OR ECHOES OR ISLAND} override;{$ENDIF}
     method {$IF TOFFEE}isEqual(Obj: id){$ELSE}&Equals(Obj: Object){$ENDIF}: Boolean;{$IF COOPER OR ECHOES} override;{$ENDIF}
     method CompareTo(const strB: DelphiString): Integer;
     method Contains(const Value: DelphiString): Boolean;
@@ -1478,11 +1481,11 @@ begin
   result := fData.ToUpper(LocaleID);
 end;
 
-method DelphiString.{$IF COOPER}hashCode: Integer{$ELSEIF ECHOES}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF};
+method DelphiString.{$IF COOPER}hashCode: Integer{$ELSEIF ECHOES OR ISLAND}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF};
 begin
   {$IF COOPER}
   result := fData.hashCode;
-  {$ELSEIF ECHOES}
+  {$ELSEIF ECHOES OR ISLAND}
   result := fData.GetHashCode;
   {$ELSEIF TOFFEE}
   result := fData.hash;

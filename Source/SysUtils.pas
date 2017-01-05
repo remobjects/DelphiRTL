@@ -156,7 +156,11 @@ implementation
 type
 TInternalFileHandles = static class
 private
+  {$IF ISLAND}
+  class var fLock: Monitor := new Monitor;
+  {$ELSE}
   class var fLock: Object := new Object;
+  {$ENDIF}
   class var fSlots: array of Object;
   class var fFirstEmpty: Integer := 0; 
   class var fFirstFree: Integer := -1;
@@ -263,7 +267,9 @@ function CreateDir(const Dir: DelphiString): Boolean;
 begin
   result := true;
   try
-    Folder.Create(Dir);
+    var lFolder := new Folder(Dir);
+    lFolder.Create;
+    //Folder.Create(Dir); // compiler error on isLand
   except
     result := false;
   end;
@@ -273,7 +279,9 @@ function RemoveDir(const Dir: DelphiString): Boolean;
 begin
   result := true;
   try
-    Folder.Delete(Dir);
+    var lFolder := new Folder(Dir);
+    lFolder.Delete;
+    //Folder.Delete(Dir);
   except
     result := false;
   end;
@@ -356,7 +364,9 @@ function DirectoryExists(const Directory: DelphiString; FollowLink: Boolean := t
 begin
   result := true;
   try
-    result := Folder.Exists(Directory);    
+    var lFolder := new Folder(Directory);
+    result := lFolder.Exists;
+    //result := Folder.Exists(Directory);    
   except
     result := false;
   end;

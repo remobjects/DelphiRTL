@@ -19,14 +19,26 @@ type
     function GetHashCode(const Value: T): Integer;
   end;
 
+  //{$IF ECHOES OR COOPER OR TOFFEE}
   IEnumerable<T> = public ISequence<T>;
+  //{$ENDIF}
 
+  //TEnumerable<T> = public abstract class({$IF ISLAND}IEnumerable<T>{$ELSE}ISequence<T>{$ENDIF})
   TEnumerable<T> = public abstract class(ISequence<T>)
   private
     method ToArrayImpl(Count: Integer): TArray<T>;
   protected
 
     method GetSequence: ISequence<T>; virtual; abstract;
+
+    {$IF ISLAND}
+    method GetEnumerator: IEnumerator<T>; virtual; abstract;
+
+    method GetNonGenericEnumerator: IEnumerator; implements IEnumerable.GetEnumerator;
+    begin
+      result := GetEnumerator;
+    end;
+    {$ENDIF}
 
     // Temporary workaround for 74077: Allow GetSequence() to actually be used to implement ISequence
     {$IF COOPER}
@@ -93,6 +105,7 @@ type
     method ItemValue(const Item: T): Integer;
     method GetSequence: ISequence<T>; override;
     method &Notify(const Item: T; Action: TCollectionNotification); virtual;
+    {$IF ISLAND}method GetEnumerator: IEnumerator<T>; override;{$ENDIF}
   public
     constructor; 
     constructor(const aComparer: IComparer<T>);
@@ -173,6 +186,13 @@ begin
   if fOnNotify <> nil then
     fOnNotify(Self, Item, Action);
 end;
+
+{$IF ISLAND}
+method TList<T>.GetEnumerator: IEnumerator<T>;
+begin
+  result := new ListEnumerator<T>(fList);
+end;
+{$ENDIF}
 
 constructor TList<T>;
 begin

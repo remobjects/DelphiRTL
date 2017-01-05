@@ -7,6 +7,14 @@ uses
 
 {$GLOBALS ON}
 
+type
+  TValueRelationship = -1..1;
+
+const
+  LessThanValue = Low(TValueRelationship);
+  EqualsValue = 0;
+  GreaterThanValue = High(TValueRelationship);
+
 function DateOf(const aValue: TDateTime): TDateTime; inline;
 function TimeOf(const aValue: TDateTime): TDateTime; inline;
 
@@ -139,21 +147,8 @@ function IncMilliSecond(const aValue: TDateTime; const aNumberOfMilliSeconds: In
 
 function EncodeDateTime(const aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word): TDateTime;
 procedure DecodeDateTime(const aValue: TDateTime; out aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word);
-
-//function EncodeDateWeek(const AYear, AWeekOfYear: Word; {ISO 8601} const ADayOfWeek: Word := 1): TDateTime;
-//procedure DecodeDateWeek(const AValue: TDateTime; out AYear, {ISO 8601} AWeekOfYear, ADayOfWeek: Word);
-
 function EncodeDateDay(const aYear, aDayOfYear: Word): TDateTime;
 procedure DecodeDateDay(const aValue: TDateTime; out aYear, aDayOfYear: Word);
-/*
-function EncodeDateMonthWeek(const AYear, AMonth, AWeekOfMonth, {ISO 8601x} ADayOfWeek: Word): TDateTime;
-procedure DecodeDateMonthWeek(const AValue: TDateTime; {ISO 8601x} out AYear, AMonth, AWeekOfMonth, ADayOfWeek: Word);
-
-function TryEncodeDateTime(const AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond: Word; out AValue: TDateTime): Boolean;
-function TryEncodeDateWeek(const AYear, AWeekOfYear: Word; {ISO 8601} out AValue: TDateTime; const ADayOfWeek: Word := 1): Boolean;
-function TryEncodeDateDay(const AYear, ADayOfYear: Word; out AValue: TDateTime): Boolean;
-function TryEncodeDateMonthWeek(const AYear, AMonth, AWeekOfMonth, {ISO 8601x} ADayOfWeek: Word; var AValue: TDateTime): Boolean;
-*/
 
 function RecodeYear(const aValue: TDateTime; const aYear: Word): TDateTime;
 function RecodeMonth(const aValue: TDateTime; const aMonth: Word): TDateTime;
@@ -167,35 +162,16 @@ function RecodeTime(const aValue: TDateTime; const aHour, aMinute, aSecond, aMil
 function RecodeDateTime(const aValue: TDateTime; const aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word): TDateTime;
 function TryRecodeDateTime(const aValue: TDateTime; const aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word; out aResult: TDateTime): Boolean;
 
-/*function CompareDateTime(const A, B: TDateTime): TValueRelationship;
+function CompareDateTime(const A, B: TDateTime): TValueRelationship;
 function SameDateTime(const A, B: TDateTime): Boolean;
 function CompareDate(const A, B: TDateTime): TValueRelationship;
 function SameDate(const A, B: TDateTime): Boolean;
 function CompareTime(const A, B: TDateTime): TValueRelationship;
 function SameTime(const A, B: TDateTime): Boolean;
 
-function NthDayOfWeek(const AValue: TDateTime): Word;
-procedure DecodeDayOfWeekInMonth(const AValue: TDateTime; out AYear, AMonth, ANthDayOfWeek, ADayOfWeek: Word);
-function EncodeDayOfWeekInMonth(const AYear, AMonth, ANthDayOfWeek, ADayOfWeek: Word): TDateTime;
-function TryEncodeDayOfWeekInMonth(const AYear, AMonth, ANthDayOfWeek, ADayOfWeek: Word; out AValue: TDateTime): Boolean;
+function NthDayOfWeek(const aValue: TDateTime): Word;
+procedure DecodeDayOfWeekInMonth(const aValue: TDateTime; out aYear, aMonth, aNthDayOfWeek, aDayOfWeek: Word);
 
-procedure InvalidDateTimeError(const AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond: Word; const ABaseDate: TDateTime = 0);
-procedure InvalidDateWeekError(const AYear, AWeekOfYear, ADayOfWeek: Word);
-procedure InvalidDateDayError(const AYear, ADayOfYear: Word);
-procedure InvalidDateMonthWeekError(const AYear, AMonth, AWeekOfMonth, ADayOfWeek: Word);
-procedure InvalidDayOfWeekInMonthError(const AYear, AMonth, ANthDayOfWeek, ADayOfWeek: Word);
-
-function DateTimeToJulianDate(const AValue: TDateTime): Double;
-function JulianDateToDateTime(const AValue: Double): TDateTime;
-function TryJulianDateToDateTime(const AValue: Double; out ADateTime: TDateTime): Boolean;
-
-function DateTimeToModifiedJulianDate(const AValue: TDateTime): Double;
-function ModifiedJulianDateToDateTime(const AValue: Double): TDateTime;
-function TryModifiedJulianDateToDateTime(const AValue: Double; out ADateTime: TDateTime): Boolean;
-
-function DateTimeToUnix(const AValue: TDateTime; AInputIsUTC: Boolean := True): Int64;
-function UnixToDateTime(const AValue: Int64; AReturnUTC: Boolean := True): TDateTime;
-*/
 const
   DaysPerWeek = 7;
   WeeksPerFortnight = 2;
@@ -1011,6 +987,74 @@ begin
   if aSecond <> RecodeLeaveFieldAsIs then lSec := aSecond;
   if aMilliSecond <> RecodeLeaveFieldAsIs then lMSec := aMilliSecond;
   result := TryEncodeDateTime(lYear, lMonth, lDay, lHour, lMin, lSec, lMSec, out aResult);
+end;
+
+function CompareDateTime(const A, B: TDateTime): TValueRelationship;
+begin
+  if SameDateTime(A, B) then
+    result := EqualsValue
+  else begin
+    if A < B then
+      result := LessThanValue
+    else
+      result := GreaterThanValue
+  end;
+end;
+
+function SameDateTime(const A, B: TDateTime): Boolean;
+begin
+  result := SameDate(A, B) and SameTime(A, B);
+end;
+
+function CompareDate(const A, B: TDateTime): TValueRelationship;
+begin
+  if SameDate(A, B) then
+    result := EqualsValue
+  else begin
+    if A < B then
+      result := LessThanValue
+    else
+      result := GreaterThanValue;
+  end;
+end;
+
+function SameDate(const A, B: TDateTime): Boolean;
+begin
+  result := Math.Truncate(A) = Math.Truncate(B); 
+end;
+
+function CompareTime(const A, B: TDateTime): TValueRelationship;
+begin
+  if SameTime(A, B) then
+    result := EqualsValue
+  else begin
+    var lTimeA := Math.Abs(A) - Math.Abs(Math.Truncate(A));
+    var lTimeB := Math.Abs(B) - Math.Abs(Math.Truncate(B));
+    if lTimeA < lTimeB then
+      result := LessThanValue
+    else
+      result := GreaterThanValue;
+  end;
+end;
+
+function SameTime(const A, B: TDateTime): Boolean;
+begin
+  var lTimeA := Math.Abs(A) - Math.Abs(Math.Truncate(A));
+  var lTimeB := Math.Abs(B) - Math.Abs(Math.Truncate(B));
+  result := lTimeA = lTimeB;
+end;
+
+function NthDayOfWeek(const aValue: TDateTime): Word;
+begin
+  result := (DayOfTheMonth(aValue) - 1) div 7 + 1;
+end;
+
+procedure DecodeDayOfWeekInMonth(const aValue: TDateTime; out aYear, aMonth, aNthDayOfWeek, aDayOfWeek: Word);
+begin
+  var aDay: Word;
+  DecodeDate(aValue, var aYear, var aMonth, var aDay);
+  aNthDayOfWeek := (aDay - 1) div 7 + 1;
+  aDayOfWeek := DayOfTheWeek(aValue);
 end;
 
 end.

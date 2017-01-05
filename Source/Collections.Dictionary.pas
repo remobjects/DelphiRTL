@@ -21,6 +21,10 @@ type
     method KeyNotify(const Key: TKey; Action: TCollectionNotification); virtual;
     method ValueNotify(const Value: TValue; Action: TCollectionNotification); virtual;
     method GetSequence: ISequence<TPair<TKey,TValue>>; override; iterator;
+    {$IF ISLAND}
+    method GetEnumerator: IEnumerator<TPair<TKey,TValue>>; override;
+    {$ENDIF}
+
   public
     constructor(aCapacity: Integer := 0);
     constructor(const Collection: TEnumerable<TPair<TKey,TValue>>);
@@ -51,7 +55,6 @@ type
     property OnValueNotify: TCollectionNotifyEvent<TValue>;
   end;
 
-
 implementation
 
 method TDictionary<TKey,TValue>.KeyNotify(const Key: TKey; Action: TCollectionNotification);
@@ -71,6 +74,14 @@ begin
   for each lKey in fDict.Keys do 
     yield new KeyValuePair<TKey,TValue>(lKey, fDict.Item[lKey]);
 end;
+
+{$IF ISLAND}
+method TDictionary<TKey,TValue>.GetEnumerator: IEnumerator<TPair<TKey,TValue>>;
+begin
+  //result := fDict.GetEnumerator;
+  result := nil; // TODO
+end;
+{$ENDIF}
 
 constructor TDictionary<TKey,TValue>(aCapacity: Integer := 0);
 begin

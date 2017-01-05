@@ -15,6 +15,7 @@ type
   protected
     method &Notify(const Item: T; Action: TCollectionNotification); virtual;
     method GetSequence: ISequence<T>; override; iterator;
+    {$IF ISLAND}method GetEnumerator: IEnumerator<T>; override;{$ENDIF}
   public
     constructor;
     constructor(const Collection: TEnumerable<T>);
@@ -51,6 +52,13 @@ begin
   for lItem in lArray do
     yield lItem;
 end;
+
+{$IF ISLAND}
+method TStack<T>.GetEnumerator: IEnumerator<T>;
+begin
+  result := new StackEnumerator<T>(fStack);
+end;
+{$ENDIF}
 
 constructor TStack<T>;
 begin
