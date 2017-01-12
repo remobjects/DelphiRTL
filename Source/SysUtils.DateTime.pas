@@ -48,12 +48,12 @@ procedure IncAMonth(var Year, Month, Day: Word; NumberOfMonths: Integer := 1);
 procedure ReplaceTime(var DateTime: TDateTime; const NewTime: TDateTime);
 procedure ReplaceDate(var DateTime: TDateTime; const NewDate: TDateTime);
 // Pending DateTime funcs
-function DateToStr(const DateTime: TDateTime): string;  inline;
-function DateToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): string;  inline;
-function TimeToStr(const DateTime: TDateTime): string;  inline;
-function TimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): string;  inline;
-function DateTimeToStr(const DateTime: TDateTime): string;  inline;
-function DateTimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): string;  inline;
+function DateToStr(const DateTime: TDateTime): String;  inline;
+function DateToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;  inline;
+function TimeToStr(const DateTime: TDateTime): String;  inline;
+function TimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;  inline;
+function DateTimeToStr(const DateTime: TDateTime): String;  inline;
+function DateTimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;  inline;
 
 function StrToDate(const S: DelphiString): TDateTime; inline;
 function StrToDate(const S: DelphiString; const aFormatSettings: TFormatSettings): TDateTime; 
@@ -69,10 +69,10 @@ function StrToTimeDef(const S: DelphiString; const aDefault: TDateTime; const aF
 function TryStrToTime(const S: DelphiString; out aValue: TDateTime): Boolean; inline;
 function TryStrToTime(const S: DelphiString; out aValue: TDateTime; const aFormatSettings: TFormatSettings): Boolean; 
 
-function FormatDateTime(const Format: string; DateTime: TDateTime): string;  inline;
-function FormatDateTime(const Format: string; DateTime: TDateTime; const aFormatSettings: TFormatSettings): string; 
-procedure DateTimeToString(var aResult: string; const Format: string; DateTime: TDateTime);  inline;
-procedure DateTimeToString(var aResult: string; const Format: string; DateTime: TDateTime; const aFormatSettings: TFormatSettings); 
+function FormatDateTime(const Format: String; DateTime: TDateTime): String;  inline;
+function FormatDateTime(const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings): String; 
+procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime);  inline;
+procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings); 
 
 implementation
 
@@ -328,32 +328,32 @@ begin
   DateTime := lTmp;
 end;
 
-function DateToStr(const DateTime: TDateTime): string;
+function DateToStr(const DateTime: TDateTime): String;
 begin
   result := DateToStr(DateTime, FormatSettings);
 end;
 
-function DateToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): string;
+function DateToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;
 begin
   DateTimeToString(var result, aFormatSettings.ShortDateFormat, DateTime, aFormatSettings);
 end;
 
-function TimeToStr(const DateTime: TDateTime): string;
+function TimeToStr(const DateTime: TDateTime): String;
 begin
   result := TimeToStr(DateTime, FormatSettings);
 end;
 
-function TimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): string;
+function TimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;
 begin
   DateTimeToString(var result, aFormatSettings.LongTimeFormat, DateTime, aFormatSettings);
 end;
 
-function DateTimeToStr(const DateTime: TDateTime): string;
+function DateTimeToStr(const DateTime: TDateTime): String;
 begin
   result := DateTimeToStr(DateTime, FormatSettings);
 end;
 
-function DateTimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): string;
+function DateTimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;
 begin
   DateTimeToString(var result, '', DateTime, aFormatSettings)
 end;
@@ -508,22 +508,22 @@ begin
   {$ENDIF}
 end;
 
-function FormatDateTime(const Format: string; DateTime: TDateTime): string;
+function FormatDateTime(const Format: String; DateTime: TDateTime): String;
 begin
   result := FormatDateTime(Format, DateTime, FormatSettings);
 end;
 
-function FormatDateTime(const Format: string; DateTime: TDateTime; const aFormatSettings: TFormatSettings): string; 
+function FormatDateTime(const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings): String; 
 begin
   DateTimeToString(var result, Format, DateTime, aFormatSettings);
 end;
 
-procedure DateTimeToString(var aResult: string; const Format: string; DateTime: TDateTime);
+procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime);
 begin
   DateTimeToString(var aResult, Format, DateTime, FormatSettings);
 end;
 
-procedure DateTimeToString(var aResult: string; const Format: string; DateTime: TDateTime; const aFormatSettings: TFormatSettings); 
+procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings); 
 begin
   // TODO
 end;

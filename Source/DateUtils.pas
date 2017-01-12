@@ -11,9 +11,9 @@ type
   TValueRelationship = -1..1;
 
 const
-  LessThanValue = Low(TValueRelationship);
+  LessThanValue = low(TValueRelationship);
   EqualsValue = 0;
-  GreaterThanValue = High(TValueRelationship);
+  GreaterThanValue = high(TValueRelationship);
 
 function DateOf(const aValue: TDateTime): TDateTime; inline;
 function TimeOf(const aValue: TDateTime): TDateTime; inline;
