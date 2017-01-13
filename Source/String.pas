@@ -1067,7 +1067,7 @@ begin
   var oldValue_Length := OldValue.Length;
   var lStart := 0;
   repeat
-    lStart := lToParse.IndexOf(lOldValue, lstart);
+    lStart := lToParse.IndexOf(lOldValue, lStart);
     if lStart <> -1 then begin
       var lRest: DelphiString := '';
       if lStart + oldValue_Length < result.Length then lRest := result.Substring(lStart + oldValue_Length);
@@ -1562,8 +1562,53 @@ begin
 
   result := System.String.Compare(StrA, IndexA, StrB, IndexB, LTotalChars, LocaleID, LOptions);
   {$ELSEIF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
+  {$IF WINDOWS}
+  if (StrA.Length = 0) or (StrB.Length = 0) then begin
+    if StrA.Length > 0 then
+      result := 1
+    else
+      result := if StrB.Length > 0 then -1 else 0;
+  end 
+  else begin
+    var lOptions: Cardinal := 0;
+
+    if TCompareOption.coLingIgnoreCase in Options then
+      lOptions := lOptions or rtl.LINGUISTIC_IGNORECASE;
+    if TCompareOption.coLingIgnoreDiacritic in Options then
+      lOptions := lOptions or rtl.LINGUISTIC_IGNOREDIACRITIC;
+    if TCompareOption.coIgnoreCase in Options then
+      lOptions := lOptions or rtl.NORM_IGNORECASE;
+    if TCompareOption.coIgnoreKanatype in Options then
+      lOptions := lOptions or rtl.NORM_IGNOREKANATYPE;  
+    if TCompareOption.coIgnoreNonSpace in Options then
+      lOptions := lOptions or rtl.NORM_IGNORENONSPACE;
+    if TCompareOption.coIgnoreSymbols in Options then
+      lOptions := lOptions or rtl.NORM_IGNORESYMBOLS;
+    if TCompareOption.coIgnoreWidth in Options then
+      lOptions := lOptions or rtl.NORM_IGNOREWIDTH;
+    if TCompareOption.coLingCasing in Options then
+      lOptions := lOptions or rtl.NORM_LINGUISTIC_CASING;
+    if TCompareOption.coDigitAsNumbers in Options then
+      lOptions := lOptions or rtl.SORT_DIGITSASNUMBERS;
+    if TCompareOption.coStringSort in Options then
+      lOptions := lOptions or rtl.SORT_STRINGSORT;
+  
+    var lStrA := PlatformString(StrA.fData).FirstChar;
+    var lStrB := PlatformString(StrB.fData).FirstChar;    
+    result := rtl.CompareStringW(rtl.LOCALE_USER_DEFAULT, lOptions, lStrA + IndexA, LengthA, lStrB + IndexB, LengthB) - rtl.CSTR_EQUAL;
+    // TODO locales
+  end
+  {$ELSEIF LINUX}
+  var lStrA := PlatformString(StrA.fData.Substring(IndexA, LengthA)).ToAnsiChars(true);
+  var lStrB := PlatformString(StrB.fData.Substring(IndexB, LengthB)).ToAnsiChars(true);
+  var lStringA := ^rtl.wchar_t(@lStrA[0]);
+  var lStringB := ^rtl.wchar_t(@lStrB[0]);
+
+  if (TCompareOption.coLingIgnoreCase in Options) then
+    result := rtl.wcscasecmp(lStringA, lStringB)
+  else
+    result := rtl.wcscoll(lStringA, lStringB);
+  {$ENDIF}
   {$ELSEIF TOFFEE}
   var lOptions: Foundation.NSStringCompareOptions := 0;
   var lTotalChars: Integer;
