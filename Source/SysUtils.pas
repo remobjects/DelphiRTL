@@ -28,6 +28,7 @@ const
   SecsPerHour   = SecsPerMin * MinsPerHour;
   MSecsPerDay   = SecsPerDay * MSecsPerSec;  
   DateDelta = 693594;
+  UnixDateDelta = 25569;
 
 type
   TBytes = public TArray<Byte>;

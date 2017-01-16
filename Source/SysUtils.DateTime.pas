@@ -74,6 +74,9 @@ function FormatDateTime(const Format: String; DateTime: TDateTime; const aFormat
 procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime);  inline;
 procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings); 
 
+function DateTimeToUnix(const aValue: TDateTime): Int64;
+function UnixToDateTime(const aValue: Int64): TDateTime;
+
 implementation
 
 function TryEncodeDateTime(const AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond: Word; out Value: TDateTime): Boolean;
@@ -525,7 +528,40 @@ end;
 
 procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings); 
 begin
-  // TODO
+  var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
+  DecodeDateTime(DateTime, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
+  {$IF COOPER}
+  var lDateFormat := new java.text.SimpleDateFormat(Format);
+  var lDateTime := new java.util.Date(DateTimeToUnix(DateTime));
+  lDateFormat.format(lDateTime);
+  {$ELSEIF ECHOES}
+  var lDateTime := new System.DateTime(lYear, lMonth, lDay, lHour, lMin, lSec, lMSec);
+  aResult := lDateTime.ToString(Format);
+  {$ELSEIF TOFFEE}
+  var lFormatter := new NSDateFormatter;
+  lFormatter.dateFormat := Format;
+  var lCalendar := NSCalendar.currentCalendar;
+  var lComponents := new NSDateComponents;
+  lComponents.year := lYear;
+  lComponents.month := lMonth;
+  lComponents.day := lDay;
+  lComponents.hour := lHour;
+  lComponents.minute := lMin;
+  lComponents.second := lSec;
+  lComponents.nanosecond := lMSec * 1000;
+  var lDateTime := lCalendar.dateFromComponents(lComponents);
+  aResult := lFormatter.stringFromDate(lDateTime);
+  {$ENDIF}
+end;
+
+function DateTimeToUnix(const aValue: TDateTime): Int64;
+begin
+  result := Math.Round((aValue - UnixDateDelta) * SecsPerDay);
+end;
+
+function UnixToDateTime(const aValue: Int64): TDateTime;
+begin
+  result := (aValue / SecsPerDay) + UnixDateDelta;
 end;
 
 end.
