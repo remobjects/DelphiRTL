@@ -318,7 +318,7 @@ end;
 
 function IsValidDateMonthWeek(const aYear, aMonth, aWeekOfMonth, aDayOfWeek: Word): Boolean;
 begin
-  result := (aYear >= 1) and (aYear <= 9999) and (aMonth >= 1)  and (aMonth <= DaysInAMonth(aYear, aMonth)) and 
+  result := (aYear >= 1) and (aYear <= 9999) and (aMonth >= 1)  and (aMonth <= 12) and 
     (aWeekOfMonth >= 1) and (aWeekOfMonth <= 5) and (aDayOfWeek >= 1) and (aDayOfWeek <= 7);
 end;
 
@@ -329,8 +329,11 @@ end;
 
 function WeeksInAYear(const aYear: Word): Word;                       
 begin
-  var lTmp := EncodeDate(aYear, 12, 31);
-  result := (DayOfTheYear(lTmp) - DayOfWeek(lTmp) + 10) div 7;
+  var lTmp := EncodeDate(aYear, 1, 1);
+  var lDay := DayOfTheWeek(lTmp);
+  result := 52;
+  if (lDay = 4) or (IsLeapYear(aYear) and (lDay = 3)) then
+    inc(result);
 end;
 
 function DaysInYear(const aValue: TDateTime): Word;

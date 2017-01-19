@@ -135,6 +135,95 @@ type
       Assert.AreEqual(lSec, 59);
       Assert.AreEqual(lMSec, 999);
     end;
+
+    method DayOfWeekTests;
+    begin
+      var lDate := EncodeDate(2017, 1, 1);
+      Assert.AreEqual(1, DayOfWeek(lDate));
+
+      lDate := EncodeDate(2017, 1, 19);
+      Assert.AreEqual(5, DayOfWeek(lDate));
+
+      lDate := EncodeDate(2019, 3, 1);
+      Assert.AreEqual(6, DayOfWeek(lDate));
+    end;
+
+    method DateTests;
+    begin
+      var lDate := Date;
+      var lYear := YearOf(lDate);
+      Assert.AreEqual(lYear, CurrentYear);
+    end;
+
+    method TimeTests;
+    begin
+      var lTime := Time;
+      var lHour := HourOf(lTime);
+      var lHour2 := HourOf(Now);
+      Assert.AreEqual(lHour, lHour2);
+    end;
+
+    method NowTests;
+    begin
+      Assert.AreEqual(YearOf(Now), CurrentYear);
+    end;
+
+    method CurrentYearTests;
+    begin
+      Assert.AreEqual(CurrentYear, YearOf(Date));
+    end;
+
+    method IncMonthTests;
+    begin
+      var lDate := EncodeDate(2017, 1, 19);
+      var lNewDate := IncMonth(lDate);
+      Assert.AreEqual(MonthOf(lNewDate), 2);
+
+      lNewDate := IncMonth(lDate, 2);
+      Assert.AreEqual(MonthOf(lNewDate), 3);
+    end;
+
+    method IncAMonthTests;
+    begin
+      var lYear, lMonth, lDay: Word;
+      lYear := 2017;
+      lMonth := 1;
+      lDay := 1;
+      IncAMonth(var lYear, var lMonth, var lDay);
+      Assert.AreEqual(lMonth, 2);
+      IncAMonth(var lYear, var lMonth, var lDay, 3);
+      Assert.AreEqual(lMonth, 5);
+
+      IncAMonth(var lYear, var lMonth, var lDay, 8);
+      Assert.AreEqual(lYear, 2018);
+      Assert.AreEqual(lMonth, 1);
+    end;
+
+    method ReplaceTimeTests;
+    begin
+      var lDate := EncodeDateTime(2017, 1, 19, 20, 50, 30, 120);
+      var lNewTime := EncodeTime(10, 2, 3, 4);
+      ReplaceTime(var lDate, lNewTime);
+      var lHour, lMin, lSec, lMSec: Word;
+      DecodeTime(lDate, var lHour, var lMin, var lSec, var lMSec);
+      Assert.AreEqual(lHour, 10);
+      Assert.AreEqual(lMin, 2);
+      Assert.AreEqual(lSec, 3);
+      Assert.AreEqual(lMSec, 4);
+    end;
+
+    method ReplaceDateTests;
+    begin
+      var lDate := EncodeDateTime(2017, 1, 19, 20, 50, 30, 120);
+      var lNewDate := EncodeDate(2018, 10, 10);
+      var lYear, lMonth, lDay: Word;
+      ReplaceDate(var lDate, lNewDate);
+      DecodeDate(lDate, var lYear, var lMonth, var lDay);
+      Assert.AreEqual(lYear, 2018);
+      Assert.AreEqual(lMonth, 10);
+      Assert.AreEqual(lDay, 10);
+    end;
+
   end;
 
 end.

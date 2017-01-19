@@ -307,7 +307,7 @@ end;
 procedure IncAMonth(var Year, Month, Day: Word; NumberOfMonths: Integer := 1);
 begin
   var lDate := new DateTime(Year, Month, Day);
-  lDate.AddMonths(NumberOfMonths);
+  lDate := lDate.AddMonths(NumberOfMonths);
   Year := lDate.Year;
   Month := lDate.Month;
   Day := lDate.Day;
