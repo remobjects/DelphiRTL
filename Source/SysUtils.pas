@@ -27,6 +27,7 @@ const
   SecsPerDay    = MinsPerDay * SecsPerMin;
   SecsPerHour   = SecsPerMin * MinsPerHour;
   MSecsPerDay   = SecsPerDay * MSecsPerSec;  
+  FMSecsPerDay: Double = MSecsPerDay;
   DateDelta = 693594;
   UnixDateDelta = 25569;
 
@@ -44,6 +45,7 @@ type
   end;
 
   TTimeStamp = public record
+  public
     Time: Integer;      
     Date: Integer;      
   end;

@@ -98,7 +98,7 @@ end;
 function TryEncodeDate(aYear, aMonth, aDay: Word; out aDate: TDateTime): Boolean;
 begin
   var lIsLeap := IsLeapYear(aYear);
-  if (aDay >= 1) and (aDay <= MonthDays[lIsLeap, aMonth - 1]) and (aMonth >= 1) and (aMonth <= 12) and (aYear >= 1) and (aYear <= 12) then begin
+  if (aDay >= 1) and (aDay <= MonthDays[lIsLeap, aMonth - 1]) and (aMonth >= 1) and (aMonth <= 12) and (aYear >= 1) and (aYear <= 9999) then begin
     var lDays := (aYear - 1) * 365 + (aYear - 1) div 4 - (aYear - 1) div 100 + (aYear - 1) div 400;
     for i: Integer := 1 to aMonth - 1 do
       inc(lDays, MonthDays[lIsLeap, i - 1]);
@@ -111,9 +111,9 @@ end;
 
 function TryEncodeTime(aHour, aMin, aSec, aMSec: Word; out aTime: TDateTime): Boolean;
 begin
-  if (aHour < HoursPerDay) and (aMin < MinsPerDay) and (aSec < SecsPerMin) and (aMSec < MSecsPerSec) then begin
+  if (aHour < HoursPerDay) and (aMin < MinsPerHour) and (aSec < SecsPerMin) and (aMSec < MSecsPerSec) then begin
     var lTime := (aHour * (MinsPerHour * SecsPerMin * MSecsPerSec)) + (aMin * (SecsPerMin * MSecsPerSec)) + (aSec * MSecsPerSec) + aMSec;
-    aTime := lTime / MSecsPerDay;
+    aTime := lTime / FMSecsPerDay;
     result := true;
   end
   else
@@ -129,15 +129,14 @@ end;
 
 function TimeStampToDateTime(const TimeStamp: TTimeStamp): TDateTime;
 begin
-  var lTmp := (TimeStamp.Date - DateDelta) * MSecsPerDay;
-
+  var lTmp: Int64 := TimeStamp.Date;
   dec(lTmp, DateDelta);
   lTmp := lTmp * MSecsPerDay;
   if lTmp >= 0 then
     inc(lTmp, TimeStamp.Time)
   else
     dec(lTmp, TimeStamp.Time);
-  result := lTmp / MSecsPerDay;
+  result := lTmp / FMSecsPerDay;
 end;
 
 function MSecsToTimeStamp(MSecs: Int64): TTimeStamp;
@@ -151,7 +150,7 @@ end;
 
 function TimeStampToMSecs(const TimeStamp: TTimeStamp): Int64;
 begin
-  result := (TimeStamp.Date * MSecsPerDay) + TimeStamp.Time;  
+  result := (Int64(TimeStamp.Date) * Int64(MSecsPerDay)) + TimeStamp.Time;  
 end;
 
 function IsLeapYear(Year: Word): Boolean;
@@ -237,11 +236,11 @@ begin
   end;
 
   Month := 1;
-  lLastDays := lTotal - lLastDays;
-  while lLastDays > 0 do
+  Day := lTotal - lLastDays;
+  while Day > 0 do
   begin
-    if lLastDays > MonthDays[IsLeapYear(Year)][Month] then
-      dec(lLastDays, MonthDays[IsLeapYear(Year)][Month])
+    if Day > MonthDays[IsLeapYear(Year)][Month-1] then
+      dec(Day, MonthDays[IsLeapYear(Year)][Month-1])
     else
       Break;
     inc(Month);
@@ -258,7 +257,7 @@ end;
 procedure DecodeTime(const DateTime: TDateTime; var Hour, Min, Sec, MSec: Word);
 begin
   var lTmp := DateTime - Math.Floor(DateTime);
-  var lNumber := Math.Round(lTmp * MSecsPerDay);
+  var lNumber := Math.Round(Math.Abs(lTmp) * FMSecsPerDay);
   Hour := lNumber div (MinsPerHour * SecsPerMin * MSecsPerSec);
   var lRem := lNumber mod (MinsPerHour * SecsPerMin * MSecsPerSec);
   Min := lRem div (SecsPerMin * MSecsPerSec);
