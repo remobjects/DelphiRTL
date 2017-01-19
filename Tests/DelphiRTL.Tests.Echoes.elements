@@ -50,7 +50,7 @@
         <Reference Include="RemObjects.Elements.EUnit">
             <Private>True</Private>
         </Reference>
-        <Reference Include="Sugar">
+        <Reference Include="Elements">
             <Private>True</Private>
         </Reference>
         <Reference Include="System"/>

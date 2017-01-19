@@ -46,7 +46,7 @@
             <Private>True</Private>
         </Reference>
         <Reference Include="rt"/>
-        <Reference Include="sugar">
+        <Reference Include="elements">
             <Private>True</Private>
         </Reference>
         <Reference Include="delphi">

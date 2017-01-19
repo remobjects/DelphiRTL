@@ -38,7 +38,7 @@
         <Reference Include="CoreGraphics"/>
         <Reference Include="Foundation"/>
         <Reference Include="libEUnit"/>
-        <Reference Include="libSugar"/>
+        <Reference Include="libElements"/>
         <Reference Include="libxml2"/>
         <Reference Include="libToffee"/>
         <Reference Include="UIKit"/>

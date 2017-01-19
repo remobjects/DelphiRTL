@@ -82,7 +82,7 @@
         <Reference Include="remobjects.elements.eunit">
             <Private>True</Private>
         </Reference>
-        <Reference Include="sugar">
+        <Reference Include="elements">
             <Private>True</Private>
         </Reference>
         <Reference Include="delphi">
