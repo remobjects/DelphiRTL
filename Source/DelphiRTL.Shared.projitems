@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <PropertyGroup>
-        <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-        <HasSharedItems>true</HasSharedItems>
-        <SharedGUID>422C7732-516B-4349-88E8-7F01BA91FF08</SharedGUID>
-    </PropertyGroup>
-    <PropertyGroup Label="Configuration">
-        <Import_RootNamespace>DelphiRTL.Shared</Import_RootNamespace>
-    </PropertyGroup>
-    <ItemGroup>
-        <Compile Include="$(MSBuildThisFileDirectory)Classes.StringList.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)Collections.Dictionary.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)Collections.Queue.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)Collections.Stack.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)Collections.List.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)DateUtils.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)IniFiles.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)Locale.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)System.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)SysUtils.DateTime.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)SysUtils.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)SysUtils.Strings.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)TObject.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)Aliases.pas"/>
-        <Compile Include="$(MSBuildThisFileDirectory)String.pas"/>
-    </ItemGroup>
-    <ItemGroup/>
-    <ItemGroup>
-        <Compile Include="$(MSBuildThisFileDirectory)Classes.Persistent.pas"/>
-    </ItemGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>422C7732-516B-4349-88E8-7F01BA91FF08</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>DelphiRTL.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Classes.StringList.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Collections.Dictionary.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Collections.Queue.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Collections.Stack.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Collections.List.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)DateUtils.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)IniFiles.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Locale.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)System.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)SysUtils.DateTime.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)SysUtils.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)SysUtils.Strings.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)TObject.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Aliases.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)String.pas" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Classes.Persistent.pas" />
+  </ItemGroup>
 </Project>
