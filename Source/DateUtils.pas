@@ -60,8 +60,6 @@ function EndOfAMonth(const aYear, aMonth: Word): TDateTime;
 
 function StartOfTheWeek(const aValue: TDateTime): TDateTime;
 function EndOfTheWeek(const aValue: TDateTime): TDateTime;
-function StartOfAWeek(const aYear, aWeekOfYear: Word; const aDayOfWeek: Word := 1): TDateTime;
-function EndOfAWeek(const aYear, aWeekOfYear: Word; const aDayOfWeek: Word := 7): TDateTime;
 
 function StartOfTheDay(const aValue: TDateTime): TDateTime; inline;
 function EndOfTheDay(const aValue: TDateTime): TDateTime;
@@ -437,7 +435,7 @@ end;
 
 function EndOfTheYear(const aValue: TDateTime): TDateTime;
 begin
-  result := EndOfTheYear(YearOf(aValue));
+  result := EndOfAYear(YearOf(aValue));
 end;
 
 function StartOfAYear(const aYear: Word): TDateTime;
@@ -476,32 +474,22 @@ end;
 
 function StartOfTheWeek(const aValue: TDateTime): TDateTime;
 begin
-  // TODO
+  result := Math.Truncate(aValue) - (DayOfTheWeek(aValue) - 1);
 end;
 
 function EndOfTheWeek(const aValue: TDateTime): TDateTime;
 begin
-  // TODO
-end;
-
-function StartOfAWeek(const aYear, aWeekOfYear: Word; const aDayOfWeek: Word := 1): TDateTime;
-begin
-  // TODO
-end;
-
-function EndOfAWeek(const aYear, aWeekOfYear: Word; const aDayOfWeek: Word := 7): TDateTime;
-begin
-  // TODO
+  result := EndOfTheDay(StartOfTheWeek(aValue) + 6);
 end;
 
 function StartOfTheDay(const aValue: TDateTime): TDateTime;
 begin
-  // TODO
+  result := Math.Truncate(aValue);
 end;
 
 function EndOfTheDay(const aValue: TDateTime): TDateTime;
 begin
-  // TODO
+  result := RecodeTime(aValue, 23, 59, 59, 999);
 end;
 
 function StartOfADay(const aYear, aMonth, aDay: Word): TDateTime; 
@@ -516,12 +504,12 @@ end;
 
 function StartOfADay(const aYear, aDayOfYear: Word): TDateTime; 
 begin
-  // TODO
+  result := EncodeDateDay(aYear, aDayOfYear);
 end;
 
 function EndOfADay(const aYear, aDayOfYear: Word): TDateTime; 
 begin
-  // TODO
+  result := EndOfTheDay(EncodeDateDay(aYear, aDayOfYear));
 end;
 
 function MonthOfTheYear(const aValue: TDateTime): Word;
