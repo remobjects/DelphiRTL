@@ -5,10 +5,10 @@ uses
 
 type
   TObject = public Object;
-  
+
   Object__Delphi = public extension class(Object)
   public
-  
+
     method Destroy; empty; // no-op for compatibility
     method Free; empty;    // no-op for compatibility
 
@@ -22,12 +22,12 @@ type
     class method ClassInfo: Pointer; empty;
     class method InstanceSize: LongInt; empty;
     class method InheritsFrom(AClass: TClass): Boolean; empty;
-    
+
     class method MethodAddress(const Name: ShortString): Pointer;
     begin
       raise new NotSupportedException("TObject.MethodAddress");
     end;
-    
+
     class method MethodName(Address: Pointer): ShortString;
     begin
       raise new NotSupportedException("TObject.MethodName");
@@ -42,7 +42,7 @@ type
     begin
       raise new NotSupportedException("TObject.GetInterface");
     end;
-    
+
     class method GetInterfaceEntry(const IID: TGUID): PInterfaceEntry;
     begin
       raise new NotSupportedException("TObject.GetInterfaceEntry");
@@ -60,7 +60,7 @@ type
 
     procedure AfterConstruction; {virtual;} empty;
     procedure BeforeDestruction; {virtual;} empty;
-    
+
     procedure Dispatch(var Message); {virtual;}
     begin
       raise new NotSupportedException("TObject.Dispatch");
@@ -75,7 +75,7 @@ type
     begin
       result := new self;
     end;
-    
+
     procedure FreeInstance; {virtual;}
     begin
       {$IF ECHOES}
@@ -86,5 +86,5 @@ type
       {$ENDIF}
     end;
   end;
-  
+
 end.

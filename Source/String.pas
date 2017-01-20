@@ -143,10 +143,10 @@ type
     method IndexOfAny(      AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer;
     method Insert(StartIndex: Integer; const Value: DelphiString): DelphiString;
     //method IsDelimiter(const Delimiters: DelphiString; Index: Integer): Boolean; partial; empty;
-    method IsEmpty: Boolean; 
-    class method IsNullOrEmpty(const Value: DelphiString): Boolean; static; 
-    class method IsNullOrWhiteSpace(const Value: DelphiString): Boolean; static; 
-    class method &Join(Separator: DelphiString; Values: array of DelphiString): DelphiString; static; 
+    method IsEmpty: Boolean;
+    class method IsNullOrEmpty(const Value: DelphiString): Boolean; static;
+    class method IsNullOrWhiteSpace(const Value: DelphiString): Boolean; static;
+    class method &Join(Separator: DelphiString; Values: array of DelphiString): DelphiString; static;
     //method Join(Separator: DelphiString; Values: IEnumerator<DelphiString>): DelphiString; overload; static;
     //method Join(Separator: DelphiString; Values: IEnumerable<DelphiString>): DelphiString; overload; static; inline;
     class method &Join(Separator: DelphiString; Values: array of DelphiString; StartIndex: Integer; Count: Integer): DelphiString; static;
@@ -482,7 +482,7 @@ begin
   {$IF ISLAND}
   {$WARNING Not Implemeted for Island}
   raise new NotImplementedException();
-  {$ELSE}  
+  {$ELSE}
   result := Convert.ToInt32(self);
   {$ENDIF}
 end;
@@ -502,7 +502,7 @@ begin
   {$IF ISLAND}
   {$WARNING Not Implemeted for Island}
   raise new NotImplementedException();
-  {$ELSE}  
+  {$ELSE}
   result := Convert.ToDoubleInvariant(self);
   {$ENDIF}
 end;
@@ -512,7 +512,7 @@ begin
   {$IF ISLAND}
   {$WARNING Not Implemeted for Island}
   raise new NotImplementedException();
-  {$ELSE}  
+  {$ELSE}
   result := Convert.ToDoubleInvariant(self);
   {$ENDIF}
 end;
@@ -692,9 +692,9 @@ method DelphiString.CopyTo(SourceIndex: Integer; var destination: array of Char;
 begin
   {$IF COOPER}
   for i: Integer := 0 to Count - 1 do
-    destination[DestinationIndex + i] := self.chars[SourceIndex + i];    
+    destination[DestinationIndex + i] := self.chars[SourceIndex + i];
   {$ELSEIF ECHOES OR ISLAND}
-  PlatformString(fData).CopyTo(SourceIndex, destination, DestinationIndex, Count);  
+  PlatformString(fData).CopyTo(SourceIndex, destination, DestinationIndex, Count);
   {$ELSEIF TOFFEE}
   PlatformString(fData).getCharacters(@destination[DestinationIndex]) range(Foundation.NSMakeRange(SourceIndex, Count));
   {$ENDIF}
@@ -852,7 +852,7 @@ end;
 class method DelphiString.IsNullOrWhiteSpace(const Value: DelphiString): Boolean;
 begin
   {$IF ISLAND}
-  result := (PlatformString(Value.fData) = nil) or (Value.fData = ' ');  
+  result := (PlatformString(Value.fData) = nil) or (Value.fData = ' ');
   {$ELSE}
   result := String.IsNullOrWhiteSpace(Value);
   {$ENDIF}
@@ -935,7 +935,7 @@ end;
 method DelphiString.LastIndexOfAny(const AnyOf: array of Char): Integer;
 begin
   {$IF COOPER OR TOFFEE OR ISLAND}
-  result := LastIndexOfAny(AnyOf, fData.Length - 1, fData.Length); 
+  result := LastIndexOfAny(AnyOf, fData.Length - 1, fData.Length);
   {$ELSEIF ECHOES}
   result := PlatformString(fData).LastIndexOfAny(AnyOf);
   {$ENDIF}
@@ -963,7 +963,7 @@ begin
     lEnd := 0;
 
   for i: Integer := lStart downto lEnd do begin
-    var lChar := Chars[i];  
+    var lChar := Chars[i];
     for each c: Char in AnyOf do
       if lChar = c then
         exit i;
@@ -1061,7 +1061,7 @@ begin
     lOldValue := OldValue;
     lToParse := fData;
   end;
-  
+
   result := self;
   var lReplaceAll := not (TReplaceFlags.rfReplaceAll in ReplaceFlags);
   var oldValue_Length := OldValue.Length;
@@ -1073,7 +1073,7 @@ begin
       if lStart + oldValue_Length < result.Length then lRest := result.Substring(lStart + oldValue_Length);
       result := result.Substring(0, lStart) + NewValue + lRest;
     end
-    else 
+    else
        break;
   until lReplaceAll;
   {$ELSEIF TOFFEE}
@@ -1338,7 +1338,7 @@ begin
   {$ELSEIF ECHOES OR ISLAND}
   result := PlatformString(fData).ToCharArray(StartIndex, aLength);
   {$ELSEIF TOFFEE}
-  result := new Char[aLength]; 
+  result := new Char[aLength];
   var lArray := new Char[aLength];
    PlatformString(fData).getCharacters(lArray) range(Foundation.NSMakeRange(StartIndex, aLength));
 
@@ -1449,7 +1449,7 @@ begin
     lChars[i] := Char;
   result := new java.lang.String(lChars);
   {$ELSEIF ECHOES}
-  result := new System.String(Char, Count);  
+  result := new System.String(Char, Count);
   {$ELSEIF ISLAND}
   result := String.FromRepeatedChar(Char, Count);
   {$ELSEIF TOFFEE}
@@ -1462,7 +1462,7 @@ begin
   {$IF COOPER}
   result := new java.lang.String(Value, StartIndex, ALength);
   {$ELSEIF ECHOES}
-  result := new System.String(Value, StartIndex, ALength);  
+  result := new System.String(Value, StartIndex, ALength);
   {$ELSEIF ISLAND}
   result := String.FromCharArray(Value);
   // TODO
@@ -1568,7 +1568,7 @@ begin
       result := 1
     else
       result := if StrB.Length > 0 then -1 else 0;
-  end 
+  end
   else begin
     var lOptions: Cardinal := 0;
 
@@ -1579,7 +1579,7 @@ begin
     if TCompareOption.coIgnoreCase in Options then
       lOptions := lOptions or rtl.NORM_IGNORECASE;
     if TCompareOption.coIgnoreKanatype in Options then
-      lOptions := lOptions or rtl.NORM_IGNOREKANATYPE;  
+      lOptions := lOptions or rtl.NORM_IGNOREKANATYPE;
     if TCompareOption.coIgnoreNonSpace in Options then
       lOptions := lOptions or rtl.NORM_IGNORENONSPACE;
     if TCompareOption.coIgnoreSymbols in Options then
@@ -1592,9 +1592,9 @@ begin
       lOptions := lOptions or rtl.SORT_DIGITSASNUMBERS;
     if TCompareOption.coStringSort in Options then
       lOptions := lOptions or rtl.SORT_STRINGSORT;
-  
+
     var lStrA := PlatformString(StrA.fData).FirstChar;
-    var lStrB := PlatformString(StrB.fData).FirstChar;    
+    var lStrB := PlatformString(StrB.fData).FirstChar;
     result := rtl.CompareStringW(rtl.LOCALE_USER_DEFAULT, lOptions, lStrA + IndexA, LengthA, lStrB + IndexB, LengthB) - rtl.CSTR_EQUAL;
     // TODO locales
   end

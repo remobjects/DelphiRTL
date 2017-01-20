@@ -17,7 +17,7 @@ const
 
 function IsLeapYear(Year: Word): Boolean;
 function StrToDateTime(const S: DelphiString): TDateTime; inline;
-function StrToDateTime(const S: DelphiString; aFormatSettings: TFormatSettings): TDateTime; 
+function StrToDateTime(const S: DelphiString; aFormatSettings: TFormatSettings): TDateTime;
 function StrToDateTimeDef(const S: DelphiString; aDefault: TDateTime): TDateTime; inline;
 function StrToDateTimeDef(const S: DelphiString; const aDefault: TDateTime; aFormatSettings: TFormatSettings): TDateTime;
 function TryStrToDateTime(const S: DelphiString; out aValue: TDateTime): Boolean; inline;
@@ -56,23 +56,23 @@ function DateTimeToStr(const DateTime: TDateTime): String;  inline;
 function DateTimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;  inline;
 
 function StrToDate(const S: DelphiString): TDateTime; inline;
-function StrToDate(const S: DelphiString; const aFormatSettings: TFormatSettings): TDateTime; 
+function StrToDate(const S: DelphiString; const aFormatSettings: TFormatSettings): TDateTime;
 function StrToDateDef(const S: DelphiString; const aDefault: TDateTime): TDateTime; inline;
-function StrToDateDef(const S: DelphiString; const aDefault: TDateTime; const aFormatSettings: TFormatSettings): TDateTime; 
+function StrToDateDef(const S: DelphiString; const aDefault: TDateTime; const aFormatSettings: TFormatSettings): TDateTime;
 function TryStrToDate(const S: DelphiString; out Value: TDateTime): Boolean; inline;
-function TryStrToDate(const S: DelphiString; out aValue: TDateTime; const aFormatSettings: TFormatSettings): Boolean; 
+function TryStrToDate(const S: DelphiString; out aValue: TDateTime; const aFormatSettings: TFormatSettings): Boolean;
 
 function StrToTime(const S: DelphiString): TDateTime; inline;
-function StrToTime(const S: DelphiString; const aFormatSettings: TFormatSettings): TDateTime; 
+function StrToTime(const S: DelphiString; const aFormatSettings: TFormatSettings): TDateTime;
 function StrToTimeDef(const S: DelphiString; const aDefault: TDateTime): TDateTime; inline;
-function StrToTimeDef(const S: DelphiString; const aDefault: TDateTime; const aFormatSettings: TFormatSettings): TDateTime; 
+function StrToTimeDef(const S: DelphiString; const aDefault: TDateTime; const aFormatSettings: TFormatSettings): TDateTime;
 function TryStrToTime(const S: DelphiString; out aValue: TDateTime): Boolean; inline;
-function TryStrToTime(const S: DelphiString; out aValue: TDateTime; const aFormatSettings: TFormatSettings): Boolean; 
+function TryStrToTime(const S: DelphiString; out aValue: TDateTime; const aFormatSettings: TFormatSettings): Boolean;
 
 function FormatDateTime(const Format: String; DateTime: TDateTime): String;  inline;
-function FormatDateTime(const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings): String; 
+function FormatDateTime(const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;
 procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime);  inline;
-procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings); 
+procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings);
 
 function DateTimeToUnix(const aValue: TDateTime): Int64;
 function UnixToDateTime(const aValue: Int64): TDateTime;
@@ -105,8 +105,8 @@ begin
     aDate := lDays + aDay - DateDelta;
     result := true;
   end
-  else 
-     result := false;  
+  else
+     result := false;
 end;
 
 function TryEncodeTime(aHour, aMin, aSec, aMSec: Word; out aTime: TDateTime): Boolean;
@@ -150,7 +150,7 @@ end;
 
 function TimeStampToMSecs(const TimeStamp: TTimeStamp): Int64;
 begin
-  result := (Int64(TimeStamp.Date) * Int64(MSecsPerDay)) + TimeStamp.Time;  
+  result := (Int64(TimeStamp.Date) * Int64(MSecsPerDay)) + TimeStamp.Time;
 end;
 
 function IsLeapYear(Year: Word): Boolean;
@@ -163,7 +163,7 @@ begin
   TryStrToDateTime(S, out result);
 end;
 
-function StrToDateTime(const S: DelphiString; aFormatSettings: TFormatSettings): TDateTime; 
+function StrToDateTime(const S: DelphiString; aFormatSettings: TFormatSettings): TDateTime;
 begin
   TryStrToDateTime(S, out result, aFormatSettings);
 end;
@@ -201,7 +201,7 @@ begin
   var lDateFormatter := new NSDateFormatter;
   var lDateTime := lDateFormatter.dateFromString(NSString(S));
   var lCalendar := NSCalendar.currentCalendar;
-  var lComponents := lCalendar.components(NSCalendarUnit.CalendarUnitYear or NSCalendarUnit.CalendarUnitMonth or NSCalendarUnit.CalendarUnitDay or 
+  var lComponents := lCalendar.components(NSCalendarUnit.CalendarUnitYear or NSCalendarUnit.CalendarUnitMonth or NSCalendarUnit.CalendarUnitDay or
     NSCalendarUnit.CalendarUnitHour or NSCalendarUnit.CalendarUnitMinute or NSCalendarUnit.CalendarUnitSecond or NSCalendarUnit.NSCalendarUnitNanosecond) fromDate(lDateTime);
   result := TryEncodeDateTime(lComponents.year, lComponents.month, lComponents.day, lComponents.hour, lComponents.minute, lComponents.second, (lComponents.nanosecond / 1000), out aValue);
   {$ENDIF}
@@ -287,7 +287,7 @@ end;
 function Now: TDateTime;
 begin
   var lTmp := DateTime.Today;
-  TryEncodeDateTime(lTmp.Year, lTmp.Month, lTmp.Day, lTmp.Hour, lTmp.Minute, lTmp.Second, 0, out result); 
+  TryEncodeDateTime(lTmp.Year, lTmp.Month, lTmp.Day, lTmp.Hour, lTmp.Minute, lTmp.Second, 0, out result);
 end;
 
 function CurrentYear: Word;
@@ -366,7 +366,7 @@ begin
     raise new Exception("Date to string error");
 end;
 
-function StrToDate(const S: DelphiString; const aFormatSettings: TFormatSettings): TDateTime; 
+function StrToDate(const S: DelphiString; const aFormatSettings: TFormatSettings): TDateTime;
 begin
   if not TryStrToDate(S, out result, aFormatSettings) then
     raise new Exception("Date to string error");
@@ -378,7 +378,7 @@ begin
     result := aDefault;
 end;
 
-function StrToDateDef(const S: DelphiString; const aDefault: TDateTime; const aFormatSettings: TFormatSettings): TDateTime; 
+function StrToDateDef(const S: DelphiString; const aDefault: TDateTime; const aFormatSettings: TFormatSettings): TDateTime;
 begin
   if not TryStrToDate(S, out result, aFormatSettings) then
     result := aDefault;
@@ -389,7 +389,7 @@ begin
   result := TryStrToDate(S, out Value, FormatSettings);
 end;
 
-function TryStrToDate(const S: DelphiString; out aValue: TDateTime; const aFormatSettings: TFormatSettings): Boolean; 
+function TryStrToDate(const S: DelphiString; out aValue: TDateTime; const aFormatSettings: TFormatSettings): Boolean;
 begin
   {$IF COOPER}
   var lFormat := new java.text.SimpleDateFormat(aFormatSettings.ShortDateFormat);
@@ -411,7 +411,7 @@ begin
   lDateFormatter.dateFormat := aFormatSettings.ShortDateFormat;
   var lDateTime := lDateFormatter.dateFromString(NSString(S));
   var lCalendar := NSCalendar.currentCalendar;
-  var lComponents := lCalendar.components(NSCalendarUnit.CalendarUnitYear or NSCalendarUnit.CalendarUnitMonth or NSCalendarUnit.CalendarUnitDay or 
+  var lComponents := lCalendar.components(NSCalendarUnit.CalendarUnitYear or NSCalendarUnit.CalendarUnitMonth or NSCalendarUnit.CalendarUnitDay or
     NSCalendarUnit.CalendarUnitHour or NSCalendarUnit.CalendarUnitMinute or NSCalendarUnit.CalendarUnitSecond or NSCalendarUnit.NSCalendarUnitNanosecond) fromDate(lDateTime);
   result := TryEncodeDateTime(lComponents.year, lComponents.month, lComponents.day, lComponents.hour, lComponents.minute, lComponents.second, (lComponents.nanosecond / 1000), out aValue);
   {$ENDIF}
@@ -422,7 +422,7 @@ begin
   result := StrToTime(S, FormatSettings);
 end;
 
-function StrToTime(const S: DelphiString; const aFormatSettings: TFormatSettings): TDateTime; 
+function StrToTime(const S: DelphiString; const aFormatSettings: TFormatSettings): TDateTime;
 begin
   if not TryStrToTime(S, out result, aFormatSettings) then
     raise new Exception("Time to string error");
@@ -433,7 +433,7 @@ begin
   result := StrToTimeDef(S, aDefault, FormatSettings);
 end;
 
-function StrToTimeDef(const S: DelphiString; const aDefault: TDateTime; const aFormatSettings: TFormatSettings): TDateTime; 
+function StrToTimeDef(const S: DelphiString; const aDefault: TDateTime; const aFormatSettings: TFormatSettings): TDateTime;
 begin
   if not TryStrToTime(S, out result, aFormatSettings) then
     result := aDefault;
@@ -445,8 +445,8 @@ begin
 end;
 
 function TryStrToTime(const S: DelphiString; out aValue: TDateTime; const aFormatSettings: TFormatSettings): Boolean;
-begin  
-  var lAMPM := (S.IndexOf(aFormatSettings.TimeAMString) >= 0) or (S.IndexOf('AM') >= 0) or 
+begin
+  var lAMPM := (S.IndexOf(aFormatSettings.TimeAMString) >= 0) or (S.IndexOf('AM') >= 0) or
     (S.IndexOf(aFormatSettings.TimePMString) >= 0) or (S.IndexOf('PM') >= 0);
   var lFormats := new String[2];
   {$IF COOPER OR TOFFEE}
@@ -456,10 +456,10 @@ begin
   end
   else begin
     lFormats[0] := "HH" + aFormatSettings.TimeSeparator + "mm" + aFormatSettings.TimeSeparator + "ss";
-    lFormats[1] := "HH" + aFormatSettings.TimeSeparator + "mm";  
+    lFormats[1] := "HH" + aFormatSettings.TimeSeparator + "mm";
   end;
   {$ENDIF}
-  
+
   {$IF COOPER}
   var lFormat := new java.text.SimpleDateFormat(lFormats[0]);
   var lDateTime := lFormat.parse(S);
@@ -473,7 +473,7 @@ begin
     result := TryEncodeDateTime(lCal.get(java.util.Calendar.YEAR), lCal.get(java.util.Calendar.MONTH), lCal.get(java.util.Calendar.DAY_OF_MONTH),
     lCal.get(java.util.Calendar.HOUR), lCal.get(java.util.Calendar.MINUTE), lCal.get(java.util.Calendar.SECOND), lCal.get(java.util.Calendar.MILLISECOND), out aValue);
   end
-  else 
+  else
     result := false;
   {$ELSEIF ECHOES}
   if lAMPM then begin
@@ -482,14 +482,14 @@ begin
   end
   else begin
     lFormats[0] := "HH" + aFormatSettings.TimeSeparator + "mm" + aFormatSettings.TimeSeparator + "ss";
-    lFormats[1] := "HH" + aFormatSettings.TimeSeparator + "mm";  
+    lFormats[1] := "HH" + aFormatSettings.TimeSeparator + "mm";
   end;
 
   var lDateTime: System.DateTime;
   result := System.DateTime.TryParseExact(S, lFormats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out lDateTime);
   if result then
     result := TryEncodeDateTime(lDateTime.Year, lDateTime.Month, lDateTime.Day, lDateTime.Hour, lDateTime.Minute, lDateTime.Second, lDateTime.Millisecond, out aValue);
-  {$ELSEIF TOFFEE}  
+  {$ELSEIF TOFFEE}
   var lDateFormatter := new NSDateFormatter;
   lDateFormatter.locale := NSLocale.localeWithLocaleIdentifier("en_US_POSIX");
   lDateFormatter.dateFormat := lFormats[0];
@@ -501,7 +501,7 @@ begin
 
   if lDateTime <> nil then begin
     var lCalendar := NSCalendar.currentCalendar;
-    var lComponents := lCalendar.components(NSCalendarUnit.CalendarUnitYear or NSCalendarUnit.CalendarUnitMonth or NSCalendarUnit.CalendarUnitDay or 
+    var lComponents := lCalendar.components(NSCalendarUnit.CalendarUnitYear or NSCalendarUnit.CalendarUnitMonth or NSCalendarUnit.CalendarUnitDay or
       NSCalendarUnit.CalendarUnitHour or NSCalendarUnit.CalendarUnitMinute or NSCalendarUnit.CalendarUnitSecond or NSCalendarUnit.NSCalendarUnitNanosecond) fromDate(lDateTime);
     result := TryEncodeDateTime(lComponents.year, lComponents.month, lComponents.day, lComponents.hour, lComponents.minute, lComponents.second, (lComponents.nanosecond / 1000), out aValue);
   end
@@ -515,7 +515,7 @@ begin
   result := FormatDateTime(Format, DateTime, FormatSettings);
 end;
 
-function FormatDateTime(const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings): String; 
+function FormatDateTime(const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;
 begin
   DateTimeToString(var result, Format, DateTime, aFormatSettings);
 end;
@@ -525,7 +525,7 @@ begin
   DateTimeToString(var aResult, Format, DateTime, FormatSettings);
 end;
 
-procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings); 
+procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings);
 begin
   var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
   DecodeDateTime(DateTime, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);

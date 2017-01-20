@@ -17,7 +17,7 @@ type
     method Initialize(aCapacity: Integer := 0);
     method AddCollection(aCollection: TEnumerable<TPair<TKey,TValue>>);
     method DoRemove(aKey: TKey; aAction: TCollectionNotification): TValue;
-  protected    
+  protected
     method KeyNotify(const Key: TKey; Action: TCollectionNotification); virtual;
     method ValueNotify(const Value: TValue; Action: TCollectionNotification); virtual;
     method GetSequence: ISequence<TPair<TKey,TValue>>; override; iterator;
@@ -34,7 +34,7 @@ type
     class method Create(aCapacity: Integer; const aComparer: IEqualityComparer<TKey>): TDictionary<TKey,TValue>;
     class method Create(const Collection: TEnumerable<TPair<TKey,TValue>>): TDictionary<TKey,TValue>;
     class method Create(const Collection: TEnumerable<TPair<TKey,TValue>>; const aComparer: IEqualityComparer<TKey>): TDictionary<TKey,TValue>;
- 
+
     method &Add(const Key: TKey; const Value: TValue);
     method &Remove(const Key: TKey);
     method ExtractPair(const Key: TKey): TPair<TKey,TValue>;
@@ -45,10 +45,10 @@ type
     method ContainsKey(const Key: TKey): Boolean;
     method ContainsValue(const Value: TValue): Boolean;
     method ToArray: array of TPair<TKey,TValue>; override;
-    
+
     property Items[const Key: TKey]: TValue read GetItem write SetItem; default;
     property Count: Integer read fDict.Count;
-    
+
     property Keys: ISequence<TKey> read GetKeys;
     property Values: ISequence<TValue> read GetValues;
     property OnKeyNotify: TCollectionNotifyEvent<TKey>;
@@ -71,7 +71,7 @@ end;
 
 method TDictionary<TKey,TValue>.GetSequence: ISequence<TPair<TKey,TValue>>;
 begin
-  for each lKey in fDict.Keys do 
+  for each lKey in fDict.Keys do
     yield new KeyValuePair<TKey,TValue>(lKey, fDict.Item[lKey]);
 end;
 

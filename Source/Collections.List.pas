@@ -51,7 +51,7 @@ type
       result := GetEnumerator();
     end;
     method GetEnumerator: System.Collections.Generic.IEnumerator<T>; //implements System.Collections.Generic.IEnumerable<T>.GetEnumerator<T>;
-    begin  
+    begin
       exit System.Collections.Generic.IEnumerable<T>(GetSequence()).GetEnumerator;
     end;
     {$ELSEIF TOFFEE}
@@ -72,7 +72,7 @@ type
         aStackbuf[i] := currentSequence[aState^.state+i];
         inc(i);
       end;
-      
+
       aState^.state := aState^.state+i;
       aState^.itemsPtr := ^id(aStackbuf);
       result := i;
@@ -88,7 +88,7 @@ type
   TEmptyFunc<T> = public block (const L, R: T): Boolean;
   TCollectionNotification = public enum (cnAdded, cnRemoved, cnExtracted) of Integer;
   TCollectionNotifyEvent<T> = public block(Sender: TObject; const Item: T; Action: TCollectionNotification);
- 
+
   TList<T> = public class(TEnumerable<T>){$IF TOFFEE}where T is class;{$ENDIF}
   private
     fList: List<T>;
@@ -106,7 +106,7 @@ type
     method &Notify(const Item: T; Action: TCollectionNotification); virtual;
     {$IF ISLAND}method GetEnumerator: IEnumerator<T>; override;{$ENDIF}
   public
-    constructor; 
+    constructor;
     constructor(const aComparer: IComparer<T>);
     constructor(const aCollection: TEnumerable<T>);
     class method Create: TList<T>;
@@ -116,7 +116,7 @@ type
     method &Add(const Value: T): Integer;
     method AddRange(const Values: array of T);
     method AddRange(const Collection: IEnumerable<T>);
-    method AddRange(const Collection: TEnumerable<T>); 
+    method AddRange(const Collection: TEnumerable<T>);
     method Insert(aIndex: Integer; const Value: T);
     method InsertRange(aIndex: Integer; const Values: array of T);
     method InsertRange(aIndex: Integer; const Collection: IEnumerable<T>);
@@ -128,7 +128,7 @@ type
     method DeleteRange(aIndex, aCount: Integer);
     method ExtractItem(const Value: T; Direction: TDirection): T;
     method Extract(const Value: T): T; inline;
-    method Exchange(Index1, Index2: Integer); 
+    method Exchange(Index1, Index2: Integer);
     method Move(CurIndex, NewIndex: Integer);
     method First: T;
     method Last: T;
@@ -167,7 +167,7 @@ end;
 
 method TEnumerable<T>.ToArrayImpl(Count: Integer): TArray<T>;
 begin
-  
+
 end;
 
 method TList<T>.ItemValue(const Item: T): Integer;
@@ -230,12 +230,12 @@ end;
 
 method TList<T>.AddRange(const Collection: IEnumerable<T>);
 begin
-  InsertRange(fList.Count, Collection);  
+  InsertRange(fList.Count, Collection);
 end;
 
 method TList<T>.AddRange(const Collection: TEnumerable<T>);
 begin
-  InsertRange(fList.Count, Collection);  
+  InsertRange(fList.Count, Collection);
 end;
 
 method TList<T>.Insert(aIndex: Integer; const Value: T);
@@ -287,7 +287,7 @@ end;
 method TList<T>.Delete(aIndex: Integer);
 begin
   var lOldItem := fList[aIndex];
-  fList.RemoveAt(aIndex);  
+  fList.RemoveAt(aIndex);
   &Notify(lOldItem, TCollectionNotification.cnRemoved);
 end;
 
@@ -331,7 +331,7 @@ end;
 method TList<T>.Move(CurIndex: Integer; NewIndex: Integer);
 begin
   fList.Insert(NewIndex, fList[CurIndex]);
-  if CurIndex <= NewIndex then 
+  if CurIndex <= NewIndex then
     inc(CurIndex);
   fList.RemoveAt(CurIndex);
 end;
@@ -387,7 +387,7 @@ end;
 
 method TList<T>.Sort;
 begin
-  
+
 end;
 
 method TList<T>.Sort(const AComparer: IComparer<T>);

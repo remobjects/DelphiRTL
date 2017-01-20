@@ -36,9 +36,9 @@ end;
 
 method TPersistent.Assign(Source: TPersistent);
 begin
-  if Source <> nil then 
-    Source.AssignTo(Self) 
-  else 
+  if Source <> nil then
+    Source.AssignTo(Self)
+  else
     AssignError(nil);
 end;
 

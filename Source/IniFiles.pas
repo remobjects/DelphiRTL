@@ -108,7 +108,7 @@ method TCustomIniFile.SectionExists(aSection: DelphiString): Boolean;
 begin
   var lStr := TStringList.Create;
   ReadSectionValues(aSection, lStr);
-  result := lStr.Count > 0;  
+  result := lStr.Count > 0;
 end;
 
 method TCustomIniFile.ReadInteger(aSection: DelphiString; aIdent: DelphiString; aDefault: Integer): Integer;
@@ -334,7 +334,7 @@ begin
     aStrings.Clear;
     var lIndex := IndexOfSection(aSection);
     if lIndex >= 0 then
-      aStrings.SetStrings(fData[lIndex].Value);      
+      aStrings.SetStrings(fData[lIndex].Value);
   finally
     aStrings.EndUpdate;
   end;
@@ -377,7 +377,7 @@ begin
             lCurrentSection.Add(lStr.SubString(0, lPos).Trim + '=' + lStr.SubString(lPos + 1).Trim)
           else
             lCurrentSection.Add(lStr);
-        end;           
+        end;
       end;
     end;
   end;
