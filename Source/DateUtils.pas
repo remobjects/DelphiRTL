@@ -77,8 +77,6 @@ function MinuteOfTheYear(const aValue: TDateTime): Cardinal;
 function SecondOfTheYear(const aValue: TDateTime): Cardinal;
 function MilliSecondOfTheYear(const aValue: TDateTime): Int64;
 
-function WeekOfTheMonth(const aValue: TDateTime): Word;
-function WeekOfTheMonth(const aValue: TDateTime; var aYear, aMonth: Word): Word; 
 function DayOfTheMonth(const aValue: TDateTime): Word; inline;
 function HourOfTheMonth(const aValue: TDateTime): Word;
 function MinuteOfTheMonth(const aValue: TDateTime): Word;
@@ -559,17 +557,7 @@ function MilliSecondOfTheYear(const aValue: TDateTime): Int64;
 begin
   var lHour, lMin, lSec, lMSec: Word;
   DecodeTime(aValue, var lHour, var lMin, var lSec, var lMSec);
-  result := SecondOfTheYear(aValue) * MSecsPerSec + lMSec;
-end;
-
-function WeekOfTheMonth(const aValue: TDateTime): Word;
-begin
-  // TODO  
-end;
-
-function WeekOfTheMonth(const aValue: TDateTime; var aYear, aMonth: Word): Word; 
-begin
-  // TODO
+  result := Int64(SecondOfTheYear(aValue)) * MSecsPerSec + lMSec;
 end;
 
 function DayOfTheMonth(const aValue: TDateTime): Word; 
