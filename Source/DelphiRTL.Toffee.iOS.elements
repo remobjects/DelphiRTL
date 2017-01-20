@@ -39,7 +39,7 @@
     <ItemGroup>
         <Reference Include="CoreGraphics"/>
         <Reference Include="Foundation"/>
-        <Reference Include="libSugar"/>
+        <Reference Include="libElements"/>
         <Reference Include="UIKit"/>
         <Reference Include="rtl"/>
         <Reference Include="libToffee"/>

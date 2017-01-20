@@ -110,7 +110,7 @@
             <Target>Echoes</Target>
             <Private>True</Private>
         </Reference>
-        <Reference Include="Sugar">
+        <Reference Include="Elements">
             <Target>Echoes</Target>
             <Private>True</Private>
         </Reference>
@@ -121,7 +121,7 @@
             <Target>Cooper</Target>
             <Private>True</Private>
         </Reference>
-        <Reference Include="sugar">
+        <Reference Include="elements">
             <Target>Cooper</Target>
             <Private>True</Private>
         </Reference>
@@ -161,7 +161,7 @@
         <Reference Include="libToffee">
             <Target>Toffee.iOS</Target>
         </Reference>
-        <Reference Include="libSugar">
+        <Reference Include="libElements">
             <Target>Toffee.iOS</Target>
         </Reference>
         <Reference Include="libxml2">
@@ -176,7 +176,7 @@
         <Reference Include="libToffee">
             <Target>Toffee.macOS</Target>
         </Reference>
-        <Reference Include="libSugar">
+        <Reference Include="libElements">
             <Target>Toffee.macOS</Target>
         </Reference>
         <Reference Include="libxml2">
@@ -191,7 +191,7 @@
         <Reference Include="libToffee">
             <Target>Toffee.tvOS</Target>
         </Reference>
-        <Reference Include="libSugar">
+        <Reference Include="libElements">
             <Target>Toffee.tvOS</Target>
         </Reference>
         <Reference Include="libxml2">
@@ -206,7 +206,7 @@
         <Reference Include="libToffee">
             <Target>Toffee.watchOS</Target>
         </Reference>
-        <Reference Include="libSugar">
+        <Reference Include="libElements">
             <Target>Toffee.watchOS</Target>
         </Reference>
         <Reference Include="libxml2">
