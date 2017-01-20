@@ -362,5 +362,175 @@ type
       Assert.AreEqual(lDay, 26);
     end;
 
+    method StartOfTheDayTests;
+    begin
+      var lDate := EncodeDateTime(2017, 1, 20, 9, 56, 10, 400);
+      var lDateNew := StartOfTheDay(lDate);
+      var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
+      DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
+      Assert.AreEqual(lYear, 2017);
+      Assert.AreEqual(lMonth, 1);
+      Assert.AreEqual(lDay, 20);      
+      Assert.AreEqual(lHour, 0);
+      Assert.AreEqual(lMin, 0);
+      Assert.AreEqual(lSec, 0);
+    end;
+
+    method EndOfTheDayTests;
+    begin
+      var lDate := EncodeDateTime(1917, 11, 21, 9, 56, 10, 400);
+      var lDateNew := EndOfTheDay(lDate);
+      var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
+      DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
+      Assert.AreEqual(lYear, 1917);
+      Assert.AreEqual(lMonth, 11);
+      Assert.AreEqual(lDay, 21);      
+      Assert.AreEqual(lHour, 23);
+      Assert.AreEqual(lMin, 59);
+      Assert.AreEqual(lSec, 59);
+      Assert.AreEqual(lMSec, 999);
+    end;
+
+    method StartOfADayTests;
+    begin
+      var lDateNew := StartOfADay(2017, 17);
+      var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
+      DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
+      Assert.AreEqual(lYear, 2017);
+      Assert.AreEqual(lMonth, 1);
+      Assert.AreEqual(lDay, 17);      
+      Assert.AreEqual(lHour, 0);
+      Assert.AreEqual(lMin, 0);
+      Assert.AreEqual(lSec, 0);
+    end;
+
+    method EndOfADayTests;
+    begin
+      var lDateNew := EndOfADay(2000, 10);
+      var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
+      DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
+      Assert.AreEqual(lYear, 2000);
+      Assert.AreEqual(lMonth, 1);
+      Assert.AreEqual(lDay, 10);      
+      Assert.AreEqual(lHour, 23);
+      Assert.AreEqual(lMin, 59);
+      Assert.AreEqual(lSec, 59);
+      Assert.AreEqual(lMSec, 999);
+    end;
+
+    method StartOfADayTests2;
+    begin
+      var lDateNew := StartOfADay(3400, 12, 31);
+      var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
+      DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
+      Assert.AreEqual(lYear, 3400);
+      Assert.AreEqual(lMonth, 12);
+      Assert.AreEqual(lDay, 31);      
+      Assert.AreEqual(lHour, 0);
+      Assert.AreEqual(lMin, 0);
+      Assert.AreEqual(lSec, 0);
+    end;
+
+    method EndOfADayTests2;
+    begin
+      var lDateNew := EndOfADay(4599, 10, 1);
+      var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
+      DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
+      Assert.AreEqual(lYear, 4599);
+      Assert.AreEqual(lMonth, 10);
+      Assert.AreEqual(lDay, 1);      
+      Assert.AreEqual(lHour, 23);
+      Assert.AreEqual(lMin, 59);
+      Assert.AreEqual(lSec, 59);
+      Assert.AreEqual(lMSec, 999);
+    end;
+
+    method MonthOfTheYearTests;
+    begin
+      var lDate := EncodeDate(3800, 6, 12);
+      var lMonth := MonthOfTheYear(lDate);
+      Assert.AreEqual(lMonth, 6);
+
+      lDate := EncodeDate(3800, 1, 12);
+      lMonth := MonthOfTheYear(lDate);
+      Assert.AreEqual(lMonth, 1);
+    end;
+
+    method WeekOfTheYearTests;
+    begin
+      var lDate := EncodeDate(2016, 12, 31);
+      var lWeek := WeekOfTheYear(lDate);
+      Assert.AreEqual(lWeek, 52);
+
+      lDate := EncodeDate(2016, 1, 6);
+      lWeek := WeekOfTheYear(lDate);
+      Assert.AreEqual(lWeek, 1);
+    end;
+
+    method WeekOfTheYearTests2;
+    begin
+      var lDate := EncodeDate(2016, 12, 31);
+      var lYear: Word;
+      var lWeek := WeekOfTheYear(lDate, var lYear);
+      Assert.AreEqual(lWeek, 52);
+      Assert.AreEqual(lYear, 2016);
+
+      lDate := EncodeDate(2016, 1, 6);
+      lWeek := WeekOfTheYear(lDate, var lYear);
+      Assert.AreEqual(lWeek, 1);   
+      Assert.AreEqual(lYear, 2016);
+    end;
+
+    method DayOfTheYearTests;
+    begin
+      var lDate := EncodeDate(2017, 12, 31);
+      var lDay := DayOfTheYear(lDate);
+      Assert.AreEqual(lDay, 365);
+
+      lDate := EncodeDate(2016, 12, 31);
+      lDay := DayOfTheYear(lDate);
+      Assert.AreEqual(lDay, 366);
+    end;
+
+    method HourOfTheYearTests;
+    begin
+      var lDate := EncodeDate(2017, 6, 6);
+      var lHour := HourOfTheYear(lDate);
+      Assert.AreEqual(lHour, 3744);
+
+      lDate := EncodeDateTime(2017, 10, 1, 16, 41, 2, 100);
+      lHour := HourOfTheYear(lDate);
+      Assert.AreEqual(lHour, 6568);
+    end;
+
+    method MinuteOfTheYearTests;
+    begin
+      var lDate := EncodeDateTime(2017, 10, 1, 16, 41, 2, 100);
+      var lMin := MinuteOfTheYear(lDate);
+      Assert.AreEqual(lMin, 394121);
+
+      lDate := EncodeDateTime(2017, 2, 1, 3, 41, 2, 100);
+      lMin := MinuteOfTheYear(lDate);
+      Assert.AreEqual(lMin, 44861);
+    end;
+
+    method SecondOfTheYearTests;
+    begin
+      var lDate := EncodeDateTime(2000, 2, 14, 6, 54, 3, 100);
+      var lSec := SecondOfTheYear(lDate);
+      Assert.AreEqual(lSec, 3826443);
+
+      lDate := EncodeDateTime(3544, 11, 21, 17, 12, 3, 900);
+      lSec := SecondOfTheYear(lDate);
+      Assert.AreEqual(lSec, 28141923);
+    end;
+
+    method MilliSecondOfTheYearTests;
+    begin
+      var lDate := EncodeDateTime(3544, 11, 21, 17, 12, 3, 900);
+      var lMSec := MilliSecondOfTheYear(lDate);
+      Assert.AreEqual(lMSec, 28141923900);
+    end;
+
   end;
 end.
