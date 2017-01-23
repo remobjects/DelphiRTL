@@ -44,6 +44,6 @@ end;
 method TPersistent.GetNamePath: DelphiString;
 begin
 
-end
+end;
 
 end.
