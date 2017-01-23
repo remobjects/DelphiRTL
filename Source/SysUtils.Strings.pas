@@ -40,7 +40,9 @@ function UIntToStr(Value: Cardinal): DelphiString;
 function UIntToStr(Value: UInt64): DelphiString;
 function IntToHex(Value: Integer; Digits: Integer := sizeOf(Integer) * 2): DelphiString;
 function IntToHex(Value: Int64; Digits: Integer := sizeOf(Int64) * 2): DelphiString;
+{$IF NOT COOPER}
 function IntToHex(Value: UInt64; Digits: Integer := sizeOf(UInt64) * 2): DelphiString;
+{$ENDIF}
 function StrToInt(const S: DelphiString): Integer;
 //function StrToIntDef(const S: string; Default: Integer): Integer;
 //function TryStrToInt(const S: string; out Value: Integer): Boolean;
@@ -237,10 +239,12 @@ begin
   result := Convert.ToHexString(Value, Digits);
 end;
 
+{$IF NOT COOPER}
 function IntToHex(Value: UInt64; Digits: Integer := sizeOf(UInt64) * 2): DelphiString;
 begin
   result := Convert.ToHexString(Value, Digits);
 end;
+{$ENDIF}
 
 function StrToInt(const S: DelphiString): Integer;
 begin
