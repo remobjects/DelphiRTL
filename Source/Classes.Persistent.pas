@@ -16,7 +16,6 @@ type
     method GetNamePath: DelphiString; virtual;
   end;
 
-
 implementation
 
 method TPersistent.AssignError(Source: TPersistent);
@@ -45,7 +44,6 @@ end;
 method TPersistent.GetNamePath: DelphiString;
 begin
 
-end;
-
+end
 
 end.

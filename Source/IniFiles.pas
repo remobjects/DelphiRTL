@@ -154,23 +154,23 @@ end;
 method TCustomIniFile.ReadDate(aSection: DelphiString; aName: DelphiString; aDefault: TDateTime): TDateTime;
 begin
   var lStr := ReadString(aSection, aName, '');
-    if lStr <> '' then begin
-      if not TryStrToDate(lStr, out result) then
-        result := aDefault;
-    end
-    else
-       result := aDefault;
+  if lStr <> '' then begin
+    if not TryStrToDate(lStr, out result) then
+      result := aDefault;
+  end
+  else
+     result := aDefault;
 end;
 
 method TCustomIniFile.ReadDateTime(aSection: DelphiString; aName: DelphiString; aDefault: TDateTime): TDateTime;
 begin
   var lStr := ReadString(aSection, aName, '');
-    if lStr <> '' then begin
-      if not TryStrToDateTime(lStr, out result) then
-        result := aDefault;
-    end
-    else
-       result := aDefault;
+  if lStr <> '' then begin
+    if not TryStrToDateTime(lStr, out result) then
+      result := aDefault;
+  end
+  else
+     result := aDefault;
 end;
 
 method TCustomIniFile.ReadFloat(aSection: DelphiString; aName: DelphiString; aDefault: Double): Double;
@@ -190,12 +190,12 @@ end;
 method TCustomIniFile.ReadTime(aSection: DelphiString; aName: DelphiString; aDefault: TDateTime): TDateTime;
 begin
   var lStr := ReadString(aSection, aName, '');
-    if lStr <> '' then begin
-      if not TryStrToTime(lStr, out result) then
-        result := aDefault;
-    end
-    else
-       result := aDefault;
+  if lStr <> '' then begin
+    if not TryStrToTime(lStr, out result) then
+      result := aDefault;
+  end
+  else
+     result := aDefault;
 end;
 
 method TCustomIniFile.WriteDate(Section: DelphiString; Name: DelphiString; Value: TDateTime);

@@ -213,8 +213,9 @@ public
   end;
 end;
 
-
-///////////////////////////////////////////////////////////////////// File functions
+//
+// File functions
+//
 
 function DeleteFile(const FileName: DelphiString): Boolean;
 begin
@@ -380,6 +381,5 @@ begin
   SysLocale.DefaultLCID := Locale.Current;
 
 end;
-
 
 end.

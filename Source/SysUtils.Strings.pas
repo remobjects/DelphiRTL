@@ -267,5 +267,4 @@ begin
   result := Convert.ToString(B);
 end;
 
-
 end.
