@@ -532,5 +532,112 @@ type
       Assert.AreEqual(lMSec, 28141923900);
     end;
 
+    method DayOfTheMonthTests;
+    begin
+      var lDate := EncodeDateTime(3544, 11, 21, 17, 12, 3, 900);
+      var lDay := DayOfTheMonth(lDate);
+      Assert.AreEqual(lDay, 21);
+    end;
+
+    method HourOfTheMonthTests;
+    begin
+      var lDate := EncodeDateTime(2017, 03, 21, 17, 12, 3, 900);
+      var lHour := HourOfTheMonth(lDate);
+      Assert.AreEqual(lHour, 497);
+
+      lDate := EncodeDate(2017, 02, 10);
+      lHour := HourOfTheMonth(lDate);
+      Assert.AreEqual(lHour, 216);
+    end;
+
+    method MinuteOfTheMonthTests;
+    begin
+      var lDate := EncodeDateTime(2017, 03, 21, 17, 12, 3, 900);
+      var lMin := MinuteOfTheMonth(lDate);
+      Assert.AreEqual(lMin, 29832);
+
+      lDate := EncodeDate(2017, 02, 10);
+      lMin := MinuteOfTheMonth(lDate);
+      Assert.AreEqual(lMin, 12960);
+    end;
+
+    method SecondOfTheMonthTests;
+    begin
+      var lDate := EncodeDateTime(2017, 03, 21, 17, 12, 3, 900);
+      var lSec := SecondOfTheMonth(lDate);
+      Assert.AreEqual(lSec, 1789923);
+
+      lDate := EncodeDate(2017, 02, 10);
+      lSec := SecondOfTheMonth(lDate);
+      Assert.AreEqual(lSec, 777600);
+    end;
+
+    method MilliSecondOfTheMonthTests;
+    begin
+      var lDate := EncodeDateTime(2017, 03, 21, 17, 12, 3, 900);
+      var lSec := MilliSecondOfTheMonth(lDate);
+      Assert.AreEqual(lSec, 1789923900);
+
+      lDate := EncodeDate(2017, 02, 10);
+      lSec := MilliSecondOfTheMonth(lDate);
+      Assert.AreEqual(lSec, 777600000);
+    end;
+
+    method DayOfTheWeekTests;
+    begin
+      var lDate := EncodeDateTime(2017, 03, 21, 17, 12, 3, 900);
+      var lDay := DayOfTheWeek(lDate);
+      Assert.AreEqual(lDay, 2);
+
+      lDate := EncodeDate(2017, 02, 10);
+      lDay := DayOfTheWeek(lDate);
+      Assert.AreEqual(lDay, 5);
+    end;
+
+    method HourOfTheWeekTests;
+    begin
+      var lDate := EncodeDateTime(2017, 03, 21, 17, 12, 3, 900);
+      var lHour := HourOfTheWeek(lDate);
+      Assert.AreEqual(lHour, 41);
+
+      lDate := EncodeDate(2017, 02, 10);
+      lHour := HourOfTheWeek(lDate);
+      Assert.AreEqual(lHour, 96);
+    end;
+
+    method MinuteOfTheWeekTests;
+    begin
+      var lDate := EncodeDateTime(2017, 03, 21, 17, 12, 3, 900);
+      var lMin := MinuteOfTheWeek(lDate);
+      Assert.AreEqual(lMin, 2472);
+
+      lDate := EncodeDate(2017, 02, 10);
+      lMin := MinuteOfTheWeek(lDate);
+      Assert.AreEqual(lMin, 5760);
+    end;
+
+    method SecondOfTheWeekTests;
+    begin
+      var lDate := EncodeDateTime(2017, 03, 21, 17, 12, 3, 900);
+      var lSec := SecondOfTheWeek(lDate);
+      Assert.AreEqual(lSec, 148323);
+
+      lDate := EncodeDate(2017, 02, 10);
+      lSec := SecondOfTheWeek(lDate);
+      Assert.AreEqual(lSec, 345600);
+    end;
+
+    method MilliSecondOfTheWeekTests;
+    begin
+      var lDate := EncodeDateTime(2017, 03, 21, 17, 12, 3, 900);
+      var lMSec := MilliSecondOfTheWeek(lDate);
+      Assert.AreEqual(lMSec, 148323900);
+
+      lDate := EncodeDate(2017, 02, 10);
+      lMSec := MilliSecondOfTheWeek(lDate);
+      Assert.AreEqual(lMSec, 345600000);
+    end;
+
+
   end;
 end.
