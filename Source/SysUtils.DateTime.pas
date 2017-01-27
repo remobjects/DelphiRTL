@@ -245,6 +245,8 @@ begin
       Break;
     inc(Month);
   end;
+  if Day = 0 then
+    Day := 1;
 end;
 
 function DecodeDateFully(const DateTime: TDateTime; var Year, Month, Day, DOW: Word): Boolean;
