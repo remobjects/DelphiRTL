@@ -2,7 +2,7 @@
 
 interface
 
-uses 
+uses
   RemObjects.Elements.RTL;
 
 {$GLOBALS ON}
@@ -13,7 +13,7 @@ const
   fmOpenReadWrite = $0002;
   fmExclusive = $0004;
 
-  fmShareCompat = $0000; 
+  fmShareCompat = $0000;
   fmShareExclusive = $0010;
   fmShareDenyWrite = $0020;
   fmShareDenyRead = $0030;
@@ -26,7 +26,7 @@ const
   MinsPerDay    = HoursPerDay * MinsPerHour;
   SecsPerDay    = MinsPerDay * SecsPerMin;
   SecsPerHour   = SecsPerMin * MinsPerHour;
-  MSecsPerDay   = SecsPerDay * MSecsPerSec;  
+  MSecsPerDay   = SecsPerDay * MSecsPerSec;
   FMSecsPerDay: Double = MSecsPerDay;
   DateDelta = 693594;
   UnixDateDelta = 25569;
@@ -46,8 +46,8 @@ type
 
   TTimeStamp = public record
   public
-    Time: Integer;      
-    Date: Integer;      
+    Time: Integer;
+    Date: Integer;
   end;
 
   TFormatSettings = public record
@@ -81,7 +81,7 @@ type
     class constructor;
   end;
 
-var  
+var
   FormatSettings: TFormatSettings;
   SysLocale: TSysLocale;
 
@@ -96,13 +96,13 @@ function FileCreate(const FileName: String; Mode: Cardinal; Rights: Integer): TH
 
 function FileRead(Handle: THandle; var Buffer; Count: Cardinal): Integer;
 function FileWrite(Handle: THandle; const Buffer; Count: Cardinal): Integer; */
-function FileRead(Handle: THandle; var Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
-function FileWrite(Handle: THandle; const Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
+function FileRead(Handle: THandle; var Buffer: array of Byte; Offset, Count: Cardinal): Integer;
+function FileWrite(Handle: THandle; const Buffer: array of Byte; Offset, Count: Cardinal): Integer;
 function FileSeek(Handle: THandle; Offset, Origin: Integer): Integer;
 function FileSeek(Handle: THandle; const Offset: Int64; Origin: Integer): Int64;
 procedure FileClose(Handle: THandle);
 /*function FileAge(const FileName: string; out FileDateTime: TDateTime;
-  FollowLink: Boolean = True): Boolean; 
+  FollowLink: Boolean = True): Boolean;
 */
 function FileExists(const FileName: DelphiString; FollowLink: Boolean := true): Boolean;
 function DirectoryExists(const Directory: DelphiString; FollowLink: Boolean := true): Boolean;
@@ -116,7 +116,7 @@ procedure FindClose(var F: TSearchRec);
 function FileGetDate(Handle: THandle): LongInt;
 function FileGetDateTimeInfo(const FileName: string;
   out DateTime: TDateTimeInfoRec; FollowLink: Boolean = True): Boolean;
-function FileSetDate(const FileName: string; Age: LongInt): Integer; 
+function FileSetDate(const FileName: string; Age: LongInt): Integer;
 
 function FileSetDate(Handle: THandle; Age: Integer): Integer;  platform;
 function FileGetAttr(const FileName: string; FollowLink: Boolean = True): Integer; platform;
@@ -127,22 +127,22 @@ function FileSetReadOnly(const FileName: string; ReadOnly: Boolean): Boolean;
 */
 function DeleteFile(const FileName: DelphiString): Boolean;
 function RenameFile(const OldName, NewName: DelphiString): Boolean;
-function ChangeFileExt(const FileName, aExtension: DelphiString): DelphiString; 
+function ChangeFileExt(const FileName, aExtension: DelphiString): DelphiString;
 /*
-function ChangeFilePath(const FileName, Path: string): string; 
-function ExtractFilePath(const FileName: string): string; 
-function ExtractFileDir(const FileName: string): string; 
-function ExtractFileDrive(const FileName: string): string; 
+function ChangeFilePath(const FileName, Path: string): string;
+function ExtractFilePath(const FileName: string): string;
+function ExtractFileDir(const FileName: string): string;
+function ExtractFileDrive(const FileName: string): string;
 */
 function ExtractFileName(const FileName: DelphiString): DelphiString;
 function ExtractFileExt(const FileName: DelphiString): DelphiString;
 function GetHomePath: DelphiString;
 function ExpandFileName(const FileName: DelphiString): DelphiString;
 /*
-function ExpandUNCFileName(const FileName: string): string; 
-function ExtractRelativePath(const BaseName, DestName: string): string; 
+function ExpandUNCFileName(const FileName: string): string;
+function ExtractRelativePath(const BaseName, DestName: string): string;
 function IsRelativePath(const Path: string): Boolean;
-function ExtractShortPathName(const FileName: string): string; 
+function ExtractShortPathName(const FileName: string): string;
 function FileSearch(const Name, DirList: string): string;
 function DiskFree(Drive: Byte): Int64;
 function DiskSize(Drive: Byte): Int64;
@@ -165,7 +165,7 @@ private
   class var fLock: Object := new Object;
   {$ENDIF}
   class var fSlots: array of Object;
-  class var fFirstEmpty: Integer := 0; 
+  class var fFirstEmpty: Integer := 0;
   class var fFirstFree: Integer := -1;
   class method CopyArray(oldArray: array of Object; var newArray: array of Object);
   begin
@@ -174,10 +174,10 @@ private
   end;
 public
   class method Allocate(aValue: Object): Int64;
-  begin 
-    locking fLock do begin 
-      if (fFirstFree = -1) and (fFirstEmpty >= length(fSlots)) then begin 
-        var lNewArray := new Object[length(fSlots) + 128];        
+  begin
+    locking fLock do begin
+      if (fFirstFree = -1) and (fFirstEmpty >= length(fSlots)) then begin
+        var lNewArray := new Object[length(fSlots) + 128];
         CopyArray(fSlots, var lNewArray);
         fSlots := lNewArray;
       end;
@@ -186,7 +186,7 @@ public
         inc(fFirstEmpty);
         exit fFirstEmpty; // +1 value since gchandle 0 is reserved.
       end;
-      if fFirstFree <> -1 then begin 
+      if fFirstFree <> -1 then begin
         result := fFirstFree;
         var lFirstFree := Int64(fSlots[result]);
         fFirstFree := lFirstFree;
@@ -196,7 +196,7 @@ public
       end;
     end;
   end;
-    
+
   class method Get(aValue: Int64): Object;
   begin
     dec(aValue);
@@ -204,17 +204,18 @@ public
   end;
 
   class method Free(aValue: Int64);
-  begin 
+  begin
     dec(aValue);
-    locking fLock do begin 
+    locking fLock do begin
       fSlots[aValue] := fFirstFree;
       fFirstFree := aValue;
     end;
   end;
 end;
 
-
-///////////////////////////////////////////////////////////////////// File functions
+//
+// File functions
+//
 
 function DeleteFile(const FileName: DelphiString): Boolean;
 begin
@@ -318,20 +319,20 @@ begin
   result := FileCreate(FileName);
 end;
 
-function FileRead(Handle: THandle; var Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
+function FileRead(Handle: THandle; var Buffer: array of Byte; Offset, Count: Cardinal): Integer;
 begin
   var lHandle := FileHandle(TInternalFileHandles.Get(Handle));
   result := lHandle.Read(Buffer, Offset, Count);
 end;
 
-function FileWrite(Handle: THandle; const Buffer: array of Byte; Offset, Count: Cardinal): Integer; 
+function FileWrite(Handle: THandle; const Buffer: array of Byte; Offset, Count: Cardinal): Integer;
 begin
   var lHandle := FileHandle(TInternalFileHandles.Get(Handle));
   lHandle.Write(Buffer, Offset, Count);
   result := Count;
 end;
 
-function FileSeek(Handle: THandle; Offset, Origin: Integer): Integer; 
+function FileSeek(Handle: THandle; Offset, Origin: Integer): Integer;
 begin
   result := FileSeek(Handle, Int64(Offset), Origin);
 end;
@@ -369,7 +370,7 @@ begin
   try
     var lFolder := new Folder(Directory);
     result := lFolder.Exists;
-    //result := Folder.Exists(Directory);    
+    //result := Folder.Exists(Directory);
   except
     result := false;
   end;
@@ -380,6 +381,5 @@ begin
   SysLocale.DefaultLCID := Locale.Current;
 
 end;
-
 
 end.

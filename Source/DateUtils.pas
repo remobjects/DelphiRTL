@@ -27,7 +27,7 @@ function IsValidDateTime(const aYear, aMonth, aDay, aHour, aMinute, aSecond, aMi
 function IsValidDateDay(const aYear, aDayOfYear: Word): Boolean;
 function IsValidDateWeek(const aYear, aWeekOfYear, aDayOfWeek: Word): Boolean;
 function IsValidDateMonthWeek(const aYear, aMonth, aWeekOfMonth, aDayOfWeek: Word): Boolean;
-function WeeksInYear(const aValue: TDateTime): Word; inline; 
+function WeeksInYear(const aValue: TDateTime): Word; inline;
 function WeeksInAYear(const aYear: Word): Word;
 function DaysInYear(const aValue: TDateTime): Word; inline;
 function DaysInAYear(const aYear: Word): Word; inline;
@@ -63,14 +63,14 @@ function EndOfTheWeek(const aValue: TDateTime): TDateTime;
 
 function StartOfTheDay(const aValue: TDateTime): TDateTime; inline;
 function EndOfTheDay(const aValue: TDateTime): TDateTime;
-function StartOfADay(const aYear, aMonth, aDay: Word): TDateTime; 
-function EndOfADay(const aYear, aMonth, aDay: Word): TDateTime; 
-function StartOfADay(const aYear, aDayOfYear: Word): TDateTime; 
-function EndOfADay(const aYear, aDayOfYear: Word): TDateTime; 
+function StartOfADay(const aYear, aMonth, aDay: Word): TDateTime;
+function EndOfADay(const aYear, aMonth, aDay: Word): TDateTime;
+function StartOfADay(const aYear, aDayOfYear: Word): TDateTime;
+function EndOfADay(const aYear, aDayOfYear: Word): TDateTime;
 
 function MonthOfTheYear(const aValue: TDateTime): Word; inline;
 function WeekOfTheYear(const aValue: TDateTime): Word;
-function WeekOfTheYear(const aValue: TDateTime; var aYear: Word): Word; 
+function WeekOfTheYear(const aValue: TDateTime; var aYear: Word): Word;
 function DayOfTheYear(const aValue: TDateTime): Word;
 function HourOfTheYear(const aValue: TDateTime): Word;
 function MinuteOfTheYear(const aValue: TDateTime): Cardinal;
@@ -196,7 +196,7 @@ const
   MonthOctober = 10;
   MonthNovember = 11;
   MonthDecember = 12;
-  
+
   OneHour = 1 / HoursPerDay;
   OneMinute = 1 / MinsPerDay;
   OneSecond = 1 / SecsPerDay;
@@ -314,7 +314,7 @@ end;
 
 function IsValidDateMonthWeek(const aYear, aMonth, aWeekOfMonth, aDayOfWeek: Word): Boolean;
 begin
-  result := (aYear >= 1) and (aYear <= 9999) and (aMonth >= 1)  and (aMonth <= 12) and 
+  result := (aYear >= 1) and (aYear <= 9999) and (aMonth >= 1)  and (aMonth <= 12) and
     (aWeekOfMonth >= 1) and (aWeekOfMonth <= 5) and (aDayOfWeek >= 1) and (aDayOfWeek <= 7);
 end;
 
@@ -323,7 +323,7 @@ begin
   result := WeeksInAYear(YearOf(aValue));
 end;
 
-function WeeksInAYear(const aYear: Word): Word;                       
+function WeeksInAYear(const aYear: Word): Word;
 begin
   var lTmp := EncodeDate(aYear, 1, 1);
   var lDay := DayOfTheWeek(lTmp);
@@ -356,7 +356,7 @@ end;
 
 function Today: TDateTime;
 begin
-  result := Date;  
+  result := Date;
 end;
 
 function Yesterday: TDateTime;
@@ -490,22 +490,22 @@ begin
   result := RecodeTime(aValue, 23, 59, 59, 999);
 end;
 
-function StartOfADay(const aYear, aMonth, aDay: Word): TDateTime; 
+function StartOfADay(const aYear, aMonth, aDay: Word): TDateTime;
 begin
   TryEncodeDateTime(aYear, aMonth, aDay, 0, 0, 0, 0, out result);
 end;
 
-function EndOfADay(const aYear, aMonth, aDay: Word): TDateTime; 
+function EndOfADay(const aYear, aMonth, aDay: Word): TDateTime;
 begin
   TryEncodeDateTime(aYear, aMonth, aDay, 23, 59, 59, 999, out result);
 end;
 
-function StartOfADay(const aYear, aDayOfYear: Word): TDateTime; 
+function StartOfADay(const aYear, aDayOfYear: Word): TDateTime;
 begin
   result := EncodeDateDay(aYear, aDayOfYear);
 end;
 
-function EndOfADay(const aYear, aDayOfYear: Word): TDateTime; 
+function EndOfADay(const aYear, aDayOfYear: Word): TDateTime;
 begin
   result := EndOfTheDay(EncodeDateDay(aYear, aDayOfYear));
 end;
@@ -520,7 +520,7 @@ begin
   result := (DayOfTheYear(aValue) - DayOfWeek(aValue) + 10) div 7;
 end;
 
-function WeekOfTheYear(const aValue: TDateTime; var aYear: Word): Word; 
+function WeekOfTheYear(const aValue: TDateTime; var aYear: Word): Word;
 begin
   var lMonth, lDay, lDOW: Word;
   DecodeDateFully(aValue, var aYear, var lMonth, var lDay, var lDOW);
@@ -560,7 +560,7 @@ begin
   result := Int64(SecondOfTheYear(aValue)) * MSecsPerSec + lMSec;
 end;
 
-function DayOfTheMonth(const aValue: TDateTime): Word; 
+function DayOfTheMonth(const aValue: TDateTime): Word;
 begin
   result := DayOf(aValue);
 end;
@@ -881,7 +881,7 @@ end;
 
 procedure DecodeDateTime(const aValue: TDateTime; out aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word);
 begin
-  DecodeDate(aValue, var aYear, var aMonth, var aDay);  
+  DecodeDate(aValue, var aYear, var aMonth, var aDay);
   DecodeTime(aValue, var aHour, var aMinute, var aSecond, var aMilliSecond);
 end;
 
@@ -898,43 +898,43 @@ end;
 
 function RecodeYear(const aValue: TDateTime; const aYear: Word): TDateTime;
 begin
-  result := RecodeDateTime(aValue, aYear, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, 
+  result := RecodeDateTime(aValue, aYear, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs,
     RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs);
 end;
 
 function RecodeMonth(const aValue: TDateTime; const aMonth: Word): TDateTime;
 begin
-  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, aMonth, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, 
+  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, aMonth, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs,
     RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs);
 end;
 
 function RecodeDay(const aValue: TDateTime; const aDay: Word): TDateTime;
 begin
-  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, aDay, RecodeLeaveFieldAsIs, 
+  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, aDay, RecodeLeaveFieldAsIs,
     RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs);
 end;
 
 function RecodeHour(const aValue: TDateTime; const aHour: Word): TDateTime;
 begin
-  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, aHour, 
+  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, aHour,
     RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs);
 end;
 
 function RecodeMinute(const aValue: TDateTime; const aMinute: Word): TDateTime;
 begin
-  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, 
+  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs,
     aMinute, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs);
 end;
 
 function RecodeSecond(const aValue: TDateTime; const aSecond: Word): TDateTime;
 begin
-  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, 
+  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs,
     RecodeLeaveFieldAsIs, aSecond, RecodeLeaveFieldAsIs);
 end;
 
 function RecodeMilliSecond(const aValue: TDateTime; const aMilliSecond: Word): TDateTime;
 begin
-  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, 
+  result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs,
     RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, aMilliSecond);
 end;
 
@@ -999,7 +999,7 @@ end;
 
 function SameDate(const A, B: TDateTime): Boolean;
 begin
-  result := Math.Truncate(A) = Math.Truncate(B); 
+  result := Math.Truncate(A) = Math.Truncate(B);
 end;
 
 function CompareTime(const A, B: TDateTime): TValueRelationship;

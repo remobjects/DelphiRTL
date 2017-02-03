@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0" DefaultTargets="Build">
-    <PropertyGroup Label="Globals">
-        <ProjectGuid>422C7732-516B-4349-88E8-7F01BA91FF08</ProjectGuid>
-        <RootNamespace>Elements.RTL.Delphi</RootNamespace>
-    </PropertyGroup>
-    <PropertyGroup>
-        <RootNamespace>RTL2.Delphi</RootNamespace>
-    </PropertyGroup>
-    <Import Project="DelphiRTL.Shared.projitems" Label="Shared"/>
-    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.SharedProject.targets"/>
-    <PropertyGroup>
-        <PreBuildEvent/>
-    </PropertyGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>422C7732-516B-4349-88E8-7F01BA91FF08</ProjectGuid>
+    <RootNamespace>Elements.RTL.Delphi</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>RTL2.Delphi</RootNamespace>
+  </PropertyGroup>
+  <Import Project="DelphiRTL.Shared.projitems" Label="Shared" />
+  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.SharedProject.targets" />
+  <PropertyGroup>
+    <PreBuildEvent />
+  </PropertyGroup>
 </Project>

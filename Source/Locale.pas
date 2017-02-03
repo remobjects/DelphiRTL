@@ -7,7 +7,7 @@ uses
 
 type
   TLocaleOptions = public enum (loInvariantLocale, loUserLocale);
-  
+
   TLocaleID = public Locale;
 
   TLanguages = public class

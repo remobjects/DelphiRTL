@@ -25,7 +25,7 @@ type
     method GetValue(aName: DelphiString): DelphiString;
     method SetValue(aName: DelphiString; aValue: DelphiString);
     method GetValueFromIndex(aIndex: Integer): DelphiString;
-    method SetValueFromIndex(aIndex: Integer; Value: DelphiString);    
+    method SetValueFromIndex(aIndex: Integer; Value: DelphiString);
     method GetCommaText: DelphiString;
     method SetCommaText(aValue: DelphiString);
     method GetDelimitedText: DelphiString;
@@ -40,7 +40,7 @@ type
   protected
     method Error(const Msg: DelphiString; Data: Integer);
     method ExtractName(const S: DelphiString): DelphiString;  inline;
-    method ExtractName(const S: DelphiString; AllNames: Boolean): DelphiString; 
+    method ExtractName(const S: DelphiString; AllNames: Boolean): DelphiString;
     method Get(aIndex: Integer): DelphiString; virtual; abstract;
     method GetCapacity: Integer; virtual;
     method GetCount: Integer; virtual; abstract;
@@ -63,8 +63,8 @@ type
     method AddObject(const S: DelphiString; aObject: TObject): Integer; virtual;
     method Append(const S: DelphiString); inline;
     method AddStrings(aStrings: TStrings);  virtual;
-    method AddStrings(const aStrings: array of DelphiString); 
-    method AddStrings(const aStrings: array of DelphiString; const aObjects: array of TObject); 
+    method AddStrings(const aStrings: array of DelphiString);
+    method AddStrings(const aStrings: array of DelphiString; const aObjects: array of TObject);
     method Assign(aSource: TPersistent); override;
     method SetStrings(aSource: TStrings);
     method BeginUpdate;
@@ -268,7 +268,7 @@ end;
 method TStringList.SetUpdateState(aUpdating: Boolean);
 begin
   if aUpdating then
-    Changing 
+    Changing
   else
     Changed;
 end;
@@ -407,10 +407,10 @@ end;
 
 method TStringList.IndexOf(const S: DelphiString): Integer;
 begin
-  if not Sorted then 
+  if not Sorted then
     result := inherited IndexOf(S)
   else
-    if not Find(S, var result) then 
+    if not Find(S, var result) then
       result := -1;
 end;
 
@@ -425,7 +425,7 @@ begin
     raise new Exception("Can not insert in a sorted list");
   if aIndex >= Count then
     raise new ArgumentOutOfRangeException("InsertObject aIndex");
-  
+
   InsertItem(aIndex, S, aObject);
 end;
 
@@ -496,7 +496,7 @@ begin
     Strings[aIndex1] := Strings[aIndex2];
     Objects[aIndex1] := Objects[aIndex2];
     Strings[aIndex2] := lTempString;
-    Objects[aIndex2] := lTempObject; 
+    Objects[aIndex2] := lTempObject;
 
   finally
     EndUpdate;
@@ -558,7 +558,7 @@ end;
 method TStrings.IndexOf(const S: DelphiString): Integer;
 begin
   for i: Integer := 0 to GetCount - 1 do
-    if CompareStrings(Get(i), S) = 0 then 
+    if CompareStrings(Get(i), S) = 0 then
       exit(i);
   result := -1;
 end;
@@ -642,7 +642,7 @@ method TStrings.AddStrings(const aStrings: array of DelphiString; const aObjects
 begin
   if aStrings.length <> aObjects.length then
     raise new ArgumentOutOfRangeException("AddStrings aStrings aObjects");
-  
+
   BeginUpdate;
   try
     for i: Integer := 0 to aStrings.length - 1 do
@@ -686,7 +686,7 @@ end;
 
 method TStrings.IndexOfName(const aName: DelphiString): Integer;
 begin
-  for i: Integer := 0 to Count - 1 do begin 
+  for i: Integer := 0 to Count - 1 do begin
     var lPos := Strings[i].IndexOf(NameValueSeparator);
     if (lPos >= 0) and (DelphiString.Compare(Strings[i].SubString(0, lPos), aName) = 0) then
         exit i;
@@ -771,7 +771,7 @@ begin
   else begin
     var lPos := Strings[aIndex].IndexOf(NameValueSeparator);
     if lPos >= 0 then
-    Put(aIndex, Strings[aIndex].SubString(0, lPos) + NameValueSeparator + Value);    
+    Put(aIndex, Strings[aIndex].SubString(0, lPos) + NameValueSeparator + Value);
   end;
 end;
 
@@ -807,7 +807,7 @@ begin
 
   finally
     EndUpdate;
-  end;    
+  end;
 end;
 
 method TStrings.GetCommaText: DelphiString;
@@ -871,12 +871,12 @@ method TStrings.GetDelimitedTextWithChars(aDelimiter: Char; aQuote: Char): Delph
 begin
   var lSb := new StringBuilder;
   for i: Integer := 0 to Count - 1 do begin
-    var lTmp := Strings[i];    
+    var lTmp := Strings[i];
     if IndexOfDelimiter(lTmp, aDelimiter, aQuote) >= 0 then
       lTmp := lTmp.QuotedString(aQuote);
     lSb.Append(lTmp);
     if i < Count - 1 then
-     lSb.Append(aDelimiter);    
+     lSb.Append(aDelimiter);
   end;
   result := lSb.ToString;
 end;
@@ -903,13 +903,13 @@ begin
             end;
             inc(j);
           end;
-            lTmp := aValue.SubString(i, j - i).DeQuotedString(aQuote); 
+            lTmp := aValue.SubString(i, j - i).DeQuotedString(aQuote);
         end;
 
         else begin
           j := i + 1;
           while (j <= aValue.Length) and (IndexOfDelimiter(aValue[j], aDelimiter, aQuote) < 0) do
-            inc(j);        
+            inc(j);
           lTmp := aValue.SubString(i, j - i);
         end;
         &Add(lTmp);
@@ -968,7 +968,7 @@ begin
           inc(i);
       end;
     end;
-  end;  
+  end;
 end;
 
 end.

@@ -108,7 +108,7 @@ method TCustomIniFile.SectionExists(aSection: DelphiString): Boolean;
 begin
   var lStr := TStringList.Create;
   ReadSectionValues(aSection, lStr);
-  result := lStr.Count > 0;  
+  result := lStr.Count > 0;
 end;
 
 method TCustomIniFile.ReadInteger(aSection: DelphiString; aIdent: DelphiString; aDefault: Integer): Integer;
@@ -154,23 +154,23 @@ end;
 method TCustomIniFile.ReadDate(aSection: DelphiString; aName: DelphiString; aDefault: TDateTime): TDateTime;
 begin
   var lStr := ReadString(aSection, aName, '');
-    if lStr <> '' then begin
-      if not TryStrToDate(lStr, out result) then
-        result := aDefault;
-    end
-    else
-       result := aDefault;
+  if lStr <> '' then begin
+    if not TryStrToDate(lStr, out result) then
+      result := aDefault;
+  end
+  else
+     result := aDefault;
 end;
 
 method TCustomIniFile.ReadDateTime(aSection: DelphiString; aName: DelphiString; aDefault: TDateTime): TDateTime;
 begin
   var lStr := ReadString(aSection, aName, '');
-    if lStr <> '' then begin
-      if not TryStrToDateTime(lStr, out result) then
-        result := aDefault;
-    end
-    else
-       result := aDefault;
+  if lStr <> '' then begin
+    if not TryStrToDateTime(lStr, out result) then
+      result := aDefault;
+  end
+  else
+     result := aDefault;
 end;
 
 method TCustomIniFile.ReadFloat(aSection: DelphiString; aName: DelphiString; aDefault: Double): Double;
@@ -190,12 +190,12 @@ end;
 method TCustomIniFile.ReadTime(aSection: DelphiString; aName: DelphiString; aDefault: TDateTime): TDateTime;
 begin
   var lStr := ReadString(aSection, aName, '');
-    if lStr <> '' then begin
-      if not TryStrToTime(lStr, out result) then
-        result := aDefault;
-    end
-    else
-       result := aDefault;
+  if lStr <> '' then begin
+    if not TryStrToTime(lStr, out result) then
+      result := aDefault;
+  end
+  else
+     result := aDefault;
 end;
 
 method TCustomIniFile.WriteDate(Section: DelphiString; Name: DelphiString; Value: TDateTime);
@@ -334,7 +334,7 @@ begin
     aStrings.Clear;
     var lIndex := IndexOfSection(aSection);
     if lIndex >= 0 then
-      aStrings.SetStrings(fData[lIndex].Value);      
+      aStrings.SetStrings(fData[lIndex].Value);
   finally
     aStrings.EndUpdate;
   end;
@@ -377,7 +377,7 @@ begin
             lCurrentSection.Add(lStr.SubString(0, lPos).Trim + '=' + lStr.SubString(lPos + 1).Trim)
           else
             lCurrentSection.Add(lStr);
-        end;           
+        end;
       end;
     end;
   end;
