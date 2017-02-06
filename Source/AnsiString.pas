@@ -22,13 +22,13 @@ type
     class method SetOffset(Value: Integer);
     method GetOffsetChar(aIndex: Integer): AnsiChar;
     method SetOffsetChar(aIndex: Integer; Value: AnsiChar);
-    method GetChar(aIndex: Integer): AnsiChar;
-    method SetChar(aIndex: integer; Value: AnsiChar);
-    method GetData: array of Byte;
+    method GetChar(aIndex: Integer): AnsiChar; inline;
+    method SetChar(aIndex: integer; Value: AnsiChar); inline;
     method CharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
     method StringToUTF8(aString: PlatformString): array of Byte;
     class method CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer); static;
   public
+    constructor(aLength: Integer);
     constructor(Value: PlatformString; AsUTF16Bytes: Boolean := false);
     constructor(C: AnsiChar; Count: Integer);
     constructor(Value: array of Char);
@@ -53,10 +53,11 @@ type
     class operator LessOrEqual(Value1, Value2: AnsiString): Boolean;
     class property Offset: Integer read fOffset write SetOffset;
 
-    class method CompareStr(S1, S2: AnsiString): Integer; static;
+    class method CompareStr(S1, S2: AnsiString): Integer; static; // CompareStr --> SameStr, case sensitive
     class method SameStr(S1, S2: AnsiString): Boolean; static;
     class method CompareText(S1, S2: AnsiString): Integer; static;
-    class method SameText(S1, S2: AnsiString): Boolean; static;
+    class method SameText(S1, S2: AnsiString): Boolean; static; // --> CompareText, no case sensitive
+    class method &Copy(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer): AnsiString;
 
     [ToString]
     method ToString: PlatformString;
@@ -64,6 +65,7 @@ type
       //result := fData;
     end;
     
+    method GetData: array of Byte;
     method Insert(aIndex: Integer; Value: AnsiString): AnsiString;
     method Insert(aIndex: Integer; Value: Char): AnsiString;
     method Insert(aIndex: Integer; Value: AnsiChar): AnsiString;
@@ -76,10 +78,10 @@ type
     method Trim: AnsiString;
     method TrimLeft: AnsiString;
     method TrimRight: AnsiString;
-    method IndexOf(Substr: AnsiString): Integer;
+    method IndexOf(aSubStr: AnsiString): Integer;
     method Contains(aSubText: AnsiString): Boolean; inline;
-    method StartsWith(aSubText: AnsiString): Boolean; inline;
-    method EndsWith(aSubText: AnsiString): Boolean; inline;
+    method StartsWith(aSubText: AnsiString): Boolean; 
+    method EndsWith(aSubText: AnsiString): Boolean; 
     method Replace(aFromText, aToText: AnsiString): AnsiString; inline;
     method Replace(OldPattern, NewPattern: AnsiString; aFlags: TReplaceFlags): AnsiString;
     
@@ -92,10 +94,10 @@ type
   // Original functions
   procedure SetLength(var aString: AnsiString; aLength: Integer);
   // TODO
- /*
+ 
   function UpperCase(S: AnsiString): AnsiString;
   function LowerCase(S: AnsiString): AnsiString;
-  function CompareStr(S1, S2: AnsiString): Integer;
+ /* function CompareStr(S1, S2: AnsiString): Integer;
   function SameStr(S1, S2: AnsiString): Boolean;
   function CompareText(S1, S2: AnsiString): Integer;
   function SameText(S1, S2: AnsiString): Boolean;
@@ -108,13 +110,17 @@ type
   function EndsText(aSubText, aText: AnsiString): Boolean;
   function ReplaceText(aText, aFromText, aToText: AnsiString): AnsiString;
   function StringReplace(S, OldPattern, NewPattern: AnsiString; aFlags: TReplaceFlags): AnsiString;
+  Copy
+  Delete
+  Insert
+  FillChar
   */
 
 implementation
 
-procedure SetLength(var aString: AnsiString; aLength: Integer);
+constructor AnsiString(aLength: Integer);
 begin
-  aString.SetLength(aLength);
+  fData := new Byte[aLength];
 end;
 
 constructor AnsiString(Value: PlatformString; AsUTF16Bytes: Boolean := false);
@@ -189,32 +195,39 @@ end;
 
 operator AnsiString.Equal(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
+  if (Value1.Length <> Value2.Length) then
+    exit false;
 
+  var i := 0;
+  while (Value1[i] = Value2[i]) and (i < Value1.Length) do
+    inc(i);
+  
+  result := if i = Value1.Length then true else false;
 end;
 
 operator AnsiString.NotEqual(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
-
+  result := not (Value1 = Value2);
 end;
 
 operator AnsiString.Greater(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
-
+  result := CompareStr(Value1, Value2) > 0;
 end;
 
 operator AnsiString.Less(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
-
+  result := CompareStr(Value1, Value2) < 0;
 end;
 
 operator AnsiString.GreaterOrEqual(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
-
+  result := CompareStr(Value1, Value2) >= 0;
 end;
 
 operator AnsiString.LessOrEqual(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
-
+  result := CompareStr(Value1, Value2) <= 0;
 end;
 
 class method AnsiString.SetOffset(Value: Integer);
@@ -353,72 +366,155 @@ end;
 
 class method AnsiString.CompareStr(S1: AnsiString; S2: AnsiString): Integer;
 begin
-
+  result := S1.Length - S2.Length;
+  var lMax := if result >= 0 then S1.Length else S2.Length;
+  var i := 0;
+  while i < lMax do begin
+    var lCh := S1[i] - S2[i];
+    if lCh <> 0 then
+      exit if lCh > 0 then 1 else -1;
+  end;
 end;
 
 class method AnsiString.SameStr(S1: AnsiString; S2: AnsiString): Boolean;
 begin
-
+  result := CompareStr(S1, S2) = 0;
 end;
 
 class method AnsiString.CompareText(S1: AnsiString; S2: AnsiString): Integer;
 begin
-
+  result := S1.Length - S2.Length;
+  var lMax := if result >= 0 then S1.Length else S2.Length;
+  var i := 0;
+  var lCh1, lCh2: AnsiChar;
+  while i < lMax do begin
+    lCh1 := if S1[i] in [ord('a')..ord('z')] then S1[i] xor $20 else S1[i];
+    lCh2 := if S2[i] in [ord('a')..ord('z')] then S2[i] xor $20 else S2[i];
+    var lCh := lCh1 - lCh2;
+    if lCh <> 0 then
+      exit if lCh > 0 then 1 else -1;
+  end;
 end;
 
 class method AnsiString.SameText(S1: AnsiString; S2: AnsiString): Boolean;
 begin
+  result := CompareText(S1, S2) = 0;
+end;
 
+class method AnsiString.&Copy(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer): AnsiString;
+begin
+  result := new AnsiString(aCount);
+  for i: Integer := 0 to aCount - 1 do
+    result[i] := aSource[i];
 end;
 
 method AnsiString.CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; Count: Integer);
 begin
-
+  for i: Integer := SourceIndex to (SourceIndex + Count) - 1 do
+    Destination[DestinationIndex + i] := fData[SourceIndex + i];
 end;
 
 method AnsiString.ToUpper: AnsiString;
 begin
-
+  result := new AnsiString(Length);
+  var lCh: AnsiChar;
+  for i: Integer := 0 to Length - 1 do begin
+    lCh := fData[i];
+    if lCh in [ord('a')..ord('z')] then
+      result[i] := lCh xor $20
+    else
+      result[i] := lCh;
+  end;
 end;
 
 method AnsiString.ToLower: AnsiString;
 begin
-
+  result := new AnsiString(Length);
+  var lCh: AnsiChar;
+  for i: Integer := 0 to Length - 1 do begin
+    lCh := fData[i];
+    if lCh in [ord('A')..ord('Z')] then
+      result[i] := lCh xor $20
+    else
+      result[i] := lCh;
+  end;
 end;
 
 method AnsiString.Trim: AnsiString;
 begin
-
+  result := self.TrimLeft.TrimRight;
 end;
 
 method AnsiString.TrimLeft: AnsiString;
 begin
-
+  var i: Integer := 0;
+ 
+  while (fData[i] < ord(' ')) and (i < Length) do
+    inc(i);
+  result := AnsiString.Copy(self, i, Length - i)
 end;
 
 method AnsiString.TrimRight: AnsiString;
 begin
-
+  var i: Integer := Length - 1;
+ 
+  while (fData[i] < ord(' ')) and (i >= 0) do
+    dec(i);
+  result := AnsiString.Copy(self, 0, i - 1);
 end;
 
-method AnsiString.IndexOf(Substr: AnsiString): Integer;
+method AnsiString.IndexOf(aSubStr: AnsiString): Integer;
 begin
+  if (aSubStr = '') or (Length = 0) or (aSubStr.Length > Length) then
+    exit -1;
 
+  var i := 0;
+  var lSubData := aSubStr.Data;
+  while i < Length - aSubstr.Length do begin
+    if fData[i] = lSubData[i] then begin
+      var j := i + 1;
+      var k := 1;
+      while (fData[j] = lSubData[k]) and (k < aSubStr.Length) do begin
+        inc(j);
+        inc(k);
+      end;
+      if k = aSubStr.Length then
+        exit i;
+      inc(i);           
+    end;
+  end;
+  result := -1;
 end;
 
 method AnsiString.Contains(aSubText: AnsiString): Boolean;
 begin
-
+  result := IndexOf(aSubText) >= 0;
 end;
 
 method AnsiString.StartsWith(aSubText: AnsiString): Boolean;
 begin
+  if (aSubText = '') or (Length = 0) or (aSubText.Length > Length) then
+    exit false;
 
+  var i: Integer := 0;
+  var lSubData := aSubText.Data;
+  while (fData[i] = lSubData[i]) and (i < aSubText.Length) do
+    inc(i);
+  
+  result := if i = aSubText.Length then true else false;
 end;
 
 method AnsiString.EndsWith(aSubText: AnsiString): Boolean;
 begin
+  if (aSubText = '') or (Length = 0) or (aSubText.Length > Length) then
+    exit false;
 
+  var i := Length - aSubText.Length;
+  var lSubData := aSubText.GetData;
+  while (fData[i] = lSubData[i]) and (i < Length) do
+    inc(i);
+
+result := if i = Length then true else false;
 end;
 
 method AnsiString.Replace(aFromText: AnsiString; aToText: AnsiString): AnsiString;
@@ -429,6 +525,21 @@ end;
 method AnsiString.Replace(OldPattern: AnsiString; NewPattern: AnsiString; aFlags: TReplaceFlags): AnsiString;
 begin
 
+end;
+
+procedure SetLength(var aString: AnsiString; aLength: Integer);
+begin
+  aString.SetLength(aLength);
+end;
+
+function UpperCase(S: AnsiString): AnsiString;
+begin
+  result := S.ToUpper;
+end;
+
+function LowerCase(S: AnsiString): AnsiString;
+begin
+  result := S.ToLower;
 end;
 
 
