@@ -9,6 +9,7 @@
     <Import_RootNamespace>DelphiRTL.Tests.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Test Cases\AnsiString.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Classes.StringList.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Collections.Dictionary.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Collections.List.pas" />

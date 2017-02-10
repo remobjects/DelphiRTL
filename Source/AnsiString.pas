@@ -17,8 +17,8 @@ type
 
   AnsiString = public record
   private
-    class var fOffset: Integer;
     fData: array of Byte;
+    class var fOffset: Integer;
     class method SetOffset(Value: Integer);
     method GetOffsetChar(aIndex: Integer): AnsiChar;
     method SetOffsetChar(aIndex: Integer; aValue: AnsiChar);
@@ -64,7 +64,7 @@ type
     method ToString: PlatformString;
     
     method GetData: array of Byte;
-    method Insert(aIndex: Integer; Value: AnsiString): AnsiString;
+    method Insert(aIndex: Integer; aValue: AnsiString): AnsiString;
     method Insert(aIndex: Integer; Value: Char): AnsiString;
     method Insert(aIndex: Integer; Value: AnsiChar): AnsiString;
     method &Remove(StartIndex: Integer): AnsiString;
@@ -249,7 +249,7 @@ end;
 method AnsiString.GetOffsetChar(aIndex: Integer): AnsiChar;
 begin
   if (aIndex = 0) and (fOffset > 0) then raise new Exception("Index ot of range: Delphi AnsiStrings are one-based.");
-  result := GetChar(aIndex - fOffset);
+  result := GetChar(aIndex - fOffset);  
 end;
 
 method AnsiString.SetOffsetChar(aIndex: Integer; aValue: AnsiChar);
@@ -350,13 +350,13 @@ begin
   {$ENDIF}
 end;
 
-method AnsiString.Insert(aIndex: Integer; Value: AnsiString): AnsiString;
+method AnsiString.Insert(aIndex: Integer; aValue: AnsiString): AnsiString;
 begin
-  var lOldData := fData;
-  fData := new Byte[lOldData.length + Value.length];
+  var lOldData := self.fData;
+  fData := new Byte[lOldData.length + aValue.length];
   CopyArray(lOldData, 0, var fData, 0, aIndex);
-  CopyArray(Value.Data, 0, var fData, aIndex, Value.Length);
-  CopyArray(lOldData, aIndex, var fData, aIndex + Value.Length, Length - aIndex);
+  CopyArray(aValue.Data, 0, var fData, aIndex, aValue.Length);
+  CopyArray(lOldData, aIndex, var fData, aIndex + aValue.Length, lOldData.length - aIndex);
   result := self;
 end;
 
@@ -371,7 +371,7 @@ begin
   fData := new Byte[lOldData.length + 1];
   CopyArray(lOldData, 0, var fData, 0, aIndex);
   fData[aIndex] := Value;
-  CopyArray(lOldData, aIndex, var fData, aIndex + 1, Length - aIndex);
+  CopyArray(lOldData, aIndex, var fData, aIndex + 1, lOldData.length - aIndex);
   result := self;
 end;
 
