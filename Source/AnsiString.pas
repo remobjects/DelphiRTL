@@ -12,7 +12,11 @@ uses
 {$GLOBALS ON}
 
 type
-  AnsiChar = public Byte;
+  {$IF COOPER OR ECHOES}
+  AnsiChar = public record mapped to Byte
+  end;
+  {$ENDIF}
+
   TContentType = public (UTF8, UTF16, Unknown);
 
   AnsiString = public record
