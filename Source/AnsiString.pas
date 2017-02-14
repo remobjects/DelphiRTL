@@ -12,11 +12,6 @@ uses
 {$GLOBALS ON}
 
 type
-  {$IF COOPER OR ECHOES}
-  AnsiChar = public record mapped to Byte
-  end;
-  {$ENDIF}
-
   TContentType = public (UTF8, UTF16, Unknown);
 
   AnsiString = public record
@@ -32,6 +27,7 @@ type
     method StringToUTF8(aString: PlatformString): array of Byte;
     class method CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer); static;
   public
+    constructor;
     constructor(aLength: Integer);
     constructor(Value: PlatformString; AsUTF16Bytes: Boolean := false);
     constructor(C: AnsiChar; Count: Integer);
@@ -81,7 +77,8 @@ type
     method Trim: AnsiString;
     method TrimLeft: AnsiString;
     method TrimRight: AnsiString;
-    method IndexOf(aSubStr: AnsiString): Integer;
+    method IndexOf(aSubStr: AnsiString): Integer; inline;
+    method IndexOf(aSubStr: AnsiString; aIndex: Integer): Integer; 
     method Contains(aSubText: AnsiString): Boolean; inline;
     method StartsWith(aSubText: AnsiString): Boolean; 
     method EndsWith(aSubText: AnsiString): Boolean; 
@@ -121,6 +118,11 @@ type
     
 implementation
 
+constructor AnsiString;
+begin
+  fData := new Byte[0];
+end;
+
 constructor AnsiString(aLength: Integer);
 begin
   fData := new Byte[aLength];
@@ -143,9 +145,9 @@ end;
 
 method AnsiString.SetLength(aLength: Integer);
 begin
-  if aLength > 0 then begin
+  if Length > 0 then begin
     var lTmp := new Byte[aLength];
-    for i: Integer := 0 to aLength - 1 do
+    for i: Integer := 0 to Length - 1 do
       lTmp[i] := fData[i];
     fData := lTmp;
   end
@@ -170,7 +172,7 @@ end;
 
 operator AnsiString.Implicit(Value: Char): AnsiString;
 begin
-  result := new AnsiString(Byte(Value), 1);
+  result := new AnsiString(AnsiChar(Value), 1);
 end;
 
 operator AnsiString.Implicit(Value: PlatformString): AnsiString;
@@ -212,9 +214,12 @@ operator AnsiString.Equal(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
   if (Value1.Length <> Value2.Length) then
     exit false;
+  
+  if (Value1.Length = 0) and (Value2.Length = 0) then
+    exit true;
 
   var i := 0;
-  while (Value1[i] = Value2[i]) and (i < Value1.Length) do
+  while (Value1.Chars[i] = Value2.Chars[i]) and (i < Value1.Length) do
     inc(i);
   
   result := if i = Value1.Length then true else false;
@@ -292,7 +297,7 @@ constructor AnsiString(C: AnsiChar; Count: Integer);
 begin
   fData := new Byte[Count];
   for i: Integer := 0 to Count - 1 do
-    fData[i] := C;
+    fData[i] := Byte(C);
 end;
 
 constructor AnsiString(Value: array of Byte);
@@ -309,10 +314,12 @@ end;
 
 method AnsiString.ToString: PlatformString;
 begin
+  if fData = nil then
+    exit '';
   {$IF COOPER}
   result := new PlatformString(fData);
   {$ELSEIF ECHOES OR ISLAND}
-  var lArray: array of Char;
+  var lArray := new Char[fData.length];
   for i: Integer := 0 to fData.length - 1 do
     lArray[i] := Chr(fData[i]);
   {$IF ECHOES}
@@ -332,12 +339,12 @@ end;
 
 method AnsiString.GetChar(aIndex: Integer): AnsiChar;
 begin
-  result := fData[aIndex];
+  result := AnsiChar(fData[aIndex]);
 end;
 
 method AnsiString.SetChar(aIndex: Integer; Value: AnsiChar);
 begin
-  fData[aIndex] := Value;
+  fData[aIndex] := Byte(Value);
 end;
 
 method AnsiString.StringToUTF8(aString: PlatformString): array of Byte;
@@ -366,7 +373,7 @@ end;
 
 method AnsiString.Insert(aIndex: Integer; Value: Char): AnsiString;
 begin
-  result := Insert(aIndex, Byte(Value));
+  result := Insert(aIndex, AnsiChar(Value));
 end;
 
 method AnsiString.Insert(aIndex: Integer; Value: AnsiChar): AnsiString;
@@ -374,7 +381,7 @@ begin
   var lOldData := fData;
   fData := new Byte[lOldData.length + 1];
   CopyArray(lOldData, 0, var fData, 0, aIndex);
-  fData[aIndex] := Value;
+  fData[aIndex] := Byte(Value);
   CopyArray(lOldData, aIndex, var fData, aIndex + 1, lOldData.length - aIndex);
   result := self;
 end;
@@ -395,7 +402,7 @@ begin
   var lOldData := fData;
   fData := new Byte[Length - Count];
   CopyArray(lOldData, 0, var fData, 0, StartIndex);
-  CopyArray(lOldData, StartIndex + Count, var fData, StartIndex, Length - (StartIndex + Count));
+  CopyArray(lOldData, StartIndex + Count, var fData, StartIndex, lOldData.length - (StartIndex + Count));
   result := self;
 end;
 
@@ -405,7 +412,7 @@ begin
   var lMax := if result >= 0 then S1.Length else S2.Length;
   var i := 0;
   while i < lMax do begin
-    var lCh := S1[i] - S2[i];
+    var lCh := Byte(S1[i]) - Byte(S2[i]);
     if lCh <> 0 then
       exit if lCh > 0 then 1 else -1;
   end;
@@ -423,9 +430,9 @@ begin
   var i := 0;
   var lCh1, lCh2: AnsiChar;
   while i < lMax do begin
-    lCh1 := if S1[i] in [ord('a')..ord('z')] then S1[i] xor $20 else S1[i];
-    lCh2 := if S2[i] in [ord('a')..ord('z')] then S2[i] xor $20 else S2[i];
-    var lCh := lCh1 - lCh2;
+    lCh1 := if S1[i] in ['a'..'z'] then AnsiChar(Byte(S1[i]) xor $20) else S1[i];
+    lCh2 := if S2[i] in ['a'..'z'] then AnsiChar(Byte(S2[i]) xor $20) else S2[i];
+    var lCh := Byte(lCh1) - Byte(lCh2);
     if lCh <> 0 then
       exit if lCh > 0 then 1 else -1;
   end;
@@ -440,18 +447,18 @@ class method AnsiString.&Copy(aSource: AnsiString; aSourceIndex: Integer; aCount
 begin
   result := new AnsiString(aCount);
   for i: Integer := 0 to aCount - 1 do
-    result[i] := aSource[i];
+    result[i] := aSource[aSourceIndex + i];
 end;
 
 method AnsiString.CopyFrom(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer);
 begin
   for i: Integer := 0 to aCount - 1 do
-    fData[i] := aSource[aSourceIndex + i];
+    fData[i] := Byte(aSource[aSourceIndex + i]);
 end;
 
 method AnsiString.CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; Count: Integer);
 begin
-  for i: Integer := SourceIndex to (SourceIndex + Count) - 1 do
+  for i: Integer := 0 to Count - 1 do
     Destination[DestinationIndex + i] := fData[SourceIndex + i];
 end;
 
@@ -460,9 +467,9 @@ begin
   result := new AnsiString(Length);
   var lCh: AnsiChar;
   for i: Integer := 0 to Length - 1 do begin
-    lCh := fData[i];
-    if lCh in [ord('a')..ord('z')] then
-      result[i] := lCh xor $20
+    lCh := AnsiChar(fData[i]);
+    if lCh in ['a'..'z'] then
+      result[i] := AnsiChar(Byte(lCh) xor $20)
     else
       result[i] := lCh;
   end;
@@ -473,9 +480,9 @@ begin
   result := new AnsiString(Length);
   var lCh: AnsiChar;
   for i: Integer := 0 to Length - 1 do begin
-    lCh := fData[i];
-    if lCh in [ord('A')..ord('Z')] then
-      result[i] := lCh xor $20
+    lCh := AnsiChar(fData[i]);
+    if lCh in ['A'..'Z'] then
+      result[i] := AnsiChar(Byte(lCh) xor $20)
     else
       result[i] := lCh;
   end;
@@ -490,7 +497,7 @@ method AnsiString.TrimLeft: AnsiString;
 begin
   var i: Integer := 0;
  
-  while (fData[i] < ord(' ')) and (i < Length) do
+  while (fData[i] <= ord(' ')) and (i < Length) do
     inc(i);
   result := AnsiString.Copy(self, i, Length - i)
 end;
@@ -499,30 +506,35 @@ method AnsiString.TrimRight: AnsiString;
 begin
   var i: Integer := Length - 1;
  
-  while (fData[i] < ord(' ')) and (i >= 0) do
+  while (fData[i] <= ord(' ')) and (i >= 0) do
     dec(i);
-  result := AnsiString.Copy(self, 0, i - 1);
+  result := AnsiString.Copy(self, 0, i + 1);
 end;
 
 method AnsiString.IndexOf(aSubStr: AnsiString): Integer;
 begin
+  result := IndexOf(aSubStr, 0);
+end;
+
+method AnsiString.IndexOf(aSubStr: AnsiString; aIndex: Integer): Integer;
+begin
   if (aSubStr = '') or (Length = 0) or (aSubStr.Length > Length) then
     exit -1;
 
-  var i := 0;
+  var i := aIndex;
   var lSubData := aSubStr.Data;
-  while i < Length - aSubStr.Length do begin
-    if fData[i] = lSubData[i] then begin
+  while i <= Length - aSubStr.Length do begin
+    if fData[i] = lSubData[0] then begin
       var j := i + 1;
       var k := 1;
-      while (fData[j] = lSubData[k]) and (k < aSubStr.Length) do begin
+      while (k < aSubStr.Length) and (fData[j] = lSubData[k]) do begin
         inc(j);
         inc(k);
       end;
       if k = aSubStr.Length then
         exit i;
-      inc(i);           
     end;
+    inc(i);
   end;
   result := -1;
 end;
@@ -539,7 +551,7 @@ begin
 
   var i: Integer := 0;
   var lSubData := aSubText.Data;
-  while (fData[i] = lSubData[i]) and (i < aSubText.Length) do
+  while (i < aSubText.Length) and (fData[i] = lSubData[i]) do
     inc(i);
   
   result := if i = aSubText.Length then true else false;
@@ -551,16 +563,17 @@ begin
     exit false;
 
   var i := Length - aSubText.Length;
+  var lDelta := i;
   var lSubData := aSubText.GetData;
-  while (fData[i] = lSubData[i]) and (i < Length) do
+  while (i < Length) and (fData[i] = lSubData[i - lDelta]) do
     inc(i);
 
-result := if i = Length then true else false;
+  result := if i = Length then true else false;
 end;
 
 method AnsiString.Replace(aFromText: AnsiString; aToText: AnsiString): AnsiString;
 begin
-  result := Replace(aFromText, aToText, [TReplaceFlags.rfReplaceAll, TReplaceFlags.rfIgnoreCase]);
+  result := Replace(aFromText, aToText, []);
 end;
 
 method AnsiString.Replace(OldPattern: AnsiString; NewPattern: AnsiString; aFlags: TReplaceFlags): AnsiString;
@@ -582,39 +595,48 @@ begin
 
   var lOnlyFirst := not (TReplaceFlags.rfReplaceAll in aFlags);
   var i := 0;
-  while i < Length - OldPattern.Length do begin
-    if lData[i] = lSubData[i] then begin
+  while i <= Length - OldPattern.Length do begin
+    if lData[i] = lSubData[0] then begin
       var j := i + 1;
       var k := 1;
-      while (lData[j] = lSubData[k]) and (k < OldPattern.Length) do begin
+      while (k < OldPattern.Length) and (lData[j] = lSubData[k]) do begin
         inc(j);
         inc(k);
       end;
       if k = OldPattern.Length then begin
         result := result + NewPattern;
         inc(i, lSubData.Length);
-        if lOnlyFirst then
+        if lOnlyFirst then begin
+          result := result + &Copy(self, i, fData.length - i);
           exit;
+        end;
       end
       else begin
-        result := result + fData[i];
+        result := result + AnsiChar(fData[i]);
         inc(i); 
       end;    
+    end
+    else begin
+      result := result + AnsiChar(fData[i]);
+      inc(i);
     end;
   end;
 end;
 
 method AnsiString.FillChar(aCount: Integer; aValue: AnsiChar);
 begin
+  if Length < aCount then
+    SetLength(aCount);
+
   for i: Integer := 0 to aCount - 1 do
-    fData[i] := aValue;
+    fData[i] := Byte(aValue);
 end;
 
 method AnsiString.ToNullTerminated: AnsiString;
 begin
   result := new AnsiString(length + 1);
   result.CopyFrom(self, 0, Length);
-  result[Length] := 0;
+  result[Length] := AnsiChar(#0);
 end;
 
 procedure SetLength(var aString: AnsiString; aLength: Integer);

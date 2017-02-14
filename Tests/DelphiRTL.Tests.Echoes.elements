@@ -46,6 +46,7 @@
         <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="Echoes"/>
         <Reference Include="mscorlib"/>
         <Reference Include="RemObjects.Elements.EUnit">
             <Private>True</Private>
