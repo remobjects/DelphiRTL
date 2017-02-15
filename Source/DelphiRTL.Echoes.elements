@@ -52,6 +52,7 @@
     <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Echoes" />
     <Reference Include="mscorlib" />
     <Reference Include="Elements" />
     <Reference Include="System" />

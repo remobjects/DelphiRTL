@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -9,6 +9,7 @@
     <Import_RootNamespace>DelphiRTL.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AnsiString.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes.StringList.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Collections.Dictionary.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Collections.Queue.pas" />
