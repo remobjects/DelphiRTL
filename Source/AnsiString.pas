@@ -23,7 +23,7 @@ type
     method GetOffsetChar(aIndex: Integer): AnsiChar;
     method SetOffsetChar(aIndex: Integer; aValue: AnsiChar);
     method GetChar(aIndex: Integer): AnsiChar; inline;
-    method SetChar(aIndex: integer; Value: AnsiChar); inline;
+    method SetChar(aIndex: Integer; Value: AnsiChar); inline;
     method CharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
     method StringToUTF8(aString: PlatformString): array of Byte;
     class method CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer); static;
@@ -42,7 +42,7 @@ type
     class operator Implicit(Value: Char): AnsiString;
     class operator Implicit(Value: PlatformString): AnsiString;
     class operator Implicit(Value: AnsiString): String;
-    class operator Implicit(Value: array of char): AnsiString;
+    class operator Implicit(Value: array of Char): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: Char): AnsiString;
     class operator &Add(Value1: Char; Value2: AnsiString): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: AnsiChar): AnsiString;
@@ -171,7 +171,7 @@ end;
 
 class method AnsiString.Create(Value: array of Char): AnsiString;
 begin
-  result := create(Value, 0, Value.Length);
+  result := Create(Value, 0, Value.Length);
 end;
 
 operator AnsiString.Implicit(Value: Char): AnsiString;

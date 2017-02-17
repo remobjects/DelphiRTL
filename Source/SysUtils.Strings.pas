@@ -7,6 +7,11 @@ interface
 uses
   RemObjects.Elements.RTL;
 
+const
+  PathDelim  = {$IF ISLAND AND WINDOWS} '\'; {$ELSE} '/'; {$ENDIF}
+  DriveDelim = {$IF ISLAND AND WINDOWS} ':'; {$ELSE} '';  {$ENDIF}
+  PathSep    = {$IF ISLAND AND WINDOWS} ';'; {$ELSE} ':'; {$ENDIF}
+
 function UpperCase(const S: DelphiString): DelphiString;
 function UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; inline;
 function LowerCase(const S: DelphiString): DelphiString;
