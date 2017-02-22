@@ -3,6 +3,9 @@
 interface
 
 uses
+  {$IF ISLAND}
+  RemObjects.Elements.System,
+  {$ENDIF}
   RemObjects.Elements.RTL;
 
 {$GLOBALS ON}
@@ -86,73 +89,63 @@ var
   SysLocale: TSysLocale;
 
 
-// File functions
-
+{ File functions }
 function FileOpen(const FileName: DelphiString; Mode: Cardinal): THandle;
 function FileCreate(const FileName: String): THandle;
 function FileCreate(const FileName: String; Rights: Integer): THandle;
 function FileCreate(const FileName: String; Mode: Cardinal; Rights: Integer): THandle;
-/*function FileSystemAttributes(const Path: string): TFileSystemAttributes;
-
-function FileRead(Handle: THandle; var Buffer; Count: Cardinal): Integer;
-function FileWrite(Handle: THandle; const Buffer; Count: Cardinal): Integer; */
 function FileRead(Handle: THandle; var Buffer: array of Byte; Offset, Count: Cardinal): Integer;
 function FileWrite(Handle: THandle; const Buffer: array of Byte; Offset, Count: Cardinal): Integer;
 function FileSeek(Handle: THandle; Offset, Origin: Integer): Integer;
 function FileSeek(Handle: THandle; const Offset: Int64; Origin: Integer): Int64;
 procedure FileClose(Handle: THandle);
-/*function FileAge(const FileName: string; out FileDateTime: TDateTime;
-  FollowLink: Boolean = True): Boolean;
-*/
 function FileExists(const FileName: DelphiString; FollowLink: Boolean := true): Boolean;
 function DirectoryExists(const Directory: DelphiString; FollowLink: Boolean := true): Boolean;
-/*
-function ForceDirectories(Dir: string): Boolean;
-
-function FindFirst(const Path: string; Attr: Integer;   var F: TSearchRec): Integer;
-function FindNext(var F: TSearchRec): Integer;
-procedure FindClose(var F: TSearchRec);
-
-function FileGetDate(Handle: THandle): LongInt;
-function FileGetDateTimeInfo(const FileName: string;
-  out DateTime: TDateTimeInfoRec; FollowLink: Boolean = True): Boolean;
-function FileSetDate(const FileName: string; Age: LongInt): Integer;
-
-function FileSetDate(Handle: THandle; Age: Integer): Integer;  platform;
-function FileGetAttr(const FileName: string; FollowLink: Boolean = True): Integer; platform;
-
-function FileSetAttr(const FileName: string; Attr: Integer; FollowLink: Boolean = True): Integer; platform;
-function FileIsReadOnly(const FileName: string): Boolean;
-function FileSetReadOnly(const FileName: string; ReadOnly: Boolean): Boolean;
-*/
+function ForceDirectories(Dir: DelphiString): Boolean;
 function DeleteFile(const FileName: DelphiString): Boolean;
 function RenameFile(const OldName, NewName: DelphiString): Boolean;
 function ChangeFileExt(const FileName, aExtension: DelphiString): DelphiString;
-/*
-function ChangeFilePath(const FileName, Path: string): string;
-function ExtractFilePath(const FileName: string): string;
-function ExtractFileDir(const FileName: string): string;
-function ExtractFileDrive(const FileName: string): string;
-*/
+function ChangeFilePath(const FileName, Path: DelphiString): DelphiString;
+function ExtractFilePath(const FileName: DelphiString): DelphiString;
+function ExtractFileDir(const FileName: DelphiString): DelphiString;
+function ExtractFileDrive(const FileName: DelphiString): DelphiString;
+function IsDelimiter(const Delimiters, S: DelphiString; aIndex: Integer): Boolean; inline;
+function LastDelimiter(const Delimiters, S: DelphiString): Integer; inline;
+function IncludeTrailingPathDelimiter(const S: DelphiString): DelphiString;
+function ExcludeTrailingPathDelimiter(const S: DelphiString): DelphiString;
 function ExtractFileName(const FileName: DelphiString): DelphiString;
 function ExtractFileExt(const FileName: DelphiString): DelphiString;
 function GetHomePath: DelphiString;
 function ExpandFileName(const FileName: DelphiString): DelphiString;
-/*
-function ExpandUNCFileName(const FileName: string): string;
-function ExtractRelativePath(const BaseName, DestName: string): string;
-function IsRelativePath(const Path: string): Boolean;
-function ExtractShortPathName(const FileName: string): string;
-function FileSearch(const Name, DirList: string): string;
-function DiskFree(Drive: Byte): Int64;
-function DiskSize(Drive: Byte): Int64;
-function FileDateToDateTime(FileDate: LongInt): TDateTime;
-function DateTimeToFileDate(DateTime: TDateTime): LongInt; */
+function IsRelativePath(const Path: DelphiString): Boolean;
 function GetCurrentDir: DelphiString;
-//function SetCurrentDir(const Dir: string): Boolean;
 function CreateDir(const Dir: DelphiString): Boolean;
 function RemoveDir(const Dir: DelphiString): Boolean;
 
+{$IF ISLAND AND WINDOWS}
+function FileSetAttr(const FileName: DelphiString; Attr: Integer; FollowLink: Boolean := True): Integer;
+//function FileSetDate(Handle: THandle; Age: Integer): Integer;
+function FileGetAttr(const FileName: DelphiString; FollowLink: Boolean := True): Integer;
+function DiskFree(Drive: Byte): Int64;
+function DiskSize(Drive: Byte): Int64;
+{$ENDIF}
+/*
+{$IF ISLAND}
+function FileAge(const FileName: string; out FileDateTime: TDateTime; FollowLink: Boolean := True): Boolean;
+function FileIsReadOnly(const FileName: string): Boolean;
+function FileSetReadOnly(const FileName: string; ReadOnly: Boolean): Boolean;
+function FileSystemAttributes(const Path: string): TFileSystemAttributes;
+function SetCurrentDir(const Dir: string): Boolean;
+function FindFirst(const Path: string; Attr: Integer;   var F: TSearchRec): Integer;
+function FindNext(var F: TSearchRec): Integer;
+procedure FindClose(var F: TSearchRec);
+function FileGetDate(Handle: THandle): LongInt;
+function FileGetDateTimeInfo(const FileName: string; out DateTime: TDateTimeInfoRec; FollowLink: Boolean = True): Boolean;
+function FileSetDate(const FileName: string; Age: LongInt): Integer;
+function FileDateToDateTime(FileDate: LongInt): TDateTime;
+function DateTimeToFileDate(DateTime: TDateTime): LongInt;
+{$ENDIF}
+*/
 
 implementation
 
@@ -242,6 +235,62 @@ begin
   result := Path.ChangeExtension(FileName, aExtension);
 end;
 
+function ChangeFilePath(const FileName, Path: DelphiString): DelphiString;
+begin
+  result := IncludeTrailingPathDelimiter(Path) + ExtractFileName(FileName);
+end;
+
+function ExtractFilePath(const FileName: DelphiString): DelphiString;
+begin
+  var lPos := FileName.LastDelimiter(PathDelim);
+  if lPos > 0 then
+    result := FileName.SubString(0, lPos + 1)
+  else
+    result := '';
+end;
+
+function ExtractFileDir(const FileName: DelphiString): DelphiString;
+begin
+  var lPos := FileName.LastDelimiter(PathDelim + DriveDelim);
+  if (lPos > 0) and (FileName.Chars[lPos] = PathDelim) then
+    dec(lPos);
+  result := FileName.SubString(0, lPos + 1);
+end;
+
+function ExtractFileDrive(const FileName: DelphiString): DelphiString;
+begin
+  if (FileName.Length >= 2) and (FileName.Chars[1] = DriveDelim) then
+    result := FileName.SubString(0, 2)
+  else
+    result := '';
+end;
+
+function IsDelimiter(const Delimiters, S: DelphiString; aIndex: Integer): Boolean;
+begin
+  result := S.IsDelimiter(Delimiters, aIndex);
+end;
+
+function LastDelimiter(const Delimiters, S: DelphiString): Integer;
+begin
+  result := S.LastDelimiter(Delimiters);
+end;
+
+function IncludeTrailingPathDelimiter(const S: DelphiString): DelphiString;
+begin
+  if (S.Length > 0) and (S[S.Length - 1] <> PathDelim) then
+    result := S + PathDelim
+  else
+    result := S;
+end;
+
+function ExcludeTrailingPathDelimiter(const S: DelphiString): DelphiString;
+begin
+  if (S.Length > 0) and (S[S.Length - 1] = PathDelim) then
+    result := S.SubString(0, S.Length - 1)
+  else
+    result := S;
+end;
+
 function ExtractFileName(const FileName: DelphiString): DelphiString;
 begin
   result := Path.GetFileName(FileName);
@@ -260,6 +309,15 @@ end;
 function ExpandFileName(const FileName: DelphiString): DelphiString;
 begin
   result := Path.GetFullPath(FileName);
+end;
+
+function IsRelativePath(const Path: DelphiString): Boolean;
+begin
+  {$IF ISLAND AND WINDOWS}
+  result := (Path.Length > 0) and (Path.Chars[0] <> PathDelim) and (Path.Chars[1] <> ':');
+  {$ELSE}
+  result := (Path.Length > 0) and (Path.Chars[0] <> PathDelim);
+  {$ENDIF}
 end;
 
 function GetCurrentDir: DelphiString;
@@ -376,10 +434,78 @@ begin
   end;
 end;
 
+function ForceDirectories(Dir: DelphiString): Boolean;
+begin
+  result := true;
+  if Dir = '' then
+    raise new Exception('Can not create directory');
+
+  var lDir := ExcludeTrailingPathDelimiter(Dir);
+  var lList := new TStringList();
+  if DirectoryExists(lDir) then
+    exit;
+
+  {$IF ISLAND AND WINDOWS}
+  repeat
+    lList.Add(lDir);
+    lDir := ExtractFileDir(lDir);
+  until (lDir.Length < 3) or (ExtractFileDir(lDir) = lDir);
+  {$ELSE}
+  repeat
+    lList.Add(lDir);
+    lDir := ExpandFileName(lDir);
+  until lDir = '';
+  {$ENDIF}
+
+  for i: Integer := lList.Count - 1 downto 0 do begin
+    result := CreateDir(lList[i]);
+    if not result then 
+      exit;
+  end;
+end;
+
 class constructor TFormatSettings;
 begin
   SysLocale.DefaultLCID := Locale.Current;
 
 end;
+
+{$IF ISLAND AND WINDOWS}
+procedure CallDiskFreeSpace(Drive: Byte; var aFreeSpace: Int64; var aDiskSize: Int64);
+begin
+  var lDrive: RemObjects.Elements.System.String := Char(Drive + $40) + ':' + PathDelim;
+  var lChars := lDrive.ToCharArray();
+  var lFreeSpace, lTotalSpace: rtl.ULARGE_INTEGER;
+  rtl.GetDiskFreeSpaceEx(@lChars[0], @lFreeSpace, @lTotalSpace, nil);
+  aFreeSpace := lFreeSpace.QuadPart;
+  aDiskSize := lTotalSpace.QuadPart;
+end;
+
+function DiskSize(Drive: Byte): Int64;
+begin
+  var lFreeSpace, lDiskSize: Int64;
+  CallDiskFreeSpace(Drive, var lFreeSpace, var lDiskSize);
+  result := lDiskSize;
+end;
+
+function FileSetAttr(const FileName: DelphiString; Attr: Integer; FollowLink: Boolean := True): Integer;
+begin
+  var lArray := PlatformString(FileName).ToCharArray(true);
+  result := Integer(rtl.SetFileAttributes(@lArray[0], Attr));
+end;
+
+function FileGetAttr(const FileName: DelphiString; FollowLink: Boolean := True): Integer;
+begin
+  var lArray := PlatformString(FileName).ToCharArray(true);
+  result := rtl.GetFileAttributes(@lArray[0]); 
+end;
+
+function DiskFree(Drive: Byte): Int64;
+begin
+  var lFreeSpace, lDiskSize: Int64;
+  CallDiskFreeSpace(Drive, var lFreeSpace, var lDiskSize);
+  result := lFreeSpace;
+end;
+{$ENDIF}
 
 end.
