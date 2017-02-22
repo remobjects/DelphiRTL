@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)System.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)SysUtils.DateTime.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)SysUtils.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)SysUtils.StringBuilder.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)SysUtils.Strings.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)TObject.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Aliases.pas" />

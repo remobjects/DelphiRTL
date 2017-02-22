@@ -85,6 +85,11 @@ type
       {$ELSEIF ISLAND}
       {$ENDIF}
     end;
+
+    method ToString: DelphiString;
+    begin
+      result := '';
+    end;
   end;
 
 end.
