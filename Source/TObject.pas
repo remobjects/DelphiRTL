@@ -85,11 +85,6 @@ type
       {$ELSEIF ISLAND}
       {$ENDIF}
     end;
-
-    method ToString: String; override;
-    begin
-      result := '';
-    end;
   end;
 
 end.

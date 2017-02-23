@@ -103,7 +103,7 @@ type
     class method Check(aMajor: Integer): Boolean; static;
     class method Check(aMajor, aMinor: Integer): Boolean; static;
     class method Check(aMajor, aMinor, aServicePackMajor: Integer): Boolean; static;
-    class method ToString: String; static;
+    class method ToString: DelphiString; static;
     class property Architecture: TArchitecture read fArchitecture;
     class property Build: Integer read fBuild;
     class property Major: Integer read fMajor;
@@ -630,9 +630,9 @@ begin
   Result := Check(aMajor, aMinor) or ((fMajor = aMajor) and (fMinor = aMinor) and (fServicePackMajor >= aServicePackMajor));
 end;
 
-class method TOSVersion.ToString: String;
+class method TOSVersion.ToString: DelphiString;
 begin
-
+  result := String.Format('%s (Version %d.%d.%d)', [fName, fMajor, fMinor, fServicePackMajor]);
 end;
 
 

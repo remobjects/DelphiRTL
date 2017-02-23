@@ -12,7 +12,7 @@ type
   private
     fData: RemObjects.Elements.RTL.StringBuilder;
     method GetChars(aIndex : Integer): Char; {$IF NOT COOPER}inline;{$ENDIF}
-    method SetChars(aIndex : Integer; Value: Char); {$IF NOT COOPER}inline;{$ENDIF}
+    method SetChars(aIndex : Integer; Value: Char); {$IF NOT COOPER AND NOT TOFFEE}inline;{$ENDIF}
   public
     constructor;
     constructor(aCapacity: Integer);
