@@ -6,9 +6,9 @@ uses
   RemObjects.Elements.RTL;
 
 type
-  TCharArray = TArray<Char>;
+  TCharArray = public TArray<Char>;
 
-  TStringBuilder = class(TObject)
+  TStringBuilder = public class(TObject)
   private
     fData: RemObjects.Elements.RTL.StringBuilder;
     method GetChars(aIndex : Integer): Char; {$IF NOT COOPER}inline;{$ENDIF}
@@ -76,6 +76,7 @@ type
     method Replace(const OldChar: Char; const NewChar: Char; StartIndex: Integer; Count: Integer): TStringBuilder;
     method Replace(const OldValue: DelphiString; const NewValue: DelphiString; StartIndex: Integer; Count: Integer): TStringBuilder;
 
+    [ToString]
     method ToString: String; override;
     method ToString(StartIndex: Integer; StrLength: Integer): DelphiString;
 
@@ -131,13 +132,13 @@ end;
 
 method TStringBuilder.Append(const Value: Boolean): TStringBuilder;
 begin
-  fData.Append(Value.ToString);
+  fData.Append(Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Append(const Value: Byte): TStringBuilder;
 begin
-  fData.Append(Value.ToString);
+  fData.Append(Convert.ToString(Value));
   result := self;
 end;
 
@@ -149,25 +150,25 @@ end;
 
 method TStringBuilder.Append(const Value: Double): TStringBuilder;
 begin
-  fData.Append(Value.ToString);
+  fData.Append(Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Append(const Value: SmallInt): TStringBuilder;
 begin
-  fData.Append(Value.ToString);
+  fData.Append(Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Append(const Value: Integer): TStringBuilder;
 begin
-  fData.Append(Value.ToString);
+  fData.Append(Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Append(const Value: Int64): TStringBuilder;
 begin
-  fData.Append(Value.ToString);
+  fData.Append(Convert.ToString(Value));
   result := self;
 end;
 
@@ -179,7 +180,7 @@ end;
 
 method TStringBuilder.Append(const Value: Single): TStringBuilder;
 begin
-  fData.Append(Value.ToString);
+  fData.Append(Convert.ToString(Value));
   result := self;
 end;
 
@@ -192,32 +193,32 @@ end;
 {$IF NOT COOPER}
 method TStringBuilder.Append(const Value: ShortInt): TStringBuilder;
 begin
-  fData.Append(Value.ToString);
+  fData.Append(Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Append(const Value: UInt64): TStringBuilder;
 begin
-  fData.Append(Value.ToString);
+  fData.Append(Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Append(const Value: Word): TStringBuilder;
 begin
-  fData.Append(Value.ToString);
+  fData.Append(Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Append(const Value: Cardinal): TStringBuilder;
 begin
-  fData.Append(Value.ToString);
+  fData.Append(Convert.ToString(Value));
   result := self;
 end;
 {$ENDIF}
 
 method TStringBuilder.Append(const Value: array of Char): TStringBuilder;
 begin
-  fData.Append(new PlatformString(Value));
+  fData.Append(DelphiString.Create(Value));
   result := self;
 end;
 
@@ -229,7 +230,7 @@ end;
 
 method TStringBuilder.Append(const Value: array of Char; StartIndex: Integer; CharCount: Integer): TStringBuilder;
 begin
-  fData.Append(new PlatformString(Value, StartIndex, CharCount), StartIndex, CharCount);
+  fData.Append(DelphiString.Create(Value, StartIndex, CharCount), StartIndex, CharCount);
   result := self;
 end;
 
@@ -288,13 +289,13 @@ end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: Boolean): TStringBuilder;
 begin
-  fData.Insert(aIndex, Value.ToString);
+  fData.Insert(aIndex, Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: Byte): TStringBuilder;
 begin
-  fData.Insert(aIndex, Value.ToString);
+  fData.Insert(aIndex, Convert.ToString(Value));
   result := self;
 end;
 
@@ -306,31 +307,31 @@ end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: Double): TStringBuilder;
 begin
-  fData.Insert(aIndex, Value.ToString);
+  fData.Insert(aIndex, Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: SmallInt): TStringBuilder;
 begin
-  fData.Insert(aIndex, Value.ToString);
+  fData.Insert(aIndex, Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: Integer): TStringBuilder;
 begin
-  fData.Insert(aIndex, Value.ToString);
+  fData.Insert(aIndex, Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: array of Char): TStringBuilder;
 begin
-  fData.Insert(aIndex, new PlatformString(Value));
+  fData.Insert(aIndex, DelphiString.Create(Value));
   result := self;
 end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: Int64): TStringBuilder;
 begin
-  fData.Insert(aIndex, Value.ToString);
+  fData.Insert(aIndex, Convert.ToString(Value));
   result := self;
 end;
 
@@ -342,7 +343,7 @@ end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: Single): TStringBuilder;
 begin
-  fData.Insert(aIndex, Value.ToString);
+  fData.Insert(aIndex, Convert.ToString(Value));
   result := self;
 end;
 
@@ -355,25 +356,25 @@ end;
 {$IF NOT COOPER}
 method TStringBuilder.Insert(aIndex: Integer; const Value: ShortInt): TStringBuilder;
 begin
-  fData.Insert(aIndex, Value.ToString);
+  fData.Insert(aIndex, Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: Word): TStringBuilder;
 begin
-  fData.Insert(aIndex, Value.ToString);
+  fData.Insert(aIndex, Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: Cardinal): TStringBuilder;
 begin
-  fData.Insert(aIndex, Value.ToString);
+  fData.Insert(aIndex, Convert.ToString(Value));
   result := self;
 end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: UInt64): TStringBuilder;
 begin
-  fData.Insert(aIndex, Value.ToString);
+  fData.Insert(aIndex, Convert.ToString(Value));
   result := self;
 end;
 {$ENDIF}
@@ -388,7 +389,7 @@ end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: array of Char; startIndex: Integer; charCount: Integer): TStringBuilder;
 begin
-  fData.Insert(aIndex, new PlatformString(Value, startIndex, charCount));
+  fData.Insert(aIndex, DelphiString.Create(Value, startIndex, charCount));
   result := self;
 end;
 

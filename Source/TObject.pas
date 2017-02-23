@@ -86,7 +86,7 @@ type
       {$ENDIF}
     end;
 
-    method ToString: DelphiString; override;
+    method ToString: String; override;
     begin
       result := '';
     end;

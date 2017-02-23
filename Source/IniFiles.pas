@@ -128,7 +128,7 @@ end;
 
 method TCustomIniFile.WriteInteger(aSection: DelphiString; aIdent: DelphiString; aValue: Integer);
 begin
-  var lStr := aValue.ToString;
+  var lStr := Convert.ToString(aValue);
   WriteString(aSection, aIdent, lStr);
 end;
 
@@ -211,7 +211,7 @@ end;
 
 method TCustomIniFile.WriteFloat(aSection: DelphiString; aName: DelphiString; aValue: Double);
 begin
-  var lStr := aValue.ToString;
+  var lStr := Convert.ToString(aValue);
   WriteString(aSection, aName, lStr);
 end;
 

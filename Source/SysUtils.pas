@@ -84,10 +84,39 @@ type
     class constructor;
   end;
 
+  TArchitecture = public (arIntelX86, arIntelX64, arARM32, arARM64);
+  TPlatform = public (pfWindows, pfMacOS, pfiOS, pfAndroid, pfWinRT, pfLinux, pfNET, pfJava, pfTVOS, pfWatchOS);
+
+  TOSVersion = public record
+  private
+    class var fArchitecture: TArchitecture;
+    class var fBuild: Integer;
+    class var fMajor: Integer;
+    class var fMinor: Integer;
+    class var fName: String;
+    class var fPlatform: TPlatform;
+    class var fServicePackMajor: Integer;
+    class var fServicePackMinor: Integer;    
+    {$IF ISLAND AND WINDOWS}class method GetOSInfo; static;{$ENDIF} 
+    class constructor;
+  public
+    class method Check(aMajor: Integer): Boolean; static;
+    class method Check(aMajor, aMinor: Integer): Boolean; static;
+    class method Check(aMajor, aMinor, aServicePackMajor: Integer): Boolean; static;
+    class method ToString: String; static;
+    class property Architecture: TArchitecture read fArchitecture;
+    class property Build: Integer read fBuild;
+    class property Major: Integer read fMajor;
+    class property Minor: Integer read fMinor;
+    class property Name: String read fName;
+    class property Platform: TPlatform read FPlatform;
+    class property ServicePackMajor: Integer read fServicePackMajor;
+    class property ServicePackMinor: Integer read fServicePackMinor;
+  end;
+
 var
   FormatSettings: TFormatSettings;
   SysLocale: TSysLocale;
-
 
 { File functions }
 function FileOpen(const FileName: DelphiString; Mode: Cardinal): THandle;
@@ -507,5 +536,104 @@ begin
   result := lFreeSpace;
 end;
 {$ENDIF}
+
+{$IF ISLAND AND WINDOWS}
+class method TOSVersion.GetOSInfo;
+begin
+  fName := 'Windows';
+  var lVersion := Environment.OSVersion;
+  if lVersion <> '' then begin
+    var lNumbers := lVersion.split('.');
+    if lNumbers.Count > 0 then TryStrToInt(lNumbers[0], out fMajor);
+    if lNumbers.Count > 1 then TryStrToInt(lNumbers[1], out fMinor);
+  end;
+end;
+{$ENDIF}
+
+class constructor TOSVersion;
+begin
+  {$IF ISLAND OR TOFFEE}
+    {$IF ARM}
+      {$IF CPU64}
+        fArchitecture := TArchitecture.arARM64; 
+      {$ELSE}
+        fArchitecture := TArchitecture.arARM32; 
+      {$ENDIF}
+    {$ELSE}
+      {$IF CPU64}
+        fArchitecture := TArchitecture.arIntel64; 
+      {$ELSE}
+        fArchitecture := TArchitecture.arIntelX86; 
+      {$ENDIF}  
+    {$ENDIF}
+  {$ENDIF}
+
+  {$IF ISLAND}
+  fName := Environment.OSName;
+  {$IF WINDOWS}
+  fPlatform := TPlatform.pfWindows;
+  {$ELSEIF LINUX}
+  fPlatform := TPlatform.pfLinux;
+  {$ELSEIF ANDROID}
+  fPlatform := TPlatform.pfAndroid;
+  {$ENDIF}
+  {$ELSEIF COOPER}
+  fName := System.getProperty('os.name');
+  var lTemp := System.getProperty('os.version');
+  if lTemp <> '' then begin
+    var lNumbers := lTemp.split('.');
+    if lNumbers.length > 0 then TryStrToInt(lNumbers[0], out fMajor);
+    if lNumbers.length > 1 then TryStrToInt(lNumbers[1], out fMinor);
+  end;
+  var lOSName := fName.ToLowerInvariant;
+  if lOSName.Contains("windows") then fPlatform := TPlatform.pfWindows
+  else if lOSName.Contains("linux") then fPlatform := TPlatform.pfLinux
+  else if lOSName.Contains("mac") then fPlatform := TPlatform.pfMacOS
+  else fPlatform := TPlatform.pfJava;
+  {$ELSEIF ECHOES}
+  var lOS := System.Environment.OSVersion;
+  fName := lOS.VersionString;
+  fMajor := lOS.Version.Major;
+  fMinor := lOS.Version.Minor;
+  fServicePackMajor := lOS.Version.MajorRevision;
+  fServicePackMinor := lOS.Version.MinorRevision;
+  fBuild := lOS.Version.Build;
+  fPlatform := TPlatform.pfNET;
+  {$ELSEIF TOFFEE}
+  fMajor := NSProcessInfo.processInfo.operatingSystemVersion.majorVersion;
+  fMinor := NSProcessInfo.processInfo.operatingSystemVersion.minorVersion;
+  fName := NSProcessInfo.processInfo.operatingSystemName;
+  {$IF IOS}
+  fPlatform := TPlatform.pfIOS;
+  {$ELSEIF MACOS}
+  fPlatform := TPlatform.pfMACOS;
+  {$ELSEIF TVOS}
+  fPlatform := TPlatform.pfTVOS;
+  {$ELSEIF WATCHOS}
+  fPlatform := TPlatform.pfWatchOS;
+  {$ENDIF}
+  {$ENDIF}
+end;
+
+class method TOSVersion.Check(aMajor: Integer): Boolean;
+begin
+  result := fMajor >= aMajor;
+end;
+
+class method TOSVersion.Check(aMajor, aMinor: Integer): Boolean;
+begin
+  result := (fMajor > aMajor) or ((fMajor = aMajor) and (fMinor >= aMinor));
+end;
+
+class method TOSVersion.Check(aMajor, aMinor, aServicePackMajor: Integer): Boolean;
+begin
+  Result := Check(aMajor, aMinor) or ((fMajor = aMajor) and (fMinor = aMinor) and (fServicePackMajor >= aServicePackMajor));
+end;
+
+class method TOSVersion.ToString: String;
+begin
+
+end;
+
 
 end.
