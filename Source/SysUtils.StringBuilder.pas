@@ -47,7 +47,7 @@ type
     method Clear;
     method CopyTo(SourceIndex: Integer; const Destination: array of Char; DestinationIndex: Integer; aCount: Integer);
     method EnsureCapacity(aCapacity: Integer): Integer;
-    //method &Equals(DelphiStringBuilder: TStringBuilder): Boolean; reintroduce;
+    method &Equals(aValue: TStringBuilder): Boolean;
 
     method Insert(aIndex: Integer; const Value: Boolean): TStringBuilder;
     method Insert(aIndex: Integer; const Value: Byte): TStringBuilder;
@@ -69,15 +69,15 @@ type
     method Insert(aIndex: Integer; const Value: DelphiString; aCount: Integer): TStringBuilder;
     method Insert(aIndex: Integer; const Value: array of Char; startIndex: Integer; charCount: Integer): TStringBuilder;
 
-    /*method &Remove(StartIndex: Integer; RemLength: Integer): TStringBuilder;
+    method &Remove(StartIndex: Integer; RemLength: Integer): TStringBuilder;
 
-    method Replace(const OldChar: Char; const NewChar: Char): TStringBuilder;
-    method Replace(const OldValue: DelphiString; const NewValue: DelphiString): TStringBuilder;
+    method Replace(const OldChar: Char; const NewChar: Char): TStringBuilder; inline;
+    method Replace(const OldValue: DelphiString; const NewValue: DelphiString): TStringBuilder; inline;
     method Replace(const OldChar: Char; const NewChar: Char; StartIndex: Integer; Count: Integer): TStringBuilder;
     method Replace(const OldValue: DelphiString; const NewValue: DelphiString; StartIndex: Integer; Count: Integer): TStringBuilder;
 
-    method ToString: DelphiString; override;
-    method ToString(StartIndex: Integer; StrLength: Integer): DelphiString; reintroduce;*/
+    method ToString: String; override;
+    method ToString(StartIndex: Integer; StrLength: Integer): DelphiString;
 
     property Capacity: Integer read fData.Length write fData.Length;
     property Chars[index: Integer]: Char read GetChars write SetChars; default;
@@ -99,22 +99,24 @@ end;
 
 constructor TStringBuilder(const Value: DelphiString);
 begin
-
+  fData := new StringBuilder(Value);
 end;
 
 constructor TStringBuilder(aCapacity: Integer; aMaxCapacity: Integer);
 begin
-
+  fData := new StringBuilder(aCapacity);
 end;
 
 constructor TStringBuilder(const Value: DelphiString; aCapacity: Integer);
 begin
-
+  fData := new StringBuilder(aCapacity);
+  Append(Value);
 end;
 
 constructor TStringBuilder(const Value: DelphiString; StartIndex: Integer; aLength: Integer; aCapacity: Integer);
 begin
-
+  fData := new StringBuilder(aCapacity);
+  Append(Value);
 end;
 
 method TStringBuilder.GetChars(aIndex : Integer): Char;
@@ -271,6 +273,19 @@ begin
   result := aCapacity;
 end;
 
+method TStringBuilder.&Equals(aValue: TStringBuilder): Boolean;
+begin
+  result := false;
+  if Length <> aValue.Length then 
+    exit;
+
+  for i: Integer := 0 to Length - 1 do
+    if GetChars(i) <> aValue[i] then
+      exit;
+  
+  result := true;
+end;
+
 method TStringBuilder.Insert(aIndex: Integer; const Value: Boolean): TStringBuilder;
 begin
   fData.Insert(aIndex, Value.ToString);
@@ -375,6 +390,74 @@ method TStringBuilder.Insert(aIndex: Integer; const Value: array of Char; startI
 begin
   fData.Insert(aIndex, new PlatformString(Value, startIndex, charCount));
   result := self;
+end;
+
+method TStringBuilder.&Remove(StartIndex: Integer; RemLength: Integer): TStringBuilder;
+begin
+  fData.Delete(StartIndex, RemLength);
+  result := self;
+end;
+
+method TStringBuilder.Replace(const OldChar: Char; const NewChar: Char): TStringBuilder;
+begin
+  result := Replace(OldChar, NewChar, 0, Length);
+end;
+
+method TStringBuilder.Replace(const OldValue: DelphiString; const NewValue: DelphiString): TStringBuilder;
+begin
+  result := Replace(OldValue, NewValue, 0, Length);
+end;
+
+method TStringBuilder.Replace(const OldChar: Char; const NewChar: Char; StartIndex: Integer; Count: Integer): TStringBuilder;
+begin
+  for i: Integer := 0 to Count - 1 do
+    if GetChars(i + StartIndex) = OldChar then
+      SetChars(i + StartIndex, NewChar);
+
+  result := self;
+end;
+
+method TStringBuilder.Replace(const OldValue: DelphiString; const NewValue: DelphiString; StartIndex: Integer; Count: Integer): TStringBuilder;
+begin
+  result := self;
+  if (OldValue = '') or (Length = 0) or (OldValue.Length > Count) then
+    exit;
+
+  var lTemp: String;   
+  var i := StartIndex;
+  while i < (StartIndex + Count) do begin
+    if GetChars(i) = OldValue[0] then begin
+      var j := i + 1;
+      var k := 1;
+      while (j < Length) and (k < OldValue.Length) and (GetChars(j) = OldValue[k]) do begin
+        inc(j);
+        inc(k);
+      end;
+      if k = OldValue.Length then begin
+        lTemp := lTemp + NewValue;
+        inc(i, OldValue.Length);
+      end
+      else begin
+        lTemp := lTemp + GetChars(i);
+        inc(i); 
+      end;    
+    end
+    else begin
+      lTemp := lTemp + fData[i];
+      inc(i);
+    end;
+  end;
+  fData.Replace(StartIndex, Count, lTemp);
+end;
+
+method TStringBuilder.ToString: String;
+begin
+  result := fData.Substring(0);
+end;
+
+method TStringBuilder.ToString(StartIndex: Integer; StrLength: Integer): DelphiString;
+begin
+  result := fData.Substring(StartIndex, StrLength);
 end;
 
 end.
