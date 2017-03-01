@@ -20,6 +20,14 @@ type
     constructor (aCapacity: Integer; aMaxCapacity: Integer);
     constructor (const Value: DelphiString; aCapacity: Integer);
     constructor (const Value: DelphiString; StartIndex: Integer; aLength: Integer; aCapacity: Integer);
+
+    class method Create: TStringBuilder;
+    class method Create(aCapacity: Integer): TStringBuilder;
+    class method Create(const Value: DelphiString): TStringBuilder;
+    class method Create(aCapacity: Integer; aMaxCapacity: Integer): TStringBuilder;
+    class method Create(const Value: DelphiString; aCapacity: Integer): TStringBuilder;
+    class method Create(const Value: DelphiString; StartIndex: Integer; aLength: Integer; aCapacity: Integer): TStringBuilder;
+    class operator Equal(Value1, Value2: TStringBuilder): Boolean;
     
     method Append(const Value: Boolean): TStringBuilder;
     method Append(const Value: Byte): TStringBuilder;
@@ -118,6 +126,41 @@ constructor TStringBuilder(const Value: DelphiString; StartIndex: Integer; aLeng
 begin
   fData := new StringBuilder(aCapacity);
   Append(Value);
+end;
+
+class method TStringBuilder.Create: TStringBuilder;
+begin
+  result := new TStringBuilder();
+end;
+
+class method TStringBuilder.Create(aCapacity: Integer): TStringBuilder;
+begin
+  result := new TStringBuilder(aCapacity);
+end;
+
+class method TStringBuilder.Create(const Value: DelphiString): TStringBuilder;
+begin
+  result := new TStringBuilder(Value);
+end;
+
+class method TStringBuilder.Create(aCapacity: Integer; aMaxCapacity: Integer): TStringBuilder;
+begin
+  result := new TStringBuilder(aCapacity, aMaxCapacity);
+end;
+
+class method TStringBuilder.Create(const Value: DelphiString; aCapacity: Integer): TStringBuilder;
+begin
+  result := new TStringBuilder(Value, aCapacity);
+end;
+
+class method TStringBuilder.Create(const Value: DelphiString; StartIndex: Integer; aLength: Integer; aCapacity: Integer): TStringBuilder;
+begin
+  result := new TStringBuilder(Value, StartIndex, aLength, aCapacity);
+end;
+
+class operator TStringBuilder.Equal(Value1, Value2: TStringBuilder): Boolean;
+begin
+  result := Value1.Equals(Value2);
 end;
 
 method TStringBuilder.GetChars(aIndex : Integer): Char;
@@ -427,10 +470,10 @@ begin
   var lTemp: String;   
   var i := StartIndex;
   while i < (StartIndex + Count) do begin
-    if GetChars(i) = OldValue[0] then begin
+    if GetChars(i) = OldValue.Chars[0] then begin
       var j := i + 1;
       var k := 1;
-      while (j < Length) and (k < OldValue.Length) and (GetChars(j) = OldValue[k]) do begin
+      while (j < Length) and (k < OldValue.Length) and (GetChars(j) = OldValue.Chars[k]) do begin
         inc(j);
         inc(k);
       end;

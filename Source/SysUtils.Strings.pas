@@ -8,9 +8,9 @@ uses
   RemObjects.Elements.RTL;
 
 const
-  PathDelim  = {$IF ISLAND AND WINDOWS} '\'; {$ELSE} '/'; {$ENDIF}
-  DriveDelim = {$IF ISLAND AND WINDOWS} ':'; {$ELSE} '';  {$ENDIF}
-  PathSep    = {$IF ISLAND AND WINDOWS} ';'; {$ELSE} ':'; {$ENDIF}
+  PathDelim  = {$IF WINDOWS} '\'; {$ELSE} '/'; {$ENDIF}
+  DriveDelim = {$IF WINDOWS} ':'; {$ELSE} '';  {$ENDIF}
+  PathSep    = {$IF WINDOWS} ';'; {$ELSE} ':'; {$ENDIF}
 
 function UpperCase(const S: DelphiString): DelphiString;
 function UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; inline;

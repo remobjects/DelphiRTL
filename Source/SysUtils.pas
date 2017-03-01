@@ -97,6 +97,9 @@ type
     class var fPlatform: TPlatform;
     class var fServicePackMajor: Integer;
     class var fServicePackMinor: Integer;    
+    class var fPathDelim: String;
+    class var fDriveDelim: String;
+    class var fPathSep: String;
     {$IF ISLAND AND WINDOWS}class method GetOSInfo; static;{$ENDIF} 
     class constructor;
   public
@@ -112,6 +115,9 @@ type
     class property Platform: TPlatform read FPlatform;
     class property ServicePackMajor: Integer read fServicePackMajor;
     class property ServicePackMinor: Integer read fServicePackMinor;
+    class property PathDelim: String read fPathDelim;
+    class property DriveDelim: String read fDriveDelim;
+    class property PathSep: String read fPathSep;
   end;
 
 var
@@ -271,7 +277,7 @@ end;
 
 function ExtractFilePath(const FileName: DelphiString): DelphiString;
 begin
-  var lPos := FileName.LastDelimiter(PathDelim);
+  var lPos := FileName.LastDelimiter(TOSVersion.PathDelim);
   if lPos > 0 then
     result := FileName.SubString(0, lPos + 1)
   else
@@ -280,15 +286,15 @@ end;
 
 function ExtractFileDir(const FileName: DelphiString): DelphiString;
 begin
-  var lPos := FileName.LastDelimiter(PathDelim + DriveDelim);
-  if (lPos > 0) and (FileName.Chars[lPos] = PathDelim) then
+  var lPos := FileName.LastDelimiter(TOSVersion.PathDelim + TOSVersion.DriveDelim);
+  if (lPos > 0) and (FileName.Chars[lPos] = TOSVersion.PathDelim) then
     dec(lPos);
   result := FileName.SubString(0, lPos + 1);
 end;
 
 function ExtractFileDrive(const FileName: DelphiString): DelphiString;
 begin
-  if (FileName.Length >= 2) and (FileName.Chars[1] = DriveDelim) then
+  if (FileName.Length >= 2) and (FileName.Chars[1] = TOSVersion.DriveDelim) then
     result := FileName.SubString(0, 2)
   else
     result := '';
@@ -306,15 +312,15 @@ end;
 
 function IncludeTrailingPathDelimiter(const S: DelphiString): DelphiString;
 begin
-  if (S.Length > 0) and (S[S.Length - 1] <> PathDelim) then
-    result := S + PathDelim
+  if (S.Length > 0) and (S.Chars[S.Length - 1] <> TOSVersion.PathDelim) then
+    result := S + TOSVersion.PathDelim
   else
     result := S;
 end;
 
 function ExcludeTrailingPathDelimiter(const S: DelphiString): DelphiString;
 begin
-  if (S.Length > 0) and (S[S.Length - 1] = PathDelim) then
+  if (S.Length > 0) and (S.Chars[S.Length - 1] = TOSVersion.PathDelim) then
     result := S.SubString(0, S.Length - 1)
   else
     result := S;
@@ -342,11 +348,10 @@ end;
 
 function IsRelativePath(const Path: DelphiString): Boolean;
 begin
-  {$IF ISLAND AND WINDOWS}
-  result := (Path.Length > 0) and (Path.Chars[0] <> PathDelim) and (Path.Chars[1] <> ':');
-  {$ELSE}
-  result := (Path.Length > 0) and (Path.Chars[0] <> PathDelim);
-  {$ENDIF}
+  if TOSVersion.Platform = TPlatform.pfWindows then
+    result := (Path.Length > 0) and (Path.Chars[0] <> TOSVersion.PathDelim) and (Path.Chars[1] <> ':')
+  else
+    result := (Path.Length > 0) and (Path.Chars[0] <> TOSVersion.PathDelim);
 end;
 
 function GetCurrentDir: DelphiString;
@@ -598,7 +603,8 @@ begin
   fServicePackMajor := lOS.Version.MajorRevision;
   fServicePackMinor := lOS.Version.MinorRevision;
   fBuild := lOS.Version.Build;
-  fPlatform := TPlatform.pfNET;
+  if fName.ToLower.Contains("windows") then fPlatform := TPlatform.pfWindows
+  else fPlatform := TPlatform.pfNET;
   {$ELSEIF TOFFEE}
   fMajor := NSProcessInfo.processInfo.operatingSystemVersion.majorVersion;
   fMinor := NSProcessInfo.processInfo.operatingSystemVersion.minorVersion;
@@ -613,6 +619,16 @@ begin
   fPlatform := TPlatform.pfWatchOS;
   {$ENDIF}
   {$ENDIF}
+  if fPlatform = TPlatform.pfWindows then begin
+    fPathDelim := '\';
+    fDriveDelim := ':';
+    fPathSep := ';';  
+  end
+  else begin
+    fPathDelim := '/';
+    fDriveDelim := ''; 
+    fPathSep := ':';
+  end;
 end;
 
 class method TOSVersion.Check(aMajor: Integer): Boolean;
