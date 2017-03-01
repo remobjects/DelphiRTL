@@ -7,6 +7,11 @@ interface
 uses
   RemObjects.Elements.RTL;
 
+const
+  PathDelim  = {$IF WINDOWS} '\'; {$ELSE} '/'; {$ENDIF}
+  DriveDelim = {$IF WINDOWS} ':'; {$ELSE} '';  {$ENDIF}
+  PathSep    = {$IF WINDOWS} ';'; {$ELSE} ':'; {$ENDIF}
+
 function UpperCase(const S: DelphiString): DelphiString;
 function UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; inline;
 function LowerCase(const S: DelphiString): DelphiString;
@@ -25,15 +30,12 @@ function AnsiCompareStr(const S1, S2: DelphiString): Integer; inline;
 function AnsiSameStr(const S1, S2: DelphiString): Boolean; inline;
 function AnsiCompareText(const S1, S2: DelphiString): Integer; inline;
 function AnsiSameText(const S1, S2: DelphiString): Boolean; inline;
-//function AnsiLastChar(const S: UnicodeString): PWideChar;
 function Trim(const S: DelphiString): DelphiString;
 function TrimLeft(const S: DelphiString): DelphiString;
 function TrimRight(const S: DelphiString): DelphiString;
 function QuotedStr(const S: DelphiString): DelphiString;
 function AnsiQuotedStr(const S: DelphiString; Quote: Char): DelphiString;
 function AnsiDequotedStr(const S: DelphiString; aQuote: Char): DelphiString;
-//function AdjustLineBreaks(const S: string; Style: TTextLineBreakStyle = tlbsCRLF): string;
-//function IsValidIdent(const Ident: string; AllowDots: Boolean = False): Boolean;
 function IntToStr(Value: Integer): DelphiString;
 function IntToStr(Value: Int64): DelphiString;
 function UIntToStr(Value: Cardinal): DelphiString;
@@ -44,17 +46,17 @@ function IntToHex(Value: Int64; Digits: Integer := sizeOf(Int64) * 2): DelphiStr
 function IntToHex(Value: UInt64; Digits: Integer := sizeOf(UInt64) * 2): DelphiString;
 {$ENDIF}
 function StrToInt(const S: DelphiString): Integer;
-//function StrToIntDef(const S: string; Default: Integer): Integer;
-//function TryStrToInt(const S: string; out Value: Integer): Boolean;
+function StrToIntDef(const S: DelphiString; aDefault: Integer): Integer;
+function TryStrToInt(const S: DelphiString; out Value: Integer): Boolean;
 function StrToInt64(const S: DelphiString): Int64;
-//function StrToInt64Def(const S: string; const Default: Int64): Int64;
-//function TryStrToInt64(const S: string; out Value: Int64): Boolean;
+function StrToInt64Def(const S: DelphiString; const aDefault: Int64): Int64;
+function TryStrToInt64(const S: DelphiString; out Value: Int64): Boolean;
 function StrToUInt64(const S: DelphiString): UInt64;
-//function StrToUInt64Def(const S: string; const Default: UInt64): UInt64;
-//function TryStrToUInt64(const S: string; out Value: UInt64): Boolean;
+function StrToUInt64Def(const S: DelphiString; const aDefault: UInt64): UInt64;
+function TryStrToUInt64(const S: DelphiString; out Value: UInt64): Boolean;
 function StrToBool(const S: DelphiString): Boolean;
-//function StrToBoolDef(const S: string; const Default: Boolean): Boolean;
-//function TryStrToBool(const S: string; out Value: Boolean): Boolean;
+function StrToBoolDef(const S: DelphiString; const aDefault: Boolean): Boolean;
+function TryStrToBool(const S: DelphiString; out Value: Boolean): Boolean;
 function BoolToStr(B: Boolean; UseBoolStrs: Boolean := False): DelphiString;
 
 implementation
@@ -251,9 +253,51 @@ begin
   result := S.ToInteger;
 end;
 
+function StrToIntDef(const S: DelphiString; aDefault: Integer): Integer;
+begin
+  try
+    result := S.ToInteger;
+
+  except
+    result := aDefault;
+  end;
+end;
+
+function TryStrToInt(const S: DelphiString; out Value: Integer): Boolean;
+begin
+  try
+    Value := S.ToInteger;
+    result := true;
+
+  except
+    result := false;
+  end;
+end;
+
 function StrToInt64(const S: DelphiString): Int64;
 begin
   result := S.ToInt64;
+end;
+
+function StrToInt64Def(const S: DelphiString; const aDefault: Int64): Int64;
+begin
+  try
+    result := S.ToInt64;
+
+  except
+    result := aDefault;
+  end;
+end;
+
+function TryStrToInt64(const S: DelphiString; out Value: Int64): Boolean;
+begin
+  try
+    Value := S.ToInt64;
+    result := true;
+
+  except
+    result := false;
+  end;
 end;
 
 function StrToUInt64(const S: DelphiString): UInt64;
@@ -261,9 +305,46 @@ begin
   result := S.ToInt64;
 end;
 
+function StrToUInt64Def(const S: DelphiString; const aDefault: UInt64): UInt64;
+begin
+  result := StrToInt64Def(S, aDefault);
+end;
+
+function TryStrToUInt64(const S: DelphiString; out Value: UInt64): Boolean;
+begin
+  try
+    Value := S.ToInt64;
+    result := true;
+
+  except
+    result := false;
+  end;  
+end;
+
 function StrToBool(const S: DelphiString): Boolean;
 begin
   result := S.ToBoolean;
+end;
+
+function StrToBoolDef(const S: DelphiString; const aDefault: Boolean): Boolean;
+begin
+  try
+    result := S.ToBoolean;
+
+  except
+    result := aDefault;
+  end;
+end;
+
+function TryStrToBool(const S: DelphiString; out Value: Boolean): Boolean;
+begin
+  try
+    Value := S.ToBoolean;
+    result := true;
+
+  except
+    result := false;
+  end;
 end;
 
 function BoolToStr(B: Boolean; UseBoolStrs: Boolean := False): DelphiString;

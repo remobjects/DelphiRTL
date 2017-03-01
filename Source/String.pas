@@ -142,7 +142,7 @@ type
     method IndexOfAny(const AnyOf: array of Char; StartIndex: Integer): Integer;
     method IndexOfAny(      AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer;
     method Insert(StartIndex: Integer; const Value: DelphiString): DelphiString;
-    //method IsDelimiter(const Delimiters: DelphiString; Index: Integer): Boolean; partial; empty;
+    method IsDelimiter(const Delimiters: DelphiString; aIndex: Integer): Boolean;
     method IsEmpty: Boolean;
     class method IsNullOrEmpty(const Value: DelphiString): Boolean; static;
     class method IsNullOrWhiteSpace(const Value: DelphiString): Boolean; static;
@@ -150,7 +150,7 @@ type
     //method Join(Separator: DelphiString; Values: IEnumerator<DelphiString>): DelphiString; overload; static;
     //method Join(Separator: DelphiString; Values: IEnumerable<DelphiString>): DelphiString; overload; static; inline;
     class method &Join(Separator: DelphiString; Values: array of DelphiString; StartIndex: Integer; Count: Integer): DelphiString; static;
-    //method LastDelimiter(const Delims: DelphiString): Integer;
+    method LastDelimiter(const Delims: DelphiString): Integer;
     method LastIndexOf(Value: Char): Integer;
     method LastIndexOf(const Value: DelphiString): Integer;
     method LastIndexOf(Value: Char; StartIndex: Integer): Integer;
@@ -839,6 +839,15 @@ begin
   result := fData;
 end;
 
+method DelphiString.IsDelimiter(const Delimiters: DelphiString; aIndex: Integer): Boolean;
+begin
+  for i: Integer := 0 to Delimiters.Length - 1 do
+    if Chars[aIndex] = Delimiters.Chars[i] then
+    exit(true);
+
+  result := false;
+end;
+
 method DelphiString.IsEmpty: Boolean;
 begin
   result := fData.Length = 0;
@@ -883,6 +892,12 @@ begin
 
   result := lArray.componentsJoinedByString(Separator.fData);
   {$ENDIF}
+end;
+
+method DelphiString.LastDelimiter(const Delims: DelphiString): Integer;
+begin
+  var lArray := Delims.ToCharArray;
+  result := LastIndexOfAny(lArray);
 end;
 
 method DelphiString.LastIndexOf(Value: Char): Integer;

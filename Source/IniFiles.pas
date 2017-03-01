@@ -58,6 +58,7 @@ type
     constructor(const aFileName: DelphiString);
     constructor(const aFileName: DelphiString; const aEncoding: TEncoding);
     constructor(const aFileName: DelphiString; const aEncoding: TEncoding; aCaseSensitive: Boolean); virtual;
+    class method Create(const aFileName: DelphiString): TMemIniFile; static;
     method Clear;
     method DeleteKey(const aSection, aIdent: DelphiString); override;
     method EraseSection(const Section: DelphiString); override;
@@ -127,7 +128,7 @@ end;
 
 method TCustomIniFile.WriteInteger(aSection: DelphiString; aIdent: DelphiString; aValue: Integer);
 begin
-  var lStr := aValue.ToString;
+  var lStr := Convert.ToString(aValue);
   WriteString(aSection, aIdent, lStr);
 end;
 
@@ -210,7 +211,7 @@ end;
 
 method TCustomIniFile.WriteFloat(aSection: DelphiString; aName: DelphiString; aValue: Double);
 begin
-  var lStr := aValue.ToString;
+  var lStr := Convert.ToString(aValue);
   WriteString(aSection, aName, lStr);
 end;
 
@@ -258,6 +259,11 @@ begin
   fData := TList<TIniSectionsPair>.Create;
   CaseSensitive := aCaseSensitive;
   LoadIni;
+end;
+
+class method TMemIniFile.Create(const aFileName: DelphiString): TMemIniFile;
+begin
+  result := new TMemIniFile(aFileName);
 end;
 
 method TMemIniFile.Clear;

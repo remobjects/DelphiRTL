@@ -18,9 +18,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)DateUtils.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)IniFiles.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)System.Math.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)System.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)SysUtils.DateTime.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)SysUtils.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)SysUtils.StringBuilder.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)SysUtils.Strings.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)TObject.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Aliases.pas" />

@@ -81,6 +81,80 @@ type
       lFile := ChangeFileExt('c:\test.ini', '.bat');
       Assert.AreEqual(lFile, 'c:\test.bat');
     end;
+
+    method ChangeFilePathTests;
+    begin
+      if TOSVersion.Platform = TPlatform.pfWindows then begin
+        var lNew := ChangeFilePath('c:\one\two\test.txt', 'c:\three');
+        Assert.AreEqual(lNew, 'c:\three\test.txt');
+      end;
+    end;
+
+    method ExtractFilePathTests;
+    begin
+      if TOSVersion.Platform = TPlatform.pfWindows then begin
+        var lNew := ExtractFilePath('c:\onedir\test.txt');
+        Assert.AreEqual('c:\onedir\', lNew);
+      end;
+    end;
+
+    method ExtractFileDirTests;
+    begin
+      if TOSVersion.Platform = TPlatform.pfWindows then begin
+        var lNew := ExtractFileDir('c:\onedir\test.txt');
+        Assert.AreEqual('c:\onedir', lNew);
+      end;
+    end;
+
+    method ExtractFileDriveTests;
+    begin
+      if TOSVersion.Platform = TPlatform.pfWindows then begin
+        var lNew := ExtractFileDrive('c:\onedir\test.txt');
+        Assert.AreEqual('c:', lNew);
+      end;
+    end;
+
+    method IsDelimiterTests;
+    begin
+      Assert.IsTrue(IsDelimiter('|#', '#ComeOn', 0));
+      Assert.IsFalse(IsDelimiter('|#', '#ComeOn', 1));
+    end;
+
+    method LastDelimiterTests;
+    begin
+      Assert.AreEqual(LastDelimiter('|#', '#Come|On#'), 8);
+      Assert.AreEqual(LastDelimiter('|#', '#Come|On'), 5);
+      Assert.AreEqual(LastDelimiter('|#', '#ComeOn'), 0);
+      Assert.AreEqual(LastDelimiter('|#', 'ComeOn'), -1);
+    end;
+
+    method IncludeTrailingPathDelimiterTests;
+    begin
+      if TOSVersion.Platform = TPlatform.pfWindows then begin
+        var lNew := IncludeTrailingPathDelimiter('c:\test');
+        Assert.AreEqual(lNew, 'c:\test\');
+        lNew := IncludeTrailingPathDelimiter('c:\test\');
+        Assert.AreEqual(lNew, 'c:\test\');
+      end;
+    end;
+
+    method ExcludeTrailingPathDelimiterTests;
+    begin
+      if TOSVersion.Platform = TPlatform.pfWindows then begin
+        var lNew := ExcludeTrailingPathDelimiter('c:\test\');
+        Assert.AreEqual(lNew, 'c:\test');
+        lNew := ExcludeTrailingPathDelimiter('c:\test');
+        Assert.AreEqual(lNew, 'c:\test')
+      end;
+    end;
+
+    method IsRelativePathTests;
+    begin
+      if TOSVersion.Platform = TPlatform.pfWindows then begin
+        Assert.IsTrue(IsRelativePath('..\test\'));
+        Assert.IsFalse(IsRelativePath('c:\test'));
+      end;
+    end;
   end;
 
 end.

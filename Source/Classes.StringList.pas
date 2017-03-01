@@ -794,7 +794,7 @@ begin
     if (i <> Count - 1) or ((i = Count - 1) and TrailingLineBreak) then
       lSb.Append(LineBreak);
   end;
-  result := lSb.ToString;
+  result := lSb.Substring(0);
 end;
 
 method TStrings.SetTextStr(const aValue: DelphiString);
@@ -878,7 +878,7 @@ begin
     if i < Count - 1 then
      lSb.Append(aDelimiter);
   end;
-  result := lSb.ToString;
+  result := lSb.Substring(0);
 end;
 
 method TStrings.SetDelimitedTextWithChars(aValue: DelphiString; aDelimiter: Char; aQuote: Char);

@@ -16,13 +16,14 @@ type
 
   AnsiString = public record
   private
+    fHashCode: Integer := 0;
     fData: array of Byte;
     class var fOffset: Integer := 1;
     class method SetOffset(aOffset: Integer);
     method GetOffsetChar(aIndex: Integer): AnsiChar;
     method SetOffsetChar(aIndex: Integer; aValue: AnsiChar);
     method GetChar(aIndex: Integer): AnsiChar; inline;
-    method SetChar(aIndex: integer; Value: AnsiChar); inline;
+    method SetChar(aIndex: Integer; Value: AnsiChar); inline;
     method CharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
     method StringToUTF8(aString: PlatformString): array of Byte;
     class method CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer); static;
@@ -41,7 +42,7 @@ type
     class operator Implicit(Value: Char): AnsiString;
     class operator Implicit(Value: PlatformString): AnsiString;
     class operator Implicit(Value: AnsiString): String;
-    class operator Implicit(Value: array of char): AnsiString;
+    class operator Implicit(Value: array of Char): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: Char): AnsiString;
     class operator &Add(Value1: Char; Value2: AnsiString): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: AnsiChar): AnsiString;
@@ -59,6 +60,9 @@ type
     class method CompareText(S1, S2: AnsiString): Integer; static;
     class method SameText(S1, S2: AnsiString): Boolean; static; // --> CompareText, no case sensitive
     class method &Copy(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer): AnsiString;
+
+    method {$IF COOPER}hashCode: Integer{$ELSEIF ECHOES OR ISLAND}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF}; {$IF COOPER OR ECHOES OR ISLAND} override;{$ENDIF}
+    method {$IF TOFFEE}isEqual(Obj: id){$ELSE}&Equals(Obj: Object){$ENDIF}: Boolean;{$IF COOPER OR ECHOES} override;{$ENDIF}
 
     [ToString]
     method ToString: PlatformString;
@@ -167,7 +171,7 @@ end;
 
 class method AnsiString.Create(Value: array of Char): AnsiString;
 begin
-  result := create(Value, 0, Value.Length);
+  result := Create(Value, 0, Value.Length);
 end;
 
 operator AnsiString.Implicit(Value: Char): AnsiString;
@@ -641,6 +645,32 @@ begin
   result.CopyFrom(self, 0, Length);
   result.Chars[Length] := AnsiChar(#0);
 end;
+
+method AnsiString.{$IF COOPER}hashCode: Integer{$ELSEIF ECHOES OR ISLAND}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF};
+begin
+  if fHashCode = 0 then begin
+    var lMultiplier: Integer := 1;
+    var lShift: Integer;
+    for i: Integer := Length - 1 downto 0 do begin
+      fHashCode := fHashCode + fData[i] * lMultiplier;
+      lShift := lMultiplier shl 5;
+      lMultiplier := lShift - lMultiplier;
+    end;
+  end;
+  result := fHashCode;
+end;
+
+ method AnsiString.{$IF TOFFEE}isEqual(Obj: id){$ELSE}&Equals(Obj: Object){$ENDIF}: Boolean;
+ begin
+  if Obj = nil then
+    exit false;
+
+  if not (Obj is AnsiString) then
+    exit false;
+
+   var lItem := AnsiString(Obj);
+   result := &Equals(lItem);
+ end;
 
 procedure SetLength(var aString: AnsiString; aLength: Integer);
 begin
