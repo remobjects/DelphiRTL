@@ -610,9 +610,9 @@ begin
   fMinor := NSProcessInfo.processInfo.operatingSystemVersion.minorVersion;
   fName := NSProcessInfo.processInfo.operatingSystemName;
   {$IF IOS}
-  fPlatform := TPlatform.pfIOS;
+  fPlatform := TPlatform.pfiOS;
   {$ELSEIF MACOS}
-  fPlatform := TPlatform.pfMACOS;
+  fPlatform := TPlatform.pfMacOS;
   {$ELSEIF TVOS}
   fPlatform := TPlatform.pfTVOS;
   {$ELSEIF WATCHOS}
