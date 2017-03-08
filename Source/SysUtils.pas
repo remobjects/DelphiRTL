@@ -96,11 +96,11 @@ type
     class var fName: String;
     class var fPlatform: TPlatform;
     class var fServicePackMajor: Integer;
-    class var fServicePackMinor: Integer;    
+    class var fServicePackMinor: Integer;
     class var fPathDelim: String;
     class var fDriveDelim: String;
     class var fPathSep: String;
-    {$IF ISLAND AND WINDOWS}class method GetOSInfo; static;{$ENDIF} 
+    {$IF ISLAND AND WINDOWS}class method GetOSInfo; static;{$ENDIF}
     class constructor;
   public
     class method Check(aMajor: Integer): Boolean; static;
@@ -249,7 +249,7 @@ function DeleteFile(const FileName: DelphiString): Boolean;
 begin
   result := true;
   try
-    FileUtils.Delete(FileName);
+    File.Delete(FileName);
   except
     result := false;
   end;
@@ -259,7 +259,7 @@ function RenameFile(const OldName, NewName: DelphiString): Boolean;
 begin
   result := true;
   try
-    FileUtils.Move(OldName, NewName);
+    File.Move(OldName, NewName);
   except
     result := false;
   end;
@@ -450,7 +450,7 @@ end;
 function FileExists(const FileName: DelphiString; FollowLink: Boolean := true): Boolean;
 begin
   try
-    result := FileUtils.Exists(FileName);
+    result := File.Exists(FileName);
   except
     result := false;
   end;
@@ -493,7 +493,7 @@ begin
 
   for i: Integer := lList.Count - 1 downto 0 do begin
     result := CreateDir(lList[i]);
-    if not result then 
+    if not result then
       exit;
   end;
 end;
@@ -531,7 +531,7 @@ end;
 function FileGetAttr(const FileName: DelphiString; FollowLink: Boolean := True): Integer;
 begin
   var lArray := PlatformString(FileName).ToCharArray(true);
-  result := rtl.GetFileAttributes(@lArray[0]); 
+  result := rtl.GetFileAttributes(@lArray[0]);
 end;
 
 function DiskFree(Drive: Byte): Int64;
@@ -560,16 +560,16 @@ begin
   {$IF ISLAND OR TOFFEE}
     {$IF ARM}
       {$IF CPU64}
-        fArchitecture := TArchitecture.arARM64; 
+        fArchitecture := TArchitecture.arARM64;
       {$ELSE}
-        fArchitecture := TArchitecture.arARM32; 
+        fArchitecture := TArchitecture.arARM32;
       {$ENDIF}
     {$ELSE}
       {$IF CPU64}
-        fArchitecture := TArchitecture.arIntel64; 
+        fArchitecture := TArchitecture.arIntel64;
       {$ELSE}
-        fArchitecture := TArchitecture.arIntelX86; 
-      {$ENDIF}  
+        fArchitecture := TArchitecture.arIntelX86;
+      {$ENDIF}
     {$ENDIF}
   {$ENDIF}
 
@@ -622,11 +622,11 @@ begin
   if fPlatform = TPlatform.pfWindows then begin
     fPathDelim := '\';
     fDriveDelim := ':';
-    fPathSep := ';';  
+    fPathSep := ';';
   end
   else begin
     fPathDelim := '/';
-    fDriveDelim := ''; 
+    fDriveDelim := '';
     fPathSep := ':';
   end;
 end;
