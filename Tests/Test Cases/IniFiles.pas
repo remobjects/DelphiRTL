@@ -15,7 +15,14 @@ type
       {$IF COOPER} // TODO
       fData := new TIniFile('..\..\Test.INI',  Encoding.Default, false);
       {$ELSE}
-      fData := new TIniFile('..\..\Test.INI', TEncoding.Default, false);
+      {$IF ECHOES}
+      var lPath := System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly.Location) + '\..\..\Test.INI';
+      if not FileExists(lpath) then
+        raise new Exception('Path: ' + lPath);
+      {$ELSE}
+      var lPath := '..\..\Test.INI';
+      {$ENDIF}
+      fData := new TIniFile(lPath, TEncoding.Default, false);
       {$ENDIF}
     end;
 
