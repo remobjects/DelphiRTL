@@ -35,7 +35,11 @@ const
   UnixDateDelta = 25569;
 
 type
+  {$IF COOPER}
+  TBytes = public array of Byte;
+  {$ELSE}
   TBytes = public TArray<Byte>;
+  {$ENDIF}
   TEncoding = public Encoding;
 
   TSysLocale = public record
@@ -249,7 +253,7 @@ function DeleteFile(const FileName: DelphiString): Boolean;
 begin
   result := true;
   try
-    FileUtils.Delete(FileName);
+    File.Delete(FileName);
   except
     result := false;
   end;
@@ -259,7 +263,7 @@ function RenameFile(const OldName, NewName: DelphiString): Boolean;
 begin
   result := true;
   try
-    FileUtils.Move(OldName, NewName);
+    File.Move(OldName, NewName);
   except
     result := false;
   end;
@@ -363,9 +367,7 @@ function CreateDir(const Dir: DelphiString): Boolean;
 begin
   result := true;
   try
-    var lFolder := new Folder(Dir);
-    lFolder.Create;
-    //Folder.Create(Dir); // compiler error on isLand
+    Folder.Create(Dir); 
   except
     result := false;
   end;
@@ -375,9 +377,7 @@ function RemoveDir(const Dir: DelphiString): Boolean;
 begin
   result := true;
   try
-    var lFolder := new Folder(Dir);
-    lFolder.Delete;
-    //Folder.Delete(Dir);
+    Folder.Delete(Dir);
   except
     result := false;
   end;
@@ -450,7 +450,7 @@ end;
 function FileExists(const FileName: DelphiString; FollowLink: Boolean := true): Boolean;
 begin
   try
-    result := FileUtils.Exists(FileName);
+    result := File.Exists(FileName);
   except
     result := false;
   end;

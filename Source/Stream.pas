@@ -2,205 +2,760 @@
 
 interface
 
+uses
+  RemObjects.Elements.RTL;
+
 type
-  TSeekOrigin = (soBeginning, soCurrent, soEnd);
+  TSeekOrigin = public enum (soBeginning, soCurrent, soEnd) of Integer;
 
-  /*TStream = public class(TObject)
+  TStream = public class(TObject)
   private
-    function GetPosition: Int64;
-    procedure SetPosition(const Pos: Int64);
-    procedure SetSize64(const NewSize: Int64);
+    method GetPosition: Int64;
+    method SetPosition(const Pos: Int64);
   protected
-    function GetSize: Int64; virtual;
-    procedure SetSize(NewSize: Longint); virtual;
-    procedure SetSize(const NewSize: Int64); virtual;
+    method GetSize: Int64; virtual;
+    method SetSize(NewSize: LongInt); virtual;
+    method SetSize(const NewSize: Int64); virtual;
   public
-    function &Read(Buffer: TBytes; Offset, Count: Longint): Longint; virtual;
-    function &Write(const Buffer: TBytes; Offset, Count: Longint): Longint; virtual;
+    method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; virtual;
+    method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; virtual;
+    
+    method &Read(var Buffer: TBytes; Count: LongInt): LongInt;
+    method &Write(const Buffer: TBytes; Count: LongInt): LongInt;
 
-    function &Read(var Buffer: TBytes; Count: Longint): Longint;
-    function &Write(const Buffer: TBytes; Count: Longint): Longint;
+    method ReadData(const Buffer: TBytes; Count: LongInt): LongInt;
+    method ReadData(var Buffer: Int32): LongInt;
+    method ReadData(var Buffer: Int32; Count: LongInt): LongInt;
+    {$IF NOT COOPER}
+    method ReadData(var Buffer: Boolean): LongInt;
+    method ReadData(var Buffer: Boolean; Count: LongInt): LongInt;
+    method ReadData(var Buffer: Byte): LongInt;
+    method ReadData(var Buffer: Byte; Count: LongInt): LongInt;
+    method ReadData(var Buffer: Char): LongInt;
+    method ReadData(var Buffer: Char; Count: LongInt): LongInt;
+    method ReadData(var Buffer: ShortInt): LongInt;
+    method ReadData(var Buffer: ShortInt; Count: LongInt): LongInt;
+    method ReadData(var Buffer: Int16): LongInt;
+    method ReadData(var Buffer: Int16; Count: LongInt): LongInt;
+    method ReadData(var Buffer: UInt16): LongInt;
+    method ReadData(var Buffer: UInt16; Count: LongInt): LongInt;
+    method ReadData(var Buffer: UInt32): LongInt;
+    method ReadData(var Buffer: UInt32; Count: LongInt): LongInt;
+    method ReadData(var Buffer: UInt64): LongInt;
+    method ReadData(var Buffer: UInt64; Count: LongInt): LongInt;
+    method ReadData(var Buffer: Int64): LongInt;
+    method ReadData(var Buffer: Int64; Count: LongInt): LongInt;
+    method ReadData(var Buffer: Single): LongInt;
+    method ReadData(var Buffer: Single; Count: LongInt): LongInt;   
+    method ReadData(var Buffer: Double): LongInt;
+    method ReadData(var Buffer: Double; Count: LongInt): LongInt;
+    {$ENDIF}
 
-    function ReadData(const Buffer: TBytes; Count: Longint): Longint;
-    function ReadData(var Buffer: Boolean): Longint;
-    function ReadData(var Buffer: Boolean; Count: Longint): Longint;
-    function ReadData(var Buffer: AnsiChar): Longint;
-    function ReadData(var Buffer: AnsiChar; Count: Longint): Longint;
-    function ReadData(var Buffer: Char): Longint;
-    function ReadData(var Buffer: Char; Count: Longint): Longint;
-    function ReadData(var Buffer: ShortInt): Longint;
-    function ReadData(var Buffer: ShortInt; Count: Longint): Longint;
-    function ReadData(var Buffer: Byte): Longint;
-    function ReadData(var Buffer: Byte; Count: Longint): Longint;
-    function ReadData(var Buffer: Int16): Longint;
-    function ReadData(var Buffer: Int16; Count: Longint): Longint;
-    function ReadData(var Buffer: UInt16): Longint;
-    function ReadData(var Buffer: UInt16; Count: Longint): Longint;
-    function ReadData(var Buffer: Int32): Longint;
-    function ReadData(var Buffer: Int32; Count: Longint): Longint;
-    function ReadData(var Buffer: UInt32): Longint;
-    function ReadData(var Buffer: UInt32; Count: Longint): Longint;
-    function ReadData(var Buffer: Int64): Longint;
-    function ReadData(var Buffer: Int64; Count: Longint): Longint;
-    function ReadData(var Buffer: UInt64): Longint;
-    function ReadData(var Buffer: UInt64; Count: Longint): Longint;
-    function ReadData(var Buffer: Single): Longint;
-    function ReadData(var Buffer: Single; Count: Longint): Longint;
-    function ReadData(var Buffer: Double): Longint;
-    function ReadData(var Buffer: Double; Count: Longint): Longint;
-    function ReadData(var Buffer: Extended): Longint;
-    function ReadData(var Buffer: Extended; Count: Longint): Longint;
+    method WriteData(const Buffer: TBytes; Count: LongInt): LongInt;
+    method WriteData(const Buffer: Boolean): LongInt;
+    method WriteData(const Buffer: Boolean; Count: LongInt): LongInt;
+    method WriteData(const Buffer: Char): LongInt;
+    method WriteData(const Buffer: Char; Count: LongInt): LongInt;
+    method WriteData(const Buffer: ShortInt): LongInt;
+    method WriteData(const Buffer: ShortInt; Count: LongInt): LongInt;
+    method WriteData(const Buffer: Int16): LongInt;
+    method WriteData(const Buffer: Int16; Count: LongInt): LongInt;
+    method WriteData(const Buffer: Int32): LongInt;
+    method WriteData(const Buffer: Int32; Count: LongInt): LongInt;
+    method WriteData(const Buffer: Int64): LongInt;
+    method WriteData(const Buffer: Int64; Count: LongInt): LongInt;
+    method WriteData(const Buffer: Single): LongInt;
+    method WriteData(const Buffer: Single; Count: LongInt): LongInt;
+    method WriteData(const Buffer: Double): LongInt;
+    method WriteData(const Buffer: Double; Count: LongInt): LongInt;
+    {$IF NOT COOPER}
+    method WriteData(const Buffer: Byte): LongInt;
+    method WriteData(const Buffer: Byte; Count: LongInt): LongInt;
+    method WriteData(const Buffer: UInt16): LongInt;
+    method WriteData(const Buffer: UInt16; Count: LongInt): LongInt;
+    method WriteData(const Buffer: UInt32): LongInt;
+    method WriteData(const Buffer: UInt32; Count: LongInt): LongInt;
+    method WriteData(const Buffer: UInt64): LongInt;
+    method WriteData(const Buffer: UInt64; Count: LongInt): LongInt;
+    {$ENDIF}
 
-    function WriteData(const Buffer: TBytes; Count: Longint): Longint;
+    method Seek(Offset: LongInt; Origin: Word): LongInt; virtual;
+    method Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; virtual;
+    method Seek(const Offset: Int64; Origin: Word): Int64; inline;
 
-    function WriteData(const Buffer: Boolean): Longint;
-    function WriteData(const Buffer: Boolean; Count: Longint): Longint;
-    function WriteData(const Buffer: AnsiChar): Longint;
-    function WriteData(const Buffer: AnsiChar; Count: Longint): Longint;
-    function WriteData(const Buffer: Char): Longint;
-    function WriteData(const Buffer: Char; Count: Longint): Longint;
-    function WriteData(const Buffer: ShortInt): Longint;
-    function WriteData(const Buffer: ShortInt; Count: Longint): Longint;
-    function WriteData(const Buffer: Byte): Longint;
-    function WriteData(const Buffer: Byte; Count: Longint): Longint;
-    function WriteData(const Buffer: Int16): Longint;
-    function WriteData(const Buffer: Int16; Count: Longint): Longint;
-    function WriteData(const Buffer: UInt16): Longint;
-    function WriteData(const Buffer: UInt16; Count: Longint): Longint;
-    function WriteData(const Buffer: Int32): Longint;
-    function WriteData(const Buffer: Int32; Count: Longint): Longint;
-    function WriteData(const Buffer: UInt32): Longint;
-    function WriteData(const Buffer: UInt32; Count: Longint): Longint;
-    function WriteData(const Buffer: Int64): Longint;
-    function WriteData(const Buffer: Int64; Count: Longint): Longint;
-    function WriteData(const Buffer: UInt64): Longint;
-    function WriteData(const Buffer: UInt64; Count: Longint): Longint;
-    function WriteData(const Buffer: Single): Longint;
-    function WriteData(const Buffer: Single; Count: Longint): Longint;
-    function WriteData(const Buffer: Double): Longint;
-    function WriteData(const Buffer: Double; Count: Longint): Longint;
-    function WriteData(const Buffer: Extended): Longint;
-    function WriteData(const Buffer: Extended; Count: Longint): Longint;
+    method ReadBuffer(var Buffer: TBytes; Count: LongInt);
+    method ReadBuffer(var Buffer: TBytes; Offset, Count: LongInt);
 
-    function Seek(Offset: Longint; Origin: Word): Longint; virtual;
-    function Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; virtual;
-    function Seek(const Offset: Int64; Origin: Word): Int64; deprecated; inline;
+    method ReadBufferData(var Buffer: Int32);
+    method ReadBufferData(var Buffer: Int32; Count: LongInt);
+    {$IF NOT COOPER}
+    method ReadBufferData(var Buffer: Boolean);
+    method ReadBufferData(var Buffer: Boolean; Count: LongInt);
+    method ReadBufferData(var Buffer: Char);
+    method ReadBufferData(var Buffer: Char; Count: LongInt);
+    method ReadBufferData(var Buffer: ShortInt);
+    method ReadBufferData(var Buffer: ShortInt; Count: LongInt);
+    method ReadBufferData(var Buffer: Byte);
+    method ReadBufferData(var Buffer: Byte; Count: LongInt);
+    method ReadBufferData(var Buffer: Int16);
+    method ReadBufferData(var Buffer: Int16; Count: LongInt);
+    method ReadBufferData(var Buffer: UInt16);
+    method ReadBufferData(var Buffer: UInt16; Count: LongInt);
+    method ReadBufferData(var Buffer: UInt32);
+    method ReadBufferData(var Buffer: UInt32; Count: LongInt);
+    method ReadBufferData(var Buffer: Int64);
+    method ReadBufferData(var Buffer: Int64; Count: LongInt);
+    method ReadBufferData(var Buffer: UInt64);
+    method ReadBufferData(var Buffer: UInt64; Count: LongInt);
+    method ReadBufferData(var Buffer: Single);
+    method ReadBufferData(var Buffer: Single; Count: LongInt);
+    method ReadBufferData(var Buffer: Double);
+    method ReadBufferData(var Buffer: Double; Count: LongInt);
+    {$ENDIF}
 
-    procedure ReadBuffer(var Buffer: TBytes; Count: Longint);
-    procedure ReadBuffer(var Buffer: TBytes; Offset, Count: Longint);
+    method WriteBuffer(const Buffer: TBytes; Count: LongInt);
+    method WriteBuffer(const Buffer: TBytes; Offset, Count: LongInt);
 
-    procedure ReadBufferData(var Buffer: Boolean);
-    procedure ReadBufferData(var Buffer: Boolean; Count: Longint);
-    procedure ReadBufferData(var Buffer: AnsiChar);
-    procedure ReadBufferData(var Buffer: AnsiChar; Count: Longint);
-    procedure ReadBufferData(var Buffer: Char);
-    procedure ReadBufferData(var Buffer: Char; Count: Longint);
-    procedure ReadBufferData(var Buffer: ShortInt);
-    procedure ReadBufferData(var Buffer: ShortInt; Count: Longint);
-    procedure ReadBufferData(var Buffer: Byte);
-    procedure ReadBufferData(var Buffer: Byte; Count: Longint);
-    procedure ReadBufferData(var Buffer: Int16);
-    procedure ReadBufferData(var Buffer: Int16; Count: Longint);
-    procedure ReadBufferData(var Buffer: UInt16);
-    procedure ReadBufferData(var Buffer: UInt16; Count: Longint);
-    procedure ReadBufferData(var Buffer: Int32);
-    procedure ReadBufferData(var Buffer: Int32; Count: Longint);
-    procedure ReadBufferData(var Buffer: UInt32);
-    procedure ReadBufferData(var Buffer: UInt32; Count: Longint);
-    procedure ReadBufferData(var Buffer: Int64);
-    procedure ReadBufferData(var Buffer: Int64; Count: Longint);
-    procedure ReadBufferData(var Buffer: UInt64);
-    procedure ReadBufferData(var Buffer: UInt64; Count: Longint);
-    procedure ReadBufferData(var Buffer: Single);
-    procedure ReadBufferData(var Buffer: Single; Count: Longint);
-    procedure ReadBufferData(var Buffer: Double);
-    procedure ReadBufferData(var Buffer: Double; Count: Longint);
-    procedure ReadBufferData(var Buffer: Extended);
-    procedure ReadBufferData(var Buffer: Extended; Count: Longint);
+    method WriteBufferData(var Buffer: Integer; Count: LongInt);
 
-    procedure WriteBuffer(const Buffer: TBytes; Count: Longint);
-    procedure WriteBuffer(const Buffer: TBytes; Offset, Count: Longint);
-
-    procedure WriteBufferData(var Buffer: Integer; Count: Longint);
-
-    function CopyFrom(const Source: TStream; Count: Int64): Int64;
+    method CopyFrom(const Source: TStream; Count: Int64): Int64;
     property Position: Int64 read GetPosition write SetPosition;
-    property Size: Int64 read GetSize write SetSize64;
+    property Size: Int64 read GetSize write SetSize;
   end;
 
   THandleStream = class(TStream)
   protected
     FHandle: THandle;
-    procedure SetSize(NewSize: Longint); override;
-    procedure SetSize(const NewSize: Int64); override;
+    method SetSize(NewSize: LongInt); override;
   public
     constructor Create(AHandle: THandle);
-    function &Read(Buffer: TBytes; Offset, Count: Longint): Longint; override;
-    function &Write(const Buffer: TBytes; Offset, Count: Longint): Longint; override;
+    method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
+    method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
+    method SetSize(const NewSize: Int64); override;
 
-    function Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; override;
+    method Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; override;
     property Handle: THandle read FHandle;
   end;
-
 
   TFileStream = class(THandleStream)
   private
     FFileName: string;
   public
-    constructor(const AFileName: string; Mode: Word);
-    constructor(const AFileName: string; Mode: Word; Rights: Cardinal);
+    //constructor(const aFileName: string; Mode: Word);
+    //constructor(const aFileName: string; Mode: Word; Rights: Cardinal);
     property FileName: string read FFileName;
   end;
 
   TCustomMemoryStream = class(TStream)
-  private
-    //FMemory: Pointer;
-    FSize, FPosition: NativeInt;
   protected
-    //procedure SetPointer(Ptr: Pointer; const Size: NativeInt);
+    fData: MemoryStream;
   public
-    function &Read(var Buffer; Count: Longint): Longint; override;
-    function &Read(Buffer: TBytes; Offset, Count: Longint): Longint; override;
-    function Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; override;
-    procedure SaveToStream(Stream: TStream); virtual;
-    procedure SaveToFile(const FileName: string);
-    //property Memory: Pointer read FMemory;
+    constructor;
+    method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
+    method Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; override;
+    method SaveToStream(Stream: TStream); virtual;
+    method SaveToFile(const FileName: string);
+    property Memory: TBytes read fData.Bytes;
   end;
-
-{ TMemoryStream }
 
   TMemoryStream = class(TCustomMemoryStream)
-  private
-    FCapacity: Longint;
-    procedure SetCapacity(NewCapacity: Longint);
   protected
-    //function Realloc(var NewCapacity: Longint): Pointer; virtual;
-    property Capacity: Longint read FCapacity write SetCapacity;
+    property Capacity: LongInt read fData.Length write fData.SetLength;
   public
-    procedure Clear;
-    procedure LoadFromStream(Stream: TStream);
-    procedure LoadFromFile(const FileName: string);
-    procedure SetSize(const NewSize: Int64); override;
-    procedure SetSize(NewSize: Longint); override;
-    function Write(const Buffer; Count: Longint): Longint; override;
-    function Write(const Buffer: TBytes; Offset, Count: Longint): Longint; override;
+    method Clear;
+    method LoadFromStream(aStream: TStream);
+    method LoadFromFile(const FileName: string);
+    method SetSize(const NewSize: Int64); override;
+    method SetSize(NewSize: LongInt); override;
+    method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
   end;
-
-{ TBytesStream }
 
   TBytesStream = class(TMemoryStream)
   private
     FBytes: TBytes;
   protected
-    //function Realloc(var NewCapacity: Longint): Pointer; override;
+    //method Realloc(var NewCapacity: LongInt): Pointer; override;
   public
-    constructor(const ABytes: TBytes);
+    constructor(const aBytes: TBytes);
     property Bytes: TBytes read FBytes;
   end;
 
-*/
-
 implementation
+
+method TStream.GetPosition: Int64;
+begin
+
+end;
+
+method TStream.SetPosition(const Pos: Int64);
+begin
+
+end;
+
+method TStream.GetSize: Int64;
+begin
+
+end;
+
+method TStream.SetSize(NewSize: LongInt);
+begin
+
+end;
+
+method TStream.SetSize(const NewSize: Int64);
+begin
+
+end;
+
+method TStream.Read(Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.Read(var Buffer: TBytes; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.Write(const Buffer: TBytes; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(const Buffer: TBytes; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Int32): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Int32; Count: LongInt): LongInt;
+begin
+
+end;
+
+{$IF NOT COOPER}
+method TStream.ReadData(var Buffer: Boolean): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Boolean; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Byte): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Byte; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Char): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Char; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: ShortInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: ShortInt; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Int16): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Int16; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: UInt16): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: UInt16; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: UInt32): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: UInt32; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Int64): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Int64; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: UInt64): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: UInt64; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Single): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Single; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Double): LongInt;
+begin
+
+end;
+
+method TStream.ReadData(var Buffer: Double; Count: LongInt): LongInt;
+begin
+
+end;
+{$ENDIF}
+
+method TStream.WriteData(const Buffer: Single): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Single; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: TBytes; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Boolean): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Boolean; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Char): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Char; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: ShortInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: ShortInt; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Int16): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Int16; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Int32): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Int32; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Int64): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Int64; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Double): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Double; Count: LongInt): LongInt;
+begin
+
+end;
+
+{$IF NOT COOPER}
+method TStream.WriteData(const Buffer: Byte): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: Byte; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: UInt16): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: UInt16; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: UInt32): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: UInt32; Count: LongInt): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: UInt64): LongInt;
+begin
+
+end;
+
+method TStream.WriteData(const Buffer: UInt64; Count: LongInt): LongInt;
+begin
+
+end;
+{$ENDIF}
+
+method TStream.Seek(Offset: LongInt; Origin: Word): LongInt;
+begin
+
+end;
+
+method TStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
+begin
+
+end;
+
+method TStream.Seek(const Offset: Int64; Origin: Word): Int64;
+begin
+
+end;
+
+method TStream.ReadBuffer(var Buffer: TBytes; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBuffer(var Buffer: TBytes; Offset: LongInt; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Int32);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Int32; Count: LongInt);
+begin
+
+end;
+
+{$IF NOT COOPER}
+method TStream.ReadBufferData(var Buffer: Boolean);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Boolean; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Char);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Char; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: ShortInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: ShortInt; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Byte);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Byte; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Int16);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Int16; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: UInt16);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: UInt16; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: UInt32);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: UInt32; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Int64);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Int64; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: UInt64);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: UInt64; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Single);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Single; Count: LongInt);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Double);
+begin
+
+end;
+
+method TStream.ReadBufferData(var Buffer: Double; Count: LongInt);
+begin
+
+end;
+{$ENDIF}
+
+method TStream.WriteBuffer(const Buffer: TBytes; Count: LongInt);
+begin
+
+end;
+
+method TStream.WriteBuffer(const Buffer: TBytes; Offset: LongInt; Count: LongInt);
+begin
+
+end;
+
+method TStream.WriteBufferData(var Buffer: Integer; Count: LongInt);
+begin
+
+end;
+
+method TStream.CopyFrom(const Source: TStream; Count: Int64): Int64;
+begin
+
+end;
+
+method THandleStream.SetSize(NewSize: LongInt);
+begin
+
+end;
+
+method THandleStream.SetSize(const NewSize: Int64);
+begin
+
+end;
+
+constructor THandleStream create(AHandle: THandle);
+begin
+
+end;
+
+method THandleStream.Read(Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+begin
+
+end;
+
+method THandleStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+begin
+
+end;
+
+method THandleStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
+begin
+
+end;
+
+/*constructor TFileStream(const aFileName: String; Mode: Word);
+begin
+
+end;
+
+constructor TFileStream(const aFileName: String; Mode: Word; Rights: Cardinal);
+begin
+
+end;*/
+
+constructor TCustomMemoryStream;
+begin
+  fData := new MemoryStream();
+end;
+
+method TCustomMemoryStream.Read(Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+begin
+  result := fData.read(Buffer, Offset, Count);
+end;
+
+method TCustomMemoryStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
+begin
+  var lOrigin: SeekOrigin;
+  case Origin of
+    TSeekOrigin.soBeginning: lOrigin := SeekOrigin.Begin;
+    TSeekOrigin.soCurrent: lOrigin := SeekOrigin.Current;
+    TSeekOrigin.soEnd: lOrigin := SeekOrigin.End;
+  end;
+  result := fData.Seek(Offset, lOrigin);
+end;
+
+method TCustomMemoryStream.SaveToStream(Stream: TStream);
+begin
+
+end;
+
+method TCustomMemoryStream.SaveToFile(const FileName: String);
+begin
+
+end;
+
+method TMemoryStream.Clear;
+begin
+  fData.SetLength(0);
+end;
+
+method TMemoryStream.LoadFromStream(aStream: TStream);
+begin
+  SetSize(aStream.Size);
+  Position := 0;
+  CopyFrom(aStream, aStream.Size);
+end;
+
+method TMemoryStream.LoadFromFile(const FileName: String);
+begin
+
+end;
+
+method TMemoryStream.SetSize(const NewSize: Int64);
+begin
+  fData.SetLength(NewSize);
+end;
+
+method TMemoryStream.SetSize(NewSize: LongInt);
+begin
+  fData.SetLength(NewSize);
+end;
+
+method TMemoryStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+begin
+  result := fData.Write(Buffer, Offset, Count);
+end;
+
+constructor TBytesStream(const aBytes: TBytes);
+begin
+  fData := new MemoryStream(ABytes.Length);
+  fData.Write(aBytes, aBytes.Length);
+end;
 
 
 end.
