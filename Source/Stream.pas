@@ -2,8 +2,13 @@
 
 interface
 
+{$GLOBALS ON}
+
 uses
   RemObjects.Elements.RTL;
+
+const
+  fmCreate = $FF00;
 
 type
   TSeekOrigin = public enum (soBeginning, soCurrent, soEnd) of Integer;
@@ -125,10 +130,10 @@ type
 
   THandleStream = class(TStream)
   protected
-    FHandle: THandle;
+    fHandle: THandle;
     method SetSize(NewSize: LongInt); override;
   public
-    constructor Create(AHandle: THandle);
+    constructor(aHandle: THandle);
     method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
     method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
     method SetSize(const NewSize: Int64); override;
@@ -139,11 +144,11 @@ type
 
   TFileStream = class(THandleStream)
   private
-    FFileName: string;
+    fFileName: DelphiString;
   public
-    //constructor(const aFileName: string; Mode: Word);
-    //constructor(const aFileName: string; Mode: Word; Rights: Cardinal);
-    property FileName: string read FFileName;
+    constructor(const aFileName: DelphiString; Mode: Word);
+    constructor(const aFileName: DelphiString; Mode: Word; Rights: Cardinal);
+    property FileName: DelphiString read FFileName;
   end;
 
   TCustomMemoryStream = class(TStream)
@@ -154,7 +159,7 @@ type
     method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
     method Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; override;
     method SaveToStream(Stream: TStream); virtual;
-    method SaveToFile(const FileName: string);
+    method SaveToFile(const FileName: DelphiString);
     property Memory: TBytes read fData.Bytes;
   end;
 
@@ -164,20 +169,18 @@ type
   public
     method Clear;
     method LoadFromStream(aStream: TStream);
-    method LoadFromFile(const FileName: string);
+    method LoadFromFile(const FileName: DelphiString);
     method SetSize(const NewSize: Int64); override;
     method SetSize(NewSize: LongInt); override;
     method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
   end;
 
   TBytesStream = class(TMemoryStream)
-  private
-    FBytes: TBytes;
   protected
     //method Realloc(var NewCapacity: LongInt): Pointer; override;
   public
     constructor(const aBytes: TBytes);
-    property Bytes: TBytes read FBytes;
+    property Bytes: TBytes read fData.Bytes;
   end;
 
 implementation
@@ -658,35 +661,42 @@ begin
 
 end;
 
-constructor THandleStream create(AHandle: THandle);
+constructor THandleStream(aHandle: THandle);
 begin
-
+  inherited constructor;
+  fHandle := aHandle;
 end;
 
 method THandleStream.Read(Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
 begin
-
+  result := FileRead(fHandle, var Buffer, Offset, Count);
 end;
 
 method THandleStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
 begin
-
+  result := FileWrite(fHandle, Buffer, Offset, Count);
 end;
 
 method THandleStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
 begin
-
+  result := FileSeek(fHandle, Offset, Integer(Origin));
 end;
 
-/*constructor TFileStream(const aFileName: String; Mode: Word);
+constructor TFileStream(const aFileName: DelphiString; Mode: Word);
 begin
-
+  constructor(aFileName, Mode, 0);
 end;
 
-constructor TFileStream(const aFileName: String; Mode: Word; Rights: Cardinal);
+constructor TFileStream(const aFileName: DelphiString; Mode: Word; Rights: Cardinal);
 begin
-
-end;*/
+  var lHandle: THandle;
+  if Mode and fmCreate <> 0 then
+    lHandle := FileCreate(aFileName, Mode, Rights)
+  else
+    lHandle := FileOpen(aFileName, Mode);
+  inherited constructor(lHandle);
+  fFileName := aFileName;
+end;
 
 constructor TCustomMemoryStream;
 begin
@@ -714,7 +724,7 @@ begin
 
 end;
 
-method TCustomMemoryStream.SaveToFile(const FileName: String);
+method TCustomMemoryStream.SaveToFile(const FileName: DelphiString);
 begin
 
 end;
@@ -731,7 +741,7 @@ begin
   CopyFrom(aStream, aStream.Size);
 end;
 
-method TMemoryStream.LoadFromFile(const FileName: String);
+method TMemoryStream.LoadFromFile(const FileName: DelphiString);
 begin
 
 end;
