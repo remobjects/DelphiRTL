@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Collections.Stack.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\DateUtils.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\IniFiles.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Test Cases\Stream.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\String.Manipulations.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\SysUtils.DateTime.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Test Cases\SysUtils.pas" />

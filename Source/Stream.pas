@@ -132,7 +132,7 @@ type
     property Size: Int64 read GetSize write SetSize;
   end;
 
-  THandleStream = class(TStream)
+  THandleStream = public class(TStream)
   protected
     fHandle: THandle;
     method SetSize(NewSize: LongInt); override;
@@ -151,20 +151,24 @@ type
     property Handle: THandle read FHandle;
   end;
 
-  TFileStream = class(THandleStream)
+  TFileStream = public class(THandleStream)
   private
     fFileName: DelphiString;
   public
     constructor(const aFileName: DelphiString; Mode: Word);
     constructor(const aFileName: DelphiString; Mode: Word; Rights: Cardinal);
+    class method Create(const aFileName: DelphiString; Mode: Word): TFileStream; static;
+    class method Create(const aFileName: DelphiString; Mode: Word; Rights: Cardinal): TFileStream; static;
+
     property FileName: DelphiString read FFileName;
   end;
 
-  TCustomMemoryStream = class(TStream)
+  TCustomMemoryStream = public class(TStream)
   protected
     fData: MemoryStream;
   public
     constructor;
+    class method Create: TCustomMemoryStream; static;
     method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
     {$IF ISLAND OR TOFFEE}
     method &Read(Buffer: Pointer; Count: LongInt): LongInt; override;
@@ -175,10 +179,12 @@ type
     property Memory: TBytes read fData.Bytes;
   end;
 
-  TMemoryStream = class(TCustomMemoryStream)
+  TMemoryStream = public class(TCustomMemoryStream)
   protected
     property Capacity: LongInt read fData.Length write fData.SetLength;
   public
+    constructor;
+    class method Create: TCustomMemoryStream; static;
     method Clear;
     method LoadFromStream(aStream: TStream);
     method LoadFromFile(const aFileName: DelphiString);
@@ -190,9 +196,10 @@ type
     {$ENDIF}
   end;
 
-  TBytesStream = class(TMemoryStream)
+  TBytesStream = public class(TMemoryStream)
   public
     constructor(const aBytes: TBytes);
+    class method Create(const aBytes: TBytes): TBytesStream; static;
     property Bytes: TBytes read fData.Bytes;
   end;
 
@@ -998,9 +1005,24 @@ begin
   fFileName := aFileName;
 end;
 
+class method TFileStream.Create(const aFileName: DelphiString; Mode: Word): TFileStream;
+begin
+  result := new TFileStream(aFileName, Mode);
+end;
+
+class method TFileStream.Create(const aFileName: DelphiString; Mode: Word; Rights: Cardinal): TFileStream;
+begin
+  result := new TFileStream(aFileName, Mode, Rights);
+end;
+
 constructor TCustomMemoryStream;
 begin
   fData := new MemoryStream();
+end;
+
+class method TCustomMemoryStream.Create: TCustomMemoryStream;
+begin
+  result := new TCustomMemoryStream();
 end;
 
 method TCustomMemoryStream.Read(Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
@@ -1039,6 +1061,16 @@ method TCustomMemoryStream.SaveToFile(const aFileName: DelphiString);
 begin
   var lTmp := new TFileStream(aFileName, fmCreate or fmOpenWrite);
   SaveToStream(lTmp);
+end;
+
+constructor TMemoryStream;
+begin
+  inherited;
+end;
+
+class method TMemoryStream.Create: TCustomMemoryStream;
+begin
+  result := new TMemoryStream();
 end;
 
 method TMemoryStream.Clear;
@@ -1089,6 +1121,11 @@ constructor TBytesStream(const aBytes: TBytes);
 begin
   fData := new MemoryStream(ABytes.Length);
   fData.Write(aBytes, aBytes.Length);
+end;
+
+class method TBytesStream.Create(const aBytes: TBytes): TBytesStream;
+begin
+  result := new TBytesStream(aBytes);
 end;
 
 
