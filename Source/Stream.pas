@@ -18,6 +18,8 @@ type
     method GetPosition: Int64;
     method SetPosition(const Pos: Int64);
     method &Skip(Amount: Integer): Integer;
+    method CheckBufferRead(aBytesRead: LongInt; aSizeToRead: LongInt);
+    method CheckBufferReadCount(aBytesRead: LongInt; aCount: LongInt);
   protected
     method GetSize: Int64; virtual;
     method SetSize(NewSize: LongInt); virtual;
@@ -64,8 +66,8 @@ type
     {$ENDIF}
 
     method WriteData(const Buffer: TBytes; Count: LongInt): LongInt;
-    method WriteData(const Buffer: Int32): LongInt;
-    method WriteData(const Buffer: Int32; Count: LongInt): LongInt;
+    method WriteData(Buffer: Int32): LongInt;
+    method WriteData(Buffer: Int32; Count: LongInt): LongInt;
 
     {$IF NOT COOPER}
     method WriteData(Buffer: Boolean): LongInt;
@@ -96,9 +98,6 @@ type
     method Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; virtual;
     method Seek(const Offset: Int64; Origin: Word): Int64; inline;
 
-    method ReadBuffer(var Buffer: TBytes; Count: LongInt);
-    method ReadBuffer(var Buffer: TBytes; Offset, Count: LongInt);
-
     method ReadBufferData(var Buffer: Int32);
     method ReadBufferData(var Buffer: Int32; Count: LongInt);
     {$IF NOT COOPER}
@@ -126,9 +125,6 @@ type
     method ReadBufferData(var Buffer: Double; Count: LongInt);
     {$ENDIF}
 
-    method WriteBuffer(const Buffer: TBytes; Count: LongInt);
-    method WriteBuffer(const Buffer: TBytes; Offset, Count: LongInt);
-
     method WriteBufferData(var Buffer: Integer; Count: LongInt);
 
     method CopyFrom(const Source: TStream; Count: Int64): Int64;
@@ -144,8 +140,10 @@ type
     constructor(aHandle: THandle);
     method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
     method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
-    //method &Read(var Buffer; Count: LongInt): LongInt; override;
-    //method &Write(Buffer: Object; Count: LongInt): LongInt; override;
+    {$IF ISLAND OR TOFFEE}
+    method &Read(Buffer: Pointer; Count: LongInt): LongInt; override;
+    method &Write(Buffer: Pointer; Count: LongInt): LongInt; override;
+    {$ENDIF}
 
     method SetSize(const NewSize: Int64); override;
 
@@ -193,8 +191,6 @@ type
   end;
 
   TBytesStream = class(TMemoryStream)
-  protected
-    //method Realloc(var NewCapacity: LongInt): Pointer; override;
   public
     constructor(const aBytes: TBytes);
     property Bytes: TBytes read fData.Bytes;
@@ -233,6 +229,18 @@ method TStream.Skip(Amount: Integer): Integer;
 begin
   var lPos := Position;
   result := Seek(Amount, TSeekOrigin.soCurrent) - lPos;
+end;
+
+method TStream.CheckBufferRead(aBytesRead: LongInt; aSizeToRead: LongInt);
+begin
+  if aBytesRead <> aSizeToRead then
+    raise new Exception('Error reading from stream');
+end;
+
+method TStream.CheckBufferReadCount(aBytesRead: LongInt; aCount: LongInt);
+begin
+  if (aCount <> 0) and (aBytesRead <> aCount) then
+    raise new Exception('Error reading from stream');
 end;
 
 method TStream.Read(Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
@@ -286,7 +294,11 @@ end;
 
 method TStream.ReadData(var Buffer: Int32; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 
 method TStream.ReadBytes(Count: LongInt): TBytes;
@@ -307,7 +319,11 @@ end;
 
 method TStream.ReadData(var Buffer: Boolean; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 
 method TStream.ReadData(var Buffer: Byte): LongInt;
@@ -323,7 +339,11 @@ end;
 
 method TStream.ReadData(var Buffer: Byte; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 
 method TStream.ReadData(var Buffer: Char): LongInt;
@@ -338,7 +358,11 @@ end;
 
 method TStream.ReadData(var Buffer: Char; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 
 method TStream.ReadData(var Buffer: ShortInt): LongInt;
@@ -354,7 +378,11 @@ end;
 
 method TStream.ReadData(var Buffer: ShortInt; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 
 method TStream.ReadData(var Buffer: Int16): LongInt;
@@ -369,7 +397,11 @@ end;
 
 method TStream.ReadData(var Buffer: Int16; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 
 method TStream.ReadData(var Buffer: UInt16): LongInt;
@@ -384,7 +416,11 @@ end;
 
 method TStream.ReadData(var Buffer: UInt16; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 
 method TStream.ReadData(var Buffer: UInt32): LongInt;
@@ -399,7 +435,11 @@ end;
 
 method TStream.ReadData(var Buffer: UInt32; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 
 method TStream.ReadData(var Buffer: Int64): LongInt;
@@ -414,7 +454,11 @@ end;
 
 method TStream.ReadData(var Buffer: Int64; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 
 method TStream.ReadData(var Buffer: UInt64): LongInt;
@@ -429,7 +473,11 @@ end;
 
 method TStream.ReadData(var Buffer: UInt64; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 
 method TStream.ReadData(var Buffer: Single): LongInt;
@@ -444,7 +492,11 @@ end;
 
 method TStream.ReadData(var Buffer: Single; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 
 method TStream.ReadData(var Buffer: Double): LongInt;
@@ -459,7 +511,11 @@ end;
 
 method TStream.ReadData(var Buffer: Double; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := ReadData(var Buffer) + &Skip(Count - lSize)
+  else
+    result := ReadData(var Buffer);
 end;
 {$ENDIF}
 
@@ -468,14 +524,30 @@ begin
   result := &write(Buffer, 0, Count);
 end;
 
-method TStream.WriteData(const Buffer: Int32): LongInt;
+method TStream.WriteData(Buffer: Int32): LongInt;
 begin
-
+  {$IF COOPER}
+  result := sizeOf(Int32);
+  var lTmp := java.nio.ByteBuffer.allocate(result);
+  lTmp.putInt(Buffer);
+  var lArray := lTmp.array;
+  &Write(lArray, 0, result);
+  {$ELSEIF ECHOES}
+  var lBuf := BitConverter.GetBytes(Buffer);
+  result := lBuf.Length;
+  &Write(lBuf, 0, result);
+  {$ELSEIF ISLAND OR TOFFEE}
+  result := &Write(@Buffer, sizeOf(Buffer));
+  {$ENDIF}
 end;
 
-method TStream.WriteData(const Buffer: Int32; Count: LongInt): LongInt;
+method TStream.WriteData(Buffer: Int32; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 
 {$IF NOT COOPER}
@@ -492,7 +564,11 @@ end;
 
 method TStream.WriteData(Buffer: Boolean; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 
 method TStream.WriteData(Buffer: Char): LongInt;
@@ -508,7 +584,11 @@ end;
 
 method TStream.WriteData(Buffer: Char; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 
 method TStream.WriteData(Buffer: ShortInt): LongInt;
@@ -524,7 +604,11 @@ end;
 
 method TStream.WriteData(Buffer: ShortInt; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 
 method TStream.WriteData(Buffer: Int16): LongInt;
@@ -540,7 +624,11 @@ end;
 
 method TStream.WriteData(Buffer: Int16; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 
 method TStream.WriteData(Buffer: Int64): LongInt;
@@ -556,7 +644,11 @@ end;
 
 method TStream.WriteData(Buffer: Int64; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 
 method TStream.WriteData(Buffer: Single): LongInt;
@@ -572,7 +664,11 @@ end;
 
 method TStream.WriteData(Buffer: Single; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 
 method TStream.WriteData(Buffer: Double): LongInt;
@@ -588,7 +684,11 @@ end;
 
 method TStream.WriteData(Buffer: Double; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 
 method TStream.WriteData(Buffer: Byte): LongInt;
@@ -604,7 +704,11 @@ end;
 
 method TStream.WriteData(Buffer: Byte; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 
 method TStream.WriteData(Buffer: UInt16): LongInt;
@@ -620,7 +724,11 @@ end;
 
 method TStream.WriteData(Buffer: UInt16; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 
 method TStream.WriteData(Buffer: UInt32): LongInt;
@@ -635,8 +743,12 @@ begin
 end;
 
 method TStream.WriteData(Buffer: UInt32; Count: LongInt): LongInt;
-begin
-
+begin  
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 
 method TStream.WriteData(Buffer: UInt64): LongInt;
@@ -652,7 +764,11 @@ end;
 
 method TStream.WriteData(Buffer: UInt64; Count: LongInt): LongInt;
 begin
-
+  var lSize := sizeOf(Buffer);
+  if Count > lSize then
+    result := WriteData(Buffer) + Skip(Count - lSize)
+  else
+    result := WriteData(Buffer);
 end;
 {$ENDIF}
 
@@ -671,156 +787,144 @@ begin
   result := Seek(Offset, TSeekOrigin(Origin));
 end;
 
-method TStream.ReadBuffer(var Buffer: TBytes; Count: LongInt);
-begin
-
-end;
-
-method TStream.ReadBuffer(var Buffer: TBytes; Offset: LongInt; Count: LongInt);
-begin
-
-end;
-
 method TStream.ReadBufferData(var Buffer: Int32);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(Int32));
 end;
 
 method TStream.ReadBufferData(var Buffer: Int32; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 
 {$IF NOT COOPER}
 method TStream.ReadBufferData(var Buffer: Boolean);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(Boolean));
 end;
 
 method TStream.ReadBufferData(var Buffer: Boolean; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 
 method TStream.ReadBufferData(var Buffer: Char);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(Char));
 end;
 
 method TStream.ReadBufferData(var Buffer: Char; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 
 method TStream.ReadBufferData(var Buffer: ShortInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(ShortInt));
 end;
 
 method TStream.ReadBufferData(var Buffer: ShortInt; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 
 method TStream.ReadBufferData(var Buffer: Byte);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(Byte));
 end;
 
 method TStream.ReadBufferData(var Buffer: Byte; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 
 method TStream.ReadBufferData(var Buffer: Int16);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(Int16));
 end;
 
 method TStream.ReadBufferData(var Buffer: Int16; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 
 method TStream.ReadBufferData(var Buffer: UInt16);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(UInt16));
 end;
 
 method TStream.ReadBufferData(var Buffer: UInt16; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 
 method TStream.ReadBufferData(var Buffer: UInt32);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(UInt32));
 end;
 
 method TStream.ReadBufferData(var Buffer: UInt32; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 
 method TStream.ReadBufferData(var Buffer: Int64);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(Int64));
 end;
 
 method TStream.ReadBufferData(var Buffer: Int64; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 
 method TStream.ReadBufferData(var Buffer: UInt64);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(UInt64));
 end;
 
 method TStream.ReadBufferData(var Buffer: UInt64; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 
 method TStream.ReadBufferData(var Buffer: Single);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(Single));
 end;
 
 method TStream.ReadBufferData(var Buffer: Single; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 
 method TStream.ReadBufferData(var Buffer: Double);
 begin
-
+  CheckBufferRead(ReadData(var Buffer), sizeOf(Double));
 end;
 
 method TStream.ReadBufferData(var Buffer: Double; Count: LongInt);
 begin
-
+  CheckBufferRead(ReadData(var Buffer, Count), Count);
 end;
 {$ENDIF}
 
-method TStream.WriteBuffer(const Buffer: TBytes; Count: LongInt);
-begin
-
-end;
-
-method TStream.WriteBuffer(const Buffer: TBytes; Offset: LongInt; Count: LongInt);
-begin
-
-end;
-
 method TStream.WriteBufferData(var Buffer: Integer; Count: LongInt);
-begin
-
+begin  
+  WriteData(Buffer, Count);
 end;
 
 method TStream.CopyFrom(const Source: TStream; Count: Int64): Int64;
+const
+  bufSize = 4 * 1024; 
 begin
-
+  if Source = nil then raise new Exception('Source is null');
+  var lBuf := new Byte[bufSize];
+  while true do begin
+    var lRest := Source.Read(var lBuf, bufSize);
+    if lRest > 0 then lRest := &Write(lBuf, lRest);
+    if lRest <> bufSize then break;
+  end;  
 end;
 
 method THandleStream.SetSize(NewSize: LongInt);
@@ -848,6 +952,30 @@ method THandleStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt
 begin
   result := FileWrite(fHandle, Buffer, Offset, Count);
 end;
+
+{$IF ISLAND OR TOFFEE}
+method THandleStream.Read(Buffer: Pointer; Count: LongInt): LongInt;
+begin
+  var lBuf := new Byte[Count];
+  result := &Read(lBuf, 0, Count);
+  {$IF ISLAND}
+  {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(Buffer, @lBuf[0], Count);
+  {$ELSEIF TOFFEE}
+  memcpy(Buffer, @lBuf[0], Count);
+  {$ENDIF}  
+end;
+
+method THandleStream.Write(Buffer: Pointer; Count: LongInt): LongInt;
+begin
+  var lBuf := new Byte[Count];
+  {$IF ISLAND}
+  {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(@lBuf[0], Buffer, Count);
+  {$ELSEIF TOFFEE}
+  memcpy(@lBuf[0], Buffer, Count);
+  {$ENDIF}  
+  result := &Write(lBuf, 0, Count);
+end;
+{$ENDIF}
 
 method THandleStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
 begin
@@ -949,7 +1077,11 @@ end;
 {$IF ISLAND OR TOFFEE}
 method TMemoryStream.Write(Buffer: Pointer; Count: LongInt): LongInt;
 begin
-  result := Count;
+  {$IF ISLAND}
+  {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(@fData.Bytes[Position], Buffer, Count);
+  {$ELSEIF TOFFEE}
+  memcpy(@fData.Bytes[Position], Buffer, Count);
+  {$ENDIF}  
 end;
 {$ENDIF}
 

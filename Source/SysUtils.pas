@@ -35,7 +35,7 @@ const
   UnixDateDelta = 25569;
 
 type
-  {$IF COOPER}
+  {$IF COOPER OR TOFFEE}
   TBytes = public array of Byte;
   {$ELSE}
   TBytes = public TArray<Byte>;
@@ -94,7 +94,7 @@ type
   TOSVersion = public record
   private
     class var fArchitecture: TArchitecture;
-    class var fBuild: Integer;
+    class var fBuild: Integer := 0;
     class var fMajor: Integer;
     class var fMinor: Integer;
     class var fName: String;
