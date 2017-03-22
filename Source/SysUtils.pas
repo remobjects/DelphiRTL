@@ -21,6 +21,7 @@ const
   fmShareDenyWrite = $0020;
   fmShareDenyRead = $0030;
   fmShareDenyNone = $0040;
+  INVALID_HANDLE_VALUE = THandle(-1);
 
   HoursPerDay   = 24;
   MinsPerHour   = 60;
@@ -444,6 +445,8 @@ end;
 
 procedure FileClose(Handle: THandle);
 begin
+  var lHandle := FileHandle(TInternalFileHandles.Get(Handle));
+  lHandle.Close;
   TInternalFileHandles.Free(Handle);
 end;
 

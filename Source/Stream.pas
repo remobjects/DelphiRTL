@@ -142,7 +142,6 @@ type
     method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
     {$IF ISLAND OR TOFFEE}
     method &Read(Buffer: Pointer; Count: LongInt): LongInt; override;
-    method &Write(Buffer: Pointer; Count: LongInt): LongInt; override;
     {$ENDIF}
 
     method SetSize(const NewSize: Int64); override;
@@ -157,9 +156,11 @@ type
   public
     constructor(const aFileName: DelphiString; Mode: Word);
     constructor(const aFileName: DelphiString; Mode: Word; Rights: Cardinal);
+    finalizer;
     class method Create(const aFileName: DelphiString; Mode: Word): TFileStream; static;
     class method Create(const aFileName: DelphiString; Mode: Word; Rights: Cardinal): TFileStream; static;
 
+    method Close;
     property FileName: DelphiString read FFileName;
   end;
 
@@ -191,9 +192,6 @@ type
     method SetSize(const NewSize: Int64); override;
     method SetSize(NewSize: LongInt); override;
     method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
-    {$IF ISLAND OR TOFFEE}
-    method &Write(Buffer: Pointer; Count: LongInt): LongInt; override;
-    {$ENDIF}
   end;
 
   TBytesStream = public class(TMemoryStream)
@@ -268,7 +266,13 @@ end;
 
 method TStream.Write(Buffer: Pointer; Count: LongInt): LongInt;
 begin
-  result := 0;
+  var lBuf := new Byte[Count];
+  {$IF ISLAND}
+  {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(@lBuf[0], Buffer, Count);
+  {$ELSEIF TOFFEE}
+  memcpy(@lBuf[0], Buffer, Count);
+  {$ENDIF}  
+  result := &Write(lBuf, 0, Count);
 end;
 {$ENDIF}
 
@@ -290,10 +294,12 @@ end;
 method TStream.ReadData(var Buffer: Int32): LongInt;
 begin
   {$IF COOPER}
-  var lTemp := java.nio.ByteBuffer.wrap(ReadBytes(sizeOf(Buffer)));
-  result := lTemp.getInt;
+  result := sizeOf(Buffer);
+  var lTemp := java.nio.ByteBuffer.wrap(ReadBytes(result));
+  Buffer := lTemp.getInt;
   {$ELSEIF ECHOES}
-  BitConverter.ToBoolean(ReadBytes(sizeOf(Buffer)), 0);
+  result := sizeOf(Buffer);
+  Buffer := BitConverter.ToInt32(ReadBytes(result), 0);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Read(@Buffer, sizeOf(Buffer));
   {$ENDIF}
@@ -318,7 +324,8 @@ end;
 method TStream.ReadData(var Buffer: Boolean): LongInt;
 begin
   {$IF ECHOES}
-  Buffer := BitConverter.ToBoolean(ReadBytes(sizeOf(Buffer)), 0);
+  result := sizeOf(Buffer);
+  Buffer := BitConverter.ToBoolean(ReadBytes(result), 0);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Read(@Buffer, sizeOf(Buffer));
   {$ENDIF}
@@ -377,7 +384,7 @@ begin
   {$IF ECHOES}
   result := sizeOf(Buffer);
   var lValue := ReadBytes(result);
-  Buffer := lValue[0];
+  Buffer := ShortInt(lValue[0]);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Read(@Buffer, sizeOf(Buffer));
   {$ENDIF}
@@ -601,8 +608,9 @@ end;
 method TStream.WriteData(Buffer: ShortInt): LongInt;
 begin
   {$IF ECHOES}
-  var lBuf := BitConverter.GetBytes(Buffer);
-  result := lBuf.Length;
+  result := sizeOf(Buffer);
+  var lBuf := new Byte[result];
+  lBuf[0] := Buffer;
   &Write(lBuf, 0, result);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
@@ -971,17 +979,6 @@ begin
   memcpy(Buffer, @lBuf[0], Count);
   {$ENDIF}  
 end;
-
-method THandleStream.Write(Buffer: Pointer; Count: LongInt): LongInt;
-begin
-  var lBuf := new Byte[Count];
-  {$IF ISLAND}
-  {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(@lBuf[0], Buffer, Count);
-  {$ELSEIF TOFFEE}
-  memcpy(@lBuf[0], Buffer, Count);
-  {$ENDIF}  
-  result := &Write(lBuf, 0, Count);
-end;
 {$ENDIF}
 
 method THandleStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
@@ -1013,6 +1010,19 @@ end;
 class method TFileStream.Create(const aFileName: DelphiString; Mode: Word; Rights: Cardinal): TFileStream;
 begin
   result := new TFileStream(aFileName, Mode, Rights);
+end;
+
+finalizer TFileStream;
+begin
+  Close;
+end;
+
+method TFileStream.Close;
+begin
+  if fHandle <> INVALID_HANDLE_VALUE then begin
+    FileClose(fHandle);
+    fHandle := INVALID_HANDLE_VALUE;
+  end;
 end;
 
 constructor TCustomMemoryStream;
@@ -1105,17 +1115,6 @@ method TMemoryStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt
 begin
   result := fData.Write(Buffer, Offset, Count);
 end;
-
-{$IF ISLAND OR TOFFEE}
-method TMemoryStream.Write(Buffer: Pointer; Count: LongInt): LongInt;
-begin
-  {$IF ISLAND}
-  {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(@fData.Bytes[Position], Buffer, Count);
-  {$ELSEIF TOFFEE}
-  memcpy(@fData.Bytes[Position], Buffer, Count);
-  {$ENDIF}  
-end;
-{$ENDIF}
 
 constructor TBytesStream(const aBytes: TBytes);
 begin
