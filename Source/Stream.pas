@@ -32,7 +32,7 @@ type
     method &Read(Buffer: Pointer; Count: LongInt): LongInt; virtual;
     method &Write(Buffer: Pointer; Count: LongInt): LongInt; virtual;
     {$ENDIF}
-   
+
     method &Read(var Buffer: TBytes; Count: LongInt): LongInt; inline;
     method &Write(const Buffer: TBytes; Count: LongInt): LongInt; inline;
 
@@ -60,7 +60,7 @@ type
     method ReadData(var Buffer: Int64): LongInt;
     method ReadData(var Buffer: Int64; Count: LongInt): LongInt;
     method ReadData(var Buffer: Single): LongInt;
-    method ReadData(var Buffer: Single; Count: LongInt): LongInt;   
+    method ReadData(var Buffer: Single; Count: LongInt): LongInt;
     method ReadData(var Buffer: Double): LongInt;
     method ReadData(var Buffer: Double; Count: LongInt): LongInt;
     {$ENDIF}
@@ -147,7 +147,7 @@ type
     method SetSize(const NewSize: Int64); override;
 
     method Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; override;
-    property Handle: THandle read FHandle;
+    property Handle: THandle read fHandle;
   end;
 
   TFileStream = public class(THandleStream)
@@ -161,7 +161,7 @@ type
     class method Create(const aFileName: DelphiString; Mode: Word; Rights: Cardinal): TFileStream; static;
 
     method Close;
-    property FileName: DelphiString read FFileName;
+    property FileName: DelphiString read fFileName;
   end;
 
   TCustomMemoryStream = public class(TStream)
@@ -271,7 +271,7 @@ begin
   {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(@lBuf[0], Buffer, Count);
   {$ELSEIF TOFFEE}
   memcpy(@lBuf[0], Buffer, Count);
-  {$ENDIF}  
+  {$ENDIF}
   result := &Write(lBuf, 0, Count);
 end;
 {$ENDIF}
@@ -364,7 +364,7 @@ method TStream.ReadData(var Buffer: Char): LongInt;
 begin
   {$IF ECHOES}
   result := sizeOf(Buffer);
-  Buffer := BitConverter.ToChar(ReadBytes(result), 0);  
+  Buffer := BitConverter.ToChar(ReadBytes(result), 0);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Read(@Buffer, sizeOf(Buffer));
   {$ENDIF}
@@ -403,7 +403,7 @@ method TStream.ReadData(var Buffer: Int16): LongInt;
 begin
   {$IF ECHOES}
   result := sizeOf(Buffer);
-  Buffer := BitConverter.ToInt16(ReadBytes(result), 0);  
+  Buffer := BitConverter.ToInt16(ReadBytes(result), 0);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Read(@Buffer, sizeOf(Buffer));
   {$ENDIF}
@@ -422,7 +422,7 @@ method TStream.ReadData(var Buffer: UInt16): LongInt;
 begin
   {$IF ECHOES}
   result := sizeOf(Buffer);
-  Buffer := BitConverter.ToUInt16(ReadBytes(result), 0);  
+  Buffer := BitConverter.ToUInt16(ReadBytes(result), 0);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Read(@Buffer, sizeOf(Buffer));
   {$ENDIF}
@@ -441,7 +441,7 @@ method TStream.ReadData(var Buffer: UInt32): LongInt;
 begin
   {$IF ECHOES}
   result := sizeOf(Buffer);
-  Buffer := BitConverter.ToUInt32(ReadBytes(result), 0);  
+  Buffer := BitConverter.ToUInt32(ReadBytes(result), 0);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Read(@Buffer, sizeOf(Buffer));
   {$ENDIF}
@@ -460,7 +460,7 @@ method TStream.ReadData(var Buffer: Int64): LongInt;
 begin
   {$IF ECHOES}
   result := sizeOf(Buffer);
-  Buffer := BitConverter.ToInt64(ReadBytes(result), 0);  
+  Buffer := BitConverter.ToInt64(ReadBytes(result), 0);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Read(@Buffer, sizeOf(Buffer));
   {$ENDIF}
@@ -479,7 +479,7 @@ method TStream.ReadData(var Buffer: UInt64): LongInt;
 begin
   {$IF ECHOES}
   result := sizeOf(Buffer);
-  Buffer := BitConverter.ToUInt64(ReadBytes(result), 0);  
+  Buffer := BitConverter.ToUInt64(ReadBytes(result), 0);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Read(@Buffer, sizeOf(Buffer));
   {$ENDIF}
@@ -498,7 +498,7 @@ method TStream.ReadData(var Buffer: Single): LongInt;
 begin
   {$IF ECHOES}
   result := sizeOf(Buffer);
-  Buffer := BitConverter.ToSingle(ReadBytes(result), 0);  
+  Buffer := BitConverter.ToSingle(ReadBytes(result), 0);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Read(@Buffer, sizeOf(Buffer));
   {$ENDIF}
@@ -517,7 +517,7 @@ method TStream.ReadData(var Buffer: Double): LongInt;
 begin
   {$IF ECHOES}
   result := sizeOf(Buffer);
-  Buffer := BitConverter.ToDouble(ReadBytes(result), 0);  
+  Buffer := BitConverter.ToDouble(ReadBytes(result), 0);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Read(@Buffer, sizeOf(Buffer));
   {$ENDIF}
@@ -535,7 +535,7 @@ end;
 
 method TStream.WriteData(const Buffer: TBytes; Count: LongInt): LongInt;
 begin
-  result := &write(Buffer, 0, Count);
+  result := &Write(Buffer, 0, Count);
 end;
 
 method TStream.WriteData(Buffer: Int32): LongInt;
@@ -758,7 +758,7 @@ begin
 end;
 
 method TStream.WriteData(Buffer: UInt32; Count: LongInt): LongInt;
-begin  
+begin
   var lSize := sizeOf(Buffer);
   if Count > lSize then
     result := WriteData(Buffer) + Skip(Count - lSize)
@@ -925,13 +925,13 @@ end;
 {$ENDIF}
 
 method TStream.WriteBufferData(var Buffer: Integer; Count: LongInt);
-begin  
+begin
   WriteData(Buffer, Count);
 end;
 
 method TStream.CopyFrom(const Source: TStream; Count: Int64): Int64;
 const
-  bufSize = 4 * 1024; 
+  bufSize = 4 * 1024;
 begin
   if Source = nil then raise new Exception('Source is null');
   var lBuf := new Byte[bufSize];
@@ -939,7 +939,7 @@ begin
     var lRest := Source.Read(var lBuf, bufSize);
     if lRest > 0 then lRest := &Write(lBuf, lRest);
     if lRest <> bufSize then break;
-  end;  
+  end;
 end;
 
 method THandleStream.SetSize(NewSize: LongInt);
@@ -977,7 +977,7 @@ begin
   {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(Buffer, @lBuf[0], Count);
   {$ELSEIF TOFFEE}
   memcpy(Buffer, @lBuf[0], Count);
-  {$ENDIF}  
+  {$ENDIF}
 end;
 {$ENDIF}
 
@@ -1047,7 +1047,8 @@ begin
   {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(Buffer, @fData.Bytes[Position], Count);
   {$ELSEIF TOFFEE}
   memcpy(Buffer, @fData.Bytes[Position], Count);
-  {$ENDIF}  
+  {$ENDIF}
+  result := Count;
 end;
 {$ENDIF}
 
@@ -1118,7 +1119,7 @@ end;
 
 constructor TBytesStream(const aBytes: TBytes);
 begin
-  fData := new MemoryStream(ABytes.Length);
+  fData := new MemoryStream(aBytes.Length);
   fData.Write(aBytes, aBytes.Length);
 end;
 
