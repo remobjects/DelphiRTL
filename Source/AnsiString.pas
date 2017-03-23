@@ -66,13 +66,13 @@ type
 
     [ToString]
     method ToString: PlatformString;
-    
+
     method GetData: array of Byte;
     method Insert(aIndex: Integer; aValue: AnsiString): AnsiString;
     method Insert(aIndex: Integer; Value: Char): AnsiString;
     method Insert(aIndex: Integer; Value: AnsiChar): AnsiString;
     method &Remove(StartIndex: Integer): AnsiString;
-    method &Remove(StartIndex: Integer; Count: Integer): AnsiString;     
+    method &Remove(StartIndex: Integer; Count: Integer): AnsiString;
     method SetLength(aLength: Integer);
     method CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; Count: Integer);
     method CopyFrom(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer);
@@ -82,15 +82,15 @@ type
     method TrimLeft: AnsiString;
     method TrimRight: AnsiString;
     method IndexOf(aSubStr: AnsiString): Integer; inline;
-    method IndexOf(aSubStr: AnsiString; aIndex: Integer): Integer; 
+    method IndexOf(aSubStr: AnsiString; aIndex: Integer): Integer;
     method Contains(aSubText: AnsiString): Boolean; inline;
-    method StartsWith(aSubText: AnsiString): Boolean; 
-    method EndsWith(aSubText: AnsiString): Boolean; 
+    method StartsWith(aSubText: AnsiString): Boolean;
+    method EndsWith(aSubText: AnsiString): Boolean;
     method Replace(aFromText, aToText: AnsiString): AnsiString; inline;
     method Replace(OldPattern, NewPattern: AnsiString; aFlags: TReplaceFlags): AnsiString;
     method FillChar(aCount: Integer; aValue: AnsiChar);
     method ToNullTerminated: AnsiString;
-    
+
     property Length: Integer read fData.length write SetLength;
     property Chars[aIndex: Integer]: AnsiChar read GetChar write SetChar;
     property Character[aIndex: Integer]: AnsiChar read GetOffsetChar write SetOffsetChar; default;
@@ -98,7 +98,7 @@ type
   end;
 
   // Original functions
-  procedure SetLength(var aString: AnsiString; aLength: Integer); 
+  procedure SetLength(var aString: AnsiString; aLength: Integer);
   function UpperCase(S: AnsiString): AnsiString; inline;
   function LowerCase(S: AnsiString): AnsiString; inline;
   function CompareStr(S1, S2: AnsiString): Integer; inline;
@@ -107,7 +107,7 @@ type
   function SameText(S1, S2: AnsiString): Boolean; inline;
   function Trim(S: AnsiString): AnsiString; inline;
   function TrimLeft(S: AnsiString): AnsiString; inline;
-  function TrimRight(S: AnsiString): AnsiString; inline;  
+  function TrimRight(S: AnsiString): AnsiString; inline;
   function ContainsText(aText, aSubText: AnsiString): Boolean; inline;
   function StartsText(aSubText, aText: AnsiString): Boolean; inline;
   function EndsText(aSubText, aText: AnsiString): Boolean; inline;
@@ -119,7 +119,7 @@ type
   function &Copy(aSource: AnsiString; aIndex: Integer; aCount: Integer): AnsiString;
   procedure DeleteA(var aString: AnsiString; aIndex: Integer; aCount: Integer);
   procedure Insert(aSource: AnsiString; var aDest: AnsiString; aIndex: Integer);
-    
+
 implementation
 
 constructor AnsiString;
@@ -139,11 +139,11 @@ begin
     var lTemp := new Char[Value.length];
     Value.getCharacters(lTemp) range(NSMakeRange(0, Value.length));
     {$ELSEIF COOPER OR ECHOES OR ISLAND}
-    var lTemp := Value.ToCharArray;  
+    var lTemp := Value.ToCharArray;
     {$ENDIF}
     fData := CharArrayToByteArray(lTemp, 0, Value.Length);
   end
-  else 
+  else
     fData := StringToUTF8(Value);
 end;
 
@@ -218,14 +218,14 @@ operator AnsiString.Equal(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
   if (Value1.Length <> Value2.Length) then
     exit false;
-  
+
   if (Value1.Length = 0) and (Value2.Length = 0) then
     exit true;
 
   var i := 0;
   while (Value1.Chars[i] = Value2.Chars[i]) and (i < Value1.Length) do
     inc(i);
-  
+
   result := if i = Value1.Length then true else false;
 end;
 
@@ -263,7 +263,7 @@ end;
 method AnsiString.GetOffsetChar(aIndex: Integer): AnsiChar;
 begin
   if (aIndex = 0) and (fOffset > 0) then raise new Exception("Index ot of range: Delphi AnsiStrings are one-based.");
-  result := GetChar(aIndex - fOffset);  
+  result := GetChar(aIndex - fOffset);
 end;
 
 method AnsiString.SetOffsetChar(aIndex: Integer; aValue: AnsiChar);
@@ -314,7 +314,7 @@ constructor AnsiString(Value: array of Byte; StartIndex: Integer; aLength: Integ
 begin
   fData := new Byte[Value.length];
   for i: Integer := StartIndex to (StartIndex + aLength) - 1 do
-  fData[i - StartIndex] := Value[i]; 
+  fData[i - StartIndex] := Value[i];
 end;
 
 method AnsiString.ToString: PlatformString;
@@ -402,7 +402,7 @@ begin
   result := &Remove(StartIndex, Length - StartIndex);
 end;
 
-method AnsiString.&Remove(StartIndex: Integer; Count: Integer): AnsiString; 
+method AnsiString.&Remove(StartIndex: Integer; Count: Integer): AnsiString;
 begin
   var lOldData := fData;
   fData := new Byte[Length - Count];
@@ -414,10 +414,12 @@ end;
 class method AnsiString.CompareStr(S1: AnsiString; S2: AnsiString): Integer;
 begin
   result := S1.Length - S2.Length;
-  var lMax := if result >= 0 then S1.Length else S2.Length;
+  var lMax := if result >= 0 then S2.Length else S1.Length;
   var i := 0;
   while i < lMax do begin
-    var lCh: Integer := Byte(S1.Chars[i]) - Byte(S2.Chars[i]);
+    var lCh1: SmallInt := Byte(S1.Chars[i]);
+    var lCh2: SmallInt := Byte(S2.Chars[i]);
+    var lCh := lCh1 - lCh2;
     if lCh <> 0 then
       exit if lCh > 0 then 1 else -1;
     inc(i);
@@ -432,13 +434,16 @@ end;
 class method AnsiString.CompareText(S1: AnsiString; S2: AnsiString): Integer;
 begin
   result := S1.Length - S2.Length;
-  var lMax := if result >= 0 then S1.Length else S2.Length;
+  var lMax := if result >= 0 then S2.Length else S1.Length;
   var i := 0;
   var lCh1, lCh2: AnsiChar;
   while i < lMax do begin
     lCh1 := if S1.Chars[i] in ['a'..'z'] then AnsiChar(Byte(S1.Chars[i]) xor $20) else S1.Chars[i];
     lCh2 := if S2.Chars[i] in ['a'..'z'] then AnsiChar(Byte(S2.Chars[i]) xor $20) else S2.Chars[i];
-    var lCh: Integer := Byte(lCh1) - Byte(lCh2);
+
+    var lChar1: SmallInt := Byte(lCh1);
+    var lChar2: SmallInt := Byte(lCh2);
+    var lCh := lChar1 - lChar2;
     if lCh <> 0 then
       exit if lCh > 0 then 1 else -1;
     inc(i);
@@ -503,7 +508,7 @@ end;
 method AnsiString.TrimLeft: AnsiString;
 begin
   var i: Integer := 0;
- 
+
   while (fData[i] <= ord(' ')) and (i < Length) do
     inc(i);
   result := AnsiString.Copy(self, i, Length - i)
@@ -512,7 +517,7 @@ end;
 method AnsiString.TrimRight: AnsiString;
 begin
   var i: Integer := Length - 1;
- 
+
   while (fData[i] <= ord(' ')) and (i >= 0) do
     dec(i);
   result := AnsiString.Copy(self, 0, i + 1);
@@ -560,7 +565,7 @@ begin
   var lSubData := aSubText.Data;
   while (i < aSubText.Length) and (fData[i] = lSubData[i]) do
     inc(i);
-  
+
   result := if i = aSubText.Length then true else false;
 end;
 
@@ -589,8 +594,8 @@ begin
     exit AnsiString.Copy(self, 0, Length);
 
   var lData, lSubData: array of Byte;
-  result := new AnsiString(); 
-  
+  result := new AnsiString();
+
   if TReplaceFlags.rfIgnoreCase in aFlags then begin
     lData := ToLower.Data;
     lSubData := OldPattern.ToLower.Data;
@@ -620,8 +625,8 @@ begin
       end
       else begin
         result := result + AnsiChar(fData[i]);
-        inc(i); 
-      end;    
+        inc(i);
+      end;
     end
     else begin
       result := result + AnsiChar(fData[i]);

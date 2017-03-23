@@ -21,6 +21,7 @@ const
   fmShareDenyWrite = $0020;
   fmShareDenyRead = $0030;
   fmShareDenyNone = $0040;
+  INVALID_HANDLE_VALUE = THandle(-1);
 
   HoursPerDay   = 24;
   MinsPerHour   = 60;
@@ -35,7 +36,11 @@ const
   UnixDateDelta = 25569;
 
 type
+  {$IF COOPER OR TOFFEE}
+  TBytes = public array of Byte;
+  {$ELSE}
   TBytes = public TArray<Byte>;
+  {$ENDIF}
   TEncoding = public Encoding;
 
   TSysLocale = public record
@@ -90,7 +95,7 @@ type
   TOSVersion = public record
   private
     class var fArchitecture: TArchitecture;
-    class var fBuild: Integer;
+    class var fBuild: Integer := 0;
     class var fMajor: Integer;
     class var fMinor: Integer;
     class var fName: String;
@@ -363,9 +368,7 @@ function CreateDir(const Dir: DelphiString): Boolean;
 begin
   result := true;
   try
-    var lFolder := new Folder(Dir);
-    lFolder.Create;
-    //Folder.Create(Dir); // compiler error on isLand
+    Folder.Create(Dir); 
   except
     result := false;
   end;
@@ -375,9 +378,7 @@ function RemoveDir(const Dir: DelphiString): Boolean;
 begin
   result := true;
   try
-    var lFolder := new Folder(Dir);
-    lFolder.Delete;
-    //Folder.Delete(Dir);
+    Folder.Delete(Dir);
   except
     result := false;
   end;
@@ -444,6 +445,8 @@ end;
 
 procedure FileClose(Handle: THandle);
 begin
+  var lHandle := FileHandle(TInternalFileHandles.Get(Handle));
+  lHandle.Close;
   TInternalFileHandles.Free(Handle);
 end;
 

@@ -28,7 +28,7 @@ type
     class method Create(const Value: DelphiString; aCapacity: Integer): TStringBuilder;
     class method Create(const Value: DelphiString; StartIndex: Integer; aLength: Integer; aCapacity: Integer): TStringBuilder;
     class operator Equal(Value1, Value2: TStringBuilder): Boolean;
-    
+
     method Append(const Value: Boolean): TStringBuilder;
     method Append(const Value: Byte): TStringBuilder;
     method Append(const Value: Char): TStringBuilder;
@@ -320,13 +320,13 @@ end;
 method TStringBuilder.&Equals(aValue: TStringBuilder): Boolean;
 begin
   result := false;
-  if Length <> aValue.Length then 
+  if Length <> aValue.Length then
     exit;
 
   for i: Integer := 0 to Length - 1 do
     if GetChars(i) <> aValue[i] then
       exit;
-  
+
   result := true;
 end;
 
@@ -467,7 +467,7 @@ begin
   if (OldValue = '') or (Length = 0) or (OldValue.Length > Count) then
     exit;
 
-  var lTemp: String;   
+  var lTemp: String := '';
   var i := StartIndex;
   while i < (StartIndex + Count) do begin
     if GetChars(i) = OldValue.Chars[0] then begin
@@ -483,8 +483,8 @@ begin
       end
       else begin
         lTemp := lTemp + GetChars(i);
-        inc(i); 
-      end;    
+        inc(i);
+      end;
     end
     else begin
       lTemp := lTemp + fData[i];

@@ -8,7 +8,7 @@ uses
 type
   AnsiStringUsage = public class(Test)
   public
-    method IndexerTests();
+    method IndexerTests;
     begin
       var x : AnsiString := 'hello';
       Assert.AreEqual(x[1], AnsiChar('h'));      
