@@ -1022,7 +1022,7 @@ method DelphiString.Remove(StartIndex: Integer; Count: Integer): DelphiString;
 begin
   {$IF COOPER}
   var lSb := new StringBuilder(fData);
-  lSb.delete(StartIndex, StartIndex + Count);
+  lSb.delete(StartIndex, Count);
   fData := lSb.toString;
   {$ELSEIF ECHOES OR ISLAND}
   fData := PlatformString(fData).Remove(StartIndex, Count);
