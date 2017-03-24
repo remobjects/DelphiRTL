@@ -503,8 +503,9 @@ end;
 
 class constructor TFormatSettings;
 begin
+  {$IF NOT COOPER}
   SysLocale.DefaultLCID := Locale.Current;
-
+  {$ENDIF}
 end;
 
 {$IF ISLAND AND WINDOWS}

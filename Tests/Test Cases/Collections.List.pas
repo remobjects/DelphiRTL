@@ -253,9 +253,12 @@ type
       fList.Add('Tesla');
 
       fList.Reverse;
-      Assert.AreEqual(fList[0], 'Tesla');
-      Assert.AreEqual(fList[1], 'Porsche');
-      Assert.AreEqual(fList[2], 'Ferrari');
+      var lStr: DelphiString := fList[0];
+      Assert.AreEqual(lStr, 'Tesla');
+      lStr := fList[1];
+      Assert.AreEqual(lStr, 'Porsche');
+      lStr := fList[2];
+      Assert.AreEqual(lStr, 'Ferrari');
     end;
 
 /*    method ToArrayTests;
