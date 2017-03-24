@@ -155,8 +155,8 @@ function RecodeSecond(const aValue: TDateTime; const aSecond: Word): TDateTime;
 function RecodeMilliSecond(const aValue: TDateTime; const aMilliSecond: Word): TDateTime;
 function RecodeDate(const aValue: TDateTime; const aYear, aMonth, aDay: Word): TDateTime;
 function RecodeTime(const aValue: TDateTime; const aHour, aMinute, aSecond, aMilliSecond: Word): TDateTime;
-function RecodeDateTime(const aValue: TDateTime; const aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word): TDateTime;
-function TryRecodeDateTime(const aValue: TDateTime; const aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word; out aResult: TDateTime): Boolean;
+function RecodeDateTime(const aValue: TDateTime; aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word): TDateTime;
+function TryRecodeDateTime(const aValue: TDateTime; aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word; out aResult: TDateTime): Boolean;
 
 function CompareDateTime(const A, B: TDateTime): TValueRelationship;
 function SameDateTime(const A, B: TDateTime): Boolean;
@@ -205,7 +205,7 @@ const
   EpochAsJulianDate = 2415018.5;
   EpochAsUnixDate   = -2209161600;
   DaysPerYear: array [Boolean] of Word = [365, 366];
-  RecodeLeaveFieldAsIs = high(Word);
+  RecodeLeaveFieldAsIs: Word = high(Word);
 
 var
   ApproxDaysPerMonth: Double := 30.4375;
@@ -948,13 +948,13 @@ begin
   result := RecodeDateTime(aValue, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, RecodeLeaveFieldAsIs, aHour, aMinute, aSecond, aMilliSecond);
 end;
 
-function RecodeDateTime(const aValue: TDateTime; const aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word): TDateTime;
+function RecodeDateTime(const aValue: TDateTime; aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word): TDateTime;
 begin
   if not TryRecodeDateTime(aValue, aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond, out result) then
     raise new Exception("Wrong values to RecodeDateTime");
 end;
 
-function TryRecodeDateTime(const aValue: TDateTime; const aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word; out aResult: TDateTime): Boolean;
+function TryRecodeDateTime(const aValue: TDateTime; aYear, aMonth, aDay, aHour, aMinute, aSecond, aMilliSecond: Word; out aResult: TDateTime): Boolean;
 begin
   var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
   DecodeDateTime(aValue, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
