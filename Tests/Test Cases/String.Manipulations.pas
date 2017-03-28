@@ -609,7 +609,12 @@ type
     method LoadFromFileTests;
     begin
       var lString := TStringList.Create;
+      {$IF ECHOES}
+      var lPath := System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly.Location) + '\..\..\Test.INI';
+      lString.LoadFromFile(lPath);
+      {$ELSE}
       lString.LoadFromFile('..\..\Test.INI');
+      {$ENDIF}
       Assert.AreEqual(lString.Count > 0, true);
     end;
 
