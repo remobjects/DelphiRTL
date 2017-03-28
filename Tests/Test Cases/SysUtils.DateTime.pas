@@ -5,7 +5,7 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  SysUtilsDateTimeUsage = public class(Test)    
+  SysUtilsDateTimeUsage = public class(Test)
   public
     method IsLeapYearTests;
     begin
@@ -69,7 +69,7 @@ type
       DecodeDate(lDate, var lYear, var lMonth, var lDay);
       Assert.AreEqual(lYear, 2000);
       Assert.AreEqual(lMonth, 12);
-      Assert.AreEqual(lDay, 31); 
+      Assert.AreEqual(lDay, 31);
     end;
 
     method EncodeTimeTests;

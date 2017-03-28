@@ -5,7 +5,7 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  StringBuilderUsage = public class(Test)    
+  StringBuilderUsage = public class(Test)
   private
     fData: TStringBuilder;
   public

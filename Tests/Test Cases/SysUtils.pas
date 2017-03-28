@@ -5,7 +5,7 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  SysUtilsUsage = public class(Test)    
+  SysUtilsUsage = public class(Test)
   public
     method FileOpenTests;
     begin

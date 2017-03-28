@@ -12,31 +12,31 @@ type
     method DefaultStringTypeTests();
     begin
       var x : DelphiString := 'hello';
-      Assert.IsTrue(x is DelphiString);      
-    
+      Assert.IsTrue(x is DelphiString);
+
       var ds: DelphiString := 'hello';
-      Assert.IsTrue(ds is DelphiString);      
-    
+      Assert.IsTrue(ds is DelphiString);
+
       //var ws: WideString := 'hello';
       //Assert.IsTrue(ws is DelphiString);  // Invalid IL code in DelphiRTL.Tests.Shared.StringManipulations:DefaultStringTypeTests (): IL_006c: isinst    0x01000002
-    
+
       var s : String := 'hello';
-      Assert.IsTrue(s is PlatformString);      
+      Assert.IsTrue(s is PlatformString);
     end;
-    
+
     method IndexerTests();
     begin
       var x: DelphiString := 'house';
       x[1] := 'm';
       Assert.AreEqual(x, 'mouse');
-    
+
       x.Remove(0, 1);
       Assert.AreEqual(x, 'ouse');
-    
+
       x.Insert(0, "sp");
       Assert.AreEqual(x, 'spouse');
     end;
-    
+
     method IndexOfTests;
     begin
       var x: DelphiString := '';
@@ -45,30 +45,30 @@ type
       Assert.AreEqual(x.IndexOf('', 10), 0, 'IndexOf 2');
       Assert.AreEqual(x.IndexOf('M'), 0, 'IndexOf 3');
       Assert.AreEqual(x.IndexOf('M', 1), -1, 'IndexOf 4');
-      
+
       x := 'Hello Hello';
       Assert.AreEqual(x.IndexOf('ll', 1), 2, 'IndexOf 5');
       Assert.AreEqual(x.IndexOf('ll', 2), 2, 'IndexOf 6');
       Assert.AreEqual(x.IndexOf('ll', 3), 8, 'IndexOf 7');
-    
+
       x := 'Hello Hello';
       Assert.AreEqual(x.IndexOf('l',0, 2), -1, 'IndexOf 8');
       Assert.AreEqual(x.IndexOf('l',0, 3), 2, 'IndexOf 9');
       Assert.AreEqual(x.IndexOf('Hello', 0, 5), 0, 'IndexOf 10');
       Assert.AreEqual(x.IndexOf('llo', 6, 5), 8, 'IndexOf 11');
-    
+
       x := 'a string in the street';
       Assert.AreEqual(x.IndexOf('car'), -1, 'IndexOf 12');
       Assert.AreEqual(x.IndexOf('a '), 0, 'IndexOf 13');
       Assert.AreEqual(x.IndexOf('street'), 16, 'IndexOf 14');
     end;
-    
+
     method IndexOfAnyTests;
     begin
       var lToFind := new Char[5];
       var x: DelphiString := '';
       lToFind := ['a', 'z', '&', '(', ')'];
-      
+
       x := 'a string in the street';
       Assert.AreEqual(x.IndexOfAny(lToFind), 0, 'IndexOfAny 1');
       x := 'virtual z';
@@ -79,7 +79,7 @@ type
       Assert.AreEqual(x.IndexOfAny(lToFind), 6, 'IndexOfAny 4');
       x := '(string)';
       Assert.AreEqual(x.IndexOfAny(lToFind), 0, 'IndexOfAny 5');
-    
+
       x := 'a string';
       Assert.AreEqual(x.IndexOfAny(lToFind, 1), -1, 'IndexOfAny 6');
       Assert.AreEqual(x.IndexOfAny(lToFind, 0), 0, 'IndexOfAny 7');
@@ -89,7 +89,7 @@ type
       Assert.AreEqual(x.IndexOfAny(lToFind, 7, 2), 8, 'IndexOfAny case 10');
       Assert.AreEqual(x.IndexOfAny(lToFind, 5, 2), -1, 'IndexOfAny case 11');
     end;
-    
+
     method LastIndexOfTests;
     begin
       var x: DelphiString := '';
@@ -98,7 +98,7 @@ type
       Assert.AreEqual(x.LastIndexOf('e'), 3, 'LastIndexOf 2');
       Assert.AreEqual(x.LastIndexOf('D', 2), 0, 'LastIndexOf 3');
       Assert.AreEqual(x.LastIndexOf('e', 2), -1, 'LastIndexOf 4');
-    
+
       x := 'A drone is funny';
       Assert.AreEqual(x.LastIndexOf('n'), 14, 'LastIndexOf 5');
       Assert.AreEqual(x.LastIndexOf('A'), 0, 'LastIndexOf 6');
@@ -115,7 +115,7 @@ type
       Assert.AreEqual(x.LastIndexOf('o', 5, 1), -1, 'LastIndexOf 17');
       Assert.AreEqual(x.LastIndexOf('o', 5, 2), 4, 'LastIndexOf 18');
     end;
-    
+
     method PadLeftTests;
     begin
       var x: DelphiString := '';
@@ -125,7 +125,7 @@ type
       Assert.AreEqual(x.PadLeft(8), 'A string');
       Assert.AreEqual(x.PadLeft(8, 'x'), 'A string');
     end;
-    
+
     method PadRightTests;
     begin
       var x: DelphiString := '';
@@ -135,7 +135,7 @@ type
       Assert.AreEqual(x.PadRight(8), 'A string');
       Assert.AreEqual(x.PadRight(8, 'x'), 'A string');
     end;
-    
+
     method TrimTests;
     begin
       var lToTrim := new Char[4];
@@ -150,7 +150,7 @@ type
       x := '<<<<<String functions<a';
       Assert.AreEqual(x.Trim(lToTrim), 'String functions<a');
     end;
-    
+
     method TrimLeftTests;
     begin
       var lToTrim := new Char[4];
@@ -167,7 +167,7 @@ type
       x := '   String functions';
       Assert.AreEqual(x.TrimLeft, 'String functions');
     end;
-    
+
     method TrimRightTests;
     begin
       var lToTrim := new Char[4];
@@ -184,7 +184,7 @@ type
       x := 'String functions5    ';
       Assert.AreEqual(x.TrimRight, 'String functions5');
     end;
-    
+
     method StartsWithTests;
     begin
       var x: DelphiString := '';
@@ -196,7 +196,7 @@ type
       Assert.AreEqual(x.StartsWith('string'), true, 'StartsWith 4');
       Assert.AreEqual(x.StartsWith('s'), true, 'StartsWith 5'); // NREs before hitting StartsWith()
     end;
-    
+
     method EndsWithTests;
     begin
       var x: DelphiString := '';
@@ -208,7 +208,7 @@ type
       Assert.AreEqual(x.EndsWith('sTRING', false), false, 'EndsWith 5');
       x := 'This';
       Assert.AreEqual(x.EndsWith('This'), true, 'EndsWith 6');
-    end;     
+    end;
 
     method JoinTests;
     begin
@@ -216,7 +216,7 @@ type
       var lStrings := new DelphiString[4];
       lStrings := ['string', 'in', 'the', 'street'];
       Assert.AreEqual(x.Join(',', lStrings), 'string,in,the,street');
-      Assert.AreEqual(x.Join('##', lStrings), 'string##in##the##street');      
+      Assert.AreEqual(x.Join('##', lStrings), 'string##in##the##street');
       Assert.AreEqual(x.Join('#', lStrings, 0, 1), 'string');
       Assert.AreEqual(x.Join('##', lStrings, 0, 1), 'string');
       Assert.AreEqual(x.Join('#', lStrings, 0, 2), 'string#in');
@@ -243,24 +243,24 @@ type
       Assert.AreEqual(x.Contains('test'), true, 'Contains 3');
       Assert.AreEqual(x.Contains('this is a test string or not'), false, 'Contains 4');
       Assert.AreEqual(x.Contains('is a'), true, 'Contains 5');
-      Assert.AreEqual(x.Contains('t'), true, 'Contains 6'); 
+      Assert.AreEqual(x.Contains('t'), true, 'Contains 6');
       Assert.AreEqual(x.Contains('this is a test'), true, 'Contains 7');
       Assert.AreEqual(x.Contains('st'), true, 'Contains 8');
-      Assert.AreEqual(x.Contains('a'), true, 'Contains 9'); 
-      Assert.AreEqual(x.Contains('x'), false, 'Contains 10'); 
+      Assert.AreEqual(x.Contains('a'), true, 'Contains 9');
+      Assert.AreEqual(x.Contains('x'), false, 'Contains 10');
     end;
 
     method CopyTests;
     begin
-      var x: DelphiString := 'String test!';      
+      var x: DelphiString := 'String test!';
       Assert.AreEqual(x.Copy(x), 'String test!');
-      x := 'x';  
+      x := 'x';
       Assert.AreEqual(x.Copy(x), 'x');
     end;
 
     method CopyToTests;
     begin
-      var x: DelphiString := 'Test string';      
+      var x: DelphiString := 'Test string';
       var lTarget := new Char[11];
       var lEqual := new Char[11];
       lEqual := ['T', 'e', 's', 't', ' ', 's', 't', 'r', 'i', 'n', 'g'];
@@ -277,8 +277,8 @@ type
 
     method CountCharTests;
     begin
-      var x: DelphiString := 'Test string';      
-      
+      var x: DelphiString := 'Test string';
+
       Assert.AreEqual(x.CountChar('t'), 2);
       Assert.AreEqual(x.CountChar('g'), 1);
       x := 'aaaaaaaaaa';
@@ -287,7 +287,7 @@ type
 
     method DeQuotedStringTests;
     begin
-      var x: DelphiString := '''Test string''';      
+      var x: DelphiString := '''Test string''';
       Assert.AreEqual(x.DeQuotedString, 'Test string');
       x := '''Test ''''string''';
       Assert.AreEqual(x.DeQuotedString, 'Test ''string');
@@ -354,7 +354,7 @@ type
       x := ' ';
       Assert.AreEqual(x.IsEmpty, false);
     end;
-    
+
     method IsNullOrEmptyTests;
     begin
       Assert.AreEqual(DelphiString.IsNullOrEmpty(''), true);
@@ -404,7 +404,7 @@ type
       Assert.AreEqual(lRes.Length, 10);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[9], 'ten');
-      
+
       lRes := x.Split(lCharSep, 4);
       Assert.AreEqual(lRes.Length, 4);
       Assert.AreEqual(lRes[0], 'one');
@@ -415,7 +415,7 @@ type
       Assert.AreEqual(lRes.Length, 11);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[10], 'ten');
-      
+
       lRes := x.Split(lCharSep, TStringSplitOptions.ExcludeEmpty);
       Assert.AreEqual(lRes.Length, 10);
       Assert.AreEqual(lRes[0], 'one');
@@ -434,7 +434,7 @@ type
       Assert.AreEqual(lRes.Length, 10);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[9], 'ten');
-      
+
       lRes := x.Split(lStringSep, 4);
       Assert.AreEqual(lRes.Length, 4);
       Assert.AreEqual(lRes[0], 'one');
@@ -445,7 +445,7 @@ type
       Assert.AreEqual(lRes.Length, 11);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[10], 'ten');
-      
+
       lRes := x.Split(lStringSep, TStringSplitOptions.ExcludeEmpty);
       Assert.AreEqual(lRes.Length, 10);
       Assert.AreEqual(lRes[0], 'one');
@@ -454,7 +454,7 @@ type
       lRes := x.Split(lStringSep, 4, TStringSplitOptions.ExcludeEmpty);
       Assert.AreEqual(lRes.Length, 4);
       Assert.AreEqual(lRes[0], 'one');
-      Assert.AreEqual(lRes[3], 'four@@five%%six||seven@@eight@@nine%%ten'); 
+      Assert.AreEqual(lRes[3], 'four@@five%%six||seven@@eight@@nine%%ten');
     end;
 
     method CompareToTests;
@@ -587,7 +587,7 @@ type
       var lToFind := new Char[5];
       var x: DelphiString := '';
       lToFind := ['a', 'z', '&', '(', ')'];
-      
+
       x := 'string one z';
       Assert.AreEqual(x.LastIndexOfAny(lToFind), 11, 'LastIndexOfAny 1');
       x := 'z string';
@@ -596,7 +596,7 @@ type
       Assert.AreEqual(x.LastIndexOfAny(lToFind), 6, 'LastIndexOfAny 3');
       x := '(string)';
       Assert.AreEqual(x.LastIndexOfAny(lToFind), 7, 'LastIndexOfAny 4');
-    
+
       x := 'string a';
       Assert.AreEqual(x.LastIndexOfAny(lToFind, 6), -1, 'LastIndexOfAny 5');
       x := 'a string';
@@ -612,7 +612,7 @@ type
       lString.LoadFromFile('..\..\Test.INI');
       Assert.AreEqual(lString.Count > 0, true);
     end;
-    
+
     method LanguagesTests;
     begin
       var lTmp := TLanguages.UserDefaultLocale;
@@ -620,5 +620,5 @@ type
       lTmp := TLanguages.GetLocaleIDFromLocaleName('en-us');
       Assert.AreEqual(lTmp.Identifier <> '', true);
     end;
-  end; 
+  end;
 end.

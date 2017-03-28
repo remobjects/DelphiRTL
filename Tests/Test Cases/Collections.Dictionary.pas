@@ -58,7 +58,7 @@ type
       fDict.Add('Two', 2);
       var lItem := fDict.ExtractPair('One');
       Assert.AreEqual(lItem.Key, 'One');
-      Assert.AreEqual(lItem.Value, 1);      
+      Assert.AreEqual(lItem.Value, 1);
     end;
 
     method ClearTests;

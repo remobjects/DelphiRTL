@@ -11,7 +11,7 @@ type
     method IndexerTests;
     begin
       var x : AnsiString := 'hello';
-      Assert.AreEqual(x[1], AnsiChar('h'));      
+      Assert.AreEqual(x[1], AnsiChar('h'));
     end;
 
     method InsertTests;
@@ -44,7 +44,7 @@ type
 
     method CopyToTests;
     begin
-      var x: AnsiString := 'Test string';      
+      var x: AnsiString := 'Test string';
       var lTarget := new Byte[11];
       x.CopyTo(0, var lTarget, 0, 11);
       Assert.AreEqual(new AnsiString(lTarget), 'Test string');
@@ -75,7 +75,7 @@ type
       x := ' String functions ';
       Assert.AreEqual(x.Trim, 'String functions');
     end;
-    
+
     method TrimLeftTests;
     begin
       var x: AnsiString := '  Come On  ';
@@ -83,7 +83,7 @@ type
       x := 'Come On  ';
       Assert.AreEqual(x.TrimLeft, 'Come On  ');
     end;
-    
+
     method TrimRightTests;
     begin
       var x: AnsiString := '  Come On  ';
@@ -100,12 +100,12 @@ type
       Assert.AreEqual(x.IndexOf('', 10), -1, 'IndexOf 2');
       Assert.AreEqual(x.IndexOf('M'), 0, 'IndexOf 3');
       Assert.AreEqual(x.IndexOf('M', 1), -1, 'IndexOf 4');
-      
+
       x := 'Hello Hello';
       Assert.AreEqual(x.IndexOf('ll', 1), 2, 'IndexOf 5');
       Assert.AreEqual(x.IndexOf('ll', 2), 2, 'IndexOf 6');
       Assert.AreEqual(x.IndexOf('ll', 3), 8, 'IndexOf 7');
-    
+
       x := 'a string in the street';
       Assert.AreEqual(x.IndexOf('car'), -1, 'IndexOf 8');
       Assert.AreEqual(x.IndexOf('a '), 0, 'IndexOf 9');
@@ -122,11 +122,11 @@ type
       Assert.AreEqual(x.Contains('test'), true, 'Contains 3');
       Assert.AreEqual(x.Contains('this is a test string or not'), false, 'Contains 4');
       Assert.AreEqual(x.Contains('is a'), true, 'Contains 5');
-      Assert.AreEqual(x.Contains('t'), true, 'Contains 6'); 
+      Assert.AreEqual(x.Contains('t'), true, 'Contains 6');
       Assert.AreEqual(x.Contains('this is a test'), true, 'Contains 7');
       Assert.AreEqual(x.Contains('st'), true, 'Contains 8');
-      Assert.AreEqual(x.Contains('a'), true, 'Contains 9'); 
-      Assert.AreEqual(x.Contains('x'), false, 'Contains 10'); 
+      Assert.AreEqual(x.Contains('a'), true, 'Contains 9');
+      Assert.AreEqual(x.Contains('x'), false, 'Contains 10');
     end;
 
     method StartsWithTests;
@@ -137,19 +137,19 @@ type
       Assert.AreEqual(x.StartsWith('string'), false, 'StartsWith 2');
       x := 'string';
       Assert.AreEqual(x.StartsWith('string'), true, 'StartsWith 3');
-      Assert.AreEqual(x.StartsWith('s'), true, 'StartsWith 4'); 
+      Assert.AreEqual(x.StartsWith('s'), true, 'StartsWith 4');
     end;
-    
+
     method EndsWithTests;
     begin
       var x: AnsiString := '';
       x := 'This is an string';
       Assert.AreEqual(x.EndsWith('string'), true, 'EndsWith 1');
-      Assert.AreEqual(x.EndsWith('g'), true, 'EndsWith 2'); 
+      Assert.AreEqual(x.EndsWith('g'), true, 'EndsWith 2');
       Assert.AreEqual(x.EndsWith('String'), False, 'EndsWith 3');
       x := 'This';
       Assert.AreEqual(x.EndsWith('This'), true, 'EndsWith 4');
-    end;     
+    end;
 
     method ReplaceTests;
     begin
@@ -229,10 +229,10 @@ type
       x := 'Mack';
       Assert.AreEqual(Pos('M', x), 1);
       Assert.AreEqual(Pos('', x), 0);
-      
+
       x := 'Hello Hello';
       Assert.AreEqual(Pos('ll', x), 3);
-    
+
       x := 'a string in the street';
       Assert.AreEqual(Pos('street', x), 17);
     end;
@@ -285,7 +285,7 @@ type
       x := ' String functions ';
       Assert.AreEqual(Trim(x), 'String functions');
     end;
-    
+
     method TrimLeftFuncTests;
     begin
       var x: AnsiString := '  Come On  ';
@@ -293,7 +293,7 @@ type
       x := 'Come On  ';
       Assert.AreEqual(TrimLeft(x), 'Come On  ');
     end;
-    
+
     method TrimRightFuncTests;
     begin
       var x: AnsiString := '  Come On  ';
@@ -312,11 +312,11 @@ type
       Assert.AreEqual(ContainsText(x, 'test'), true, 'Contains 3');
       Assert.AreEqual(ContainsText(x, 'this is a test string or not'), false, 'Contains 4');
       Assert.AreEqual(ContainsText(x, 'is a'), true, 'Contains 5');
-      Assert.AreEqual(ContainsText(x, 't'), true, 'Contains 6'); 
+      Assert.AreEqual(ContainsText(x, 't'), true, 'Contains 6');
       Assert.AreEqual(ContainsText(x, 'this is a test'), true, 'Contains 7');
       Assert.AreEqual(ContainsText(x, 'st'), true, 'Contains 8');
-      Assert.AreEqual(ContainsText(x, 'a'), true, 'Contains 9'); 
-      Assert.AreEqual(ContainsText(x, 'x'), false, 'Contains 10'); 
+      Assert.AreEqual(ContainsText(x, 'a'), true, 'Contains 9');
+      Assert.AreEqual(ContainsText(x, 'x'), false, 'Contains 10');
     end;
 
     method StartsTextTests;
@@ -327,19 +327,19 @@ type
       Assert.AreEqual(StartsText('string', x), false, 'StartsWith 2');
       x := 'string';
       Assert.AreEqual(StartsText('string', x), true, 'StartsWith 3');
-      Assert.AreEqual(StartsText('s', x), true, 'StartsWith 4'); 
+      Assert.AreEqual(StartsText('s', x), true, 'StartsWith 4');
     end;
-    
+
     method EndsTextTests;
     begin
       var x: AnsiString := '';
       x := 'This is an string';
       Assert.AreEqual(EndsText('string', x), true, 'EndsWith 1');
-      Assert.AreEqual(EndsText('g', x), true, 'EndsWith 2'); 
+      Assert.AreEqual(EndsText('g', x), true, 'EndsWith 2');
       Assert.AreEqual(EndsText('String', x), False, 'EndsWith 3');
       x := 'This';
       Assert.AreEqual(EndsText('This', x), true, 'EndsWith 4');
-    end;     
+    end;
 
     method FillCharFuncTests;
     begin

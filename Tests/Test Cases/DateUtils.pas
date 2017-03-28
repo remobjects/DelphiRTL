@@ -5,7 +5,7 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  DateUtilsUsage = public class(Test)    
+  DateUtilsUsage = public class(Test)
   public
     method DateOfTests;
     begin
@@ -83,7 +83,7 @@ type
     method IsValidDateDayTests;
     begin
       Assert.AreEqual(IsValidDateDay(2016, 366), true);
-      Assert.AreEqual(IsValidDateDay(2015, 366), false);      
+      Assert.AreEqual(IsValidDateDay(2015, 366), false);
       Assert.AreEqual(IsValidDateDay(2016, 367), false);
     end;
 
@@ -160,7 +160,7 @@ type
       Assert.AreEqual(DaysInAMonth(2400, 2), 29);
       Assert.AreEqual(DaysInAMonth(2400, 1), 31);
       Assert.AreEqual(DaysInAMonth(2015, 2), 28);
-      Assert.AreEqual(DaysInAMonth(2015, 12), 31);      
+      Assert.AreEqual(DaysInAMonth(2015, 12), 31);
     end;
 
     method TodayTests;
@@ -370,7 +370,7 @@ type
       DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
       Assert.AreEqual(lYear, 2017);
       Assert.AreEqual(lMonth, 1);
-      Assert.AreEqual(lDay, 20);      
+      Assert.AreEqual(lDay, 20);
       Assert.AreEqual(lHour, 0);
       Assert.AreEqual(lMin, 0);
       Assert.AreEqual(lSec, 0);
@@ -384,7 +384,7 @@ type
       DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
       Assert.AreEqual(lYear, 1917);
       Assert.AreEqual(lMonth, 11);
-      Assert.AreEqual(lDay, 21);      
+      Assert.AreEqual(lDay, 21);
       Assert.AreEqual(lHour, 23);
       Assert.AreEqual(lMin, 59);
       Assert.AreEqual(lSec, 59);
@@ -398,7 +398,7 @@ type
       DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
       Assert.AreEqual(lYear, 2017);
       Assert.AreEqual(lMonth, 1);
-      Assert.AreEqual(lDay, 17);      
+      Assert.AreEqual(lDay, 17);
       Assert.AreEqual(lHour, 0);
       Assert.AreEqual(lMin, 0);
       Assert.AreEqual(lSec, 0);
@@ -411,7 +411,7 @@ type
       DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
       Assert.AreEqual(lYear, 2000);
       Assert.AreEqual(lMonth, 1);
-      Assert.AreEqual(lDay, 10);      
+      Assert.AreEqual(lDay, 10);
       Assert.AreEqual(lHour, 23);
       Assert.AreEqual(lMin, 59);
       Assert.AreEqual(lSec, 59);
@@ -425,7 +425,7 @@ type
       DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
       Assert.AreEqual(lYear, 3400);
       Assert.AreEqual(lMonth, 12);
-      Assert.AreEqual(lDay, 31);      
+      Assert.AreEqual(lDay, 31);
       Assert.AreEqual(lHour, 0);
       Assert.AreEqual(lMin, 0);
       Assert.AreEqual(lSec, 0);
@@ -438,7 +438,7 @@ type
       DecodeDateTime(lDateNew, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
       Assert.AreEqual(lYear, 4599);
       Assert.AreEqual(lMonth, 10);
-      Assert.AreEqual(lDay, 1);      
+      Assert.AreEqual(lDay, 1);
       Assert.AreEqual(lHour, 23);
       Assert.AreEqual(lMin, 59);
       Assert.AreEqual(lSec, 59);
@@ -477,7 +477,7 @@ type
 
       lDate := EncodeDate(2016, 1, 6);
       lWeek := WeekOfTheYear(lDate, var lYear);
-      Assert.AreEqual(lWeek, 1);   
+      Assert.AreEqual(lWeek, 1);
       Assert.AreEqual(lYear, 2016);
     end;
 
@@ -681,7 +681,7 @@ type
       lData := MilliSecondOfTheDay(lDate);
       Assert.AreEqual(lData, 8650015);
     end;
-    
+
     method MinuteOfTheHourTests;
     begin
       var lDate := EncodeDateTime(2017, 03, 21, 21, 5, 3, 900);
@@ -692,7 +692,7 @@ type
       lData := MinuteOfTheHour(lDate);
       Assert.AreEqual(lData, 24);
     end;
-    
+
     method SecondOfTheHourTests;
     begin
       var lDate := EncodeDateTime(2017, 03, 21, 21, 5, 3, 900);
@@ -1191,10 +1191,10 @@ type
       lDate := RecodeDateTime(lDate, 2020, 6, 5, 17, 45, 31, 562);
       var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
       DecodeDateTime(lDate, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
-      
+
       Assert.AreEqual(lYear, 2020);
       Assert.AreEqual(lMonth, 6);
-      Assert.AreEqual(lDay, 5);      
+      Assert.AreEqual(lDay, 5);
       Assert.AreEqual(lHour, 17);
       Assert.AreEqual(lMin, 45);
       Assert.AreEqual(lSec, 31);

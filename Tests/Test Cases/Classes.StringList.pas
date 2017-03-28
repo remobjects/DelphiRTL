@@ -104,7 +104,7 @@ type
       lList.Add('A string on a list');
       lList.Add('test string');
       lList.Add('on the road');
- 
+
       var lIndex := lList.IndexOf('test string');
       Assert.AreEqual(lIndex, 1);
 
@@ -286,7 +286,7 @@ type
       lNewList.AddObject('Two', fList);
       lNewList.AddObject('Three', self);
 
-      Assert.AreEqual(lNewList.CommaText, 'One,Two,Three');      
+      Assert.AreEqual(lNewList.CommaText, 'One,Two,Three');
     end;
 
     method DelimitedText;
@@ -297,7 +297,7 @@ type
       lNewList.AddObject('Three', self);
 
       lNewList.Delimiter := ':';
-      Assert.AreEqual(lNewList.DelimitedText, 'One:Two:Three');      
+      Assert.AreEqual(lNewList.DelimitedText, 'One:Two:Three');
     end;
 
     method NamesTests;

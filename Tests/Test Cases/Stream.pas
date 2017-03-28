@@ -23,11 +23,11 @@ type
       Assert.AreEqual(lToRead[0], 9);
       lStream.Read(var lToRead, 4);
       Assert.AreEqual(lToRead[0], 8);
-      
+
       var lNewStream := TMemoryStream.Create;
       lNewStream.Size := 5;
       lNewStream.CopyFrom(lStream, lStream.Size);
-      
+
       lStream.Seek(2, TSeekOrigin.soBeginning);
       Assert.AreEqual(lStream.Position, 2);
     end;
@@ -35,7 +35,7 @@ type
     method FileStreamTests;
     begin
       var lPath := GetHomePath + '\tests';
-      var lStream := TFileStream.Create(lPath, fmCreate);      
+      var lStream := TFileStream.Create(lPath, fmCreate);
       var lArray := new Byte[5];
       var lToRead := new Byte[5];
       lArray := [9, 8, 7, 6, 5];
@@ -48,11 +48,11 @@ type
       Assert.AreEqual(lToRead[0], 9);
       lStream.Read(var lToRead, 4);
       Assert.AreEqual(lToRead[0], 8);
-      
+
       var lNewStream := TMemoryStream.Create;
       lNewStream.Size := 5;
       lNewStream.CopyFrom(lStream, lStream.Size);
-      
+
       lStream.Seek(2, TSeekOrigin.soBeginning);
       Assert.AreEqual(lStream.Position, 2);
 
@@ -220,6 +220,6 @@ type
       Assert.AreEqual(lAnotherDouble, lAnotherDouble2);
       {$ENDIF}
     end;
-  end;    
+  end;
 
 end.

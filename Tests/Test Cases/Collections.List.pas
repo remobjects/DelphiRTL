@@ -133,7 +133,7 @@ type
       fList.Add('String 2');
       var lStr2 := fList.ExtractItem(lStr, TDirection.FromBeginning);
       Assert.AreEqual(fList.Count, 1);
-      Assert.AreEqual(lStr2, lStr);      
+      Assert.AreEqual(lStr2, lStr);
     end;
 
     method ExtractTests;
@@ -143,7 +143,7 @@ type
       fList.Add('String 2');
       var lStr2 := fList.Extract(lStr);
       Assert.AreEqual(fList.Count, 1);
-      Assert.AreEqual(lStr2, lStr);      
+      Assert.AreEqual(lStr2, lStr);
     end;
 
     method ExchangeTests;
@@ -280,7 +280,7 @@ type
 
       Assert.AreEqual(fList[1], 'Porsche');
       fList[1] := 'Renault';
-      Assert.AreEqual(fList[1], 'Renault');      
+      Assert.AreEqual(fList[1], 'Renault');
     end;
   end;
 {$ENDIF}
