@@ -34,7 +34,7 @@ type
 
     method FileStreamTests;
     begin
-      var lPath := GetHomePath + '\tests';
+      var lPath := GetHomePath + DelphiString('\tests');
       var lStream := TFileStream.Create(lPath, fmCreate);
       var lArray := new Byte[5];
       var lToRead := new Byte[5];

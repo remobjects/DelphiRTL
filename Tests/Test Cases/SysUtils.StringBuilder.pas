@@ -2,6 +2,7 @@
 
 uses
   RemObjects.Elements.EUnit,
+  RemObjects.Elements.RTL,
   RemObjects.Elements.RTL.Delphi;
 
 type

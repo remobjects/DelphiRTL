@@ -11,7 +11,7 @@ type
     method IndexerTests;
     begin
       var x : AnsiString := 'hello';
-      Assert.AreEqual(x[1], AnsiChar('h'));
+      Assert.AreEqual(Char(x[1]), 'h');
     end;
 
     method InsertTests;
@@ -241,7 +241,7 @@ type
     begin
       // 1 based
       var x: AnsiString := 'Test1234';
-      var y := &Copy(x, 5, 4);
+      var y := RemObjects.elements.rtl.delphi.&Copy(x, 5, 4);
       Assert.AreEqual(y, '1234');
     end;
 

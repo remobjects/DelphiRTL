@@ -8,12 +8,12 @@ uses
 {$GLOBALS ON}
 
 type
-  TValueRelationship = -1..1;
+  TValueRelationship = public Integer;
 
 const
-  LessThanValue = low(TValueRelationship);
+  LessThanValue = -1;
   EqualsValue = 0;
-  GreaterThanValue = high(TValueRelationship);
+  GreaterThanValue = 1;
 
 function DateOf(const aValue: TDateTime): TDateTime; inline;
 function TimeOf(const aValue: TDateTime): TDateTime; inline;
