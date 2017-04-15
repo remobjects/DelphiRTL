@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # RemObjects Fire
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Tests.Cooper", "DelphiRTL.Tests.Cooper.elements", "{0808EAD6-3C45-4830-A8B4-5D5AD5022293}"
 EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Tests.Cooper.Android", "DelphiRTL.Tests.Cooper.Android.elements", "{69254735-D3A0-467F-96E1-14FA7B98E34A}"
+EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Tests.Echoes", "DelphiRTL.Tests.Echoes.elements", "{E482D4AE-E4F4-441E-B3C0-49ADB8832374}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Tests.Island.Linux", "DelphiRTL.Tests.Island.Linux.elements", "{EDEA5741-DA2F-4DBF-9266-BC98558CC555}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Tests.Island.Windows", "DelphiRTL.Tests.Island.Windows.elements", "{6B14DE01-C3BA-4EFD-94EC-D3F7968D7163}"
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Tests.Shared", "DelphiRTL.Tests.Shared.elements", "{737C0B8D-F33B-43F9-9C2F-ED382C8E3B48}"
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Tests.Toffee.iOS", "DelphiRTL.Tests.Toffee.iOS.elements", "{A4294C37-C9F1-4B5A-975B-C5530E0F27BD}"
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Tests.Toffee.macOS", "DelphiRTL.Tests.Toffee.macOS.elements", "{8494A862-244E-4913-B62F-B848D8709A01}"
-EndProject
-Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "delphirtl.tests.cooper.android", "DelphiRTL.Tests.Cooper.Android.elements", "{69254735-D3A0-467F-96E1-14FA7B98E34A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +27,22 @@ Global
 		{0808EAD6-3C45-4830-A8B4-5D5AD5022293}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
 		{0808EAD6-3C45-4830-A8B4-5D5AD5022293}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
 		{0808EAD6-3C45-4830-A8B4-5D5AD5022293}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{69254735-D3A0-467F-96E1-14FA7B98E34A}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{69254735-D3A0-467F-96E1-14FA7B98E34A}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{69254735-D3A0-467F-96E1-14FA7B98E34A}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{69254735-D3A0-467F-96E1-14FA7B98E34A}.Release|AnyCPU.Build.0 = Release|AnyCPU
 		{E482D4AE-E4F4-441E-B3C0-49ADB8832374}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
 		{E482D4AE-E4F4-441E-B3C0-49ADB8832374}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
 		{E482D4AE-E4F4-441E-B3C0-49ADB8832374}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
 		{E482D4AE-E4F4-441E-B3C0-49ADB8832374}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{EDEA5741-DA2F-4DBF-9266-BC98558CC555}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{EDEA5741-DA2F-4DBF-9266-BC98558CC555}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{EDEA5741-DA2F-4DBF-9266-BC98558CC555}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{EDEA5741-DA2F-4DBF-9266-BC98558CC555}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{6B14DE01-C3BA-4EFD-94EC-D3F7968D7163}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{6B14DE01-C3BA-4EFD-94EC-D3F7968D7163}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{6B14DE01-C3BA-4EFD-94EC-D3F7968D7163}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{6B14DE01-C3BA-4EFD-94EC-D3F7968D7163}.Release|AnyCPU.Build.0 = Release|AnyCPU
 		{A4294C37-C9F1-4B5A-975B-C5530E0F27BD}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
 		{A4294C37-C9F1-4B5A-975B-C5530E0F27BD}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
 		{A4294C37-C9F1-4B5A-975B-C5530E0F27BD}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
@@ -35,10 +51,6 @@ Global
 		{8494A862-244E-4913-B62F-B848D8709A01}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
 		{8494A862-244E-4913-B62F-B848D8709A01}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
 		{8494A862-244E-4913-B62F-B848D8709A01}.Release|AnyCPU.Build.0 = Release|AnyCPU
-		{69254735-D3A0-467F-96E1-14FA7B98E34A}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
-		{69254735-D3A0-467F-96E1-14FA7B98E34A}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
-		{69254735-D3A0-467F-96E1-14FA7B98E34A}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
-		{69254735-D3A0-467F-96E1-14FA7B98E34A}.Release|AnyCPU.Build.0 = Release|AnyCPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
