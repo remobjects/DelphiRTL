@@ -961,6 +961,7 @@ begin
     while (i < lStr.Length) and (not (lStr[i] in [#13, #10])) do
       inc(i);
     &Add(lStr.SubString(lFrom, (i - lFrom)));
+    inc(i);
     if i < lStr.Length then begin
       if lStr[i] = #13 then begin
         inc(i);
