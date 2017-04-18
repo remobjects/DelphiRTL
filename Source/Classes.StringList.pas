@@ -84,8 +84,8 @@ type
     /*method LoadFromStream(Stream: TStream);  virtual;
     method LoadFromStream(Stream: TStream; Encoding: TEncoding);  virtual;*/
     method Move(aCurIndex, aNewIndex: Integer); virtual;
-    /*method SaveToFile(const FileName: DelphiString);  virtual;
-    method SaveToFile(const FileName: DelphiString; Encoding: TEncoding);  virtual;
+    method SaveToFile(const FileName: DelphiString);  virtual;
+    /*method SaveToFile(const FileName: DelphiString; Encoding: TEncoding);  virtual;
     method SaveToStream(Stream: TStream);  virtual;
     method SaveToStream(Stream: TStream; Encoding: TEncoding);  virtual; */
     method ToStringArray: array of DelphiString;
@@ -98,7 +98,7 @@ type
     property Delimiter: Char := ',';
     property DelimitedText: DelphiString read GetDelimitedText write SetDelimitedText;
     /*property Encoding: TEncoding read FEncoding;*/
-    property LineBreak: DelphiString;
+    property LineBreak: DelphiString := TOSVersion.LineBreak;
     property Names[Index: Integer]: DelphiString read GetName;
     property KeyNames[Index: Integer]: DelphiString read GetKeyName;
     property Objects[aIndex: Integer]: TObject read GetObject write PutObject;
@@ -938,6 +938,14 @@ begin
   end;
 end;
 
+method TStrings.SaveToFile(const FileName: DelphiString);
+begin
+  var lStream := new TFileStream(FileName, fmCreate or fmOpenWrite);
+  var lArray := Encoding.Default.GetBytes(self.Text);
+  lStream.Write(lArray, lArray.Length);
+  lStream.Close;
+end;
+
 method TStrings.Error(const Msg: DelphiString; Data: Integer);
 begin
   raise new Exception(Msg);
@@ -951,24 +959,29 @@ end;
 method TStrings.LoadFromFile(const aFileName: DelphiString; aEncoding: TEncoding);
 begin
   var lHandle := new FileHandle(aFileName, FileOpenMode.ReadOnly);
-  var lBuffer := new Byte[lHandle.Length];
-  lHandle.Read(lBuffer, lHandle.Length);
-  var lStr := aEncoding.GetString(lBuffer);
-  var i := 0;
-  var lFrom := 0;
-  while i < lStr.Length do begin
-    lFrom := i;
-    while (i < lStr.Length) and (not (lStr[i] in [#13, #10])) do
-      inc(i);
-    &Add(lStr.SubString(lFrom, (i - lFrom)));
-    inc(i);
-    if i < lStr.Length then begin
-      if lStr[i] = #13 then begin
-        inc(i);
-        if lStr[i] = #10 then
+  try
+      var lBuffer := new Byte[lHandle.Length];
+      lHandle.Read(lBuffer, lHandle.Length);
+      var lStr := aEncoding.GetString(lBuffer);
+      var i := 0;
+      var lFrom := 0;
+      while i < lStr.Length do begin
+        lFrom := i;
+        while (i < lStr.Length) and (not (lStr[i] in [#13, #10])) do
           inc(i);
+        &Add(lStr.SubString(lFrom, (i - lFrom)));
+        inc(i);
+        if i < lStr.Length then begin
+          if lStr[i] = #13 then begin
+            inc(i);
+            if lStr[i] = #10 then
+              inc(i);
+          end;
+        end;
       end;
-    end;
+
+  finally
+    lHandle.Close;
   end;
 end;
 

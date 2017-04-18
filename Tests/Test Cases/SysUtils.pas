@@ -2,58 +2,66 @@
 
 uses
   RemObjects.Elements.EUnit,
-  RemObjects.Elements.RTL.Delphi;
+  RemObjects.Elements.RTL.Delphi,
+  RemObjects.Elements.RTL;
 
 type
   SysUtilsUsage = public class(Test)
   private
-    method GetTestIniPath: String;
-    begin
-      {$IF ECHOES}
-      result := System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly.Location) + '\..\..\Test.INI';
-      if not FileExists(result) then
-        raise new Exception('Path: ' + result);
-      {$ELSE}
-      result := '..\..\Test.INI';
-      {$ENDIF}
-    end;
+    fTestPath: DelphiString;
   public
+    method Setup; override;
+    begin
+      fTestPath := Path.Combine(Environment.TempFolder, 'Test.INI');      
+      var lContent := new TFileStream(fTestPath, fmCreate or fmOpenWrite);
+      var lData: Integer := 100;
+      for i: Integer := 0 to 249 do
+        lContent.WriteData(lData);
+      lContent.Close;
+    end;
+
+    method Teardown; override;
+    begin
+      DeleteFile(fTestPath);
+    end;
+
     method FileOpenTests;
     begin
-      var lFile := FileOpen(GetTestIniPath, fmOpenRead);
+      var lFile := FileOpen(fTestPath, fmOpenRead);
       Assert.AreEqual(lFile > 0, true);
       FileClose(lFile);
     end;
 
     method FileReadTests;
     begin
-      var lFile := FileOpen(GetTestIniPath, fmOpenRead);
+      var lFile := FileOpen(fTestPath, fmOpenRead);
       var lArray := new Byte[1024];
       var lRes := FileRead(lFile, var lArray, 0, 1024);
-      Assert.AreEqual(lRes, 907);
+      Assert.AreEqual(lRes, 1000);
+      FileClose(lFile);
     end;
 
     method FileCloseTests;
     begin
-      var lFile := FileOpen(GetTestIniPath, fmOpenRead);
+      var lFile := FileOpen(fTestPath, fmOpenRead);
       Assert.AreEqual(lFile > 0, true);
       FileClose(lFile);
     end;
 
     method FileSeekTests;
     begin
-      var lFile := FileOpen(GetTestIniPath, fmOpenRead);
+      var lFile := FileOpen(fTestPath, fmOpenRead);
       var lSeek := FileSeek(lFile, 100, 0);
       Assert.AreEqual(lSeek, 100);
       var lArray := new Byte[1024];
       var lRes := FileRead(lFile, var lArray, 0, 1024);
-      Assert.AreEqual(lRes, 807);
+      Assert.AreEqual(lRes, 900);
       FileClose(lFile);
     end;
 
     method FileExistsTests;
     begin
-      Assert.AreEqual(FileExists(GetTestIniPath), true);
+      Assert.AreEqual(FileExists(fTestPath), true);
       Assert.AreEqual(FileExists('..\..\Test1asd.INI'), false);
     end;
 

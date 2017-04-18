@@ -94,6 +94,7 @@ type
 
   TOSVersion = public record
   private
+    class var fLineBreak: String;
     class var fArchitecture: TArchitecture;
     class var fBuild: Integer := 0;
     class var fMajor: Integer;
@@ -123,6 +124,7 @@ type
     class property PathDelim: String read fPathDelim;
     class property DriveDelim: String read fDriveDelim;
     class property PathSep: String read fPathSep;
+    class property LineBreak: String read fLineBreak;
   end;
 
 var
@@ -627,11 +629,13 @@ begin
     fPathDelim := '\';
     fDriveDelim := ':';
     fPathSep := ';';
+    fLineBreak := #13#10;
   end
   else begin
     fPathDelim := '/';
     fDriveDelim := '';
     fPathSep := ':';
+    fLineBreak := #10;
   end;
 end;
 

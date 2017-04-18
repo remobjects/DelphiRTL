@@ -9,28 +9,58 @@ type
   IniFilesUsage = public class(Test)
   private
     fData: TIniFile;
+    fTestPath: DelphiString;
   public
     method Setup; override;
     begin
-      {$IF COOPER} // TODO
-      fData := new TIniFile('..\..\Test.INI',  Encoding.Default, false);
-      {$ELSE}
-      {$IF ECHOES}
-      var lPath := System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly.Location) + '\..\..\Test.INI';
-      if not FileExists(lpath) then
-        raise new Exception('Path: ' + lPath);
-      {$ELSE}
-      var lPath := '..\..\Test.INI';
-      {$ENDIF}
-      fData := new TIniFile(lPath, TEncoding.Default, false);
-      {$ENDIF}
+      var lContent := new TStringList();
+      fTestPath := Path.Combine(Environment.TempFolder, 'Test.INI');            
+      lContent.Add('[Config]');
+      lContent.Add('DateTimeFormat=');
+      lContent.Add('Language=ENGLISH');
+      lContent.Add('RightEdge=80');
+      lContent.Add('SaveRecent=1');
+      lContent.Add('RightEdgeColor=12632256');
+      lContent.Add('eMailClient=0');
+      lContent.Add('FilesToIgnore=.cvsignore;vssver.scc');
+      lContent.Add('');
+      lContent.Add('[HTML document]');
+      lContent.Add('Compilator ParsLog=line %L column %C');
+      lContent.Add('');
+      lContent.Add('[PHP]');
+      lContent.Add('Compilator File=C:\blah\blah.exe');
+      lContent.Add('Compilator Param=%File%');
+      lContent.Add('Compilator Capture=1');
+      lContent.Add('Compilator ParsLog=*on line <b>%L');
+      lContent.Add('');
+      lContent.Add('[FilePos]');
+      lContent.Add('Width=1860');
+      lContent.Add('Height=1020');
+      lContent.Add('Top=20');
+      lContent.Add('Left=0');
+      lContent.Add('Maximized=0');
+      lContent.Add('ChildMaximized=1');
+      lContent.Add('HTMLWidth=620');
+      lContent.Add('HTMLHeight=450');
+      lContent.Add('HTMLTop=10');
+      lContent.Add('HTMLLeft=10');
+      lContent.Add('ForceFirstMonitor=0');
+      lContent.Add('AutoSavePos=1');
+      lContent.SaveToFile(fTestPath);
+      
+      fData := new TIniFile(fTestPath, TEncoding.Default, false);
+    end;
+
+    method Teardown; override;
+    begin
+      DeleteFile(fTestPath);
     end;
 
     method ReadSectionsTests;
     begin
       var lValues := TStringList.Create;
       fData.ReadSections(lValues);
-      Assert.AreEqual(lValues.Count, 9);
+      Assert.AreEqual(lValues.Count, 4);
     end;
 
     method ReadSectionTests;
