@@ -6,17 +6,28 @@ uses
 
 type
   SysUtilsUsage = public class(Test)
+  private
+    method GetTestIniPath: String;
+    begin
+      {$IF ECHOES}
+      result := System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly.Location) + '\..\..\Test.INI';
+      if not FileExists(result) then
+        raise new Exception('Path: ' + result);
+      {$ELSE}
+      result := '..\..\Test.INI';
+      {$ENDIF}
+    end;
   public
     method FileOpenTests;
     begin
-      var lFile := FileOpen('..\..\Test.INI', fmOpenRead);
+      var lFile := FileOpen(GetTestIniPath, fmOpenRead);
       Assert.AreEqual(lFile > 0, true);
       FileClose(lFile);
     end;
 
     method FileReadTests;
     begin
-      var lFile := FileOpen('..\..\Test.INI', fmOpenRead);
+      var lFile := FileOpen(GetTestIniPath, fmOpenRead);
       var lArray := new Byte[1024];
       var lRes := FileRead(lFile, var lArray, 0, 1024);
       Assert.AreEqual(lRes, 907);
@@ -24,14 +35,14 @@ type
 
     method FileCloseTests;
     begin
-      var lFile := FileOpen('..\..\Test.INI', fmOpenRead);
+      var lFile := FileOpen(GetTestIniPath, fmOpenRead);
       Assert.AreEqual(lFile > 0, true);
       FileClose(lFile);
     end;
 
     method FileSeekTests;
     begin
-      var lFile := FileOpen('..\..\Test.INI', fmOpenRead);
+      var lFile := FileOpen(GetTestIniPath, fmOpenRead);
       var lSeek := FileSeek(lFile, 100, 0);
       Assert.AreEqual(lSeek, 100);
       var lArray := new Byte[1024];
@@ -42,7 +53,7 @@ type
 
     method FileExistsTests;
     begin
-      Assert.AreEqual(FileExists('..\..\Test.INI'), true);
+      Assert.AreEqual(FileExists(GetTestIniPath), true);
       Assert.AreEqual(FileExists('..\..\Test1asd.INI'), false);
     end;
 
