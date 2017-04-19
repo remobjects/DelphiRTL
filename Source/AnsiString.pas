@@ -616,20 +616,20 @@ begin
         inc(k);
       end;
       if k = OldPattern.Length then begin
-        result := result + NewPattern;
+        result.Insert(result.Length, NewPattern);        
         inc(i, lSubData.Length);
         if lOnlyFirst then begin
-          result := result + &Copy(self, i, fData.length - i);
+            result.Insert(result.Length, &Copy(self, i, fData.length - i));
           exit;
         end;
       end
       else begin
-        result := result + AnsiChar(fData[i]);
+        result.Insert(result.Length, AnsiChar(fData[i]));
         inc(i);
       end;
     end
     else begin
-      result := result + AnsiChar(fData[i]);
+      result.Insert(result.Length, AnsiChar(fData[i]));
       inc(i);
     end;
   end;

@@ -61,7 +61,10 @@ type
     method AppendLineTests;
     begin
       fData.AppendLine('One Line');
-      Assert.AreEqual(fData.Chars[8], #13);
+      if TOSVersion.Platform = TPlatform.pfWindows then
+        Assert.AreEqual(fData.Chars[8], #13)
+      else 
+        Assert.AreEqual(fData.Chars[8], #10);
     end;
 
     method CopyToTests;

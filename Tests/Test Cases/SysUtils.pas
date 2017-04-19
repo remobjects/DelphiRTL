@@ -67,7 +67,7 @@ type
 
     method DirectoryExistsTests;
     begin
-      Assert.AreEqual(DirectoryExists('c:\'), true);
+      Assert.AreEqual(DirectoryExists(Environment.TempFolder), true);
       Assert.AreEqual(DirectoryExists('..\..\Testssss\'), false);
     end;
 
@@ -82,14 +82,16 @@ type
 
     method ExtractFileNameTests;
     begin
-      var lFile := ExtractFileName('c:\sample\test.ini');
-      Assert.AreEqual(lFile, 'test.ini');
+      if TOSVersion.Platform = TPlatform.pfWindows then begin
+        var lFile := ExtractFileName('c:\sample\test.ini');
+        Assert.AreEqual(lFile, 'test.ini');
 
-      lFile := ExtractFileName('c:\test.ini');
-      Assert.AreEqual(lFile, 'test.ini');
+        lFile := ExtractFileName('c:\test.ini');
+        Assert.AreEqual(lFile, 'test.ini');
 
-      lFile := ExtractFileName('c:\test');
-      Assert.AreEqual(lFile, 'test');
+        lFile := ExtractFileName('c:\test');
+        Assert.AreEqual(lFile, 'test');
+      end;
     end;
 
     method ChangeFileExtTests;
