@@ -5,6 +5,7 @@ uses
   RemObjects.Elements.RTL,
   RemObjects.Elements.RTL.Delphi;
 
+{$IF NOT TOFFEE}
 type
   IniFilesUsage = public class(Test)
   private
@@ -14,7 +15,7 @@ type
     method Setup; override;
     begin
       var lContent := new TStringList();
-      fTestPath := Path.Combine(Environment.TempFolder, 'Test.INI');            
+      fTestPath := Path.Combine(Environment.TempFolder, 'Test.INI');
       lContent.Add('[Config]');
       lContent.Add('DateTimeFormat=');
       lContent.Add('Language=ENGLISH');
@@ -148,5 +149,5 @@ type
       Assert.AreEqual(fData.ReadBool('Config', 'Data', false), true);
     end;
   end;
-
+{$ENDIF}
 end.

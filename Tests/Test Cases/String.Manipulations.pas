@@ -609,13 +609,20 @@ type
     method LoadFromFileTests;
     begin
       var lString := TStringList.Create;
-      {$IF ECHOES}
-      var lPath := System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly.Location) + '\..\..\Test.INI';
-      lString.LoadFromFile(lPath);
-      {$ELSE}
-      lString.LoadFromFile('..\..\Test.INI');
-      {$ENDIF}
-      Assert.AreEqual(lString.Count > 0, true);
+      var lContent := new TStringList();
+      var lTestPath := Path.Combine(Environment.TempFolder, 'Test.INI');            
+      lContent.Add('[Config]');
+      lContent.Add('DateTimeFormat=');
+      lContent.Add('Language=ENGLISH');
+      lContent.Add('RightEdge=80');
+      lContent.Add('AutoSavePos=1');      
+      lContent.SaveToFile(lTestPath);
+      try
+        lString.LoadFromFile(lTestPath);
+        Assert.AreEqual(lString.Count > 0, true);
+      finally
+        DeleteFile(lTestPath);
+      end;
     end;
 
     method LanguagesTests;
