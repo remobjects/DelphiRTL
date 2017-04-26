@@ -373,7 +373,7 @@ type
       var x: DelphiString := 'Test string';
       Assert.AreEqual(x.Replace('t', 'x'), 'Tesx sxring');
       Assert.AreEqual(x.Replace('x', 'v'), 'Test string');
-      {$IF ECHOES OR TOFFEE} // T76259
+      {$IF NOT COOPER} // T76259
       Assert.AreEqual(x.Replace('t', 'x', [TReplaceFlags.rfReplaceAll]), 'Tesx sxring');
       Assert.AreEqual(x.Replace('T', 'x'), 'xest string');
       Assert.AreEqual(x.Replace('t', 'x', [TReplaceFlags.rfIgnoreCase]), 'xest string');
@@ -384,7 +384,7 @@ type
       Assert.AreEqual(x.Replace('This', 'Maybe'), 'Maybe is a test string');
       Assert.AreEqual(x.Replace('string', 'procedure'), 'This is a test procedure');
 
-      {$IF ECHOES OR TOFFEE} // T76259
+      {$IF NOT COOPER} // T76259
       x := 'This this xxx this';
       Assert.AreEqual(x.Replace('This', 'Wall'), 'Wall this xxx this');
       Assert.AreEqual(x.Replace('this', 'that', [TReplaceFlags.rfReplaceAll]), 'This that xxx that');

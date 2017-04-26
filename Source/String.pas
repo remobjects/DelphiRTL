@@ -792,7 +792,7 @@ end;
 method DelphiString.IndexOfAny(const AnyOf: array of Char; StartIndex: Integer): Integer;
 begin
   {$IF ISLAND}
-  result := IndexOfAny(AnyOf, 0, fData.Length);
+  result := IndexOfAny(AnyOf, StartIndex, fData.Length);
   {$ELSE}
   result := fData.IndexOfAny(AnyOf, StartIndex);
   {$ENDIF}
@@ -1087,6 +1087,7 @@ begin
       var lRest: DelphiString := '';
       if lStart + oldValue_Length < result.Length then lRest := result.Substring(lStart + oldValue_Length);
       result := result.Substring(0, lStart) + NewValue + lRest;
+      inc(lStart, oldValue_Length);
     end
     else
        break;
