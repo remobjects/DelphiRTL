@@ -369,162 +369,82 @@ end;
 
 class method DelphiString.Parse(Value: Integer): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToString(Value);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToString(Value);
 end;
 
 class method DelphiString.Parse(Value: Int64): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToString(Value);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToString(Value);
 end;
 
 class method DelphiString.Parse(Value: Boolean): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToString(Value);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToString(Value);
 end;
 
 class method DelphiString.Parse(Value: Extended): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToString(Value);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToString(Value);
 end;
 
 class method DelphiString.ToBoolean(const S: DelphiString): Boolean;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToBoolean(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToBoolean(S);
 end;
 
 class method DelphiString.ToInteger(const S: DelphiString): Integer;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToInt32(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToInt32(S);
 end;
 
 class method DelphiString.ToInt64(const S: DelphiString): Int64;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToInt64(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToInt64(S);
 end;
 
 class method DelphiString.ToSingle(const S: DelphiString): Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(S);
 end;
 
 class method DelphiString.ToDouble(const S: DelphiString): Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(S);
 end;
 
 class method DelphiString.ToExtended(const S: DelphiString): Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(S);
 end;
 
 method DelphiString.ToBoolean: Boolean;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToBoolean(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToBoolean(self);
 end;
 
 method DelphiString.ToInteger: Integer;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToInt32(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToInt32(self);
 end;
 
 method DelphiString.ToInt64: Int64;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToInt64(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToInt64(self);
 end;
 
 method DelphiString.ToSingle: Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(self);
 end;
 
 method DelphiString.ToDouble: Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(self);
 end;
 
 method DelphiString.ToExtended: Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(self);
 end;
 
 class operator DelphiString.Implicit(Value: PlatformString): DelphiString;
@@ -861,7 +781,7 @@ end;
 class method DelphiString.IsNullOrWhiteSpace(const Value: DelphiString): Boolean;
 begin
   {$IF ISLAND}
-  result := (PlatformString(Value.fData) = nil) or (Value.fData = ' ');
+  result := (PlatformString(Value.fData) = nil) or (Value.fData = ' ') or (Value.Length = 0);
   {$ELSE}
   result := String.IsNullOrWhiteSpace(Value);
   {$ENDIF}
@@ -1480,8 +1400,7 @@ begin
   {$ELSEIF ECHOES}
   result := new System.String(Value, StartIndex, ALength);
   {$ELSEIF ISLAND}
-  result := String.FromCharArray(Value);
-  // TODO
+  result := String.FromPChar(@Value[StartIndex], aLength);
   {$ELSEIF TOFFEE}
   result := new Foundation.NSString withCharacters(@Value[StartIndex]) length(aLength);
   {$ENDIF}

@@ -4,7 +4,7 @@ uses
   RemObjects.Elements.EUnit,
   RemObjects.Elements.RTL.Delphi;
 
-{$IF COOPER OR ECHOES}
+{$IF NOT TOFFEE}
 type
   ListUsage = public class(Test)
   private

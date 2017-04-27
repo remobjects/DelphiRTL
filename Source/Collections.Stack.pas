@@ -125,7 +125,7 @@ end;
 
 method TStack<T>.ToArray: array of T;
 begin
-  raise new Exception('Not implemented.');
+  result := fStack.ToArray;
 end;
 
 method TStack<T>.Initialize;
