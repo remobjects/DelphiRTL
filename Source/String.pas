@@ -25,7 +25,7 @@ type
 
   DelphiString = public partial record
   private
-    fData: String;
+    fData: RemObjects.Elements.RTL.String;
     class method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer; static;
     class method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; IgnoreCase: Boolean; LocaleID: TLocaleID): Integer; static;
 
@@ -1227,7 +1227,6 @@ begin
       lStr := SubString(lStartIndex, lIndex - lStartIndex);
     lStartIndex := lIndex + lCurrentLength;
     if (not lStr.IsEmpty) or ((lStr.IsEmpty) and (Options <> TStringSplitOptions.ExcludeEmpty)) then begin
-      //lArray.addObject(lStr.fData);
       lList.Add(lStr);
       inc(lTotal);
     end;
@@ -1290,11 +1289,7 @@ end;
 
 method DelphiString.ToLowerInvariant: DelphiString;
 begin
-  {$IF ISLAND}
-  result := fData.ToLower(true);
-  {$ELSE}
   result := fData.ToLowerInvariant;
-  {$ENDIF}
 end;
 
 method DelphiString.ToUpper: DelphiString;
@@ -1304,11 +1299,7 @@ end;
 
 method DelphiString.ToUpperInvariant: DelphiString;
 begin
-  {$IF ISLAND}
-  result := fData.ToUpper(true);
-  {$ELSE}
   result := fData.ToUpperInvariant;
-  {$ENDIF}
 end;
 
 method DelphiString.Trim: DelphiString;
@@ -1611,22 +1602,12 @@ end;
 
 method DelphiString.ToLower(LocaleID: TLocaleID): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
   result := fData.ToLower(LocaleID);
-  {$ENDIF}
 end;
 
 method DelphiString.ToUpper(LocaleID: TLocaleID): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
   result := fData.ToUpper(LocaleID);
-  {$ENDIF}
 end;
 
 method DelphiString.{$IF COOPER}hashCode: Integer{$ELSEIF ECHOES OR ISLAND}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF};
