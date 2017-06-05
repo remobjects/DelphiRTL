@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Stream.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)System.Math.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)System.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)System.Registry.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)SysUtils.DateTime.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)SysUtils.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)SysUtils.StringBuilder.pas" />
