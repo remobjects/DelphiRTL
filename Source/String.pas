@@ -25,7 +25,7 @@ type
 
   DelphiString = public partial record
   private
-    fData: String;
+    fData: RemObjects.Elements.RTL.String;
     class method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer; static;
     class method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; IgnoreCase: Boolean; LocaleID: TLocaleID): Integer; static;
 
@@ -369,162 +369,82 @@ end;
 
 class method DelphiString.Parse(Value: Integer): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToString(Value);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToString(Value);
 end;
 
 class method DelphiString.Parse(Value: Int64): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToString(Value);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToString(Value);
 end;
 
 class method DelphiString.Parse(Value: Boolean): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToString(Value);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToString(Value);
 end;
 
 class method DelphiString.Parse(Value: Extended): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToString(Value);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToString(Value);
 end;
 
 class method DelphiString.ToBoolean(const S: DelphiString): Boolean;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToBoolean(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToBoolean(S);
 end;
 
 class method DelphiString.ToInteger(const S: DelphiString): Integer;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToInt32(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToInt32(S);
 end;
 
 class method DelphiString.ToInt64(const S: DelphiString): Int64;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToInt64(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToInt64(S);
 end;
 
 class method DelphiString.ToSingle(const S: DelphiString): Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(S);
 end;
 
 class method DelphiString.ToDouble(const S: DelphiString): Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(S);
 end;
 
 class method DelphiString.ToExtended(const S: DelphiString): Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(S);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(S);
 end;
 
 method DelphiString.ToBoolean: Boolean;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToBoolean(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToBoolean(self);
 end;
 
 method DelphiString.ToInteger: Integer;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToInt32(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToInt32(self);
 end;
 
 method DelphiString.ToInt64: Int64;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToInt64(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToInt64(self);
 end;
 
 method DelphiString.ToSingle: Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(self);
 end;
 
 method DelphiString.ToDouble: Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(self);
 end;
 
 method DelphiString.ToExtended: Double;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
-  result := Convert.ToDoubleInvariant(self);
-  {$ENDIF}
+  result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(self);
 end;
 
 class operator DelphiString.Implicit(Value: PlatformString): DelphiString;
@@ -792,7 +712,7 @@ end;
 method DelphiString.IndexOfAny(const AnyOf: array of Char; StartIndex: Integer): Integer;
 begin
   {$IF ISLAND}
-  result := IndexOfAny(AnyOf, 0, fData.Length);
+  result := IndexOfAny(AnyOf, StartIndex, fData.Length);
   {$ELSE}
   result := fData.IndexOfAny(AnyOf, StartIndex);
   {$ENDIF}
@@ -861,7 +781,7 @@ end;
 class method DelphiString.IsNullOrWhiteSpace(const Value: DelphiString): Boolean;
 begin
   {$IF ISLAND}
-  result := (PlatformString(Value.fData) = nil) or (Value.fData = ' ');
+  result := (PlatformString(Value.fData) = nil) or (Value.fData = ' ') or (Value.Length = 0);
   {$ELSE}
   result := String.IsNullOrWhiteSpace(Value);
   {$ENDIF}
@@ -1087,6 +1007,7 @@ begin
       var lRest: DelphiString := '';
       if lStart + oldValue_Length < result.Length then lRest := result.Substring(lStart + oldValue_Length);
       result := result.Substring(0, lStart) + NewValue + lRest;
+      inc(lStart, oldValue_Length);
     end
     else
        break;
@@ -1306,7 +1227,6 @@ begin
       lStr := SubString(lStartIndex, lIndex - lStartIndex);
     lStartIndex := lIndex + lCurrentLength;
     if (not lStr.IsEmpty) or ((lStr.IsEmpty) and (Options <> TStringSplitOptions.ExcludeEmpty)) then begin
-      //lArray.addObject(lStr.fData);
       lList.Add(lStr);
       inc(lTotal);
     end;
@@ -1369,11 +1289,7 @@ end;
 
 method DelphiString.ToLowerInvariant: DelphiString;
 begin
-  {$IF ISLAND}
-  result := fData.ToLower(true);
-  {$ELSE}
   result := fData.ToLowerInvariant;
-  {$ENDIF}
 end;
 
 method DelphiString.ToUpper: DelphiString;
@@ -1383,11 +1299,7 @@ end;
 
 method DelphiString.ToUpperInvariant: DelphiString;
 begin
-  {$IF ISLAND}
-  result := fData.ToUpper(true);
-  {$ELSE}
   result := fData.ToUpperInvariant;
-  {$ENDIF}
 end;
 
 method DelphiString.Trim: DelphiString;
@@ -1479,8 +1391,7 @@ begin
   {$ELSEIF ECHOES}
   result := new System.String(Value, StartIndex, ALength);
   {$ELSEIF ISLAND}
-  result := String.FromCharArray(Value);
-  // TODO
+  result := String.FromPChar(@Value[StartIndex], aLength);
   {$ELSEIF TOFFEE}
   result := new Foundation.NSString withCharacters(@Value[StartIndex]) length(aLength);
   {$ENDIF}
@@ -1691,22 +1602,12 @@ end;
 
 method DelphiString.ToLower(LocaleID: TLocaleID): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
   result := fData.ToLower(LocaleID);
-  {$ENDIF}
 end;
 
 method DelphiString.ToUpper(LocaleID: TLocaleID): DelphiString;
 begin
-  {$IF ISLAND}
-  {$WARNING Not Implemeted for Island}
-  raise new NotImplementedException();
-  {$ELSE}
   result := fData.ToUpper(LocaleID);
-  {$ENDIF}
 end;
 
 method DelphiString.{$IF COOPER}hashCode: Integer{$ELSEIF ECHOES OR ISLAND}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF};

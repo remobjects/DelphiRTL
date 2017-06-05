@@ -2,7 +2,8 @@
 
 uses
   RemObjects.Elements.EUnit,
-  RemObjects.Elements.RTL.Delphi;
+  RemObjects.Elements.RTL.Delphi,
+  RemObjects.Elements.RTL;
 
 type
   StreamUsage = public class(Test)
@@ -34,7 +35,7 @@ type
 
     method FileStreamTests;
     begin
-      var lPath := GetHomePath + DelphiString('\tests');
+      var lPath := Path.Combine(Environment.TempFolder, 'Tests');
       var lStream := TFileStream.Create(lPath, fmCreate);
       var lArray := new Byte[5];
       var lToRead := new Byte[5];

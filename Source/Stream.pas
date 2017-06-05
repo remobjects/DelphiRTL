@@ -710,7 +710,7 @@ method TStream.WriteData(Buffer: Byte): LongInt;
 begin
   {$IF ECHOES}
   var lBuf := BitConverter.GetBytes(Buffer);
-  result := lBuf.Length;
+  result := sizeOf(Byte);
   &Write(lBuf, 0, result);
   {$ELSEIF ISLAND OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));

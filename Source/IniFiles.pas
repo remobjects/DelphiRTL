@@ -256,7 +256,7 @@ constructor TMemIniFile(aFileName: DelphiString; aEncoding: TEncoding; aCaseSens
 begin
   inherited constructor(aFileName);
   fEncoding := aEncoding;
-  fData := TList<TIniSectionsPair>.Create;
+  fData := new TList<TIniSectionsPair>();
   CaseSensitive := aCaseSensitive;
   LoadIni;
 end;
@@ -379,8 +379,12 @@ begin
         var lPos: Integer;
         if lCurrentSection <> nil then begin
           lPos := lStr.IndexOf('=');
-          if lPos > 0 then
-            lCurrentSection.Add(lStr.SubString(0, lPos).Trim + '=' + lStr.SubString(lPos + 1).Trim)
+          if lPos > 0 then begin
+            var lValue: DelphiString := '';
+            if lPos + 1 < lStr.Length then
+              lValue := lStr.SubString(lPos + 1).Trim;
+            lCurrentSection.Add(lStr.SubString(0, lPos).Trim + '=' + lValue);
+          end
           else
             lCurrentSection.Add(lStr);
         end;

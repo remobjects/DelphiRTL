@@ -154,7 +154,7 @@ type
     method ReplaceTests;
     begin
       var x: AnsiString := 'Test string';
-      Assert.AreEqual(x.Replace('t', 'x'), 'Tesx string');
+      Assert.AreEqual(x.Replace('t', 'x'), 'Tesx string'); // T77622 check for toffee
       Assert.AreEqual(x.Replace('x', 'v'), 'Test string');
       {$IF ECHOES OR TOFFEE} // T76259
       Assert.AreEqual(x.Replace('t', 'x', [TReplaceFlags.rfReplaceAll]), 'Tesx sxring');
@@ -257,6 +257,7 @@ type
 
     method InsertFuncTests;
     begin
+      // Toffee affected by T77622 
       var x: AnsiString := 'Test1234';
       Insert('5678', var x, 9);
       Assert.AreEqual(x, 'Test12345678');

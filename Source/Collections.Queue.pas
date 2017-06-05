@@ -124,7 +124,7 @@ end;
 
 method TQueue<T>.ToArray: array of T;
 begin
-  raise new Exception("Not implemented.");
+  result := fQueue.ToArray;
 end;
 
 method TQueue<T>.Initialize;
