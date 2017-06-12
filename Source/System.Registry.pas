@@ -136,7 +136,7 @@ end;
 
 method TRegistry.GetBaseKey(Relative: Boolean): rtl.HKey;
 begin
-  result := if Relative or ((fCurrentKey <> nil) and (fCurrentKey^.unused <> 0)) then fCurrentKey else fRootKey;
+  result := if (not Relative) or (fCurrentKey = nil) then fRootKey else fCurrentKey;
 end;
 
 method TRegistry.IsRelative(Key: DelphiString): Boolean;
@@ -147,7 +147,8 @@ end;
 method TRegistry.GetData(Name: DelphiString; Buffer: Pointer; BufSize: rtl.DWORD; var RegData: TRegDataType): Integer;
 begin
   var lType: rtl.DWORD;
-  if not CheckResult(rtl.RegGetValue(CurrentKey, nil, Name.ToString.FirstChar, rtl.RRF_RT_ANY, @lType, Buffer, @BufSize)) then
+  var lKeyChars := Name.ToString.ToCharArray(true);
+  if not CheckResult(rtl.RegGetValue(CurrentKey, nil, @lKeyChars[0], rtl.RRF_RT_ANY, @lType, Buffer, @BufSize)) then
     raise new Exception('Can not retrieve value for ' + Name);
   RegData := ConvertDataType(lType);
   result := BufSize;
@@ -158,8 +159,9 @@ begin
   var lNewKey: rtl.HKEY;
   var lKey: DelphiString;
   var lCurrent := GetProperKey(Key, var lKey);
+  var lKeyChars := lKey.ToString.ToCharArray(true);
 
-  if CheckResult(rtl.RegOpenKeyEx(lCurrent, lKey.ToString.FirstChar, 0, fAccess or rtl.KEY_WOW64_RES, @lNewKey)) then
+  if CheckResult(rtl.RegOpenKeyEx(lCurrent, @lKeyChars[0], 0, fAccess or rtl.KEY_WOW64_RES, @lNewKey)) then
     result := lNewKey
   else
     raise new Exception('Error opening ' + Key);
@@ -181,7 +183,8 @@ end;
 
 method TRegistry.PutData(Name: DelphiString; Buffer: Pointer; BufSize: Integer; RegData: TRegDataType);
 begin
-  if not CheckResult(rtl.RegSetKeyValue(CurrentKey, nil, Name.ToString.FirstChar, ConvertToDataType(RegData), Buffer, BufSize)) then
+  var lNameChars := Name.ToString.ToCharArray(true);
+  if not CheckResult(rtl.RegSetKeyValue(CurrentKey, nil, @lNameChars[0], ConvertToDataType(RegData), Buffer, BufSize)) then
     raise new Exception('Can not write ' + Name + ' value to registry');
 end;
 
@@ -225,10 +228,10 @@ end;
 
 method TRegistry.CloseKey;
 begin
-  if (fCurrentKey <> nil) and (fCurrentKey^.unused <> 0) then begin
+  if (fCurrentKey <> nil) then begin
     rtl.RegFlushKey(fCurrentKey);
     rtl.RegCloseKey(fCurrentKey);
-    fCurrentKey^.unused := 0;
+    fCurrentKey := nil;
     fCurrentPath := '';
   end;
 end;
@@ -239,9 +242,10 @@ begin
   var lDisposition: rtl.DWORD;
   var lKey: DelphiString;
   var lCurrent := GetProperKey(Key, var lKey);
+  var lKeyChars := lKey.ToString.ToCharArray(true);
 
-  result := CheckResult(rtl.RegCreateKeyEx(lCurrent, lKey.ToString.FirstChar, 0, nil, rtl.REG_OPTION_NON_VOLATILE,
-    rtl.KEY_ALL_ACCESS or rtl.KEY_WOW64_RES, nil, @lNewKey, @lDisposition));
+  result := CheckResult(rtl.RegCreateKeyEx(lCurrent, @lKeyChars[0], 0, nil, rtl.REG_OPTION_NON_VOLATILE,
+    rtl.KEY_ALL_ACCESS or (fAccess and rtl.KEY_WOW64_RES), nil, @lNewKey, @lDisposition));
 
   if not result then
     raise new Exception('Error while creating new registry key: ' + Key)
@@ -254,19 +258,22 @@ method TRegistry.DeleteKey(Key: DelphiString): Boolean;
 begin
   var lKey: DelphiString;
   var lCurrent := GetProperKey(Key, var lKey);
+  var lKeyChars := lKey.ToString.ToCharArray(true);
 
-  result := CheckResult(rtl.RegDeleteKeyEx(lCurrent, lKey.ToString.FirstChar, rtl.KEY_ALL_ACCESS or rtl.KEY_WOW64_RES, 0));
+  result := CheckResult(rtl.RegDeleteKeyEx(lCurrent, @lKeyChars[0], rtl.KEY_ALL_ACCESS {and rtl.KEY_WOW64_RES}, 0));
 end;
 
 method TRegistry.DeleteValue(Name: DelphiString): Boolean;
 begin
-  result := CheckResult(rtl.RegDeleteValue(CurrentKey, Name.ToString.FirstChar));
+  var lKeyChars := Name.ToString.ToCharArray(true);
+  result := CheckResult(rtl.RegDeleteValue(CurrentKey, @lKeyChars[0]));
 end;
 
 method TRegistry.GetDataInfo(ValueName: DelphiString; var Value: TRegDataInfo): Boolean;
 begin
   var lType: rtl.DWORD;
-  result := CheckResult(rtl.RegGetValue(CurrentKey, nil, ValueName.ToString.FirstChar, rtl.RRF_RT_ANY, @lType, nil, @Value.DataSize));
+  var lValueChars := ValueName.ToString.ToCharArray(true);
+  result := CheckResult(rtl.RegGetValue(CurrentKey, nil, @lValueChars[0], rtl.RRF_RT_ANY, @lType, nil, @Value.DataSize));
   Value.RegData := ConvertDataType(lType);
 end;
 
@@ -349,13 +356,22 @@ begin
   var lNewKey: rtl.HKEY;
   var lKey: DelphiString;
   var lCurrent := GetProperKey(Key, var lKey);
+  var lKeyChars := lKey.ToString.ToCharArray(true);
 
-  result := CheckResult(rtl.RegOpenKeyEx(lCurrent, lKey.ToString.FirstChar, 0, fAccess or rtl.KEY_WOW64_RES, @lNewKey));
+  rtl.RegOpenKeyEx(lCurrent, @lKeyChars[0], 0, (fAccess and rtl.KEY_WOW64_RES) or rtl.STANDARD_RIGHTS_READ or rtl.KEY_QUERY_VALUE or rtl.KEY_ENUMERATE_SUB_KEYS, @lNewKey);
+  if lNewKey <> nil then begin
+    rtl.RegCloseKey(lNewKey);
+    result := true;
+  end
+  else 
+    result := false;
 end;
 
 method TRegistry.LoadKey(Key, FileName: DelphiString): Boolean;
 begin
-  result := CheckResult(rtl.RegLoadKey(fRootKey, Key.ToString.FirstChar, FileName.ToString.FirstChar));
+  var lKeyChars := Key.ToString.ToCharArray(true);
+  var lFileChars := FileName.ToString.ToCharArray(true);
+  result := CheckResult(rtl.RegLoadKey(fRootKey, @lKeyChars[0], @lFileChars[0]));
 end;
 
 method TRegistry.OpenKey(const Key: DelphiString; CanCreate: Boolean): Boolean;
@@ -369,9 +385,9 @@ begin
 
   if CanCreate then
     result := CheckResult(rtl.RegCreateKeyEx(lCurrent, @lKeyChars[0], 0, nil, rtl.REG_OPTION_NON_VOLATILE,
-      rtl.KEY_ALL_ACCESS or rtl.KEY_WOW64_RES, nil, @lNewKey, @lDisposition))
+      rtl.KEY_ALL_ACCESS or (fAccess and rtl.KEY_WOW64_RES), nil, @lNewKey, @lDisposition))
   else
-    result := CheckResult(rtl.RegOpenKeyEx(lCurrent, @lKeyChars[0], 0, fAccess or rtl.KEY_WOW64_RES, @lNewKey));
+    result := CheckResult(rtl.RegOpenKeyEx(lCurrent, @lKeyChars[0], 0, fAccess, @lNewKey));
 
   if result then begin
     var lCurrentPath: DelphiString;
@@ -390,7 +406,7 @@ begin
   var lKey: DelphiString;
   var lCurrent := GetProperKey(Key, var lKey);
 
-  result := CheckResult(rtl.RegOpenKeyEx(lCurrent, lKey.ToString.FirstChar, 0, fAccess or rtl.KEY_WOW64_RES or rtl.KEY_READ, @lNewKey));
+  result := CheckResult(rtl.RegOpenKeyEx(lCurrent, lKey.ToString.FirstChar, 0, fAccess or rtl.KEY_READ, @lNewKey));
   if result then begin
     var lCurrentPath: DelphiString;
     if IsRelative(Key) then
@@ -450,7 +466,7 @@ begin
   var lRegData: TRegDataType;
   var lTotal := GetData(Name, @lChars[0], lSize, var lRegData);
   if (lRegData = TRegDataType.String) or (lRegData = TRegDataType.ExpandString) then
-    result := DelphiString.Create(lChars, 0, lTotal div sizeOf(Char))
+    result := DelphiString.Create(lChars, 0, (lTotal div sizeOf(Char)) - 1) // remove #0
   else
     raise new Exception('Can no read ' + Name + ' as string value');
 end;

@@ -19,9 +19,29 @@ type
 
     method OpenKeyTests;
     begin
-      if fReg.OpenKey('\Software\Microsoft\Windows\CurrentVersion', false) then begin
+      Assert.AreEqual(fReg.OpenKey('Software\Microsoft\Windows\CurrentVersion', false), true);
+      fReg.CloseKey;      
+    end;
 
-      end;
+    method CreateKeyExistsReadWriteTests;
+    begin
+      Assert.AreEqual(fReg.CreateKey('Software\RemObjectsTests'), true);
+      Assert.AreEqual(fReg.KeyExists('Software\RemObjectsTests'), true);
+      Assert.AreEqual(fReg.OpenKey('Software\RemObjectsTests', false), true);
+
+      fReg.WriteInteger('Check integer', 123);
+      fReg.WriteString('Check string', 'Come on!');
+      fReg.WriteBool('Check boolean', true);
+      fReg.WriteFloat('Check float', 8.0);
+
+      Assert.AreEqual(fReg.ReadInteger('Check integer'), 123);
+      Assert.AreEqual(fReg.ReadString('Check string'), 'Come on!');
+      Assert.AreEqual(fReg.ReadBool('Check boolean'), true);
+      Assert.AreEqual(fReg.ReadFloat('Check float'), 8.0);
+
+      fReg.CloseKey;
+      Assert.AreEqual(fReg.DeleteKey('Software\RemObjectsTests'), true);
+      Assert.AreEqual(fReg.KeyExists('Software\RemObjectsTests'), false);      
     end;
   end;
 
