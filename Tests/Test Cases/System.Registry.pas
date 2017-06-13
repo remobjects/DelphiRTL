@@ -39,9 +39,24 @@ type
       Assert.AreEqual(fReg.ReadBool('Check boolean'), true);
       Assert.AreEqual(fReg.ReadFloat('Check float'), 8.0);
 
+      var lValues := TStringList.Create;
+      fReg.GetValueNames(lValues);
+      Assert.IsTrue(lValues.Count > 0);
+      Assert.IsTrue(lValues.IndexOf('Check integer') >= 0);
+           
       fReg.CloseKey;
       Assert.AreEqual(fReg.DeleteKey('Software\RemObjectsTests'), true);
       Assert.AreEqual(fReg.KeyExists('Software\RemObjectsTests'), false);      
+    end;
+
+    method EnumKeysTests;
+    begin
+      Assert.IsTrue(fReg.OpenKey('Software\Microsoft\Windows\CurrentVersion', false));
+      Assert.IsTrue(fReg.HasSubKeys);
+      var lKeys := TStringList.Create;
+      fReg.GetKeyNames(lKeys);
+      Assert.IsTrue(lKeys.Count > 0);
+      fReg.CloseKey;      
     end;
   end;
 

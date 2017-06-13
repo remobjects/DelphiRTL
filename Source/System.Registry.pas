@@ -306,7 +306,7 @@ begin
   var lKeyInfo: TRegKeyInfo;
   var lWritten: rtl.DWORD;
   if GetKeyInfo(var lKeyInfo) then begin
-    var lBuffer := new Char[lKeyInfo.MaxValueLen + 1];
+    var lBuffer := new Char[lKeyInfo.MaxSubKeyLen * 2];
     Strings.BeginUpdate;
     try
       for i: Integer := 0 to lKeyInfo.NumSubKeys - 1 do begin
