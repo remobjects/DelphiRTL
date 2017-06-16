@@ -224,6 +224,19 @@ type
       Assert.AreEqual(lDay, 10);
     end;
 
+    method DateTimeToStrTests;
+    begin
+      var lDate := EncodeDateTime(2017, 1, 19, 20, 50, 30, 120);
+      var lString := DateToStr(lDate);
+      // TODO assert
+
+      var lSettings := TFormatSettings.Create;
+      lSettings.ShortDateFormat := 'dd/mm/yy';
+      lSettings.LongDateFormat := 'dd/mm/yyyy';
+      lString := DateToStr(lDate, lSettings);
+      // TODO assert
+    end;
+
   end;
 
 end.

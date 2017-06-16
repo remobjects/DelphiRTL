@@ -60,32 +60,33 @@ type
 
   TFormatSettings = public record
   public
-    CurrencyString: String;
+    CurrencyString: DelphiString;
     CurrencyFormat: Byte;
     CurrencyDecimals: Byte;
     DateSeparator: Char;
     TimeSeparator: Char;
     ListSeparator: Char;
-    ShortDateFormat: String;
-    LongDateFormat: String;
-    TimeAMString: String;
-    TimePMString: String;
-    ShortTimeFormat: String;
-    LongTimeFormat: String;
-/*    ShortMonthNames: array[1..12] of string;
-    LongMonthNames: array[1..12] of string;
-    ShortDayNames: array[1..7] of string;
-    LongDayNames: array[1..7] of string;*/
+    ShortDateFormat: DelphiString;
+    LongDateFormat: DelphiString;
+    TimeAMString: DelphiString;
+    TimePMString: DelphiString;
+    ShortTimeFormat: DelphiString;
+    LongTimeFormat: DelphiString;
+/*    ShortMonthNames: array[1..12] of DelphiString;
+    LongMonthNames: array[1..12] of DelphiString;
+    ShortDayNames: array[1..7] of DelphiString;
+    LongDayNames: array[1..7] of DelphiString;*/
     //EraInfo: array of TEraInfo;
     ThousandSeparator: Char;
     DecimalSeparator: Char;
     TwoDigitYearCenturyWindow: Word;
     NegCurrFormat: Byte;
     NormalizedLocaleName: String;
-    //class function Create: TFormatSettings; static; inline;
-    //class function Create(Locale: TLocaleID): TFormatSettings; static;
-    //class function Create(const LocaleName: string): TFormatSettings; static;
-    //class function Invariant: TFormatSettings; static;
+    Locale: TLocaleID;
+    class function Create: TFormatSettings; static;
+    class function Create(aLocale: TLocaleID): TFormatSettings; static;
+    class function Create(aLocaleName: DelphiString): TFormatSettings; static;
+    class function Invariant: TFormatSettings; static;
     class constructor;
   end;
 
@@ -501,6 +502,38 @@ begin
     if not result then
       exit;
   end;
+end;
+
+class function TFormatSettings.Create: TFormatSettings;
+begin
+  result := Create(Locale.Current);
+end;
+
+class function TFormatSettings.Create(aLocale: TLocaleID): TFormatSettings;
+begin
+  result.Locale  := aLocale;
+end;
+
+class function TFormatSettings.Create(aLocaleName: DelphiString): TFormatSettings;
+begin
+  var aLocale := TLanguages.GetLocaleIDFromLocaleName(aLocaleName);
+  result := Create(aLocale);
+end;
+
+class function TFormatSettings.Invariant: TFormatSettings;
+begin
+  result.CurrencyString := #$00A4;
+  result.CurrencyFormat := 0;
+  result.CurrencyDecimals := 2;
+  result.DateSeparator := '/';
+  result.TimeSeparator := ':';
+  result.ListSeparator := ',';
+  result.ShortDateFormat := 'MM/dd/yyyy';
+  result.LongDateFormat := 'dddd, dd MMMMM yyyy HH:mm:ss';
+  result.TimeAMString := 'AM';
+  result.TimePMString := 'PM';
+  result.ShortTimeFormat := 'HH:mm';
+  result.LongTimeFormat := 'HH:mm:ss';
 end;
 
 class constructor TFormatSettings;

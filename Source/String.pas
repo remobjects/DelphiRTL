@@ -775,7 +775,7 @@ end;
 
 class method DelphiString.IsNullOrEmpty(const Value: DelphiString): Boolean;
 begin
-  result := String.IsNullOrEmpty(Value.fData);
+  result := (Value.fData = nil) or (String.IsNullOrEmpty(Value.fData));
 end;
 
 class method DelphiString.IsNullOrWhiteSpace(const Value: DelphiString): Boolean;
@@ -1357,6 +1357,9 @@ end;
 
 class method DelphiString.InternalCreate(Value: PlatformString): PlatformString;
 begin
+  if Value = nil then
+    Value := '';
+
   {$IF COOPER}
   result := new java.lang.String(Value);
   {$ELSEIF ECHOES}
