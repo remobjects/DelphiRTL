@@ -11,8 +11,27 @@ type
   TStringBuilder = public class(TObject)
   private
     fData: RemObjects.Elements.RTL.StringBuilder;
-    method GetChars(aIndex : Integer): Char; {$IF NOT COOPER}inline;{$ENDIF}
-    method SetChars(aIndex : Integer; Value: Char); {$IF NOT COOPER AND NOT TOFFEE}inline;{$ENDIF}
+    {$IFDEF COOPER or TOFFEE}
+    method GetChars(aIndex : Integer): Char; 
+    begin
+      result := fData[aIndex];
+    end;
+    
+    method SetChars(aIndex : Integer; Value: Char); 
+    begin
+      fData[aIndex] := Value;
+    end;
+{$ELSE}
+    method GetChars(aIndex : Integer): Char; inline;
+    begin
+      result := fData[aIndex];
+    end;
+    
+    method SetChars(aIndex : Integer; Value: Char); inline;
+    begin
+      fData[aIndex] := Value;
+    end;    
+{$ENDIF}
   public
     constructor;
     constructor(aCapacity: Integer);
@@ -163,15 +182,6 @@ begin
   result := Value1.Equals(Value2);
 end;
 
-method TStringBuilder.GetChars(aIndex : Integer): Char;
-begin
-  result := fData[aIndex];
-end;
-
-method TStringBuilder.SetChars(aIndex : Integer; Value: Char);
-begin
-  fData[aIndex] := Value;
-end;
 
 method TStringBuilder.Append(const Value: Boolean): TStringBuilder;
 begin

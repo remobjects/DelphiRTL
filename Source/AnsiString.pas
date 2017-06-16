@@ -4,10 +4,11 @@ interface
 
 uses
 {$IF ISLAND}
-  RemObjects.Elements.System;
+  RemObjects.Elements.System,
 {$ELSE}
-  RemObjects.Elements.RTL;
+  RemObjects.Elements.RTL,
 {$ENDIF}
+  RemObjects;
 
 {$GLOBALS ON}
 
@@ -61,8 +62,21 @@ type
     class method SameText(S1, S2: AnsiString): Boolean; static; // --> CompareText, no case sensitive
     class method &Copy(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer): AnsiString;
 
-    method {$IF COOPER}hashCode: Integer{$ELSEIF ECHOES OR ISLAND}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF}; {$IF COOPER OR ECHOES OR ISLAND} override;{$ENDIF}
-    method {$IF TOFFEE}isEqual(Obj: id){$ELSE}&Equals(Obj: Object){$ENDIF}: Boolean;{$IF COOPER OR ECHOES} override;{$ENDIF}
+    {$IF COOPER}
+    method hashCode: Integer; override;
+    {$ELSEIF ECHOES OR ISLAND}
+    method GetHashCode: Integer; override;
+    {$ELSEIF TOFFEE}
+    method hash: Foundation.NSUInteger;
+    {$ENDIF}
+    
+    {$IF TOFFEE}
+    method isEqual(Obj: id): Boolean;
+    {$ELSEIF COOPER OR ECHOES}
+    method &Equals(Obj: Object): Boolean; override;
+    {$ELSE}
+    method &Equals(Obj: Object): Boolean;
+    {$ENDIF} 
 
     [ToString]
     method ToString: PlatformString;
@@ -278,8 +292,8 @@ begin
   for i: Integer := StartIndex to (StartIndex + aLength) - 1 do
   begin
     var lChar := Word(aCharArray[i]);
-    result[2 * i] := low(lChar);
-    result[(2 * i) + 1] := high(lChar);
+    result[2 * i] := Byte(lChar);
+    result[(2 * i) + 1] := Byte(Word(lChar) shr 8);
   end;
 end;
 
@@ -651,7 +665,8 @@ begin
   result.Chars[Length] := AnsiChar(#0);
 end;
 
-method AnsiString.{$IF COOPER}hashCode: Integer{$ELSEIF ECHOES OR ISLAND}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF};
+{$IF COOPER}
+method AnsiString.hashCode: Integer; 
 begin
   if fHashCode = 0 then begin
     var lMultiplier: Integer := 1;
@@ -664,8 +679,50 @@ begin
   end;
   result := fHashCode;
 end;
+{$ELSEIF ECHOES OR ISLAND}
+method AnsiString.GetHashCode: Integer;
+begin
+  if fHashCode = 0 then begin
+    var lMultiplier: Integer := 1;
+    var lShift: Integer;
+    for i: Integer := Length - 1 downto 0 do begin
+      fHashCode := fHashCode + fData[i] * lMultiplier;
+      lShift := lMultiplier shl 5;
+      lMultiplier := lShift - lMultiplier;
+    end;
+  end;
+  result := fHashCode;
+end;
+{$ELSEIF TOFFEE}
+method AnsiString.hash: Foundation.NSUInteger;
+begin
+  if fHashCode = 0 then begin
+    var lMultiplier: Integer := 1;
+    var lShift: Integer;
+    for i: Integer := Length - 1 downto 0 do begin
+      fHashCode := fHashCode + fData[i] * lMultiplier;
+      lShift := lMultiplier shl 5;
+      lMultiplier := lShift - lMultiplier;
+    end;
+  end;
+  result := fHashCode;
+end;
+{$ENDIF}
 
- method AnsiString.{$IF TOFFEE}isEqual(Obj: id){$ELSE}&Equals(Obj: Object){$ENDIF}: Boolean;
+{$IF TOFFEE}
+method AnsiString.isEqual(Obj: id): Boolean;
+begin
+  if Obj = nil then
+    exit false;
+
+  if not (Obj is AnsiString) then
+    exit false;
+
+   var lItem := AnsiString(Obj);
+   result := &Equals(lItem);
+ end;
+{$ELSEIF COOPER OR ECHOES}
+method AnsiString.&Equals(Obj: Object): Boolean; 
  begin
   if Obj = nil then
     exit false;
@@ -676,6 +733,20 @@ end;
    var lItem := AnsiString(Obj);
    result := &Equals(lItem);
  end;
+{$ELSE}
+method &AnsiString.Equals(Obj: Object): Boolean;
+ begin
+  if Obj = nil then
+    exit false;
+
+  if not (Obj is AnsiString) then
+    exit false;
+
+   var lItem := AnsiString(Obj);
+   result := &Equals(lItem);
+ end;
+{$ENDIF} 
+
 
 procedure SetLength(var aString: AnsiString; aLength: Integer);
 begin

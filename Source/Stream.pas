@@ -268,7 +268,7 @@ method TStream.Write(Buffer: Pointer; Count: LongInt): LongInt;
 begin
   var lBuf := new Byte[Count];
   {$IF ISLAND}
-  {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(@lBuf[0], Buffer, Count);
+  {$IFDEF WINDOWS}ExternalCalls.memcpy(@lBuf[0], Buffer, Count){$ELSEIF POSIX}rtl.memcpy(@lBuf[0], Buffer, Count){$ENDIF};
   {$ELSEIF TOFFEE}
   memcpy(@lBuf[0], Buffer, Count);
   {$ENDIF}
@@ -974,7 +974,7 @@ begin
   var lBuf := new Byte[Count];
   result := &Read(lBuf, 0, Count);
   {$IF ISLAND}
-  {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(Buffer, @lBuf[0], Count);
+  {$IFDEF WINDOWS}ExternalCalls.memcpy(Buffer, @lBuf[0], Count){$ELSEIF POSIX}rtl.memcpy(Buffer, @lBuf[0], Count){$ENDIF};
   {$ELSEIF TOFFEE}
   memcpy(Buffer, @lBuf[0], Count);
   {$ENDIF}
@@ -1044,7 +1044,7 @@ end;
 method TCustomMemoryStream.&Read(Buffer: Pointer; Count: LongInt): LongInt;
 begin
   {$IF ISLAND}
-  {$IFDEF WINDOWS}ExternalCalls.{$ELSEIF POSIX}rtl.{$ENDIF}memcpy(Buffer, @fData.Bytes[Position], Count);
+  {$IFDEF WINDOWS}ExternalCalls.memcpy(Buffer, @fData.Bytes[Position], Count){$ELSEIF POSIX}rtl.memcpy(Buffer, @fData.Bytes[Position], Count){$ENDIF};
   {$ELSEIF TOFFEE}
   memcpy(Buffer, @fData.Bytes[Position], Count);
   {$ENDIF}
