@@ -21,11 +21,11 @@ type
     method KeyNotify(const Key: TKey; Action: TCollectionNotification); virtual;
     method ValueNotify(const Value: TValue; Action: TCollectionNotification); virtual;
     method GetSequence: ISequence<TPair<TKey,TValue>>; override; iterator;
+
+  public
     {$IF ISLAND}
     method GetEnumerator: IEnumerator<TPair<TKey,TValue>>; override;
     {$ENDIF}
-
-  public
     constructor(aCapacity: Integer := 0);
     constructor(const Collection: TEnumerable<TPair<TKey,TValue>>);
 

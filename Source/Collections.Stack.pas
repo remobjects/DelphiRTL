@@ -15,8 +15,8 @@ type
   protected
     method &Notify(const Item: T; Action: TCollectionNotification); virtual;
     method GetSequence: ISequence<T>; override; iterator;
-    {$IF ISLAND}method GetEnumerator: IEnumerator<T>; override;{$ENDIF}
   public
+    {$IF ISLAND}method GetEnumerator: IEnumerator<T>; override;{$ENDIF}
     constructor;
     constructor(const Collection: TEnumerable<T>);
     class method Create: TStack<T>;

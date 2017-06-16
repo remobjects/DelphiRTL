@@ -712,7 +712,7 @@ begin
   result := PlatformString(fData).IndexOf(Value, StartIndex, Count);
   {$ELSEIF TOFFEE}
   var lRange:= PlatformString(fData).rangeOfString(Value) options(NSStringCompareOptions.NSLiteralSearch) range(Foundation.NSMakeRange(StartIndex, Count));
-  result := if lRange.location <> NSNotFound then lRange.location else -1;
+  result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
 
@@ -754,7 +754,7 @@ begin
   {$ELSEIF TOFFEE}
   var lChars := Foundation.NSCharacterSet.characterSetWithCharactersInString(new Foundation.NSString withCharacters(@AnyOf) length(AnyOf.length));
   var lRange := PlatformString(fData).rangeOfCharacterFromSet(lChars) options(NSStringCompareOptions.NSLiteralSearch) range(Foundation.NSMakeRange(StartIndex, Count));
-  result := if lRange.location <> NSNotFound then lRange.location else -1;
+  result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
 
@@ -879,7 +879,7 @@ begin
   result := PlatformString(fData).LastIndexOf(Value, StartIndex, Count);
   {$ELSEIF TOFFEE}
   var lRange:= PlatformString(fData).rangeOfString(Value) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange((StartIndex - Count) + 1, Count));
-  result := if lRange.location <> NSNotFound then lRange.location else -1;
+  result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
 
@@ -925,7 +925,7 @@ begin
   {$ELSEIF TOFFEE}
   var lChars := Foundation.NSCharacterSet.characterSetWithCharactersInString(new Foundation.NSString withCharacters(@AnyOf) length(AnyOf.length));
   var lRange := PlatformString(fData).rangeOfCharacterFromSet(lChars) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange((StartIndex - Count) + 1, Count));
-  result := if lRange.location <> NSNotFound then lRange.location else -1;
+  result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
 

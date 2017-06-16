@@ -15,8 +15,8 @@ type
   protected
     method &Notify(const Item: T; Action: TCollectionNotification); virtual;
     method GetSequence: ISequence<T>; override; iterator;
-    {$IF ISLAND}method GetEnumerator: IEnumerator<T>; override;{$ENDIF}
   public
+    {$IF ISLAND}method GetEnumerator: IEnumerator<T>; override;{$ENDIF}
     constructor;
     constructor(Collection: TEnumerable<T>);
     class method Create: TQueue<T>;

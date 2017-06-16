@@ -104,8 +104,8 @@ type
     method ItemValue(const Item: T): Integer;
     method GetSequence: ISequence<T>; override;
     method &Notify(const Item: T; Action: TCollectionNotification); virtual;
-    {$IF ISLAND}method GetEnumerator: IEnumerator<T>; override;{$ENDIF}
   public
+    {$IF ISLAND}method GetEnumerator: IEnumerator<T>; override;{$ENDIF}
     constructor;
     constructor(const aComparer: IComparer<T>);
     constructor(const aCollection: TEnumerable<T>);
