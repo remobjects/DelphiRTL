@@ -63,7 +63,7 @@ type
     CurrencyString: DelphiString;
     CurrencyFormat: Byte;
     CurrencyDecimals: Byte;
-    DateSeparator: Char;
+    DateSeparator: DelphiString;
     TimeSeparator: Char;
     ListSeparator: Char;
     ShortDateFormat: DelphiString;
@@ -512,6 +512,73 @@ end;
 class function TFormatSettings.Create(aLocale: TLocaleID): TFormatSettings;
 begin
   result.Locale  := aLocale;
+  {$IF COOPER}
+  var lFormat := java.text.SimpleDateFormat(java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG, java.util.Locale(aLocale)));
+  result.LongDateFormat := lFormat.toPattern;
+  lFormat := java.text.SimpleDateFormat(java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT, java.util.Locale(aLocale)));
+  result.ShortDateFormat := lFormat.toPattern;
+  result.LongTimeFormat := 'hh:mm:ss';
+  result.ShortTimeFormat := 'hh:mm';
+  var lDateSymbols := lFormat.getDateFormatSymbols;
+  if lDateSymbols.AmPmStrings.length > 1 then begin
+    result.TimeAMString := lDateSymbols.AmPmStrings[0];
+    result.TimePMString := lDateSymbols.AmPmStrings[1];
+  end;
+  result.DateSeparator := '/';
+
+  var lCurrency := java.util.Currency.getInstance(java.util.Locale(aLocale));
+  result.CurrencyString := lCurrency.getSymbol;
+  result.CurrencyDecimals := lCurrency.DefaultFractionDigits;
+  var lSymbols := new java.text.DecimalFormat().getDecimalFormatSymbols;
+  result.DecimalSeparator := lSymbols.getDecimalSeparator;
+  result.ThousandSeparator := lSymbols.getGroupingSeparator;
+  {$ELSEIF ECHOES}
+  var lLocale := System.Globalization.CultureInfo(aLocale);    
+  result.LongDateFormat := lLocale.DateTimeFormat.LongDatePattern;
+  result.ShortDateFormat := lLocale.DateTimeFormat.ShortDatePattern;
+  result.LongTimeFormat := lLocale.DateTimeFormat.LongTimePattern;
+  result.ShortTimeFormat := lLocale.DateTimeFormat.ShortTimePattern;
+  result.TimePMString := lLocale.DateTimeFormat.PMDesignator;
+  result.TimeAMString := lLocale.DateTimeFormat.AMDesignator;
+  result.DateSeparator := lLocale.DateTimeFormat.DateSeparator;
+
+  result.CurrencyString := lLocale.NumberFormat.CurrencySymbol;
+  if length(lLocale.NumberFormat.CurrencyGroupSizes) > 0 then
+    result.CurrencyDecimals := lLocale.NumberFormat.CurrencyGroupSizes[0];
+  if lLocale.NumberFormat.NumberDecimalSeparator.Length > 0 then
+    result.DecimalSeparator := lLocale.NumberFormat.NumberDecimalSeparator[0];
+  if lLocale.NumberFormat.NumberGroupSeparator.Length > 0 then
+    result.ThousandSeparator := lLocale.NumberFormat.NumberGroupSeparator[0];
+  {$ELSEIF ISLAND AND WINDOWS}
+  // TODO
+  {$ELSEIF TOFFEE}
+  var lLocale := NSLocale(aLocale);
+  var lDateFormatter := new NSDateFormatter();
+  lDateFormatter.locale := lLocale;
+  lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterFullStyle;
+  lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
+  result.LongDateFormat := lDateFormatter.dateFormat;
+
+  lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterShortStyle;
+  lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
+  result.ShortDateFormat := lDateFormatter.dateFormat;
+
+  lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
+  lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterMediumStyle;
+  result.LongTimeFormat := lDateFormatter.dateFormat;
+
+  lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
+  lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterShortStyle;
+  result.ShortTimeFormat := lDateFormatter.dateFormat;
+
+  var lNumberFormatter := new NSNumberFormatter();
+  lNumberFormatter.locale := lLocale;
+  result.CurrencyString := lNumberFormatter.currencySymbol;
+  if lNumberFormatter.decimalSeparator.length > 0 then
+    result.DecimalSeparator := lNumberFormatter.decimalSeparator[0];
+  if lNumberFormatter.groupingSeparator.length > 0 then
+  result.ThousandSeparator := lNumberFormatter.groupingSeparator[0];
+  {$ENDIF}
 end;
 
 class function TFormatSettings.Create(aLocaleName: DelphiString): TFormatSettings;

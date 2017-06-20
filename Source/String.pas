@@ -580,7 +580,7 @@ end;
 
 method DelphiString.GetLength: Integer;
 begin
-  result := fData.Length;
+  result := if fData <> nil then fData.Length else 0;
 end;
 
 class method DelphiString.LowerCase(const S: DelphiString): DelphiString;

@@ -530,8 +530,8 @@ end;
 {$IF ECHOES OR TOFFEE}
 function FixFormatString(aFormat: DelphiString): DelphiString;
 begin
-  result := aFormat.Replace('m', 'M');
-  result := result.Replace('n', 'm');
+  var lFormat := aFormat.Replace('m', 'M');
+  result := lFormat.Replace('n', 'm');
 end;
 {$ENDIF}
 
@@ -544,7 +544,9 @@ begin
   var lDateTime := new java.util.Date(DateTimeToUnix(DateTime));
   lDateFormat.format(lDateTime);
   {$ELSEIF ECHOES}
-  var lFormat := FixFormatString(Format);
+  var lFormat: DelphiString := '';
+  if not DelphiString.IsNullOrEmpty(Format) then
+    lFormat := FixFormatString(Format);
   var lDateTime := new System.DateTime(lYear, lMonth, lDay, lHour, lMin, lSec, lMSec);
   aResult := lDateTime.ToString(lFormat);
   {$ELSEIF TOFFEE}
@@ -552,6 +554,10 @@ begin
   if not DelphiString.IsNullOrEmpty(Format) then begin
     var lFormat := FixFormatString(Format);
     lFormatter.dateFormat := lFormat;
+  end
+  else begin
+    lFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterShortStyle;
+    lFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
   end;
   var lCalendar := NSCalendar.currentCalendar;
   var lComponents := new NSDateComponents;
