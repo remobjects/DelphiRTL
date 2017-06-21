@@ -540,8 +540,10 @@ begin
   var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
   DecodeDateTime(DateTime, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
   {$IF COOPER}
+  var lCalendar := java.util.Calendar.getInstance;
+  lCalendar.set(lYear, lMonth - 1, lDay, lHour, lMin, lSec);
   var lDateFormat := new java.text.SimpleDateFormat(Format);
-  var lDateTime := new java.util.Date(DateTimeToUnix(DateTime));
+  var lDateTime := lCalendar.getTime;
   aResult := lDateFormat.format(lDateTime);
   {$ELSEIF ECHOES}
   var lFormat: DelphiString := '';
