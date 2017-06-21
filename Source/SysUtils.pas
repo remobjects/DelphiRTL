@@ -129,7 +129,7 @@ type
   end;
 
 var
-  FormatSettings: TFormatSettings;
+  FormatSettings: TFormatSettings := TFormatSettings.Create;
   SysLocale: TSysLocale;
 
 { File functions }
@@ -371,7 +371,7 @@ function CreateDir(const Dir: DelphiString): Boolean;
 begin
   result := true;
   try
-    Folder.Create(Dir); 
+    Folder.Create(Dir);
   except
     result := false;
   end;
@@ -533,7 +533,7 @@ begin
   result.DecimalSeparator := lSymbols.getDecimalSeparator;
   result.ThousandSeparator := lSymbols.getGroupingSeparator;
   {$ELSEIF ECHOES}
-  var lLocale := System.Globalization.CultureInfo(aLocale);    
+  var lLocale := System.Globalization.CultureInfo(aLocale);
   result.LongDateFormat := lLocale.DateTimeFormat.LongDatePattern;
   result.ShortDateFormat := lLocale.DateTimeFormat.ShortDatePattern;
   result.LongTimeFormat := lLocale.DateTimeFormat.LongTimePattern;
@@ -550,7 +550,42 @@ begin
   if lLocale.NumberFormat.NumberGroupSeparator.Length > 0 then
     result.ThousandSeparator := lLocale.NumberFormat.NumberGroupSeparator[0];
   {$ELSEIF ISLAND AND WINDOWS}
-  // TODO
+  var lLocale: rtl.LCID; // TODO
+  var lBuffer := new Char[100];
+  var lTotal: Integer;
+  var lTemp: DelphiString;
+
+  lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SLONGDATE, @lBuffer[0], lBuffer.Length);
+  result.LongDateFormat := DelphiString.Create(lBuffer, 0, lTotal);
+  lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SSHORTDATE, @lBuffer[0], lBuffer.Length);
+  result.ShortDateFormat := DelphiString.Create(lBuffer, 0, lTotal);
+  result.LongTimeFormat := 'hh:mm:ss';
+  result.ShortTimeFormat := 'hh:mm';
+
+  lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_S1159, @lBuffer[0], lBuffer.Length);
+  result.TimeAMString := DelphiString.Create(lBuffer, 0, lTotal);
+  lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_S2359, @lBuffer[0], lBuffer.Length);
+  result.TimePMString := DelphiString.Create(lBuffer, 0, lTotal);
+  lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_STIME, @lBuffer[0], lBuffer.Length);
+  result.DateSeparator := DelphiString.Create(lBuffer, 0, lTotal);
+  lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SDATE, @lBuffer[0], lBuffer.Length);
+  lTemp := DelphiString.Create(lBuffer, 0, lTotal);
+  if lTemp.Length > 0 then
+  result.TimeSeparator := lTemp.Chars[0];
+
+  lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SCURRENCY, @lBuffer[0], lBuffer.Length);
+  result.CurrencyString := DelphiString.Create(lBuffer, 0, lTotal);
+  lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_ICURRDIGITS, @lBuffer[0], lBuffer.Length);
+  lTemp := DelphiString.Create(lBuffer, 0, lTotal);
+  result.CurrencyDecimals := lTemp.ToInteger;
+  lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SDECIMAL, @lBuffer[0], lBuffer.Length);
+  lTemp := DelphiString.Create(lBuffer, 0, lTotal);
+  if lTemp.Length > 0 then
+     result.DecimalSeparator := lTemp.Chars[0];
+  lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_STHOUSAND, @lBuffer[0], lBuffer.Length);
+  lTemp := DelphiString.Create(lBuffer, 0, lTotal).SubString(0, 1);
+  if lTemp.Length > 0 then
+  result.ThousandSeparator := lTemp.Chars[0];
   {$ELSEIF TOFFEE}
   var lLocale := NSLocale(aLocale);
   var lDateFormatter := new NSDateFormatter();

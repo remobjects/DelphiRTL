@@ -542,7 +542,7 @@ begin
   {$IF COOPER}
   var lDateFormat := new java.text.SimpleDateFormat(Format);
   var lDateTime := new java.util.Date(DateTimeToUnix(DateTime));
-  lDateFormat.format(lDateTime);
+  aResult := lDateFormat.format(lDateTime);
   {$ELSEIF ECHOES}
   var lFormat: DelphiString := '';
   if not DelphiString.IsNullOrEmpty(Format) then
@@ -554,10 +554,6 @@ begin
   if not DelphiString.IsNullOrEmpty(Format) then begin
     var lFormat := FixFormatString(Format);
     lFormatter.dateFormat := lFormat;
-  end
-  else begin
-    lFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterShortStyle;
-    lFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
   end;
   var lCalendar := NSCalendar.currentCalendar;
   var lComponents := new NSDateComponents;
