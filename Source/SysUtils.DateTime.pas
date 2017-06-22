@@ -359,7 +359,7 @@ end;
 
 function DateTimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;
 begin
-  DateTimeToString(var result, '', DateTime, aFormatSettings)
+  DateTimeToString(var result, aFormatSettings.ShortDateFormat + ' ' + aFormatSettings.LongTimeFormat, DateTime, aFormatSettings)
 end;
 
 function StrToDate(const S: DelphiString): TDateTime;
@@ -527,36 +527,47 @@ begin
   DateTimeToString(var aResult, Format, DateTime, FormatSettings);
 end;
 
-{$IF ECHOES OR TOFFEE}
 function FixFormatString(aFormat: DelphiString): DelphiString;
 begin
-  var lFormat := aFormat.Replace('m', 'M');
-  result := lFormat.Replace('n', 'm');
+  result := aFormat;
+  var lLastHourPos := -1;
+  for i: Integer := 0 to aFormat.Length - 1 do begin
+    case aFormat.Chars[i] of
+      'n': begin
+        result.Chars[i] := 'm';
+        lLastHourPos := -1;
+      end;
+
+      'y', 's', 'd', 'M': lLastHourPos := -1;
+       
+      'm': if lLastHourPos = -1 then result.Chars[i] := 'M';
+
+      'h': lLastHourPos := i;
+    end;
+  end;
 end;
-{$ENDIF}
 
 procedure DateTimeToString(var aResult: DelphiString; const Format: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings);
 begin
   var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
   DecodeDateTime(DateTime, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
+  var lFormat := Format;
+  if not DelphiString.IsNullOrEmpty(Format) then
+    lFormat := FixFormatString(Format);
   {$IF COOPER}
   var lCalendar := java.util.Calendar.getInstance;
   lCalendar.set(lYear, lMonth - 1, lDay, lHour, lMin, lSec);
-  var lDateFormat := new java.text.SimpleDateFormat(Format);
+  var lDateFormat := new java.text.SimpleDateFormat(lFormat);
   var lDateTime := lCalendar.getTime;
   aResult := lDateFormat.format(lDateTime);
   {$ELSEIF ECHOES}
-  var lFormat: DelphiString := '';
-  if not DelphiString.IsNullOrEmpty(Format) then
-    lFormat := FixFormatString(Format);
   var lDateTime := new System.DateTime(lYear, lMonth, lDay, lHour, lMin, lSec, lMSec);
   aResult := lDateTime.ToString(lFormat);
+  {$ELSEIF ISLAND AND WINDOWS}
+  //TODO
   {$ELSEIF TOFFEE}
   var lFormatter := new NSDateFormatter;
-  if not DelphiString.IsNullOrEmpty(Format) then begin
-    var lFormat := FixFormatString(Format);
-    lFormatter.dateFormat := lFormat;
-  end;
+  lFormatter.dateFormat := lFormat;
   var lCalendar := NSCalendar.currentCalendar;
   var lComponents := new NSDateComponents;
   lComponents.year := lYear;
