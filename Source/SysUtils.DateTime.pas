@@ -77,6 +77,10 @@ procedure DateTimeToString(var aResult: DelphiString; const Format: DelphiString
 function DateTimeToUnix(const aValue: TDateTime): Int64;
 function UnixToDateTime(const aValue: Int64): TDateTime;
 
+{$IF ISLAND AND WINDOWS}
+procedure DateTimeToSystemTime(DateTime: TDateTime; var SystemTime: rtl.SYSTEMTIME);
+{$ENDIF}
+
 implementation
 
 function TryEncodeDateTime(const AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond: Word; out Value: TDateTime): Boolean;
@@ -539,7 +543,7 @@ begin
       end;
 
       'y', 's', 'd', 'M': lLastHourPos := -1;
-       
+
       'm': if lLastHourPos = -1 then result.Chars[i] := 'M';
 
       'h': lLastHourPos := i;
@@ -564,7 +568,25 @@ begin
   var lDateTime := new System.DateTime(lYear, lMonth, lDay, lHour, lMin, lSec, lMSec);
   aResult := lDateTime.ToString(lFormat);
   {$ELSEIF ISLAND AND WINDOWS}
-  //TODO
+
+  var lSystemTime: rtl.SYSTEMTIME;
+  var lFormatChars := lFormat.ToString.ToCharArray(true);
+  var lBuffer := new Char[255];
+  DateTimeToSystemTime(DateTime, var lSystemTime);
+  var lTotal := rtl.GetDateFormat(rtl.LOCALE_USER_DEFAULT, 0, @lSystemTime, @lFormatChars[0], @lBuffer[0], 255);
+  var lDateStr := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  lTotal := rtl.GetTimeFormat(rtl.LOCALE_USER_DEFAULT, 0, @lSystemTime, @lFormatChars[0], @lBuffer[0], 255);
+  var lTimeStr := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  lDateStr := lDateStr.Replace(lFormat, '').Trim;
+  lTimeStr := lTimeStr.Replace(lFormat, '').Trim;
+  aResult := '';
+  if lDateStr.Length > 0 then
+    aResult := lDateStr;
+  if lTimeStr.Length > 0 then begin
+    if aResult.Length > 0 then
+      aResult := aResult + ' ';
+    aResult := aResult + lTimeStr;
+  end;
   {$ELSEIF TOFFEE}
   var lFormatter := new NSDateFormatter;
   lFormatter.dateFormat := lFormat;
@@ -591,5 +613,14 @@ function UnixToDateTime(const aValue: Int64): TDateTime;
 begin
   result := (aValue / SecsPerDay) + UnixDateDelta;
 end;
+
+{$IF ISLAND AND WINDOWS}
+procedure DateTimeToSystemTime(DateTime: TDateTime; var SystemTime: rtl.SYSTEMTIME);
+begin
+  DecodeDateFully(DateTime, var SystemTime.wYear, var SystemTime.wMonth, var SystemTime.wDay, var SystemTime.wDayOfWeek);
+  Dec(SystemTime.wDayOfWeek);
+  DecodeTime(DateTime, var SystemTime.wHour, var SystemTime.wMinute, var SystemTime.wSecond, var SystemTime.wMilliseconds);
+end;
+{$ENDIF}
 
 end.
