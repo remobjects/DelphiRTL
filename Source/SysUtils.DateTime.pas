@@ -546,7 +546,12 @@ begin
 
       'm': if lLastHourPos = -1 then result.Chars[i] := 'M';
 
-      'h': lLastHourPos := i;
+      'h': begin
+        lLastHourPos := i;
+        {$IF ECHOES}
+        result.Chars[i] := 'H';
+        {$ENDIF}
+      end; 
     end;
   end;
 end;
@@ -568,7 +573,6 @@ begin
   var lDateTime := new System.DateTime(lYear, lMonth, lDay, lHour, lMin, lSec, lMSec);
   aResult := lDateTime.ToString(lFormat);
   {$ELSEIF ISLAND AND WINDOWS}
-
   var lSystemTime: rtl.SYSTEMTIME;
   var lFormatChars := lFormat.ToString.ToCharArray(true);
   var lBuffer := new Char[255];
