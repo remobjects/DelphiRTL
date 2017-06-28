@@ -551,7 +551,7 @@ begin
         {$IF ECHOES}
         result.Chars[i] := 'H';
         {$ENDIF}
-      end; 
+      end;
     end;
   end;
 end;

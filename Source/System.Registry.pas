@@ -80,7 +80,7 @@ type
     method SaveKey(Key, FileName: DelphiString): Boolean;
     method UnLoadKey(Key: DelphiString): Boolean;
     method ValueExists(Name: DelphiString): Boolean;
-    
+
     method WriteBinaryData(Name: DelphiString; Buffer: Pointer; BufSize: Integer);
     method WriteBool(Name: DelphiString; Value: Boolean);
     method WriteDate(Name: DelphiString; Value: TDateTime);
@@ -297,7 +297,7 @@ end;
 
 method TRegistry.GetKeyInfo(var Value: TRegKeyInfo): Boolean;
 begin
-  result := CheckResult(rtl.RegQueryInfoKey(CurrentKey, nil, nil, nil, @Value.NumSubKeys, @Value.MaxSubKeyLen, nil, 
+  result := CheckResult(rtl.RegQueryInfoKey(CurrentKey, nil, nil, nil, @Value.NumSubKeys, @Value.MaxSubKeyLen, nil,
     @Value.NumValues, @Value.MaxValueLen, @Value.MaxDataLen, nil, @Value.FileTime));
 end;
 
@@ -363,7 +363,7 @@ begin
     rtl.RegCloseKey(lNewKey);
     result := true;
   end
-  else 
+  else
     result := false;
 end;
 

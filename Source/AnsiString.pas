@@ -616,7 +616,7 @@ begin
         inc(k);
       end;
       if k = OldPattern.Length then begin
-        result.Insert(result.Length, NewPattern);        
+        result.Insert(result.Length, NewPattern);
         inc(i, lSubData.Length);
         if lOnlyFirst then begin
             result.Insert(result.Length, &Copy(self, i, fData.length - i));

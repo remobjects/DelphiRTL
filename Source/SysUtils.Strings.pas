@@ -318,7 +318,7 @@ begin
 
   except
     result := false;
-  end;  
+  end;
 end;
 
 function StrToBool(const S: DelphiString): Boolean;
