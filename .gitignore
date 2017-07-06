@@ -1,6 +1,7 @@
 Bin
 obj
 *.sln.fire.cache
+*.sln.water.cache
 *.user
 .vs
 .suo

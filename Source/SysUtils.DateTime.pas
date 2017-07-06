@@ -48,12 +48,12 @@ procedure IncAMonth(var Year, Month, Day: Word; NumberOfMonths: Integer := 1);
 procedure ReplaceTime(var DateTime: TDateTime; const NewTime: TDateTime);
 procedure ReplaceDate(var DateTime: TDateTime; const NewDate: TDateTime);
 // Pending DateTime funcs
-function DateToStr(const DateTime: TDateTime): String;  inline;
-function DateToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;  inline;
-function TimeToStr(const DateTime: TDateTime): String;  inline;
-function TimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;  inline;
-function DateTimeToStr(const DateTime: TDateTime): String;  inline;
-function DateTimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;  inline;
+function DateToStr(const DateTime: TDateTime): DelphiString; inline;
+function DateToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;  inline;
+function TimeToStr(const DateTime: TDateTime): DelphiString; inline;
+function TimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;  inline;
+function DateTimeToStr(const DateTime: TDateTime): DelphiString; inline;
+function DateTimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;  inline;
 
 function StrToDate(const S: DelphiString): TDateTime; inline;
 function StrToDate(const S: DelphiString; const aFormatSettings: TFormatSettings): TDateTime;
@@ -69,13 +69,17 @@ function StrToTimeDef(const S: DelphiString; const aDefault: TDateTime; const aF
 function TryStrToTime(const S: DelphiString; out aValue: TDateTime): Boolean; inline;
 function TryStrToTime(const S: DelphiString; out aValue: TDateTime; const aFormatSettings: TFormatSettings): Boolean;
 
-function FormatDateTime(const Format: String; DateTime: TDateTime): String;  inline;
-function FormatDateTime(const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;
-procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime);  inline;
-procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings);
+function FormatDateTime(const Format: DelphiString; DateTime: TDateTime): DelphiString;  inline;
+function FormatDateTime(const Format: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;
+procedure DateTimeToString(var aResult: DelphiString; const Format: DelphiString; DateTime: TDateTime);  inline;
+procedure DateTimeToString(var aResult: DelphiString; const Format: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings);
 
 function DateTimeToUnix(const aValue: TDateTime): Int64;
 function UnixToDateTime(const aValue: Int64): TDateTime;
+
+{$IF ISLAND AND WINDOWS}
+procedure DateTimeToSystemTime(DateTime: TDateTime; var SystemTime: rtl.SYSTEMTIME);
+{$ENDIF}
 
 implementation
 
@@ -332,34 +336,34 @@ begin
   DateTime := lTmp;
 end;
 
-function DateToStr(const DateTime: TDateTime): String;
+function DateToStr(const DateTime: TDateTime): DelphiString;
 begin
   result := DateToStr(DateTime, FormatSettings);
 end;
 
-function DateToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;
+function DateToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;
 begin
   DateTimeToString(var result, aFormatSettings.ShortDateFormat, DateTime, aFormatSettings);
 end;
 
-function TimeToStr(const DateTime: TDateTime): String;
+function TimeToStr(const DateTime: TDateTime): DelphiString;
 begin
   result := TimeToStr(DateTime, FormatSettings);
 end;
 
-function TimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;
+function TimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;
 begin
   DateTimeToString(var result, aFormatSettings.LongTimeFormat, DateTime, aFormatSettings);
 end;
 
-function DateTimeToStr(const DateTime: TDateTime): String;
+function DateTimeToStr(const DateTime: TDateTime): DelphiString;
 begin
   result := DateTimeToStr(DateTime, FormatSettings);
 end;
 
-function DateTimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;
+function DateTimeToStr(const DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;
 begin
-  DateTimeToString(var result, '', DateTime, aFormatSettings)
+  DateTimeToString(var result, aFormatSettings.ShortDateFormat + ' ' + aFormatSettings.LongTimeFormat, DateTime, aFormatSettings)
 end;
 
 function StrToDate(const S: DelphiString): TDateTime;
@@ -512,35 +516,82 @@ begin
   {$ENDIF}
 end;
 
-function FormatDateTime(const Format: String; DateTime: TDateTime): String;
+function FormatDateTime(const Format: DelphiString; DateTime: TDateTime): DelphiString;
 begin
   result := FormatDateTime(Format, DateTime, FormatSettings);
 end;
 
-function FormatDateTime(const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings): String;
+function FormatDateTime(const Format: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;
 begin
   DateTimeToString(var result, Format, DateTime, aFormatSettings);
 end;
 
-procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime);
+procedure DateTimeToString(var aResult: DelphiString; const Format: DelphiString; DateTime: TDateTime);
 begin
   DateTimeToString(var aResult, Format, DateTime, FormatSettings);
 end;
 
-procedure DateTimeToString(var aResult: String; const Format: String; DateTime: TDateTime; const aFormatSettings: TFormatSettings);
+function FixFormatString(aFormat: DelphiString): DelphiString;
+begin
+  result := aFormat;
+  var lLastHourPos := -1;
+  for i: Integer := 0 to aFormat.Length - 1 do begin
+    case aFormat.Chars[i] of
+      'n': begin
+        result.Chars[i] := 'm';
+        lLastHourPos := -1;
+      end;
+
+      'y', 's', 'd', 'M': lLastHourPos := -1;
+
+      'm': if lLastHourPos = -1 then result.Chars[i] := 'M';
+
+      'h': begin
+        lLastHourPos := i;
+        result.Chars[i] := 'H';
+      end;
+    end;
+  end;
+end;
+
+procedure DateTimeToString(var aResult: DelphiString; const Format: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings);
 begin
   var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
   DecodeDateTime(DateTime, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
+  var lFormat := Format;
+  if not DelphiString.IsNullOrEmpty(Format) then
+    lFormat := FixFormatString(Format);
   {$IF COOPER}
-  var lDateFormat := new java.text.SimpleDateFormat(Format);
-  var lDateTime := new java.util.Date(DateTimeToUnix(DateTime));
-  lDateFormat.format(lDateTime);
+  var lCalendar := java.util.Calendar.getInstance;
+  lCalendar.set(lYear, lMonth - 1, lDay, lHour, lMin, lSec);
+  var lDateFormat := new java.text.SimpleDateFormat(lFormat);
+  var lDateTime := lCalendar.getTime;
+  aResult := lDateFormat.format(lDateTime);
   {$ELSEIF ECHOES}
   var lDateTime := new System.DateTime(lYear, lMonth, lDay, lHour, lMin, lSec, lMSec);
-  aResult := lDateTime.ToString(Format);
+  aResult := lDateTime.ToString(lFormat);
+  {$ELSEIF ISLAND AND WINDOWS}
+  var lSystemTime: rtl.SYSTEMTIME;
+  var lFormatChars := lFormat.ToString.ToCharArray(true);
+  var lBuffer := new Char[255];
+  DateTimeToSystemTime(DateTime, var lSystemTime);
+  var lTotal := rtl.GetDateFormat(rtl.LOCALE_USER_DEFAULT, 0, @lSystemTime, @lFormatChars[0], @lBuffer[0], 255);
+  var lDateStr := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  lTotal := rtl.GetTimeFormat(rtl.LOCALE_USER_DEFAULT, 0, @lSystemTime, @lFormatChars[0], @lBuffer[0], 255);
+  var lTimeStr := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  lDateStr := lDateStr.Replace(lFormat, '').Trim;
+  lTimeStr := lTimeStr.Replace(lFormat, '').Trim;
+  aResult := '';
+  if lDateStr.Length > 0 then
+    aResult := lDateStr;
+  if lTimeStr.Length > 0 then begin
+    if aResult.Length > 0 then
+      aResult := aResult + ' ';
+    aResult := aResult + lTimeStr;
+  end;
   {$ELSEIF TOFFEE}
   var lFormatter := new NSDateFormatter;
-  lFormatter.dateFormat := Format;
+  lFormatter.dateFormat := lFormat;
   var lCalendar := NSCalendar.currentCalendar;
   var lComponents := new NSDateComponents;
   lComponents.year := lYear;
@@ -564,5 +615,14 @@ function UnixToDateTime(const aValue: Int64): TDateTime;
 begin
   result := (aValue / SecsPerDay) + UnixDateDelta;
 end;
+
+{$IF ISLAND AND WINDOWS}
+procedure DateTimeToSystemTime(DateTime: TDateTime; var SystemTime: rtl.SYSTEMTIME);
+begin
+  DecodeDateFully(DateTime, var SystemTime.wYear, var SystemTime.wMonth, var SystemTime.wDay, var SystemTime.wDayOfWeek);
+  Dec(SystemTime.wDayOfWeek);
+  DecodeTime(DateTime, var SystemTime.wHour, var SystemTime.wMinute, var SystemTime.wSecond, var SystemTime.wMilliseconds);
+end;
+{$ENDIF}
 
 end.

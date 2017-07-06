@@ -596,7 +596,7 @@ end;
 
 method DelphiString.GetLength: Integer;
 begin
-  result := fData.Length;
+  result := if fData <> nil then fData.Length else 0;
 end;
 
 class method DelphiString.LowerCase(const S: DelphiString): DelphiString;
@@ -791,7 +791,7 @@ end;
 
 class method DelphiString.IsNullOrEmpty(const Value: DelphiString): Boolean;
 begin
-  result := String.IsNullOrEmpty(Value.fData);
+  result := (Value.fData = nil) or (String.IsNullOrEmpty(Value.fData));
 end;
 
 class method DelphiString.IsNullOrWhiteSpace(const Value: DelphiString): Boolean;
@@ -1373,6 +1373,9 @@ end;
 
 class method DelphiString.InternalCreate(Value: PlatformString): PlatformString;
 begin
+  if Value = nil then
+    Value := '';
+
   {$IF COOPER}
   result := new java.lang.String(Value);
   {$ELSEIF ECHOES}
@@ -1433,7 +1436,7 @@ begin
   {$ELSEIF ECHOES OR ISLAND}
   fData := fData.Substring(0, aIndex) + aValue + fData.Substring(aIndex+1);
   {$ELSEIF TOFFEE}
-  fData := PlatformString(fData).substringWithRange(Foundation.NSMakeRange(0, aIndex)) + aValue + PlatformString(fData).substringWithRange(Foundation.NSMakeRange(aIndex + 1, fData.Length - 1));
+  fData := PlatformString(fData).substringWithRange(Foundation.NSMakeRange(0, aIndex)) + aValue + PlatformString(fData).substringWithRange(Foundation.NSMakeRange(aIndex + 1, fData.Length - 1 - aIndex));
   {$ENDIF}
 end;
 
