@@ -548,9 +548,7 @@ begin
 
       'h': begin
         lLastHourPos := i;
-        {$IF ECHOES}
         result.Chars[i] := 'H';
-        {$ENDIF}
       end;
     end;
   end;

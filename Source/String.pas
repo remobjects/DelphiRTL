@@ -1420,7 +1420,7 @@ begin
   {$ELSEIF ECHOES OR ISLAND}
   fData := fData.Substring(0, aIndex) + aValue + fData.Substring(aIndex+1);
   {$ELSEIF TOFFEE}
-  fData := PlatformString(fData).substringWithRange(Foundation.NSMakeRange(0, aIndex)) + aValue + PlatformString(fData).substringWithRange(Foundation.NSMakeRange(aIndex + 1, fData.Length - 1));
+  fData := PlatformString(fData).substringWithRange(Foundation.NSMakeRange(0, aIndex)) + aValue + PlatformString(fData).substringWithRange(Foundation.NSMakeRange(aIndex + 1, fData.Length - 1 - aIndex));
   {$ENDIF}
 end;
 
