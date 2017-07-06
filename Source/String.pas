@@ -4,10 +4,11 @@ interface
 
 uses
 {$IF ISLAND}
-  RemObjects.Elements.System;
+  RemObjects.Elements.System,
 {$ELSE}
-  RemObjects.Elements.RTL;
+  RemObjects.Elements.RTL,
 {$ENDIF}
+  RemObjects;
 
 type
   TCompareOption = public enum(coLingIgnoreCase, coLingIgnoreDiacritic, coIgnoreCase,
@@ -117,8 +118,23 @@ type
     class method LowerCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; static; partial; empty;
     class method UpperCase(const S: DelphiString): DelphiString; static;
     class method UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; static; partial; empty;
-    method {$IF COOPER}hashCode: Integer{$ELSEIF ECHOES OR ISLAND}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF}; {$IF COOPER OR ECHOES OR ISLAND} override;{$ENDIF}
-    method {$IF TOFFEE}isEqual(Obj: id){$ELSE}&Equals(Obj: Object){$ENDIF}: Boolean;{$IF COOPER OR ECHOES} override;{$ENDIF}
+    
+    {$IF COOPER}
+    method hashCode: Integer; override;
+    {$ELSEIF ECHOES OR ISLAND}
+    method GetHashCode: Integer; override;
+    {$ELSEIF TOFFEE}
+    method hash: Foundation.NSUInteger;
+    {$ENDIF}
+    
+    {$IF TOFFEE}
+    method isEqual(Obj: id): Boolean;
+    {$ELSEIF COOPER OR ECHOES}
+    method &Equals(Obj: Object): Boolean; override;
+    {$ELSE}
+    method &Equals(Obj: Object): Boolean;
+    {$ENDIF} 
+    
     method CompareTo(const strB: DelphiString): Integer;
     method Contains(const Value: DelphiString): Boolean;
     class method &Copy(const Str: DelphiString): DelphiString; static;
@@ -442,7 +458,7 @@ begin
   result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(self);
 end;
 
-method DelphiString.ToExtended: Double;
+method DelphiString.ToExtended: Extended;
 begin
   result := RemObjects.Elements.RTL.Convert.ToDoubleInvariant(self);
 end;
@@ -696,7 +712,7 @@ begin
   result := PlatformString(fData).IndexOf(Value, StartIndex, Count);
   {$ELSEIF TOFFEE}
   var lRange:= PlatformString(fData).rangeOfString(Value) options(NSStringCompareOptions.NSLiteralSearch) range(Foundation.NSMakeRange(StartIndex, Count));
-  result := if lRange.location <> NSNotFound then lRange.location else -1;
+  result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
 
@@ -738,7 +754,7 @@ begin
   {$ELSEIF TOFFEE}
   var lChars := Foundation.NSCharacterSet.characterSetWithCharactersInString(new Foundation.NSString withCharacters(@AnyOf) length(AnyOf.length));
   var lRange := PlatformString(fData).rangeOfCharacterFromSet(lChars) options(NSStringCompareOptions.NSLiteralSearch) range(Foundation.NSMakeRange(StartIndex, Count));
-  result := if lRange.location <> NSNotFound then lRange.location else -1;
+  result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
 
@@ -804,7 +820,7 @@ begin
   result := sb.toString;
   {$ELSEIF ECHOES OR ISLAND}
   var lArray := StringArrayToPlatformArray(Values);
-  result := {$IF ECHOES}System.{$ENDIF}String.Join(Separator, lArray, StartIndex, Count);
+  result := {$IF ECHOES}System.String.Join(Separator, lArray, StartIndex, Count){$ELSE}String.Join(Separator, lArray, StartIndex, Count){$ENDIF};
   {$ELSEIF TOFFEE}
   var lArray := new NSMutableArray withCapacity(Values.length);
   for i: Integer := StartIndex to (StartIndex + Count) - 1 do
@@ -863,7 +879,7 @@ begin
   result := PlatformString(fData).LastIndexOf(Value, StartIndex, Count);
   {$ELSEIF TOFFEE}
   var lRange:= PlatformString(fData).rangeOfString(Value) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange((StartIndex - Count) + 1, Count));
-  result := if lRange.location <> NSNotFound then lRange.location else -1;
+  result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
 
@@ -909,7 +925,7 @@ begin
   {$ELSEIF TOFFEE}
   var lChars := Foundation.NSCharacterSet.characterSetWithCharactersInString(new Foundation.NSString withCharacters(@AnyOf) length(AnyOf.length));
   var lRange := PlatformString(fData).rangeOfCharacterFromSet(lChars) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange((StartIndex - Count) + 1, Count));
-  result := if lRange.location <> NSNotFound then lRange.location else -1;
+  result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
 
@@ -1236,7 +1252,7 @@ begin
   if (lStartIndex < Length) and (lTotal < lCount) then
     lList.Add(SubString(lStartIndex));
 
-  result := {$IF TOFFEE}PlatformArrayToStringArray(lList.ToArray);{$ELSE}lList.ToArray;{$ENDIF}
+  result := {$IF TOFFEE}PlatformArrayToStringArray(lList.ToArray){$ELSE}lList.ToArray{$ENDIF};
   {$ENDIF}
 end;
 
@@ -1613,19 +1629,27 @@ begin
   result := fData.ToUpper(LocaleID);
 end;
 
-method DelphiString.{$IF COOPER}hashCode: Integer{$ELSEIF ECHOES OR ISLAND}GetHashCode: Integer{$ELSEIF TOFFEE}hash: Foundation.NSUInteger{$ENDIF};
-begin
-  {$IF COOPER}
-  result := fData.hashCode;
-  {$ELSEIF ECHOES OR ISLAND}
-  result := fData.GetHashCode;
-  {$ELSEIF TOFFEE}
-  result := fData.hash;
-  {$ENDIF}
-end;
 
- method DelphiString.{$IF TOFFEE}isEqual(Obj: id){$ELSE}&Equals(Obj: Object){$ENDIF}: Boolean;
- begin
+{$IF COOPER}
+method DelphiString.hashCode: Integer; 
+begin
+  result := fData.hashCode;
+end;
+{$ELSEIF ECHOES OR ISLAND}
+method DelphiString.GetHashCode: Integer; 
+begin
+  result := fData.GetHashCode;
+end;
+{$ELSEIF TOFFEE}
+method DelphiString.hash: Foundation.NSUInteger;
+begin
+  result := fData.hash;
+end;
+{$ENDIF}
+
+{$IF TOFFEE}
+method DelphiString.isEqual(Obj: id): Boolean;
+begin
   if Obj = nil then
     exit false;
 
@@ -1634,6 +1658,31 @@ end;
 
    var lItem := DelphiString(Obj);
    result := &Equals(lItem);
- end;
+end;
+{$ELSEIF COOPER OR ECHOES}
+method &DelphiString.Equals(Obj: Object): Boolean; 
+begin
+  if Obj = nil then
+    exit false;
+
+  if not (Obj is DelphiString) then
+    exit false;
+
+   var lItem := DelphiString(Obj);
+   result := &Equals(lItem);
+end;
+{$ELSE}
+method DelphiString.&Equals(Obj: Object): Boolean;
+begin
+  if Obj = nil then
+    exit false;
+
+  if not (Obj is DelphiString) then
+    exit false;
+
+   var lItem := DelphiString(Obj);
+   result := &Equals(lItem);
+end;
+{$ENDIF} 
 
 end.
