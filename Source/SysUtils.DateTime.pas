@@ -31,12 +31,12 @@ function TimeStampToDateTime(const TimeStamp: TTimeStamp): TDateTime;
 function MSecsToTimeStamp(MSecs: Int64): TTimeStamp;
 function TimeStampToMSecs(const TimeStamp: TTimeStamp): Int64;
 
-function EncodeDate(Year, Month, Day: Word): TDateTime;
-function EncodeTime(Hour, Min, Sec, MSec: Word): TDateTime;
+function EncodeDate(aYear, aMonth, aDay: Word): TDateTime;
+function EncodeTime(aHour, aMin, aSec, aMSec: Word): TDateTime;
 
 procedure DecodeDate(const DateTime: TDateTime; var Year, Month, Day: Word);
 function DecodeDateFully(const DateTime: TDateTime; var Year, Month, Day, DOW: Word): Boolean;
-procedure DecodeTime(const DateTime: TDateTime; var Hour, Min, Sec, MSec: Word);
+procedure DecodeTime(const DateTime: TDateTime; var aHour, aMin, aSec, aMSec: Word);
 
 function DayOfWeek(const DateTime: TDateTime): Word;
 function Date: TDateTime;
@@ -211,15 +211,15 @@ begin
   {$ENDIF}
 end;
 
-function EncodeDate(Year, Month, Day: Word): TDateTime;
+function EncodeDate(aYear, aMonth, aDay: Word): TDateTime;
 begin
-  if not TryEncodeDate(Year, Month, Day, out result) then
+  if not TryEncodeDate(aYear, aMonth, aDay, out result) then
     raise new Exception("Date encode Error");
 end;
 
-function EncodeTime(Hour, Min, Sec, MSec: Word): TDateTime;
+function EncodeTime(aHour, aMin, aSec, aMSec: Word): TDateTime;
 begin
-  if not TryEncodeTime(Hour, Min, Sec, MSec, out result) then
+  if not TryEncodeTime(aHour, aMin, aSec, aMSec, out result) then
     raise new Exception("Time encode Error");
 end;
 
@@ -260,16 +260,16 @@ begin
   DOW := lTmp.Date mod 7 + 1;
 end;
 
-procedure DecodeTime(const DateTime: TDateTime; var Hour, Min, Sec, MSec: Word);
+procedure DecodeTime(const DateTime: TDateTime; var aHour, aMin, aSec, aMSec: Word);
 begin
   var lTmp := DateTime - Math.Floor(DateTime);
   var lNumber := Math.Round(Math.Abs(lTmp) * FMSecsPerDay);
-  Hour := lNumber div (MinsPerHour * SecsPerMin * MSecsPerSec);
+  aHour := lNumber div (MinsPerHour * SecsPerMin * MSecsPerSec);
   var lRem := lNumber mod (MinsPerHour * SecsPerMin * MSecsPerSec);
-  Min := lRem div (SecsPerMin * MSecsPerSec);
+  aMin := lRem div (SecsPerMin * MSecsPerSec);
   lRem := lRem mod (SecsPerMin * MSecsPerSec);
-  Sec := lRem div MSecsPerSec;
-  MSec := lRem mod MSecsPerSec;
+  aSec := lRem div MSecsPerSec;
+  aMSec := lRem mod MSecsPerSec;
 end;
 
 function DayOfWeek(const DateTime: TDateTime): Word;

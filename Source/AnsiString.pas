@@ -72,12 +72,10 @@ type
     
     {$IF TOFFEE}
     method isEqual(Obj: id): Boolean;
-    {$ELSEIF COOPER OR ECHOES}
-    method &Equals(Obj: Object): Boolean; override;
     {$ELSE}
-    method &Equals(Obj: Object): Boolean;
-    {$ENDIF} 
-
+    method &Equals(Obj: Object): Boolean; override;
+    {$ENDIF}
+    
     [ToString]
     method ToString: PlatformString;
 

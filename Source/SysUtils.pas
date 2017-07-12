@@ -96,14 +96,14 @@ type
   TOSVersion = public record
   private
     class var fLineBreak: String;
-    class var fArchitecture: TArchitecture;
+    class var fArchitecture: TArchitecture := TArchitecture.arIntelX86;
     class var fBuild: Integer := 0;
     class var fMajor: Integer;
     class var fMinor: Integer;
     class var fName: String;
     class var fPlatform: TPlatform;
-    class var fServicePackMajor: Integer;
-    class var fServicePackMinor: Integer;
+    class var fServicePackMajor: Integer := 0;
+    class var fServicePackMinor: Integer := 0;
     class var fPathDelim: String;
     class var fDriveDelim: String;
     class var fPathSep: String;
@@ -550,7 +550,7 @@ begin
   if lLocale.NumberFormat.NumberGroupSeparator.Length > 0 then
     result.ThousandSeparator := lLocale.NumberFormat.NumberGroupSeparator[0];
   {$ELSEIF ISLAND AND WINDOWS}
-  var lLocale: rtl.LCID; // TODO
+  //var lLocale: rtl.LCID; // TODO
   var lBuffer := new Char[100];
   var lTotal: Integer;
   var lTemp: DelphiString;
