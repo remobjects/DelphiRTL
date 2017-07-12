@@ -704,7 +704,7 @@ begin
       {$ENDIF}
     {$ELSE}
       {$IF CPU64}
-        fArchitecture := TArchitecture.arIntel64;
+        fArchitecture := TArchitecture.arIntelX64;
       {$ELSE}
         fArchitecture := TArchitecture.arIntelX86;
       {$ENDIF}
