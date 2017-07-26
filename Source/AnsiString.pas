@@ -722,7 +722,6 @@ begin
 {$ELSE}
 method &AnsiString.Equals(Obj: Object): Boolean;
 begin
-  {$IF COOPER OR ECHOES}
   if Obj = nil then
     exit false;
 
@@ -731,20 +730,8 @@ begin
 
   var lItem := AnsiString(Obj);
   result := &Equals(lItem);
-  {$ELSE}
-
-  if Obj = nil then
-    exit false;
-
-  if not (Obj is AnsiString) then
-    exit false;
-
-  var lItem := AnsiString(Obj);
-  result := &Equals(lItem);
-  {$ENDIF}
  end;
 {$ENDIF} 
-
 
 procedure SetLength(var aString: AnsiString; aLength: Integer);
 begin
