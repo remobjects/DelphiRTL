@@ -719,21 +719,10 @@ begin
    var lItem := AnsiString(Obj);
    result := &Equals(lItem);
  end;
-{$ELSEIF COOPER OR ECHOES}
-method AnsiString.&Equals(Obj: Object): Boolean; 
- begin
-  if Obj = nil then
-    exit false;
-
-  if not (Obj is AnsiString) then
-    exit false;
-
-   var lItem := AnsiString(Obj);
-   result := &Equals(lItem);
- end;
 {$ELSE}
 method &AnsiString.Equals(Obj: Object): Boolean;
- begin
+begin
+  {$IF COOPER OR ECHOES}
   if Obj = nil then
     exit false;
 
@@ -742,6 +731,17 @@ method &AnsiString.Equals(Obj: Object): Boolean;
 
    var lItem := AnsiString(Obj);
    result := &Equals(lItem);
+ {$ELSE}
+
+  if Obj = nil then
+    exit false;
+
+  if not (Obj is AnsiString) then
+    exit false;
+
+   var lItem := AnsiString(Obj);
+   result := &Equals(lItem);
+  {$ENDIF}
  end;
 {$ENDIF} 
 

@@ -1657,21 +1657,10 @@ begin
    var lItem := DelphiString(Obj);
    result := &Equals(lItem);
 end;
-{$ELSEIF COOPER OR ECHOES}
-method &DelphiString.Equals(Obj: Object): Boolean; 
-begin
-  if Obj = nil then
-    exit false;
-
-  if not (Obj is DelphiString) then
-    exit false;
-
-   var lItem := DelphiString(Obj);
-   result := &Equals(lItem);
-end;
 {$ELSE}
 method DelphiString.&Equals(Obj: Object): Boolean;
 begin
+  {$IF COOPER OR ECHOES}
   if Obj = nil then
     exit false;
 
@@ -1680,6 +1669,16 @@ begin
 
    var lItem := DelphiString(Obj);
    result := &Equals(lItem);
+  {$ELSE}
+  if Obj = nil then
+    exit false;
+
+  if not (Obj is DelphiString) then
+    exit false;
+
+   var lItem := DelphiString(Obj);
+   result := &Equals(lItem);
+   {$ENDIF}
 end;
 {$ENDIF} 
 
