@@ -729,9 +729,9 @@ begin
   if not (Obj is AnsiString) then
     exit false;
 
-   var lItem := AnsiString(Obj);
-   result := &Equals(lItem);
- {$ELSE}
+  var lItem := AnsiString(Obj);
+  result := &Equals(lItem);
+  {$ELSE}
 
   if Obj = nil then
     exit false;
@@ -739,8 +739,8 @@ begin
   if not (Obj is AnsiString) then
     exit false;
 
-   var lItem := AnsiString(Obj);
-   result := &Equals(lItem);
+  var lItem := AnsiString(Obj);
+  result := &Equals(lItem);
   {$ENDIF}
  end;
 {$ENDIF} 

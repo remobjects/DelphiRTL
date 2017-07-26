@@ -1667,8 +1667,8 @@ begin
   if not (Obj is DelphiString) then
     exit false;
 
-   var lItem := DelphiString(Obj);
-   result := &Equals(lItem);
+  var lItem := DelphiString(Obj);
+  result := &Equals(lItem);
   {$ELSE}
   if Obj = nil then
     exit false;
@@ -1676,9 +1676,9 @@ begin
   if not (Obj is DelphiString) then
     exit false;
 
-   var lItem := DelphiString(Obj);
-   result := &Equals(lItem);
-   {$ENDIF}
+  var lItem := DelphiString(Obj);
+  result := &Equals(lItem);
+  {$ENDIF}
 end;
 {$ENDIF} 
 
