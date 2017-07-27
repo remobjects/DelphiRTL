@@ -221,6 +221,12 @@ type
       Assert.AreEqual(x.Join('##', lStrings, 0, 1), 'string');
       Assert.AreEqual(x.Join('#', lStrings, 0, 2), 'string#in');
       Assert.AreEqual(x.Join('##', lStrings, 0, 2), 'string##in');
+
+      var lList := new TList<DelphiString>;
+      lList.Add('Hi');
+      lList.Add('Friends');
+      var lAll: DelphiString := DelphiString.Join('->', lList);
+      Assert.AreEqual(lAll, 'Hi->Friends');
     end;
 
     method SubStringTests;
