@@ -210,53 +210,6 @@ const
 var
   ApproxDaysPerMonth: Double := 30.4375;
   ApproxDaysPerYear: Double  := 365.25;
-/*
-type
-  ELocalTimeInvalid = class(Exception);
-  EDateTimeException = class(Exception);
-
-  TLocalTimeType = (
-    lttStandard,
-    lttDaylight,
-    lttAmbiguous,
-    lttInvalid
-  );
-
-  TTimeZone = abstract class
-  private
-    class var FLocal: TTimeZone;
-    class constructor Create;
-    //class destructor Destroy;
-    function GetAbbreviationForNow: DelphiString; inline;
-    function GetDisplayNameForNow: DelphiString; inline;
-    function GetUtcOffsetInSeconds(const ADateTime: TDateTime; const ForceDaylight: Boolean): Int64;
-    function GetCurrentUtcOffset: TTimeSpan; inline;
-  protected
-    procedure DoGetOffsetsAndType(const ADateTime: TDateTime; out AOffset, ADstSave: Int64; out AType: TLocalTimeType); virtual; abstract;
-    function DoGetDisplayName(const ADateTime: TDateTime; const ForceDaylight: Boolean): DelphiString; virtual; abstract;
-    function DoGetID: DelphiString; virtual; abstract;
-  public
-    function GetUtcOffset(const ADateTime: TDateTime; const ForceDaylight: Boolean := False): TTimeSpan; inline;
-    function ToUniversalTime(const ADateTime: TDateTime; const ForceDaylight: Boolean := False): TDateTime; inline;
-    function ToLocalTime(const ADateTime: TDateTime): TDateTime;
-    function GetDisplayName(const ADateTime: TDateTime; const ForceDaylight: Boolean := False): DelphiString;
-    function GetAbbreviation(const ADateTime: TDateTime; const ForceDaylight: Boolean := False): DelphiString;
-    function GetLocalTimeType(const ADateTime: TDateTime): TLocalTimeType; inline;
-    function IsStandardTime(const ADateTime: TDateTime; const ForceDaylight: Boolean := False): Boolean;
-    function IsInvalidTime(const ADateTime: TDateTime): Boolean; inline;
-    function IsAmbiguousTime(const ADateTime: TDateTime): Boolean; inline;
-    function IsDaylightTime(const ADateTime: TDateTime; const ForceDaylight: Boolean := False): Boolean;
-    property ID: DelphiString read DoGetID;
-    property DisplayName: DelphiString read GetDisplayNameForNow;
-    property Abbreviation: DelphiString read GetAbbreviationForNow;
-    property UtcOffset: TTimeSpan read GetCurrentUtcOffset;
-    class property Local: TTimeZone read FLocal;
-  end;
-
-function ISO8601ToDate(const AISODate: DelphiString; AReturnUTC: Boolean := True): TDateTime;
-function TryISO8601ToDate(const AISODate: DelphiString; out Value: TDateTime; AReturnUTC: Boolean := True): Boolean;
-function DateToISO8601(const ADate: TDateTime; AInputIsUTC: Boolean := True): DelphiString;
-*/
 
 implementation
 

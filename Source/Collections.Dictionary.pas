@@ -78,8 +78,7 @@ end;
 {$IF ISLAND}
 method TDictionary<TKey,TValue>.GetEnumerator: IEnumerator<TPair<TKey,TValue>>;
 begin
-  //result := fDict.GetEnumerator;
-  result := nil; // TODO
+  result := fDict.GetSequence.GetEnumerator;
 end;
 {$ENDIF}
 

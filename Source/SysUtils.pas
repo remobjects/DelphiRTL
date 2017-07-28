@@ -468,7 +468,7 @@ begin
   try
     var lFolder := new Folder(Directory);
     result := lFolder.Exists;
-    //result := Folder.Exists(Directory);
+
   except
     result := false;
   end;

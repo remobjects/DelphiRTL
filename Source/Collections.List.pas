@@ -18,11 +18,8 @@ type
     function GetHashCode(const Value: T): Integer;
   end;
 
-  //{$IF ECHOES OR COOPER OR TOFFEE}
   IEnumerable<T> = public ISequence<T>;
-  //{$ENDIF}
 
-  //TEnumerable<T> = public abstract class({$IF ISLAND}IEnumerable<T>{$ELSE}ISequence<T>{$ENDIF})
   TEnumerable<T> = public abstract class(ISequence<T>)
   private
     method ToArrayImpl(Count: Integer): TArray<T>;
@@ -112,7 +109,6 @@ type
     class method Create: TList<T>;
     class method Create(const aComparer: IComparer<T>): TList<T>;
     class method Create(const aCollection: TEnumerable<T>): TList<T>;
-    class method Error(const aMsg: DelphiString; Data: Integer); virtual;
     method &Add(const Value: T): Integer;
     method AddRange(const Values: array of T);
     method AddRange(const Collection: IEnumerable<T>);
@@ -210,11 +206,6 @@ begin
   AddRange(aCollection);
 end;
 
-class method TList<T>.Error(const aMsg: DelphiString; Data: Integer);
-begin
-
-end;
-
 method TList<T>.Add(const Value: T): Integer;
 begin
   fList.Add(Value);
@@ -224,7 +215,6 @@ end;
 
 method TList<T>.AddRange(const Values: array of T);
 begin
-  //fList.AddRange(Values);
   fList.Add(Values);
 end;
 
