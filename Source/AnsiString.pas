@@ -719,32 +719,19 @@ begin
    var lItem := AnsiString(Obj);
    result := &Equals(lItem);
  end;
-{$ELSEIF COOPER OR ECHOES}
-method AnsiString.&Equals(Obj: Object): Boolean; 
- begin
-  if Obj = nil then
-    exit false;
-
-  if not (Obj is AnsiString) then
-    exit false;
-
-   var lItem := AnsiString(Obj);
-   result := &Equals(lItem);
- end;
 {$ELSE}
 method &AnsiString.Equals(Obj: Object): Boolean;
- begin
+begin
   if Obj = nil then
     exit false;
 
   if not (Obj is AnsiString) then
     exit false;
 
-   var lItem := AnsiString(Obj);
-   result := &Equals(lItem);
+  var lItem := AnsiString(Obj);
+  result := &Equals(lItem);
  end;
 {$ENDIF} 
-
 
 procedure SetLength(var aString: AnsiString; aLength: Integer);
 begin

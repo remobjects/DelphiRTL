@@ -4,7 +4,6 @@ uses
   RemObjects.Elements.RTL;
 
 type
-  //TClass = Sugar.Reflection.Type;
   TClass = Pointer;
   ShortString = String;
   Pointer = {$IF COOPER}Integer{$ELSE}^Void{$ENDIF};

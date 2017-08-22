@@ -11,7 +11,6 @@ type
     //method DefineProperties(Filer: TFiler); virtual;
     method GetOwner: TPersistent; virtual;
   public
-    //destructor Destroy; override;
     method Assign(Source: TPersistent); virtual;
     method GetNamePath: DelphiString; virtual;
   end;

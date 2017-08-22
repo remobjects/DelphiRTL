@@ -161,8 +161,7 @@ type
     class method IsNullOrEmpty(const Value: DelphiString): Boolean; static;
     class method IsNullOrWhiteSpace(const Value: DelphiString): Boolean; static;
     class method &Join(Separator: DelphiString; Values: array of DelphiString): DelphiString; static;
-    //method Join(Separator: DelphiString; Values: IEnumerator<DelphiString>): DelphiString; overload; static;
-    //method Join(Separator: DelphiString; Values: IEnumerable<DelphiString>): DelphiString; overload; static; inline;
+    class method Join(Separator: DelphiString; Values: sequence of DelphiString): DelphiString; static;
     class method &Join(Separator: DelphiString; Values: array of DelphiString; StartIndex: Integer; Count: Integer): DelphiString; static;
     method LastDelimiter(const Delims: DelphiString): Integer;
     method LastIndexOf(Value: Char): Integer;
@@ -804,6 +803,23 @@ end;
 class method DelphiString.Join(Separator: DelphiString; Values: array of DelphiString): DelphiString;
 begin
   result := &Join(Separator, Values, 0, Values.length);
+end;
+
+class method DelphiString.Join(Separator: DelphiString; Values: sequence of DelphiString): DelphiString;
+begin
+  if Values <> nil then begin
+    var lSb := new TStringBuilder();
+    for each lValue in Values do
+      if lSb.Length = 0 then
+        lSb.Append(lValue)
+      else begin
+        lSb.Append(Separator);
+        lSb.Append(lValue);
+      end;
+      result := lSb.ToString;
+  end
+  else 
+    result := '';
 end;
 
 class method DelphiString.Join(Separator: DelphiString; Values: array of DelphiString; StartIndex: Integer; Count: Integer): DelphiString;
@@ -1654,20 +1670,8 @@ begin
   if not (Obj is DelphiString) then
     exit false;
 
-   var lItem := DelphiString(Obj);
-   result := &Equals(lItem);
-end;
-{$ELSEIF COOPER OR ECHOES}
-method &DelphiString.Equals(Obj: Object): Boolean; 
-begin
-  if Obj = nil then
-    exit false;
-
-  if not (Obj is DelphiString) then
-    exit false;
-
-   var lItem := DelphiString(Obj);
-   result := &Equals(lItem);
+  var lItem := DelphiString(Obj);
+  result := &Equals(lItem);
 end;
 {$ELSE}
 method DelphiString.&Equals(Obj: Object): Boolean;
@@ -1678,8 +1682,8 @@ begin
   if not (Obj is DelphiString) then
     exit false;
 
-   var lItem := DelphiString(Obj);
-   result := &Equals(lItem);
+  var lItem := DelphiString(Obj);
+  result := &Equals(lItem);
 end;
 {$ENDIF} 
 
