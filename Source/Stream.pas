@@ -1048,6 +1048,7 @@ begin
   {$ELSEIF TOFFEE}
   memcpy(Buffer, @fData.Bytes[Position], Count);
   {$ENDIF}
+  fData.Position := fData.Position + Count;
   result := Count;
 end;
 {$ENDIF}

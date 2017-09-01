@@ -17,6 +17,7 @@ type
   private
     fUpdateCount: Integer;
     fOptions: TStringsOptions;
+    fEncoding: TEncoding := TEncoding.Default;
     function GetUseLocale: Boolean;
     procedure SetUseLocale(aValue: Boolean);
     method GetUpdating: Boolean;
@@ -49,14 +50,12 @@ type
     method Put(aIndex: Integer; const S: DelphiString); virtual;
     method PutObject(aIndex: Integer; aObject: TObject); virtual;
     method SetCapacity(aNewCapacity: Integer); virtual;
-    /*method SetEncoding(const Value: TEncoding); virtual;*/
+    method SetEncoding(Value: TEncoding); virtual;
     method SetTextStr(const aValue: DelphiString); virtual;
     method SetUpdateState(aUpdating: Boolean); virtual;
     method CompareStrings(const S1, S2: DelphiString): Integer; virtual;
     property UpdateCount: Integer read fUpdateCount;
   public
-    /*constructor;
-    destructor Destroy; override;*/
     method &Add(const S: DelphiString): Integer; virtual;
     method AddPair(const aName: DelphiString; const aValue: DelphiString): TStrings;
     method AddPair(const aName: DelphiString; const aValue: DelphiString; aObject: TObject): TStrings;
@@ -81,23 +80,22 @@ type
     method InsertObject(aIndex: Integer; const S: DelphiString; aObject: TObject); virtual;
     method LoadFromFile(const aFileName: DelphiString); virtual;
     method LoadFromFile(const aFileName: DelphiString; aEncoding: TEncoding); virtual;
-    /*method LoadFromStream(Stream: TStream);  virtual;
-    method LoadFromStream(Stream: TStream; Encoding: TEncoding);  virtual;*/
+    method LoadFromStream(aStream: TStream); virtual;
+    method LoadFromStream(aStream: TStream; aEncoding: TEncoding); virtual;
     method Move(aCurIndex, aNewIndex: Integer); virtual;
-    method SaveToFile(const FileName: DelphiString);  virtual;
-    /*method SaveToFile(const FileName: DelphiString; Encoding: TEncoding);  virtual;
-    method SaveToStream(Stream: TStream);  virtual;
-    method SaveToStream(Stream: TStream; Encoding: TEncoding);  virtual; */
+    method SaveToFile(const FileName: DelphiString); virtual;
+    method SaveToFile(const FileName: DelphiString; Encoding: TEncoding); virtual;
+    method SaveToStream(aStream: TStream);  virtual;
+    method SaveToStream(aStream: TStream; aEncoding: TEncoding); virtual; 
     method ToStringArray: array of DelphiString;
     method ToObjectArray: array of TObject;
     property Updating: Boolean read GetUpdating;
     property Capacity: Integer read GetCapacity;
     property CommaText: DelphiString read GetCommaText write SetCommaText;
     property Count: Integer read GetCount;
-    /*property DefaultEncoding: TEncoding read FDefaultEncoding write SetDefaultEncoding; */
     property Delimiter: Char := ',';
     property DelimitedText: DelphiString read GetDelimitedText write SetDelimitedText;
-    /*property Encoding: TEncoding read FEncoding;*/
+    property Encoding: TEncoding read fEncoding;
     property LineBreak: DelphiString := TOSVersion.LineBreak;
     property Names[Index: Integer]: DelphiString read GetName;
     property KeyNames[Index: Integer]: DelphiString read GetKeyName;
@@ -568,6 +566,11 @@ begin
   // Empty method
 end;
 
+method TStrings.SetEncoding(Value: TEncoding);
+begin
+  fEncoding := Value;
+end;
+
 method TStrings.GetUseLocale: Boolean;
 begin
   result := TStringsOption.soUseLocale in Options;
@@ -940,10 +943,25 @@ end;
 
 method TStrings.SaveToFile(const FileName: DelphiString);
 begin
+  SaveToFile(FileName, fEncoding);
+end;
+
+method TStrings.SaveToFile(const FileName: DelphiString; Encoding: TEncoding);
+begin
   var lStream := new TFileStream(FileName, fmCreate or fmOpenWrite);
-  var lArray := Encoding.Default.GetBytes(self.Text);
-  lStream.Write(lArray, lArray.Length);
+  SaveToStream(lStream, Encoding);
   lStream.Close;
+end;
+
+method TStrings.SaveToStream(aStream: TStream);
+begin
+  SaveToStream(aStream, fEncoding);
+end;
+
+method TStrings.SaveToStream(aStream: TStream; aEncoding: TEncoding);
+begin
+  var lArray := aEncoding.GetBytes(self.Text);
+  aStream.Write(lArray, lArray.Length);
 end;
 
 method TStrings.Error(const Msg: DelphiString; Data: Integer);
@@ -953,36 +971,46 @@ end;
 
 method TStrings.LoadFromFile(const aFileName: DelphiString);
 begin
-  LoadFromFile(aFileName, TEncoding.Default);
+  LoadFromFile(aFileName, fEncoding);
 end;
 
 method TStrings.LoadFromFile(const aFileName: DelphiString; aEncoding: TEncoding);
 begin
-  var lHandle := new FileHandle(aFileName, FileOpenMode.ReadOnly);
+  var lStream := new TFileStream(aFileName, fmOpenRead);
   try
-      var lBuffer := new Byte[lHandle.Length];
-      lHandle.Read(lBuffer, lHandle.Length);
-      var lStr := aEncoding.GetString(lBuffer);
-      var i := 0;
-      var lFrom := 0;
-      while i < lStr.Length do begin
-        lFrom := i;
-        while (i < lStr.Length) and (not (lStr[i] in [#13, #10])) do
-          inc(i);
-        &Add(lStr.SubString(lFrom, (i - lFrom)));
-        inc(i);
-        if i < lStr.Length then begin
-          if lStr[i] = #13 then begin
-            inc(i);
-            if lStr[i] = #10 then
-              inc(i);
-          end;
-        end;
-      end;
+    LoadFromStream(lStream, aEncoding);
 
   finally
-    lHandle.Close;
+    lStream.Close;
   end;
+end;
+
+method TStrings.LoadFromStream(aStream: TStream);
+begin
+  LoadFromStream(aStream, fEncoding);
+end;
+
+method TStrings.LoadFromStream(aStream: TStream; aEncoding: TEncoding);
+begin
+  var lBuffer := new Byte[aStream.Size];
+  aStream.Read(lBuffer, 0, aStream.Size);
+  var lStr := aEncoding.GetString(lBuffer);
+  var i := 0;
+  var lFrom := 0;
+  while i < lStr.Length do begin
+    lFrom := i;
+    while (i < lStr.Length) and (not (lStr[i] in [#13, #10])) do
+      inc(i);
+    &Add(lStr.SubString(lFrom, (i - lFrom)));
+    inc(i);
+    if i < lStr.Length then begin
+      if lStr[i] = #13 then begin
+        inc(i);
+        if lStr[i] = #10 then
+          inc(i);
+      end;
+    end;
+  end;  
 end;
 
 end.
