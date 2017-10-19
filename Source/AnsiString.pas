@@ -38,8 +38,8 @@ type
     constructor(Value: array of Byte);
     constructor(Value: array of Byte; StartIndex: Integer; aLength: Integer);
     class method Create(C: AnsiChar; Count: Integer): AnsiString; static;
-    class method Create(const Value: array of Char; StartIndex: Integer; aLength: Integer): AnsiString; static;
-    class method Create(const Value: array of Char): AnsiString; static;
+    class method Create(Value: array of Char; StartIndex: Integer; aLength: Integer): AnsiString; static;
+    class method Create(Value: array of Char): AnsiString; static;
     class operator Implicit(Value: Char): AnsiString;
     class operator Implicit(Value: PlatformString): AnsiString;
     class operator Implicit(Value: AnsiString): String;

@@ -62,17 +62,17 @@ begin
   result := Math.Max(A, B);
 end;
 
-function Min(const A, B: Integer): Integer;
+function Min(A, B: Integer): Integer;
 begin
   result := Math.Min(A, B);
 end;
 
-function Min(const A, B: Int64): Int64;
+function Min(A, B: Int64): Int64;
 begin
   result := Math.Min(A, B);
 end;
 
-function Min(const A, B: Double): Double;
+function Min(A, B: Double): Double;
 begin
   result := Math.Min(A, B);
 end;
@@ -81,7 +81,5 @@ function Power(Base, Exponent: Double): Double;
 begin
   result := Math.Pow(Base, Exponent);
 end;
-
-
 
 end.

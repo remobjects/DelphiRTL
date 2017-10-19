@@ -374,7 +374,7 @@ begin
   result := CheckResult(rtl.RegLoadKey(fRootKey, @lKeyChars[0], @lFileChars[0]));
 end;
 
-method TRegistry.OpenKey(const Key: DelphiString; CanCreate: Boolean): Boolean;
+method TRegistry.OpenKey(Key: DelphiString; CanCreate: Boolean): Boolean;
 begin
   CloseKey;
   var lNewKey: rtl.HKEY;

@@ -125,7 +125,7 @@ type
     fOnChanging: TNotifyEvent;
     procedure Setup;
     method SetSorted(Value: Boolean);
-    method SetCaseSensitive(const Value: Boolean);
+    method SetCaseSensitive(Value: Boolean);
   protected
     method Changed; virtual;
     method Changing; virtual;

@@ -137,8 +137,8 @@ type
     method &Reverse;
     method Sort;
     method Sort(const AComparer: IComparer<T>);
-    method BinarySearch(const Item: T; out Index: Integer): Boolean;
-    method BinarySearch(const Item: T; out Index: Integer; const AComparer: IComparer<T>): Boolean;
+    method BinarySearch(Item: T; out Index: Integer): Boolean;
+    method BinarySearch(Item: T; out Index: Integer; AComparer: IComparer<T>): Boolean;
     method TrimExcess;
     method ToArray: array of T; override; final;
     property Capacity: Integer read fList.Count write SetCapacity;
@@ -385,12 +385,12 @@ begin
 
 end;
 
-method TList<T>.BinarySearch(const Item: T; out &Index: Integer): Boolean;
+method TList<T>.BinarySearch(Item: T; out &Index: Integer): Boolean;
 begin
 
 end;
 
-method TList<T>.BinarySearch(const Item: T; out &Index: Integer; AComparer: IComparer<T>): Boolean;
+method TList<T>.BinarySearch(Item: T; out &Index: Integer; AComparer: IComparer<T>): Boolean;
 begin
 
 end;
