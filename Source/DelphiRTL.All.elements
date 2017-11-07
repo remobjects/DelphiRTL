@@ -26,6 +26,7 @@
   <PropertyGroup Condition=" '$(Target)' == 'Island.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
+    <OutputType>staticlibrary</OutputType>
     <Architecture>i386</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island.Linux' ">
