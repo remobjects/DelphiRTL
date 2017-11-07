@@ -237,7 +237,7 @@ begin
     exit true;
 
   var i := 0;
-  while (Value1.Chars[i] = Value2.Chars[i]) and (i < Value1.Length) do
+  while (i < Value1.Length) and (Value1.Chars[i] = Value2.Chars[i]) do
     inc(i);
 
   result := if i = Value1.Length then true else false;
