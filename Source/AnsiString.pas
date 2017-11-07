@@ -84,7 +84,7 @@ type
     method Insert(aIndex: Integer; Value: Char): AnsiString;
     method Insert(aIndex: Integer; Value: AnsiChar): AnsiString;
     method &Remove(StartIndex: Integer): AnsiString;
-    method &Remove(StartIndex: Integer; Count: Integer): AnsiString;
+    method &Remove(StartIndex: Integer; aCount: Integer): AnsiString;
     method SetLength(aLength: Integer);
     method CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; Count: Integer);
     method CopyFrom(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer);
@@ -100,6 +100,8 @@ type
     method EndsWith(aSubText: AnsiString): Boolean;
     method Replace(aFromText, aToText: AnsiString): AnsiString; inline;
     method Replace(OldPattern, NewPattern: AnsiString; aFlags: TReplaceFlags): AnsiString;
+    method SubString(StartIndex: Integer): AnsiString;
+    method SubString(StartIndex: Integer; aLength: Integer): AnsiString;
     method FillChar(aCount: Integer; aValue: AnsiChar);
     method ToNullTerminated: AnsiString;
 
@@ -414,12 +416,16 @@ begin
   result := &Remove(StartIndex, Length - StartIndex);
 end;
 
-method AnsiString.&Remove(StartIndex: Integer; Count: Integer): AnsiString;
+method AnsiString.&Remove(StartIndex: Integer; aCount: Integer): AnsiString;
 begin
+  if StartIndex >= fData.Length then
+    exit self;
+
+  var lCount := if (StartIndex + aCount) > fData.Length then (fData.Length - StartIndex) else aCount;
   var lOldData := fData;
-  fData := new Byte[Length - Count];
+  fData := new Byte[Length - lCount];
   CopyArray(lOldData, 0, var fData, 0, StartIndex);
-  CopyArray(lOldData, StartIndex + Count, var fData, StartIndex, lOldData.length - (StartIndex + Count));
+  CopyArray(lOldData, StartIndex + lCount, var fData, StartIndex, lOldData.length - (StartIndex + lCount));
   result := self;
 end;
 
@@ -469,8 +475,9 @@ end;
 
 class method AnsiString.&Copy(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer): AnsiString;
 begin
-  result := new AnsiString(aCount);
-  for i: Integer := 0 to aCount - 1 do
+  var lCount := if (aSourceIndex + aCount) > aSource.Length then (aSource.Length - aSourceIndex) else aCount; 
+  result := new AnsiString(lCount);
+  for i: Integer := 0 to lCount - 1 do
     result.Chars[i] := aSource.Chars[aSourceIndex + i];
 end;
 
@@ -645,6 +652,16 @@ begin
       inc(i);
     end;
   end;
+end;
+
+method AnsiString.SubString(StartIndex: Integer): AnsiString;
+begin
+  result := AnsiString.Copy(self, StartIndex, fData.Length - StartIndex);
+end;
+
+method AnsiString.SubString(StartIndex: Integer; aLength: Integer): AnsiString;
+begin
+  result := AnsiString.Copy(self, StartIndex, aLength);
 end;
 
 method AnsiString.FillChar(aCount: Integer; aValue: AnsiChar);
