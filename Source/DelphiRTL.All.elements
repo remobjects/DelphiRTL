@@ -12,6 +12,9 @@
     <AllowLegacyCreate>False</AllowLegacyCreate>
     <AllowUnsafeCode>False</AllowUnsafeCode>
     <CrossPlatform>True</CrossPlatform>
+    <GeneratePDB>True</GeneratePDB>
+    <GenerateMDB>True</GenerateMDB>
+    <GenerateDebugInfo>True</GenerateDebugInfo>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Echoes' ">
