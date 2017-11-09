@@ -11,46 +11,71 @@
     <AllowLegacyOutParams>False</AllowLegacyOutParams>
     <AllowLegacyCreate>False</AllowLegacyCreate>
     <AllowUnsafeCode>False</AllowUnsafeCode>
+    <CrossPlatform>True</CrossPlatform>
+    <GeneratePDB>True</GeneratePDB>
+    <GenerateMDB>True</GenerateMDB>
+    <GenerateDebugInfo>True</GenerateDebugInfo>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Echoes' ">
     <Mode>Echoes</Mode>
+    <SubMode>Full</SubMode>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Cooper' ">
     <Mode>Cooper</Mode>
+    <SubMode>Plain</SubMode>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Island.Windows.32bit' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Island.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
+    <OutputType>staticlibrary</OutputType>
     <Architecture>i386</Architecture>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Island.Windows.64bit' ">
-    <Mode>Island</Mode>
-    <SubMode>Windows</SubMode>
-    <Architecture>x86_64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island.Linux' ">
     <Mode>Island</Mode>
     <SubMode>Linux</SubMode>
+    <OutputType>staticlibrary</OutputType>
     <Architecture>x86_64</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Island.Android' ">
+    <Mode>Island</Mode>
+    <SubMode>Android</SubMode>
+    <OutputType>staticlibrary</OutputType>
+  </PropertyGroup>
+  <!--<PropertyGroup Condition=" '$(Target)' == 'Island.WebAssembly' ">
+    <Enabled>False</Enabled>
+    <Mode>Island</Mode>
+    <SubMode>WebAssembly</SubMode>
+    <OutputType>staticlibrary</OutputType>
+  </PropertyGroup>-->
+  <PropertyGroup Condition=" '$(Target)' == 'Toffee.macOS' ">
+    <Mode>Toffee</Mode>
+    <SubMode>macOS</SubMode>
+    <SDK>macOS</SDK>
+    <OutputType>staticlibrary</OutputType>
+    <DefaultUses>Foundation</DefaultUses>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Toffee.iOS' ">
     <Mode>Toffee</Mode>
+    <SubMode>iOS</SubMode>
     <SDK>iOS</SDK>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Toffee.macOS' ">
-    <Mode>Toffee</Mode>
-    <SDK>macOS</SDK>
+    <OutputType>staticlibrary</OutputType>
+    <DefaultUses>Foundation</DefaultUses>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Toffee.tvOS' ">
     <Mode>Toffee</Mode>
+    <SubMode>tvOS</SubMode>
     <SDK>tvOS</SDK>
+    <OutputType>staticlibrary</OutputType>
+    <DefaultUses>Foundation</DefaultUses>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Toffee.watchOS' ">
     <Mode>Toffee</Mode>
+    <SubMode>watchOS</SubMode>
     <SDK>watchOS</SDK>
+    <OutputType>staticlibrary</OutputType>
+    <DefaultUses>Foundation</DefaultUses>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Optimize>false</Optimize>
@@ -88,7 +113,6 @@
     <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gotham" />
     <Reference Include="mscorlib">
       <Target>Echoes</Target>
     </Reference>
@@ -127,22 +151,34 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="rtl">
-      <Target>Island.Windows.64bit</Target>
+      <Target>Island.Windows</Target>
     </Reference>
     <Reference Include="gc">
-      <Target>Island.Windows.64bit</Target>
+      <Target>Island.Windows</Target>
     </Reference>
     <Reference Include="Island">
-      <Target>Island.Windows.64bit</Target>
+      <Target>Island.Windows</Target>
+    </Reference>
+    <Reference Include="Elements">
+      <Target>Island.Windows</Target>
     </Reference>
     <Reference Include="rtl">
-      <Target>Island.Windows.32bit</Target>
+      <Target>Island.Android</Target>
     </Reference>
     <Reference Include="gc">
-      <Target>Island.Windows.32bit</Target>
+      <Target>Island.Android</Target>
     </Reference>
     <Reference Include="Island">
-      <Target>Island.Windows.32bit</Target>
+      <Target>Island.Android</Target>
+    </Reference>
+    <Reference Include="Elements">
+      <Target>Island.Android</Target>
+    </Reference>
+    <Reference Include="Island">
+      <Target>Island.WebAssembly</Target>
+    </Reference>
+    <Reference Include="Elements">
+      <Target>Island.WebAssembly</Target>
     </Reference>
     <Reference Include="rtl">
       <Target>Island.Linux</Target>
@@ -153,6 +189,9 @@
     <Reference Include="Island">
       <Target>Island.Linux</Target>
     </Reference>
+    <Reference Include="Elements">
+      <Target>Island.Linux</Target>
+    </Reference>
     <Reference Include="Foundation">
       <Target>Toffee.iOS</Target>
     </Reference>
@@ -162,10 +201,10 @@
     <Reference Include="libToffee">
       <Target>Toffee.iOS</Target>
     </Reference>
-    <Reference Include="libElements">
+    <Reference Include="libxml2">
       <Target>Toffee.iOS</Target>
     </Reference>
-    <Reference Include="libxml2">
+    <Reference Include="libElements">
       <Target>Toffee.iOS</Target>
     </Reference>
     <Reference Include="Foundation">
@@ -177,10 +216,10 @@
     <Reference Include="libToffee">
       <Target>Toffee.macOS</Target>
     </Reference>
-    <Reference Include="libElements">
+    <Reference Include="libxml2">
       <Target>Toffee.macOS</Target>
     </Reference>
-    <Reference Include="libxml2">
+    <Reference Include="libElements">
       <Target>Toffee.macOS</Target>
     </Reference>
     <Reference Include="Foundation">
@@ -192,10 +231,10 @@
     <Reference Include="libToffee">
       <Target>Toffee.tvOS</Target>
     </Reference>
-    <Reference Include="libElements">
+    <Reference Include="libxml2">
       <Target>Toffee.tvOS</Target>
     </Reference>
-    <Reference Include="libxml2">
+    <Reference Include="libElements">
       <Target>Toffee.tvOS</Target>
     </Reference>
     <Reference Include="Foundation">
@@ -207,10 +246,10 @@
     <Reference Include="libToffee">
       <Target>Toffee.watchOS</Target>
     </Reference>
-    <Reference Include="libElements">
+    <Reference Include="libxml2">
       <Target>Toffee.watchOS</Target>
     </Reference>
-    <Reference Include="libxml2">
+    <Reference Include="libElements">
       <Target>Toffee.watchOS</Target>
     </Reference>
   </ItemGroup>
