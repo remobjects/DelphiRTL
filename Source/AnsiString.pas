@@ -165,7 +165,8 @@ method AnsiString.SetLength(aLength: Integer);
 begin
   if Length > 0 then begin
     var lTmp := new Byte[aLength];
-    for i: Integer := 0 to Length - 1 do
+    var lTotal := if aLength > Length then Length else aLength;
+    for i: Integer := 0 to lTotal - 1 do
       lTmp[i] := fData[i];
     fData := lTmp;
   end

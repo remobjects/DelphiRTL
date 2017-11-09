@@ -221,6 +221,16 @@ type
       Assert.AreEqual(lAnotherDouble, lAnotherDouble2);
       {$ENDIF}
     end;
+
+    method StreamTextTests;
+    begin
+      var lMemStream := new TMemoryStream();
+      lMemStream.WriteString('Testing TextStream');
+      
+      lMemStream.Position := 0;
+      var lString := lMemStream.ReadString(36);
+      Assert.AreEqual(lString, 'Testing TextStream');
+    end;
   end;
 
 end.
