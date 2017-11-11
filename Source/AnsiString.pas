@@ -27,6 +27,7 @@ type
     method SetChar(aIndex: Integer; Value: AnsiChar); inline;
     method CharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
     method StringToUTF8(aString: PlatformString): array of Byte;
+    method GetLength: Integer;
     class method CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer); static;
   public
     constructor;
@@ -105,7 +106,7 @@ type
     method FillChar(aCount: Integer; aValue: AnsiChar);
     method ToNullTerminated: AnsiString;
 
-    property Length: Integer read fData.length write SetLength;
+    property Length: Integer read GetLength write SetLength;
     property Chars[aIndex: Integer]: AnsiChar read GetChar write SetChar;
     property Character[aIndex: Integer]: AnsiChar read GetOffsetChar write SetOffsetChar; default;
     property Data: array of Byte read GetData;
@@ -379,6 +380,11 @@ begin
   var lData := Binary(aString.dataUsingEncoding(NSStringEncoding.NSUTF8StringEncoding));
   exit lData.ToArray as not nullable;
   {$ENDIF}
+end;
+
+method AnsiString.GetLength: Integer;
+begin
+  result := if fData <> nil then fData.Length else 0;
 end;
 
 method AnsiString.Insert(aIndex: Integer; aValue: AnsiString): AnsiString;
