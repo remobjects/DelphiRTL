@@ -29,6 +29,7 @@ type
     method StringToUTF8(aString: PlatformString): array of Byte;
     method GetLength: Integer;
     class method CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer); static;
+    method CheckfData; inline;
   public
     constructor;
     constructor(aLength: Integer);
@@ -389,7 +390,8 @@ end;
 
 method AnsiString.Insert(aIndex: Integer; aValue: AnsiString): AnsiString;
 begin
-  var lOldData := self.fData;
+  CheckfData;
+  var lOldData := fData;
   fData := new Byte[lOldData.length + aValue.length];
   CopyArray(lOldData, 0, var fData, 0, aIndex);
   CopyArray(aValue.Data, 0, var fData, aIndex, aValue.Length);
@@ -404,6 +406,7 @@ end;
 
 method AnsiString.Insert(aIndex: Integer; Value: AnsiChar): AnsiString;
 begin
+  CheckfData;
   var lOldData := fData;
   fData := new Byte[lOldData.length + 1];
   CopyArray(lOldData, 0, var fData, 0, aIndex);
@@ -416,6 +419,11 @@ class method AnsiString.CopyArray(aSource: array of Byte; aSourceIndex: Integer;
 begin
   for i: Integer := 0 to aLength - 1 do
     aTarget[aTargetIndex + i] := aSource[aSourceIndex + i];
+end;
+
+method AnsiString.CheckfData;
+begin
+  if fData = nil then fData := new Byte[0];
 end;
 
 method AnsiString.&Remove(StartIndex: Integer): AnsiString;
