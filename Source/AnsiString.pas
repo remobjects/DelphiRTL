@@ -150,6 +150,11 @@ end;
 
 constructor AnsiString(Value: PlatformString; AsUTF16Bytes: Boolean := false);
 begin
+  if (Value = nil) or (Value.Length = 0) then begin
+   fData := new Byte[0];
+   exit;
+  end;
+
   if AsUTF16Bytes then begin
     {$IF TOFFEE}
     var lTemp := new Char[Value.length];
