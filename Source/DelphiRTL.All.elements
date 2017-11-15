@@ -258,6 +258,6 @@
       <Target>Echoes</Target>
     </Compile>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Gotham.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
   <Import Project="DelphiRTL.Shared.projitems" Label="Shared" />
 </Project>
