@@ -84,7 +84,7 @@ type
     method LoadFromStream(aStream: TStream; aEncoding: TEncoding); virtual;
     method Move(aCurIndex, aNewIndex: Integer); virtual;
     method SaveToFile(const FileName: DelphiString); virtual;
-    method SaveToFile(const FileName: DelphiString; Encoding: TEncoding); virtual;
+    method SaveToFile(const FileName: DelphiString; aEncoding: TEncoding); virtual;
     method SaveToStream(aStream: TStream);  virtual;
     method SaveToStream(aStream: TStream; aEncoding: TEncoding); virtual; 
     method ToStringArray: array of DelphiString;
@@ -946,10 +946,10 @@ begin
   SaveToFile(FileName, fEncoding);
 end;
 
-method TStrings.SaveToFile(const FileName: DelphiString; Encoding: TEncoding);
+method TStrings.SaveToFile(const FileName: DelphiString; aEncoding: TEncoding);
 begin
   var lStream := new TFileStream(FileName, fmCreate or fmOpenWrite);
-  SaveToStream(lStream, Encoding);
+  SaveToStream(lStream, aEncoding);
   lStream.Close;
 end;
 

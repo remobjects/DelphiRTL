@@ -26,6 +26,7 @@ type
     method GetChar(aIndex: Integer): AnsiChar; inline;
     method SetChar(aIndex: Integer; Value: AnsiChar); inline;
     method CharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
+    method CastCharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
     method StringToUTF8(aString: PlatformString): array of Byte;
     method GetLength: Integer;
     class method CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer); static;
@@ -35,17 +36,18 @@ type
     constructor(aLength: Integer);
     constructor(Value: PlatformString; AsUTF16Bytes: Boolean := false);
     constructor(C: AnsiChar; Count: Integer);
-    constructor(Value: array of Char);
-    constructor(Value: array of Char; StartIndex: Integer; aLength: Integer);
+    constructor(Value: array of Char; PreserveChars: Boolean = true);
+    constructor(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true);
     constructor(Value: array of Byte);
     constructor(Value: array of Byte; StartIndex: Integer; aLength: Integer);
     class method Create(C: AnsiChar; Count: Integer): AnsiString; static;
-    class method Create(Value: array of Char; StartIndex: Integer; aLength: Integer): AnsiString; static;
-    class method Create(Value: array of Char): AnsiString; static;
+    class method Create(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true): AnsiString; static;
+    class method Create(Value: array of Char; PreserveChars: Boolean = true): AnsiString; static;
     class operator Implicit(Value: Char): AnsiString;
     class operator Implicit(Value: PlatformString): AnsiString;
     class operator Implicit(Value: AnsiString): String;
     class operator Implicit(Value: array of Char): AnsiString;
+    class operator Implicit(Value: DelphiString): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: Char): AnsiString;
     class operator &Add(Value1: Char; Value2: AnsiString): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: AnsiChar): AnsiString;
@@ -186,14 +188,14 @@ begin
   result := new AnsiString(C, Count);
 end;
 
-class method AnsiString.Create(Value: array of Char; StartIndex: Integer; aLength: Integer): AnsiString;
+class method AnsiString.Create(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true): AnsiString;
 begin
-  result := new AnsiString(Value, StartIndex, aLength);
+  result := new AnsiString(Value, StartIndex, aLength, PreserveChars);
 end;
 
-class method AnsiString.Create(Value: array of Char): AnsiString;
+class method AnsiString.Create(Value: array of Char; PreserveChars: Boolean = true): AnsiString;
 begin
-  result := Create(Value, 0, Value.Length);
+  result := Create(Value, 0, Value.Length, PreserveChars);
 end;
 
 operator AnsiString.Implicit(Value: Char): AnsiString;
@@ -300,9 +302,16 @@ begin
   for i: Integer := StartIndex to (StartIndex + aLength) - 1 do
   begin
     var lChar := Word(aCharArray[i]);
-    result[2 * i] := Byte(lChar);
-    result[(2 * i) + 1] := Byte(Word(lChar) shr 8);
+    result[2 * (i - StartIndex)] := Byte(lChar);
+    result[(2 * (i - StartIndex)) + 1] := Byte(Word(lChar) shr 8);
   end;
+end;
+
+method AnsiString.CastCharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
+begin
+  result := new Byte[aLength];
+  for i: Integer := 0 to aLength - 1 do
+    result[i] := Byte(aCharArray[StartIndex + i]); 
 end;
 
 operator AnsiString.Implicit(Value: array of Char): AnsiString;
@@ -310,14 +319,25 @@ begin
   result := new AnsiString(Value);
 end;
 
-constructor AnsiString(Value: array of Char);
+operator AnsiString.Implicit(Value: DelphiString): AnsiString;
 begin
-  fData := CharArrayToByteArray(Value, 0, Value.Length);
+  result := new AnsiString(Value.ToCharArray, false); 
 end;
 
-constructor AnsiString(Value: array of Char; StartIndex: Integer; aLength: Integer);
+constructor AnsiString(Value: array of Char; PreserveChars: Boolean = true);
 begin
-  fData := CharArrayToByteArray(Value, StartIndex, aLength);
+  if PreserveChars then
+    fData := CharArrayToByteArray(Value, 0, Value.Length)
+  else
+    fData := CastCharArrayToByteArray(Value, 0, Value.Length);
+end;
+
+constructor AnsiString(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true);
+begin
+  if PreserveChars then
+    fData := CharArrayToByteArray(Value, StartIndex, aLength)
+  else
+    fData := CastCharArrayToByteArray(Value, StartIndex, aLength);
 end;
 
 constructor AnsiString(C: AnsiChar; Count: Integer);
@@ -335,8 +355,7 @@ end;
 constructor AnsiString(Value: array of Byte; StartIndex: Integer; aLength: Integer);
 begin
   fData := new Byte[Value.length];
-  for i: Integer := StartIndex to (StartIndex + aLength) - 1 do
-  fData[i - StartIndex] := Value[i];
+  CopyArray(Value, StartIndex, var fData, 0, aLength);
 end;
 
 method AnsiString.ToString: PlatformString;
@@ -422,8 +441,15 @@ end;
 
 class method AnsiString.CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer);
 begin
+  if aLength = 0 then exit;
+  {$IF ISLAND}
+  {$IFDEF WINDOWS}ExternalCalls.memcpy(@aTarget[aTargetIndex], @aSource[aSourceIndex], aLength){$ELSEIF POSIX}rtl.memcpy(@aTarget[aTargetIndex], @aSource[aSourceIndex], aLength){$ENDIF};
+  {$ELSEIF TOFFEE}
+  memcpy(@aTarget[aTargetIndex], @aSource[aSourceIndex], aLength);
+  {$ELSE}
   for i: Integer := 0 to aLength - 1 do
     aTarget[aTargetIndex + i] := aSource[aSourceIndex + i];
+  {$ENDIF}
 end;
 
 method AnsiString.CheckfData;

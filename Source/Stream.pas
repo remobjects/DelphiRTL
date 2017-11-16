@@ -127,7 +127,7 @@ type
 
     method WriteBufferData(var Buffer: Integer; Count: LongInt);
     
-    method ReadString(Count: LongInt; aEncoding: TEncoding := TEncoding.UTF16LE): Delphistring;
+    method ReadString(Count: LongInt; aEncoding: TEncoding := TEncoding.UTF16LE): DelphiString;
     method WriteString(aString: DelphiString; aEncoding: TEncoding := TEncoding.UTF16LE): LongInt;
 
     method CopyFrom(const Source: TStream; Count: Int64): Int64;

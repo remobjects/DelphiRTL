@@ -69,6 +69,7 @@ type
     class operator Implicit(Value: Char): DelphiString;
     class operator Implicit(Value: PlatformString): DelphiString;
     class operator Implicit(Value: DelphiString): String;
+    class operator Implicit(Value: AnsiString): DelphiString;
     class operator &Add(Value1: DelphiString; Value2: Char): DelphiString;
     class operator &Add(Value1: Char; Value2: DelphiString): DelphiString;
     class operator &Add(Value1: DelphiString; Value2: DelphiString): not nullable DelphiString;
@@ -468,6 +469,16 @@ end;
 class operator DelphiString.Implicit(Value: DelphiString): String;
 begin
   result := Value.fData;
+end;
+
+class operator DelphiString.Implicit(Value: AnsiString): DelphiString;
+begin
+  var lSource := Value.Data;
+  var lArray := new Char[lSource.Length];
+  for i: Integer := 0 to lSource.Length - 1 do
+    lArray[i] := chr(lSource[i]);
+  
+  result := DelphiString.Create(lArray);
 end;
 
 operator DelphiString.Implicit(Value: Char): DelphiString;
