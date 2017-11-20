@@ -30,6 +30,8 @@ type
     method StringToUTF8(aString: PlatformString): array of Byte;
     method GetLength: Integer;
     class method CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer); static;
+    class method InternalCompareStr(S1: AnsiString; S2: DelphiString): Integer; static; 
+    class method InternalCompareText(S1: AnsiString; S2: DelphiString): Integer; static;
     method CheckfData; inline;
   public
     constructor;
@@ -53,16 +55,26 @@ type
     class operator &Add(Value1: AnsiString; Value2: AnsiChar): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: AnsiString): not nullable AnsiString;
     class operator Equal(Value1, Value2: AnsiString): Boolean;
+    class operator Equal(Value1: AnsiString; Value2: DelphiString): Boolean;
     class operator NotEqual(Value1, Value2: AnsiString): Boolean;
+    class operator NotEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
     class operator Greater(Value1, Value2: AnsiString): Boolean;
+    class operator Greater(Value1: AnsiString; Value2: DelphiString): Boolean;
     class operator Less(Value1, Value2: AnsiString): Boolean;
+    class operator Less(Value1: AnsiString; Value2: DelphiString): Boolean;
     class operator GreaterOrEqual(Value1, Value2: AnsiString): Boolean;
+    class operator GreaterOrEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
     class operator LessOrEqual(Value1, Value2: AnsiString): Boolean;
+    class operator LessOrEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
     class property Offset: Integer read fOffset write SetOffset;
 
     class method CompareStr(S1, S2: AnsiString): Integer; static; // CompareStr --> SameStr, case sensitive
+    class method CompareStr(S1: AnsiString; S2: DelphiString): Integer; //static; inline;
+    class method CompareStr(S1: DelphiString; S2: AnsiString): Integer; //static; inline;
     class method SameStr(S1, S2: AnsiString): Boolean; static;
     class method CompareText(S1, S2: AnsiString): Integer; static;
+    class method CompareText(S1: AnsiString; S2: DelphiString): Integer; //static; inline;
+    class method CompareText(S1: DelphiString; S2: AnsiString): Integer; //static; inline;
     class method SameText(S1, S2: AnsiString): Boolean; static; // --> CompareText, no case sensitive
     class method &Copy(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer): AnsiString;
 
@@ -253,7 +265,27 @@ begin
   result := if i = Value1.Length then true else false;
 end;
 
+class operator AnsiString.Equal(Value1: AnsiString; Value2: DelphiString): Boolean;
+begin
+  if (Value1.Length <> Value2.Length) then
+    exit false;
+
+  if (Value1.Length = 0) and (Value2.Length = 0) then
+    exit true;
+
+  var i := 0;
+  while (i < Value1.Length) and (SmallInt(Value1.Chars[i]) = Value2.Chars[i]) do
+    inc(i);
+
+  result := if i = Value1.Length then true else false;
+end;
+
 operator AnsiString.NotEqual(Value1: AnsiString; Value2: AnsiString): Boolean;
+begin
+  result := not (Value1 = Value2);
+end;
+
+class operator AnsiString.NotEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
 begin
   result := not (Value1 = Value2);
 end;
@@ -263,9 +295,19 @@ begin
   result := CompareStr(Value1, Value2) > 0;
 end;
 
+operator AnsiString.Greater(Value1: AnsiString; Value2: DelphiString): Boolean;
+begin
+  result := InternalCompareStr(Value1, Value2) > 0;
+end;
+
 operator AnsiString.Less(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
   result := CompareStr(Value1, Value2) < 0;
+end;
+
+operator AnsiString.Less(Value1: AnsiString; Value2: DelphiString): Boolean;
+begin
+  result := InternalCompareStr(Value1, Value2) < 0;
 end;
 
 operator AnsiString.GreaterOrEqual(Value1: AnsiString; Value2: AnsiString): Boolean;
@@ -273,9 +315,19 @@ begin
   result := CompareStr(Value1, Value2) >= 0;
 end;
 
+operator AnsiString.GreaterOrEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
+begin
+  result := InternalCompareStr(Value1, Value2) >= 0;
+end;
+
 operator AnsiString.LessOrEqual(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
   result := CompareStr(Value1, Value2) <= 0;
+end;
+
+operator AnsiString.LessOrEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
+begin
+  result := InternalCompareStr(Value1, Value2) <= 0;
 end;
 
 class method AnsiString.SetOffset(aOffset: Integer);
@@ -452,6 +504,41 @@ begin
   {$ENDIF}
 end;
 
+class method AnsiString.InternalCompareStr(S1: AnsiString; S2: DelphiString): Integer;
+begin
+  result := S1.Length - S2.Length;
+  var lMax := if result >= 0 then S2.Length else S1.Length;
+  var i := 0;
+  while i < lMax do begin
+    var lCh1: SmallInt := Byte(S1.Chars[i]);
+    var lCh2: SmallInt := SmallInt(S2.Chars[i]);
+    var lCh := lCh1 - lCh2;
+    if lCh <> 0 then
+      exit if lCh > 0 then 1 else -1;
+    inc(i);
+  end;
+end;
+
+class method AnsiString.InternalCompareText(S1: AnsiString; S2: DelphiString): Integer;
+begin
+  result := S1.Length - S2.Length;
+  var lMax := if result >= 0 then S2.Length else S1.Length;
+  var i := 0;
+  var lCh1: Byte;
+  var lCh2: SmallInt;
+  while i < lMax do begin
+    lCh1 := if S1.Chars[i] in ['a'..'z'] then Byte(S1.Chars[i]) xor $20 else Byte(S1.Chars[i]);
+    lCh2 := if S2.Chars[i] in ['a'..'z'] then SmallInt(S2.Chars[i]) xor $20 else SmallInt(S2.Chars[i]);
+
+    var lChar1: SmallInt := Byte(lCh1);
+    var lChar2: SmallInt := SmallInt(lCh2);
+    var lCh := lChar1 - lChar2;
+    if lCh <> 0 then
+      exit if lCh > 0 then 1 else -1;
+    inc(i);
+  end;
+end;
+
 method AnsiString.CheckfData;
 begin
   if fData = nil then fData := new Byte[0];
@@ -490,6 +577,16 @@ begin
   end;
 end;
 
+class method AnsiString.CompareStr(S1: AnsiString; S2: DelphiString): Integer; 
+begin
+  result := InternalCompareStr(S1, S2);
+end;
+
+class method AnsiString.CompareStr(S1: DelphiString; S2: AnsiString): Integer;
+begin
+  result := -InternalCompareStr(S2, S1);
+end;
+
 class method AnsiString.SameStr(S1: AnsiString; S2: AnsiString): Boolean;
 begin
   result := CompareStr(S1, S2) = 0;
@@ -512,6 +609,16 @@ begin
       exit if lCh > 0 then 1 else -1;
     inc(i);
   end;
+end;
+
+class method AnsiString.CompareText(S1: AnsiString; S2: DelphiString): Integer;
+begin
+  result := InternalCompareText(S1, S2);
+end;
+
+class method AnsiString.CompareText(S1: DelphiString; S2: AnsiString): Integer;
+begin
+  result := -InternalCompareText(S2, S1);
 end;
 
 class method AnsiString.SameText(S1: AnsiString; S2: AnsiString): Boolean;
