@@ -372,6 +372,42 @@ type
       Assert.AreEqual(StringReplace(x, 'this', 'that', [TReplaceFlags.rfReplaceAll, TReplaceFlags.rfIgnoreCase]), 'that that xxx that');
       {$ENDIF}
     end;
+
+    method ImplicitAnsiStringDelphiStringTests;
+    begin
+      var x: AnsiString := 'Testing implicit';
+      var y: DelphiString;
+
+      y := x;
+      Assert.IsTrue(y = 'Testing implicit');
+
+      var x1: AnsiString;
+      var y1: DelphiString := 'Another conversion';
+      x1 := y1;
+      Assert.IsTrue(x1 = 'Another conversion');
+    end;
+
+    method EqualAnsiStringDelphiStringTests;
+    begin
+      var x: AnsiString := 'Test string';
+      var y: DelphiString := 'Test string';
+      Assert.IsTrue(x = y);
+
+      x := 'Test String';
+      y := 'Test string';
+      Assert.IsFalse(x = y);
+
+      Assert.IsTrue(AnsiString.CompareText(x, y) = 0);
+      Assert.IsTrue(AnsiString.CompareStr(x, y) <> 0);
+    end;
+
+    method SetLengthTests;
+    begin
+      var x: AnsiString := 'Testing 1234';
+      SetLength(var x, 4);
+
+      Assert.IsTrue(x = 'Test');
+    end;
   end;
 
 end.
