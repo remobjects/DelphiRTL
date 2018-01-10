@@ -43,8 +43,7 @@
     <SubMode>Android</SubMode>
     <OutputType>staticlibrary</OutputType>
   </PropertyGroup>
-  <!--<PropertyGroup Condition=" '$(Target)' == 'Island.WebAssembly' ">
-    <Enabled>False</Enabled>
+  <PropertyGroup Condition=" '$(Target)' == 'Island.WebAssembly' ">
     <Mode>Island</Mode>
     <SubMode>WebAssembly</SubMode>
     <OutputType>staticlibrary</OutputType>
