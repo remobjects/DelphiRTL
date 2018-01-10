@@ -133,6 +133,7 @@ var
   SysLocale: TSysLocale;
 
 { File functions }
+{$IF NOT WEBASSEMBLY}
 function FileOpen(const FileName: DelphiString; Mode: Cardinal): THandle;
 function FileCreate(const FileName: String): THandle;
 function FileCreate(const FileName: String; Rights: Integer): THandle;
@@ -164,8 +165,9 @@ function IsRelativePath(const Path: DelphiString): Boolean;
 function GetCurrentDir: DelphiString;
 function CreateDir(const Dir: DelphiString): Boolean;
 function RemoveDir(const Dir: DelphiString): Boolean;
+{$ENDIF}
 
-{$IF ISLAND AND WINDOWS}
+{$IF (ISLAND AND NOT WEBASSEMBLY) AND WINDOWS}
 function FileSetAttr(const FileName: DelphiString; Attr: Integer; FollowLink: Boolean := True): Integer;
 //function FileSetDate(Handle: THandle; Age: Integer): Integer;
 function FileGetAttr(const FileName: DelphiString; FollowLink: Boolean := True): Integer;
@@ -253,6 +255,7 @@ end;
 // File functions
 //
 
+{$IFNDEF WEBASSEMBLY}
 function DeleteFile(const FileName: DelphiString): Boolean;
 begin
   result := true;
@@ -503,6 +506,7 @@ begin
       exit;
   end;
 end;
+{$ENDIF}
 
 class function TFormatSettings.Create: TFormatSettings;
 begin
@@ -642,7 +646,7 @@ begin
   {$ENDIF}
 end;
 
-{$IF ISLAND AND WINDOWS}
+{$IF (ISLAND AND NOT WEBASSEMBLY) AND WINDOWS}
 procedure CallDiskFreeSpace(Drive: Byte; var aFreeSpace: Int64; var aDiskSize: Int64);
 begin
   var lDrive: RemObjects.Elements.System.String := Char(Drive + $40) + ':' + PathDelim;

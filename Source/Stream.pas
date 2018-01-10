@@ -135,6 +135,7 @@ type
     property Size: Int64 read GetSize write SetSize;
   end;
 
+  {$IFNDEF WEBASSEMBLY}
   THandleStream = public class(TStream)
   protected
     fHandle: THandle;
@@ -203,6 +204,7 @@ type
     class method Create(const aBytes: TBytes): TBytesStream; static;
     property Bytes: TBytes read fData.Bytes;
   end;
+  {$ENDIF}
 
 implementation
 
@@ -959,6 +961,7 @@ begin
   end;
 end;
 
+{$IFNDEF WEBASSEMBLY}
 method THandleStream.SetSize(NewSize: LongInt);
 begin
   SetSize(Int64(NewSize));
@@ -1145,6 +1148,7 @@ class method TBytesStream.Create(const aBytes: TBytes): TBytesStream;
 begin
   result := new TBytesStream(aBytes);
 end;
+{$ENDIF}
 
 
 end.

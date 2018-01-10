@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IFNDEF WEBASSEMBLY}
+
 interface
 
 uses
@@ -432,5 +434,7 @@ begin
   inherited constructor(aFileName, aEncoding, aCaseSensitive);
   AutoSave := true;
 end;
+
+{$ENDIF}
 
 end.
