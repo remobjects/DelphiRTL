@@ -80,8 +80,6 @@
     <Optimize>false</Optimize>
     <OutputPath>..\Bin\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE;</DefineConstants>
-    <GeneratePDB>True</GeneratePDB>
-    <GenerateMDB>True</GenerateMDB>
     <EnableAsserts>True</EnableAsserts>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <CaptureConsoleOutput>False</CaptureConsoleOutput>
@@ -97,8 +95,6 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <Optimize>true</Optimize>
     <OutputPath>..\Bin\Release</OutputPath>
-    <GeneratePDB>False</GeneratePDB>
-    <GenerateMDB>False</GenerateMDB>
     <EnableAsserts>False</EnableAsserts>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <CaptureConsoleOutput>False</CaptureConsoleOutput>
