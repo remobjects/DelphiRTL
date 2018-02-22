@@ -126,12 +126,16 @@ type
     {$ENDIF}
 
     method WriteBufferData(var Buffer: Integer; Count: LongInt);
+    
+    method ReadString(Count: LongInt; aEncoding: TEncoding := TEncoding.UTF16LE): DelphiString;
+    method WriteString(aString: DelphiString; aEncoding: TEncoding := TEncoding.UTF16LE): LongInt;
 
     method CopyFrom(const Source: TStream; Count: Int64): Int64;
     property Position: Int64 read GetPosition write SetPosition;
     property Size: Int64 read GetSize write SetSize;
   end;
 
+  {$IFNDEF WEBASSEMBLY}
   THandleStream = public class(TStream)
   protected
     fHandle: THandle;
@@ -200,6 +204,7 @@ type
     class method Create(const aBytes: TBytes): TBytesStream; static;
     property Bytes: TBytes read fData.Bytes;
   end;
+  {$ENDIF}
 
 implementation
 
@@ -929,6 +934,20 @@ begin
   WriteData(Buffer, Count);
 end;
 
+method TStream.ReadString(Count: LongInt; aEncoding: TEncoding := TEncoding.UTF16LE): Delphistring;
+begin
+  var lTotal := if Count > Size - Position then Size - Position else Count;
+  var lBytes := new Byte[lTotal];
+  &Read(var lBytes, lTotal);
+  result := aEncoding.GetString(lBytes);
+end;
+
+method TStream.WriteString(aString: DelphiString; aEncoding: TEncoding := TEncoding.UTF16LE): LongInt;
+begin
+  var lBytes := aEncoding.GetBytes(aString);
+  &Write(lBytes, 0, length(lBytes));
+end;
+
 method TStream.CopyFrom(const Source: TStream; Count: Int64): Int64;
 const
   bufSize = 4 * 1024;
@@ -942,6 +961,7 @@ begin
   end;
 end;
 
+{$IFNDEF WEBASSEMBLY}
 method THandleStream.SetSize(NewSize: LongInt);
 begin
   SetSize(Int64(NewSize));
@@ -1128,6 +1148,7 @@ class method TBytesStream.Create(const aBytes: TBytes): TBytesStream;
 begin
   result := new TBytesStream(aBytes);
 end;
+{$ENDIF}
 
 
 end.

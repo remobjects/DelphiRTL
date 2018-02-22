@@ -78,13 +78,15 @@ type
     method IndexOfObject(aObject: TObject): Integer; virtual;
     method Insert(aIndex: Integer; const S: DelphiString); virtual; abstract;
     method InsertObject(aIndex: Integer; const S: DelphiString; aObject: TObject); virtual;
+    {$IFNDEF WEBASSEMBLY}
     method LoadFromFile(const aFileName: DelphiString); virtual;
     method LoadFromFile(const aFileName: DelphiString; aEncoding: TEncoding); virtual;
+    method SaveToFile(const FileName: DelphiString); virtual;
+    method SaveToFile(const FileName: DelphiString; aEncoding: TEncoding); virtual;
+    {$ENDIF}
     method LoadFromStream(aStream: TStream); virtual;
     method LoadFromStream(aStream: TStream; aEncoding: TEncoding); virtual;
     method Move(aCurIndex, aNewIndex: Integer); virtual;
-    method SaveToFile(const FileName: DelphiString); virtual;
-    method SaveToFile(const FileName: DelphiString; Encoding: TEncoding); virtual;
     method SaveToStream(aStream: TStream);  virtual;
     method SaveToStream(aStream: TStream; aEncoding: TEncoding); virtual; 
     method ToStringArray: array of DelphiString;
@@ -125,7 +127,7 @@ type
     fOnChanging: TNotifyEvent;
     procedure Setup;
     method SetSorted(Value: Boolean);
-    method SetCaseSensitive(const Value: Boolean);
+    method SetCaseSensitive(Value: Boolean);
   protected
     method Changed; virtual;
     method Changing; virtual;
@@ -941,17 +943,35 @@ begin
   end;
 end;
 
+{$IFNDEF WEBASSEMBLY}
+method TStrings.LoadFromFile(const aFileName: DelphiString);
+begin
+  LoadFromFile(aFileName, fEncoding);
+end;
+
+method TStrings.LoadFromFile(const aFileName: DelphiString; aEncoding: TEncoding);
+begin
+  var lStream := new TFileStream(aFileName, fmOpenRead);
+  try
+    LoadFromStream(lStream, aEncoding);
+
+  finally
+    lStream.Close;
+  end;
+end;
+
 method TStrings.SaveToFile(const FileName: DelphiString);
 begin
   SaveToFile(FileName, fEncoding);
 end;
 
-method TStrings.SaveToFile(const FileName: DelphiString; Encoding: TEncoding);
+method TStrings.SaveToFile(const FileName: DelphiString; aEncoding: TEncoding);
 begin
   var lStream := new TFileStream(FileName, fmCreate or fmOpenWrite);
-  SaveToStream(lStream, Encoding);
+  SaveToStream(lStream, aEncoding);
   lStream.Close;
 end;
+{$ENDIF}
 
 method TStrings.SaveToStream(aStream: TStream);
 begin
@@ -967,22 +987,6 @@ end;
 method TStrings.Error(const Msg: DelphiString; Data: Integer);
 begin
   raise new Exception(Msg);
-end;
-
-method TStrings.LoadFromFile(const aFileName: DelphiString);
-begin
-  LoadFromFile(aFileName, fEncoding);
-end;
-
-method TStrings.LoadFromFile(const aFileName: DelphiString; aEncoding: TEncoding);
-begin
-  var lStream := new TFileStream(aFileName, fmOpenRead);
-  try
-    LoadFromStream(lStream, aEncoding);
-
-  finally
-    lStream.Close;
-  end;
 end;
 
 method TStrings.LoadFromStream(aStream: TStream);

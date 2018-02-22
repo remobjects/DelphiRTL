@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IFNDEF WEBASSEMBLY}
+
 interface
 
 uses
@@ -11,35 +13,35 @@ type
     fFileName: DelphiString;
   protected
     //const SectionNameSeparator: DelphiString = '\';
-    method InternalReadSections(const aSection: DelphiString; aStrings: TStrings; aSubSectionNamesOnly, aRecurse: Boolean); virtual;
+    method InternalReadSections(aSection: DelphiString; aStrings: TStrings; aSubSectionNamesOnly, aRecurse: Boolean); virtual;
   public
-    constructor(const aFileName: DelphiString);
-    method SectionExists(const aSection: DelphiString): Boolean;
-    method ReadString(const aSection, aIdent, aDefault: DelphiString): DelphiString; virtual; abstract;
-    method WriteString(const aSection, aIdent, aValue: DelphiString); virtual; abstract;
-    method ReadInteger(const aSection, aIdent: DelphiString; aDefault: Integer): Integer; virtual;
-    method WriteInteger(const aSection, aIdent: DelphiString; aValue: Integer); virtual;
-    method ReadBool(const aSection, aIdent: DelphiString; aDefault: Boolean): Boolean; virtual;
-    method WriteBool(const aSection, aIdent: DelphiString; aValue: Boolean); virtual;
+    constructor(aFileName: DelphiString);
+    method SectionExists(aSection: DelphiString): Boolean;
+    method ReadString(aSection, aIdent, aDefault: DelphiString): DelphiString; virtual; abstract;
+    method WriteString(aSection, aIdent, aValue: DelphiString); virtual; abstract;
+    method ReadInteger(aSection, aIdent: DelphiString; aDefault: Integer): Integer; virtual;
+    method WriteInteger(aSection, aIdent: DelphiString; aValue: Integer); virtual;
+    method ReadBool(aSection, aIdent: DelphiString; aDefault: Boolean): Boolean; virtual;
+    method WriteBool(aSection, aIdent: DelphiString; aValue: Boolean); virtual;
     //method ReadBinaryStream(const Section, Name: DelphiString; Value: TStream): Integer; virtual;
-    method ReadDate(const aSection, aName: DelphiString; aDefault: TDateTime): TDateTime; virtual;
-    method ReadDateTime(const aSection, aName: DelphiString; aDefault: TDateTime): TDateTime; virtual;
-    method ReadFloat(const aSection, aName: DelphiString; aDefault: Double): Double; virtual;
-    method ReadTime(const aSection, aName: DelphiString; aDefault: TDateTime): TDateTime; virtual;
+    method ReadDate(aSection, aName: DelphiString; aDefault: TDateTime): TDateTime; virtual;
+    method ReadDateTime(aSection, aName: DelphiString; aDefault: TDateTime): TDateTime; virtual;
+    method ReadFloat(aSection, aName: DelphiString; aDefault: Double): Double; virtual;
+    method ReadTime(aSection, aName: DelphiString; aDefault: TDateTime): TDateTime; virtual;
     //method WriteBinaryStream(const Section, Name: DelphiString; Value: TStream); virtual;
-    method WriteDate(const Section, Name: DelphiString; Value: TDateTime); virtual;
-    method WriteDateTime(const Section, Name: DelphiString; Value: TDateTime); virtual;
-    method WriteFloat(const aSection, aName: DelphiString; aValue: Double); virtual;
-    method WriteTime(const Section, Name: DelphiString; Value: TDateTime); virtual;
-    method ReadSection(const Section: DelphiString; DelphiStrings: TStrings); virtual; abstract;
+    method WriteDate(Section, Name: DelphiString; Value: TDateTime); virtual;
+    method WriteDateTime(Section, Name: DelphiString; Value: TDateTime); virtual;
+    method WriteFloat(aSection, aName: DelphiString; aValue: Double); virtual;
+    method WriteTime(Section, Name: DelphiString; Value: TDateTime); virtual;
+    method ReadSection(Section: DelphiString; DelphiStrings: TStrings); virtual; abstract;
     method ReadSections(DelphiStrings: TStrings); virtual; abstract;
-    method ReadSections(const aSection: DelphiString; aStrings: TStrings); virtual;
-    method ReadSubSections(const aSection: DelphiString; aStrings: TStrings; aRecurse: Boolean := False); virtual;
-    method ReadSectionValues(const aSection: DelphiString; aStrings: TStrings); virtual; abstract;
-    method EraseSection(const Section: DelphiString); virtual; abstract;
-    method DeleteKey(const Section, Ident: DelphiString); virtual; abstract;
+    method ReadSections(aSection: DelphiString; aStrings: TStrings); virtual;
+    method ReadSubSections(aSection: DelphiString; aStrings: TStrings; aRecurse: Boolean := False); virtual;
+    method ReadSectionValues(aSection: DelphiString; aStrings: TStrings); virtual; abstract;
+    method EraseSection(Section: DelphiString); virtual; abstract;
+    method DeleteKey(Section, Ident: DelphiString); virtual; abstract;
     method UpdateFile; virtual; abstract;
-    method ValueExists(const aSection, aIdent: DelphiString): Boolean; virtual;
+    method ValueExists(aSection, aIdent: DelphiString): Boolean; virtual;
     property FileName: DelphiString read fFileName;
   end;
 
@@ -55,22 +57,22 @@ type
     method LoadIni;
     method IndexOfSection(aSection: DelphiString): Integer;
   public
-    constructor(const aFileName: DelphiString);
-    constructor(const aFileName: DelphiString; const aEncoding: TEncoding);
-    constructor(const aFileName: DelphiString; const aEncoding: TEncoding; aCaseSensitive: Boolean); virtual;
-    class method Create(const aFileName: DelphiString): TMemIniFile; static;
+    constructor(aFileName: DelphiString);
+    constructor(aFileName: DelphiString; aEncoding: TEncoding);
+    constructor(aFileName: DelphiString; aEncoding: TEncoding; aCaseSensitive: Boolean); virtual;
+    class method Create(aFileName: DelphiString): TMemIniFile; static;
     method Clear;
-    method DeleteKey(const aSection, aIdent: DelphiString); override;
-    method EraseSection(const Section: DelphiString); override;
-    method GetStrings(const aList: TStrings);
-    method ReadSection(const aSection: DelphiString; aStrings: TStrings); override;
+    method DeleteKey(aSection, aIdent: DelphiString); override;
+    method EraseSection(Section: DelphiString); override;
+    method GetStrings(aList: TStrings);
+    method ReadSection(aSection: DelphiString; aStrings: TStrings); override;
     method ReadSections(Strings: TStrings); override;
-    method ReadSectionValues(const aSection: DelphiString; aStrings: TStrings); override;
-    method ReadString(const aSection, aIdent, aDefault: DelphiString): DelphiString; override;
-    method Rename(const FileName: DelphiString; Reload: Boolean);
-    method SetStrings(const aList: TStrings);
+    method ReadSectionValues(aSection: DelphiString; aStrings: TStrings); override;
+    method ReadString(aSection, aIdent, aDefault: DelphiString): DelphiString; override;
+    method Rename(FileName: DelphiString; Reload: Boolean);
+    method SetStrings(aList: TStrings);
     method UpdateFile; override;
-    method WriteString(const aSection, aIdent, aValue: DelphiString); override;
+    method WriteString(aSection, aIdent, aValue: DelphiString); override;
     property CaseSensitive: Boolean read fCaseSensitive write SetCaseSensitive;
     property Encoding: TEncoding read fEncoding write fEncoding;
     property Modified: Boolean read fModified write fModified;
@@ -79,7 +81,7 @@ type
 
   TIniFile = public class(TMemIniFile)
   public
-    constructor(const aFileName: DelphiString; const aEncoding: TEncoding; aCaseSensitive: Boolean); override;
+    constructor(aFileName: DelphiString; aEncoding: TEncoding; aCaseSensitive: Boolean); override;
   end;
 
 implementation
@@ -100,7 +102,7 @@ begin
   end;
 end;
 
-constructor TCustomIniFile(const aFileName: DelphiString);
+constructor TCustomIniFile(aFileName: DelphiString);
 begin
   fFileName := aFileName;
 end;
@@ -261,7 +263,7 @@ begin
   LoadIni;
 end;
 
-class method TMemIniFile.Create(const aFileName: DelphiString): TMemIniFile;
+class method TMemIniFile.Create(aFileName: DelphiString): TMemIniFile;
 begin
   result := new TMemIniFile(aFileName);
 end;
@@ -432,5 +434,7 @@ begin
   inherited constructor(aFileName, aEncoding, aCaseSensitive);
   AutoSave := true;
 end;
+
+{$ENDIF}
 
 end.

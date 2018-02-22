@@ -26,39 +26,55 @@ type
     method GetChar(aIndex: Integer): AnsiChar; inline;
     method SetChar(aIndex: Integer; Value: AnsiChar); inline;
     method CharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
+    method CastCharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
     method StringToUTF8(aString: PlatformString): array of Byte;
+    method GetLength: Integer;
     class method CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer); static;
+    class method InternalCompareStr(S1: AnsiString; S2: DelphiString): Integer; static; 
+    class method InternalCompareText(S1: AnsiString; S2: DelphiString): Integer; static;
+    method CheckfData; inline;
   public
     constructor;
     constructor(aLength: Integer);
     constructor(Value: PlatformString; AsUTF16Bytes: Boolean := false);
     constructor(C: AnsiChar; Count: Integer);
-    constructor(Value: array of Char);
-    constructor(Value: array of Char; StartIndex: Integer; aLength: Integer);
+    constructor(Value: array of Char; PreserveChars: Boolean = true);
+    constructor(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true);
     constructor(Value: array of Byte);
     constructor(Value: array of Byte; StartIndex: Integer; aLength: Integer);
     class method Create(C: AnsiChar; Count: Integer): AnsiString; static;
-    class method Create(const Value: array of Char; StartIndex: Integer; aLength: Integer): AnsiString; static;
-    class method Create(const Value: array of Char): AnsiString; static;
+    class method Create(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true): AnsiString; static;
+    class method Create(Value: array of Char; PreserveChars: Boolean = true): AnsiString; static;
     class operator Implicit(Value: Char): AnsiString;
     class operator Implicit(Value: PlatformString): AnsiString;
     class operator Implicit(Value: AnsiString): String;
     class operator Implicit(Value: array of Char): AnsiString;
+    class operator Implicit(Value: DelphiString): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: Char): AnsiString;
     class operator &Add(Value1: Char; Value2: AnsiString): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: AnsiChar): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: AnsiString): not nullable AnsiString;
     class operator Equal(Value1, Value2: AnsiString): Boolean;
+    class operator Equal(Value1: AnsiString; Value2: DelphiString): Boolean;
     class operator NotEqual(Value1, Value2: AnsiString): Boolean;
+    class operator NotEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
     class operator Greater(Value1, Value2: AnsiString): Boolean;
+    class operator Greater(Value1: AnsiString; Value2: DelphiString): Boolean;
     class operator Less(Value1, Value2: AnsiString): Boolean;
+    class operator Less(Value1: AnsiString; Value2: DelphiString): Boolean;
     class operator GreaterOrEqual(Value1, Value2: AnsiString): Boolean;
+    class operator GreaterOrEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
     class operator LessOrEqual(Value1, Value2: AnsiString): Boolean;
+    class operator LessOrEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
     class property Offset: Integer read fOffset write SetOffset;
 
     class method CompareStr(S1, S2: AnsiString): Integer; static; // CompareStr --> SameStr, case sensitive
+    class method CompareStr(S1: AnsiString; S2: DelphiString): Integer; //static; inline;
+    class method CompareStr(S1: DelphiString; S2: AnsiString): Integer; //static; inline;
     class method SameStr(S1, S2: AnsiString): Boolean; static;
     class method CompareText(S1, S2: AnsiString): Integer; static;
+    class method CompareText(S1: AnsiString; S2: DelphiString): Integer; //static; inline;
+    class method CompareText(S1: DelphiString; S2: AnsiString): Integer; //static; inline;
     class method SameText(S1, S2: AnsiString): Boolean; static; // --> CompareText, no case sensitive
     class method &Copy(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer): AnsiString;
 
@@ -84,7 +100,7 @@ type
     method Insert(aIndex: Integer; Value: Char): AnsiString;
     method Insert(aIndex: Integer; Value: AnsiChar): AnsiString;
     method &Remove(StartIndex: Integer): AnsiString;
-    method &Remove(StartIndex: Integer; Count: Integer): AnsiString;
+    method &Remove(StartIndex: Integer; aCount: Integer): AnsiString;
     method SetLength(aLength: Integer);
     method CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; Count: Integer);
     method CopyFrom(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer);
@@ -100,10 +116,12 @@ type
     method EndsWith(aSubText: AnsiString): Boolean;
     method Replace(aFromText, aToText: AnsiString): AnsiString; inline;
     method Replace(OldPattern, NewPattern: AnsiString; aFlags: TReplaceFlags): AnsiString;
+    method SubString(StartIndex: Integer): AnsiString;
+    method SubString(StartIndex: Integer; aLength: Integer): AnsiString;
     method FillChar(aCount: Integer; aValue: AnsiChar);
     method ToNullTerminated: AnsiString;
 
-    property Length: Integer read fData.length write SetLength;
+    property Length: Integer read GetLength write SetLength;
     property Chars[aIndex: Integer]: AnsiChar read GetChar write SetChar;
     property Character[aIndex: Integer]: AnsiChar read GetOffsetChar write SetOffsetChar; default;
     property Data: array of Byte read GetData;
@@ -146,6 +164,11 @@ end;
 
 constructor AnsiString(Value: PlatformString; AsUTF16Bytes: Boolean := false);
 begin
+  if (Value = nil) or (Value.Length = 0) then begin
+   fData := new Byte[0];
+   exit;
+  end;
+
   if AsUTF16Bytes then begin
     {$IF TOFFEE}
     var lTemp := new Char[Value.length];
@@ -163,7 +186,8 @@ method AnsiString.SetLength(aLength: Integer);
 begin
   if Length > 0 then begin
     var lTmp := new Byte[aLength];
-    for i: Integer := 0 to Length - 1 do
+    var lTotal := if aLength > Length then Length else aLength;
+    for i: Integer := 0 to lTotal - 1 do
       lTmp[i] := fData[i];
     fData := lTmp;
   end
@@ -176,14 +200,14 @@ begin
   result := new AnsiString(C, Count);
 end;
 
-class method AnsiString.Create(Value: array of Char; StartIndex: Integer; aLength: Integer): AnsiString;
+class method AnsiString.Create(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true): AnsiString;
 begin
-  result := new AnsiString(Value, StartIndex, aLength);
+  result := new AnsiString(Value, StartIndex, aLength, PreserveChars);
 end;
 
-class method AnsiString.Create(Value: array of Char): AnsiString;
+class method AnsiString.Create(Value: array of Char; PreserveChars: Boolean = true): AnsiString;
 begin
-  result := Create(Value, 0, Value.Length);
+  result := Create(Value, 0, Value.Length, PreserveChars);
 end;
 
 operator AnsiString.Implicit(Value: Char): AnsiString;
@@ -235,7 +259,22 @@ begin
     exit true;
 
   var i := 0;
-  while (Value1.Chars[i] = Value2.Chars[i]) and (i < Value1.Length) do
+  while (i < Value1.Length) and (Value1.Chars[i] = Value2.Chars[i]) do
+    inc(i);
+
+  result := if i = Value1.Length then true else false;
+end;
+
+class operator AnsiString.Equal(Value1: AnsiString; Value2: DelphiString): Boolean;
+begin
+  if (Value1.Length <> Value2.Length) then
+    exit false;
+
+  if (Value1.Length = 0) and (Value2.Length = 0) then
+    exit true;
+
+  var i := 0;
+  while (i < Value1.Length) and (SmallInt(Value1.Chars[i]) = Value2.Chars[i]) do
     inc(i);
 
   result := if i = Value1.Length then true else false;
@@ -246,9 +285,19 @@ begin
   result := not (Value1 = Value2);
 end;
 
+class operator AnsiString.NotEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
+begin
+  result := not (Value1 = Value2);
+end;
+
 operator AnsiString.Greater(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
   result := CompareStr(Value1, Value2) > 0;
+end;
+
+operator AnsiString.Greater(Value1: AnsiString; Value2: DelphiString): Boolean;
+begin
+  result := InternalCompareStr(Value1, Value2) > 0;
 end;
 
 operator AnsiString.Less(Value1: AnsiString; Value2: AnsiString): Boolean;
@@ -256,14 +305,29 @@ begin
   result := CompareStr(Value1, Value2) < 0;
 end;
 
+operator AnsiString.Less(Value1: AnsiString; Value2: DelphiString): Boolean;
+begin
+  result := InternalCompareStr(Value1, Value2) < 0;
+end;
+
 operator AnsiString.GreaterOrEqual(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
   result := CompareStr(Value1, Value2) >= 0;
 end;
 
+operator AnsiString.GreaterOrEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
+begin
+  result := InternalCompareStr(Value1, Value2) >= 0;
+end;
+
 operator AnsiString.LessOrEqual(Value1: AnsiString; Value2: AnsiString): Boolean;
 begin
   result := CompareStr(Value1, Value2) <= 0;
+end;
+
+operator AnsiString.LessOrEqual(Value1: AnsiString; Value2: DelphiString): Boolean;
+begin
+  result := InternalCompareStr(Value1, Value2) <= 0;
 end;
 
 class method AnsiString.SetOffset(aOffset: Integer);
@@ -290,9 +354,16 @@ begin
   for i: Integer := StartIndex to (StartIndex + aLength) - 1 do
   begin
     var lChar := Word(aCharArray[i]);
-    result[2 * i] := Byte(lChar);
-    result[(2 * i) + 1] := Byte(Word(lChar) shr 8);
+    result[2 * (i - StartIndex)] := Byte(lChar);
+    result[(2 * (i - StartIndex)) + 1] := Byte(Word(lChar) shr 8);
   end;
+end;
+
+method AnsiString.CastCharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
+begin
+  result := new Byte[aLength];
+  for i: Integer := 0 to aLength - 1 do
+    result[i] := Byte(aCharArray[StartIndex + i]); 
 end;
 
 operator AnsiString.Implicit(Value: array of Char): AnsiString;
@@ -300,14 +371,25 @@ begin
   result := new AnsiString(Value);
 end;
 
-constructor AnsiString(Value: array of Char);
+operator AnsiString.Implicit(Value: DelphiString): AnsiString;
 begin
-  fData := CharArrayToByteArray(Value, 0, Value.Length);
+  result := new AnsiString(Value.ToCharArray, false); 
 end;
 
-constructor AnsiString(Value: array of Char; StartIndex: Integer; aLength: Integer);
+constructor AnsiString(Value: array of Char; PreserveChars: Boolean = true);
 begin
-  fData := CharArrayToByteArray(Value, StartIndex, aLength);
+  if PreserveChars then
+    fData := CharArrayToByteArray(Value, 0, Value.Length)
+  else
+    fData := CastCharArrayToByteArray(Value, 0, Value.Length);
+end;
+
+constructor AnsiString(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true);
+begin
+  if PreserveChars then
+    fData := CharArrayToByteArray(Value, StartIndex, aLength)
+  else
+    fData := CastCharArrayToByteArray(Value, StartIndex, aLength);
 end;
 
 constructor AnsiString(C: AnsiChar; Count: Integer);
@@ -325,8 +407,7 @@ end;
 constructor AnsiString(Value: array of Byte; StartIndex: Integer; aLength: Integer);
 begin
   fData := new Byte[Value.length];
-  for i: Integer := StartIndex to (StartIndex + aLength) - 1 do
-  fData[i - StartIndex] := Value[i];
+  CopyArray(Value, StartIndex, var fData, 0, aLength);
 end;
 
 method AnsiString.ToString: PlatformString;
@@ -378,9 +459,15 @@ begin
   {$ENDIF}
 end;
 
+method AnsiString.GetLength: Integer;
+begin
+  result := if fData <> nil then fData.Length else 0;
+end;
+
 method AnsiString.Insert(aIndex: Integer; aValue: AnsiString): AnsiString;
 begin
-  var lOldData := self.fData;
+  CheckfData;
+  var lOldData := fData;
   fData := new Byte[lOldData.length + aValue.length];
   CopyArray(lOldData, 0, var fData, 0, aIndex);
   CopyArray(aValue.Data, 0, var fData, aIndex, aValue.Length);
@@ -395,6 +482,7 @@ end;
 
 method AnsiString.Insert(aIndex: Integer; Value: AnsiChar): AnsiString;
 begin
+  CheckfData;
   var lOldData := fData;
   fData := new Byte[lOldData.length + 1];
   CopyArray(lOldData, 0, var fData, 0, aIndex);
@@ -405,8 +493,55 @@ end;
 
 class method AnsiString.CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer);
 begin
+  if aLength = 0 then exit;
+  {$IF ISLAND}
+  {$IFDEF WINDOWS}ExternalCalls.memcpy(@aTarget[aTargetIndex], @aSource[aSourceIndex], aLength){$ELSEIF POSIX}rtl.memcpy(@aTarget[aTargetIndex], @aSource[aSourceIndex], aLength){$ENDIF};
+  {$ELSEIF TOFFEE}
+  memcpy(@aTarget[aTargetIndex], @aSource[aSourceIndex], aLength);
+  {$ELSE}
   for i: Integer := 0 to aLength - 1 do
     aTarget[aTargetIndex + i] := aSource[aSourceIndex + i];
+  {$ENDIF}
+end;
+
+class method AnsiString.InternalCompareStr(S1: AnsiString; S2: DelphiString): Integer;
+begin
+  result := S1.Length - S2.Length;
+  var lMax := if result >= 0 then S2.Length else S1.Length;
+  var i := 0;
+  while i < lMax do begin
+    var lCh1: SmallInt := Byte(S1.Chars[i]);
+    var lCh2: SmallInt := SmallInt(S2.Chars[i]);
+    var lCh := lCh1 - lCh2;
+    if lCh <> 0 then
+      exit if lCh > 0 then 1 else -1;
+    inc(i);
+  end;
+end;
+
+class method AnsiString.InternalCompareText(S1: AnsiString; S2: DelphiString): Integer;
+begin
+  result := S1.Length - S2.Length;
+  var lMax := if result >= 0 then S2.Length else S1.Length;
+  var i := 0;
+  var lCh1: Byte;
+  var lCh2: SmallInt;
+  while i < lMax do begin
+    lCh1 := if S1.Chars[i] in ['a'..'z'] then Byte(S1.Chars[i]) xor $20 else Byte(S1.Chars[i]);
+    lCh2 := if S2.Chars[i] in ['a'..'z'] then SmallInt(S2.Chars[i]) xor $20 else SmallInt(S2.Chars[i]);
+
+    var lChar1: SmallInt := Byte(lCh1);
+    var lChar2: SmallInt := SmallInt(lCh2);
+    var lCh := lChar1 - lChar2;
+    if lCh <> 0 then
+      exit if lCh > 0 then 1 else -1;
+    inc(i);
+  end;
+end;
+
+method AnsiString.CheckfData;
+begin
+  if fData = nil then fData := new Byte[0];
 end;
 
 method AnsiString.&Remove(StartIndex: Integer): AnsiString;
@@ -414,12 +549,16 @@ begin
   result := &Remove(StartIndex, Length - StartIndex);
 end;
 
-method AnsiString.&Remove(StartIndex: Integer; Count: Integer): AnsiString;
+method AnsiString.&Remove(StartIndex: Integer; aCount: Integer): AnsiString;
 begin
+  if StartIndex >= fData.Length then
+    exit self;
+
+  var lCount := if (StartIndex + aCount) > fData.Length then (fData.Length - StartIndex) else aCount;
   var lOldData := fData;
-  fData := new Byte[Length - Count];
+  fData := new Byte[Length - lCount];
   CopyArray(lOldData, 0, var fData, 0, StartIndex);
-  CopyArray(lOldData, StartIndex + Count, var fData, StartIndex, lOldData.length - (StartIndex + Count));
+  CopyArray(lOldData, StartIndex + lCount, var fData, StartIndex, lOldData.length - (StartIndex + lCount));
   result := self;
 end;
 
@@ -436,6 +575,16 @@ begin
       exit if lCh > 0 then 1 else -1;
     inc(i);
   end;
+end;
+
+class method AnsiString.CompareStr(S1: AnsiString; S2: DelphiString): Integer; 
+begin
+  result := InternalCompareStr(S1, S2);
+end;
+
+class method AnsiString.CompareStr(S1: DelphiString; S2: AnsiString): Integer;
+begin
+  result := -InternalCompareStr(S2, S1);
 end;
 
 class method AnsiString.SameStr(S1: AnsiString; S2: AnsiString): Boolean;
@@ -462,6 +611,16 @@ begin
   end;
 end;
 
+class method AnsiString.CompareText(S1: AnsiString; S2: DelphiString): Integer;
+begin
+  result := InternalCompareText(S1, S2);
+end;
+
+class method AnsiString.CompareText(S1: DelphiString; S2: AnsiString): Integer;
+begin
+  result := -InternalCompareText(S2, S1);
+end;
+
 class method AnsiString.SameText(S1: AnsiString; S2: AnsiString): Boolean;
 begin
   result := CompareText(S1, S2) = 0;
@@ -469,8 +628,9 @@ end;
 
 class method AnsiString.&Copy(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer): AnsiString;
 begin
-  result := new AnsiString(aCount);
-  for i: Integer := 0 to aCount - 1 do
+  var lCount := if (aSourceIndex + aCount) > aSource.Length then (aSource.Length - aSourceIndex) else aCount; 
+  result := new AnsiString(lCount);
+  for i: Integer := 0 to lCount - 1 do
     result.Chars[i] := aSource.Chars[aSourceIndex + i];
 end;
 
@@ -645,6 +805,16 @@ begin
       inc(i);
     end;
   end;
+end;
+
+method AnsiString.SubString(StartIndex: Integer): AnsiString;
+begin
+  result := AnsiString.Copy(self, StartIndex, fData.Length - StartIndex);
+end;
+
+method AnsiString.SubString(StartIndex: Integer; aLength: Integer): AnsiString;
+begin
+  result := AnsiString.Copy(self, StartIndex, aLength);
 end;
 
 method AnsiString.FillChar(aCount: Integer; aValue: AnsiChar);

@@ -48,6 +48,7 @@
     <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
     <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
     <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    <Architecture>x86_64;armv6</Architecture>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="rtl" />

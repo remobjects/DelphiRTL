@@ -69,6 +69,7 @@ type
     class operator Implicit(Value: Char): DelphiString;
     class operator Implicit(Value: PlatformString): DelphiString;
     class operator Implicit(Value: DelphiString): String;
+    class operator Implicit(Value: AnsiString): DelphiString;
     class operator &Add(Value1: DelphiString; Value2: Char): DelphiString;
     class operator &Add(Value1: Char; Value2: DelphiString): DelphiString;
     class operator &Add(Value1: DelphiString; Value2: DelphiString): not nullable DelphiString;
@@ -180,7 +181,7 @@ type
     method QuotedString: DelphiString;
     method QuotedString(const QuoteChar: Char): DelphiString;
     method &Remove(StartIndex: Integer): DelphiString; inline;
-    method &Remove(StartIndex: Integer; Count: Integer): DelphiString;
+    method &Remove(StartIndex: Integer; aCount: Integer): DelphiString;
     method Replace(OldChar: Char; NewChar: Char): DelphiString;
     method Replace(OldChar: Char; NewChar: Char; ReplaceFlags: TReplaceFlags): DelphiString; inline;
     method Replace(const OldValue: DelphiString; const NewValue: DelphiString): DelphiString;
@@ -198,7 +199,7 @@ type
     method StartsWith(const Value: DelphiString): Boolean;
     method StartsWith(const Value: DelphiString; IgnoreCase: Boolean): Boolean;
     method SubString(StartIndex: Integer): DelphiString;
-    method SubString(StartIndex: Integer; ALength: Integer): DelphiString;
+    method SubString(StartIndex: Integer; aLength: Integer): DelphiString;
     method ToBoolean: Boolean;
     method ToInteger: Integer;
     method ToInt64: Int64;
@@ -468,6 +469,16 @@ end;
 class operator DelphiString.Implicit(Value: DelphiString): String;
 begin
   result := Value.fData;
+end;
+
+class operator DelphiString.Implicit(Value: AnsiString): DelphiString;
+begin
+  var lSource := Value.Data;
+  var lArray := new Char[lSource.Length];
+  for i: Integer := 0 to lSource.Length - 1 do
+    lArray[i] := chr(lSource[i]);
+  
+  result := DelphiString.Create(lArray);
 end;
 
 operator DelphiString.Implicit(Value: Char): DelphiString;
@@ -968,18 +979,22 @@ begin
   result := &Remove(StartIndex, Length - StartIndex);
 end;
 
-method DelphiString.Remove(StartIndex: Integer; Count: Integer): DelphiString;
+method DelphiString.Remove(StartIndex: Integer; aCount: Integer): DelphiString;
 begin
+  if StartIndex >= fData.Length then
+    exit fData;
+
+  var lCount := if (StartIndex + aCount) > fData.Length then (fData.Length - StartIndex) else aCount;
   {$IF COOPER}
   var lSb := new StringBuilder(fData);
-  lSb.delete(StartIndex, Count);
+  lSb.delete(StartIndex, lCount);
   fData := lSb.toString;
   {$ELSEIF ECHOES OR ISLAND}
-  fData := PlatformString(fData).Remove(StartIndex, Count);
+  fData := PlatformString(fData).Remove(StartIndex, lCount);
   {$ELSEIF TOFFEE}
   var lString := new NSMutableString withCapacity(fData.Length);
   lString.setString(fData);
-  lString.deleteCharactersInRange(NSMakeRange(StartIndex, Count));
+  lString.deleteCharactersInRange(NSMakeRange(StartIndex, lCount));
   fData := lString;
   {$ENDIF}
   result := fData;
@@ -1282,12 +1297,16 @@ end;
 
 method DelphiString.SubString(StartIndex: Integer): DelphiString;
 begin
-  result := fData.Substring(StartIndex);
+  result := SubString(StartIndex, fData.Length - StartIndex);
 end;
 
-method DelphiString.SubString(StartIndex: Integer; ALength: Integer): DelphiString;
+method DelphiString.SubString(StartIndex: Integer; aLength: Integer): DelphiString;
 begin
-  result := fData.Substring(StartIndex, ALength);
+  if (StartIndex >= fData.Length) then
+    exit '';
+
+  var lCount := if StartIndex + ALength > fData.Length then fData.Length - StartIndex else ALength;
+  result := fData.Substring(StartIndex, lCount);
 end;
 
 method DelphiString.ToCharArray: array of Char;
