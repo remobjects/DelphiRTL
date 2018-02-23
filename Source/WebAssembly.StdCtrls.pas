@@ -6,67 +6,32 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  //TNotifyEvent = public block(Sender: dynamic);
   
-  TComponent = public class
-  private
-    fName: String;
-    fOwner: TComponent;
-    method setName(aValue: String);
-    method setOwner(aValue: TComponent);
-  protected
-    method GetDefaultName: String;
-    method ClassName: String; virtual;
-    method Loaded; virtual;
-    constructor(aOwner: TComponent);
-  public
-    property Name: String read fName write setName;
-    property Owner: TComponent read fOwner write setOwner;
-  end;
-
-  // TODO: move to a non WebAssembly unit
-  TControl = public class(TComponent)
-  private
-    fParent: TWebControl;
-    fText: String;
-    fOnClick: TNotifyEvent;
-    fWidth: Integer;
-    fHeight: Integer;
-    fTop: Integer;
-    fLeft: Integer;
-    method SetParent(aValue: TWebControl);
-    method SetOnClick(aValue: TNotifyEvent);
-    method SetWidth(aValue: Integer);
-    method SetHeight(aValue: Integer);
-    method SetTop(aValue: Integer);
-    method setLeft(aValue: Integer);
+  TWebControl = public abstract class(TControl)
   protected
     fHandle: dynamic;
-    method SetText(aValue: String); virtual;
-    property Text: String read fText write SetText;
+    method PlatformSetWidth(aValue: Integer); override;
+    method PlatformSetHeight(aValue: Integer); override;
+    method PlatformSetTop(aValue: Integer); override;
+    method PlatformSetLeft(aValue: Integer); override;
+    method PlatformSetParent(aValue: TControl); override;
+    method PlatformSetOnClick(aValue: TNotifyEvent); override;
+    method GetDefaultName: String; virtual;
+    method CreateHandle; abstract;
+    method ApplyDefaults; virtual;
+
     constructor(aOwner: TComponent);
-    method ClassName: String; override;
-    method Loaded; override;
   public
     property Handle: dynamic read fHandle;
-    property Parent: TWebControl read fParent write SetParent;
-    property Height: Integer read fHeight write SetHeight;
-    property Width: Integer read fWidth write SetWidth;
-    property Left: Integer read fLeft write setLeft;
-    property Top: Integer read fTop write SetTop;
-    property OnClick: TNotifyEvent read fOnClick write SetOnClick;
-  end;
-
-  TWebControl = public class(TControl)
   end;
 
   TForm = public class(TWebControl)
   private
     fRootView: dynamic;
     method setRootView(value: dynamic);
-    fRoot: dynamic;
+  protected
+    method CreateHandle; override;
   public
-    constructor(aOwner: TComponent);
     property RootView: dynamic read fRootView write setRootView;
   end;
 
@@ -76,8 +41,8 @@ type
     method setCaption(aValue: String);    
   protected
     method ClassName: String; override;
+    method CreateHandle; override;
   public
-    constructor(aOwner: TComponent);
     class method Create(AOwner: TComponent): TButton;
     property Caption: String read fCaption write setCaption;
   end;
@@ -88,79 +53,80 @@ type
     method setCaption(aValue: String);
  protected
     method ClassName: String; override;
+    method CreateHandle; override;
   public
-    constructor(aOwner: TComponent);
     class method Create(aOwner: TComponent): TLabel;
     property Caption: String read fCaption write setCaption;
   end;
 
   TPanel = public class(TWebControl)
-  private  
+  private
+  protected
+    method CreateHandle; override;
   public
-    constructor(aOwner: TComponent);
   end;
 
   TEdit = public class(TWebControl)
   private
     method setText(value: String);
     method getText: String;
+  protected
+    method CreateHandle; override;
   public
-    constructor(aOwner: TComponent);
     property Text: String read getText write setText;
   end;
 
-  TCheckBox = public class(TWebControl)
+  TRadioCheckBox = public abstract class(TWebControl)
   private
-  
+    method setCaption(value: String);
+    fCaption: String;
+  protected
+    method internalCreateHandle(aType: String);
   public
+    property Caption: String read fCaption write setCaption;
   end;
 
-  TRadioButton = public class(TWebControl)
-  private
-  
-  public
+  TCheckBox = public class(TRadioCheckBox)
+  protected
+    method CreateHandle; override;  
   end;
 
-  TComboBox = public class(TWebControl)
-  private
-  
-  public
+  TRadioButton = public class(TRadioCheckBox)
+  protected
+    method CreateHandle; override;  
   end;
 
-  TListBox = public class(TWebControl)
+  TListControl = public abstract class(TWebControl)
   private
     fItems: TStrings;
-  public
+    fListBoxMode: Boolean;
+  protected
+    method internalCreateHandle(aListBoxMode: Boolean);
     constructor(aOwner: TComponent);
+  public
     method AddItem(aValue: String);
+  end;
+
+  TComboBox = public class(TListControl)
+  protected
+    method CreateHandle; override;
+  public
+  end;
+
+  TListBox = public class(TListControl)
+  protected
+    method CreateHandle; override;
+  public
+
   end;
 
 
 implementation
 
-method TControl.SetParent(aValue: TWebControl);
-begin
-  fParent := aValue;
-  aValue.Handle.appendChild(fHandle);           
-end;
-
-method TControl.SetOnClick(aValue: TNotifyEvent);
-begin
-  var lDelegate := new WebAssemblyDelegate((a) -> aValue(self));
-
-  fHandle.addEventListener("click", lDelegate);
-end;
-
-method TControl.SetText(aValue: String);
-begin
-  fText := aValue;
-end;
-
-constructor TButton(aOwner: TComponent);
+method TButton.CreateHandle;
 begin
   fHandle := WebAssembly.CreateElement('BUTTON');
   var lCaption := WebAssembly.CreateTextNode(Name);
-  fHandle.setAttribute('id', Name);
   fHandle.style.position := "absolute";
   fHandle.appendChild(lCaption);
 end;
@@ -176,36 +142,9 @@ begin
   fHandle.innerText := fCaption;
 end;
 
-method TComponent.setName(aValue: String);
-begin
-  fName := aValue;
-end;
-
-method TComponent.GetDefaultName: String;
-begin
-  var i := 1;
-  var lObject := WebAssembly.GetElementById(ClassName + i.ToString);
-  while lObject <> nil do begin
-    inc(i);
-    lObject := WebAssembly.GetElementById(ClassName + i.ToString);
-  end;
-  result := ClassName + i.ToString;
-end;
-
 method TButton.ClassName: String;
 begin
   result := 'Button';
-end;
-
-constructor TControl(aOwner: TComponent);
-begin
-
-end;
-
-constructor TComponent(aOwner: TComponent);
-begin
-  fOwner := aOwner;
-  Name := GetDefaultName;
 end;
 
 method TLabel.setCaption(aValue: String);
@@ -214,7 +153,7 @@ begin
   fHandle.innerHTML := aValue;
 end;
 
-constructor TLabel(aOwner: TComponent);
+method TLabel.CreateHandle;
 begin
   fHandle := WebAssembly.CreateElement('LABEL');
   var lCaption := WebAssembly.CreateTextNode(Name);
@@ -232,79 +171,30 @@ begin
   result := new TLabel(aOwner);
 end;
 
-method TControl.ClassName: String;
+method TForm.CreateHandle;
 begin
-  result := 'TControl';
-end;
-
-method TComponent.ClassName: String;
-begin
-  result := 'TComponent';
-end;
-
-method TControl.SetWidth(aValue: Integer);
-begin
-  fWidth := aValue;
-  fHandle.style.width := aValue.ToString + 'px';
-end;
-
-method TControl.SetHeight(aValue: Integer);
-begin
-  fHeight := aValue;
-  fHandle.style.height := aValue.ToString + 'px';
-end;
-
-constructor TForm(aOwner: TComponent);
-begin  
   fHandle := WebAssembly.CreateElement('div');
   fHandle.style.position := "relative";
   fHandle.style.margin := "0 auto";
 end;
 
-constructor TPanel(aOwner: TComponent);
+method TPanel.CreateHandle;
 begin
   fHandle := WebAssembly.CreateElement('div');
   fHandle.style.position := "absolute";
 end;
 
-method TControl.setLeft(aValue: Integer);
-begin
-  fLeft := aValue;
-  fHandle.style.left := aValue.ToString + 'px';
-end;
-
-method TControl.SetTop(aValue: Integer);
-begin
-  fTop := aValue;
-  fHandle.style.top := aValue.ToString + 'px';
-end;
-
-method TComponent.Loaded;
-begin
-  // Nothing
-end;
-
-method TControl.Loaded;
-begin
-  fHandle.setAttribute('id', Name);
-end;
-
-constructor TEdit(aOwner: TComponent);
+method TEdit.CreateHandle;
 begin
   fHandle := WebAssembly.CreateElement("INPUT");
   fHandle.setAttribute("type", "text");
   fHandle.style.position := "absolute";
 end;
 
-method TComponent.setOwner(aValue: TComponent);
-begin
-  fOwner := aValue;
-end;
-
 method TForm.setRootView(value: dynamic);
 begin
-  fRoot := value;
-  if fRoot = nil then begin
+  fRootView := value;
+  if fRootView = nil then begin
 
   end
   else begin
@@ -312,20 +202,9 @@ begin
   end;
 end;
 
-constructor TListBox(aOwner: TComponent);
+method TListBox.CreateHandle;
 begin
-  fItems := TStringList.Create;
-  fHandle := WebAssembly.CreateElement("SELECT");
-  fHandle.setAttribute("size", 6);
-  fHandle.style.position := "absolute";
-end;
-
-method TListBox.AddItem(aValue: String);
-begin
-  fItems.Add(aValue);
-  var lItem := WebAssembly.CreateElement("option");
-  lItem.text := aValue;
-  fHandle.add(lItem);
+  internalCreateHandle(true);
 end;
 
 method TEdit.getText: String;
@@ -337,6 +216,112 @@ method TEdit.setText(value: String);
 begin
 
 end;
+
+method TWebControl.PlatformSetWidth(aValue: Integer);
+begin
+  fHandle.style.width := aValue.ToString + 'px';
+end;
+
+method TWebControl.PlatformSetHeight(aValue: Integer);
+begin
+  fHandle.style.height := aValue.ToString + 'px';
+end;
+
+method TWebControl.PlatformSetTop(aValue: Integer);
+begin
+  fHandle.style.top := aValue.ToString + 'px';
+end;
+
+method TWebControl.PlatformSetLeft(aValue: Integer);
+begin
+  fHandle.style.left := aValue.ToString + 'px';
+end;
+
+method TWebControl.PlatformSetParent(aValue: TControl);
+begin
+  TWebControl(aValue).Handle.appendChild(fHandle);
+end;
+
+method TWebControl.PlatformSetOnClick(aValue: TNotifyEvent);
+begin
+  var lDelegate := new WebAssemblyDelegate((a) -> aValue(self));
+  fHandle.addEventListener("click", lDelegate);
+end;
+
+method TWebControl.GetDefaultName: String;
+begin
+  var i := 1;
+  var lObject := WebAssembly.GetElementById(ClassName + i.ToString);
+  while lObject <> nil do begin
+    inc(i);
+    lObject := WebAssembly.GetElementById(ClassName + i.ToString);
+  end;
+  result := ClassName + i.ToString;
+end;
+
+constructor TWebControl(aOwner: TComponent);
+begin
+  Name := GetDefaultName;
+  CreateHandle;
+  ApplyDefaults;
+end;
+
+method TWebControl.ApplyDefaults;
+begin
+  fHandle.setAttribute('id', Name);
+end;
+
+method TCheckBox.CreateHandle;
+begin
+  internalCreateHandle("checkbox");
+end;
+
+method TRadioCheckBox.setCaption(value: String);
+begin
+  fCaption := value;
+  fHandle.setAttribute("value", value);
+end;
+
+method TRadioCheckBox.internalCreateHandle(aType: String);
+begin
+  fHandle := WebAssembly.CreateElement("INPUT");
+  fHandle.setAttribute("type", aType);
+  fHandle.setAttribute("value", Name);
+  fHandle.style.position := "absolute";  
+end;
+
+method TRadioButton.CreateHandle;
+begin
+  internalCreateHandle("radio");
+end;
+
+constructor TListControl(aOwner: TComponent);
+begin
+  fItems := TStringList.Create;
+end;
+
+method TListControl.AddItem(aValue: String);
+begin
+  fItems.Add(aValue);
+  var lItem := WebAssembly.CreateElement("option");
+  lItem.text := aValue;
+  fHandle.add(lItem);
+end;
+
+method TListControl.internalCreateHandle(aListBoxMode: Boolean);
+begin
+  fListBoxMode := aListBoxMode;
+  fHandle := WebAssembly.CreateElement("SELECT");
+  if fListBoxMode then
+    fHandle.setAttribute("size", 6);
+  fHandle.style.position := "absolute";
+end;
+
+method TComboBox.CreateHandle;
+begin
+  internalCreateHandle(false);
+end;
+
 
 
 end.
