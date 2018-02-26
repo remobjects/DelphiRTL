@@ -18,7 +18,7 @@ type
     property Owner: TComponent read fOwner write setOwner;
   end;
 
-  TControl = public abstract class(TComponent)
+  TControl = public partial class(TComponent)
   private
     fParent: TControl;
     fOnClick: TNotifyEvent;
@@ -35,14 +35,13 @@ type
 protected
     method ClassName: String; override;
     method Loaded; override;
-    method PlatformSetWidth(aValue: Integer); abstract;
-    method PlatformSetHeight(aValue: Integer); abstract;
-    method PlatformSetTop(aValue: Integer); abstract;
-    method PlatformSetLeft(aValue: Integer); abstract;
-    method PlatformSetParent(aValue: TControl); abstract;
-    method PlatformSetOnClick(aValue: TNotifyEvent); abstract;
+    method PlatformSetWidth(aValue: Integer); partial; empty;
+    method PlatformSetHeight(aValue: Integer); partial; empty;
+    method PlatformSetTop(aValue: Integer); partial; empty;
+    method PlatformSetLeft(aValue: Integer); partial; empty;
+    method PlatformSetParent(aValue: TControl); partial; empty;
+    method PlatformSetOnClick(aValue: TNotifyEvent); partial; empty;
     
-    constructor(aOwner: TComponent);
   public
     property Parent: TControl read fParent write SetParent;
     property Height: Integer read fHeight write SetHeight;
@@ -110,11 +109,6 @@ method TControl.SetHeight(aValue: Integer);
 begin
   fHeight := aValue;
   PlatformSetHeight(aValue);
-end;
-
-constructor TControl(aOwner: TComponent);
-begin
-
 end;
 
 method TControl.SetParent(aValue: TControl);

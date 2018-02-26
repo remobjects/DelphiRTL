@@ -7,15 +7,15 @@ uses
 
 type
   
-  TWebControl = public abstract class(TControl)
+  TControl = public partial class(TComponent)
   protected
     fHandle: dynamic;
-    method PlatformSetWidth(aValue: Integer); override;
-    method PlatformSetHeight(aValue: Integer); override;
-    method PlatformSetTop(aValue: Integer); override;
-    method PlatformSetLeft(aValue: Integer); override;
-    method PlatformSetParent(aValue: TControl); override;
-    method PlatformSetOnClick(aValue: TNotifyEvent); override;
+    method PlatformSetWidth(aValue: Integer); partial;
+    method PlatformSetHeight(aValue: Integer); partial;
+    method PlatformSetTop(aValue: Integer); partial;
+    method PlatformSetLeft(aValue: Integer); partial;
+    method PlatformSetParent(aValue: TControl); partial;
+    method PlatformSetOnClick(aValue: TNotifyEvent); partial;
     method GetDefaultName: String; virtual;
     method CreateHandle; abstract;
     method ApplyDefaults; virtual;
@@ -25,7 +25,7 @@ type
     property Handle: dynamic read fHandle;
   end;
 
-  TForm = public class(TWebControl)
+  TForm = public class(TControl)
   private
     fRootView: dynamic;
     method setRootView(value: dynamic);
@@ -35,7 +35,7 @@ type
     property RootView: dynamic read fRootView write setRootView;
   end;
 
-  TButton = public class(TWebControl)
+  TButton = public class(TControl)
   private
     fCaption: String;
     method setCaption(aValue: String);    
@@ -47,7 +47,7 @@ type
     property Caption: String read fCaption write setCaption;
   end;
 
-  TLabel = public class(TWebControl)
+  TLabel = public class(TControl)
   private
     fCaption: String;
     method setCaption(aValue: String);
@@ -59,14 +59,14 @@ type
     property Caption: String read fCaption write setCaption;
   end;
 
-  TPanel = public class(TWebControl)
+  TPanel = public class(TControl)
   private
   protected
     method CreateHandle; override;
   public
   end;
 
-  TEdit = public class(TWebControl)
+  TEdit = public class(TControl)
   private
     method setText(value: String);
     method getText: String;
@@ -76,7 +76,7 @@ type
     property Text: String read getText write setText;
   end;
 
-  TRadioCheckBox = public abstract class(TWebControl)
+  TRadioCheckBox = public abstract class(TControl)
   private
     method setCaption(value: String);
     fCaption: String;
@@ -96,12 +96,13 @@ type
     method CreateHandle; override;  
   end;
 
-  TListControl = public abstract class(TWebControl)
+  TListControl = public abstract class(TControl)
   private
     fItems: TStrings;
     fListBoxMode: Boolean;
   protected
     method internalCreateHandle(aListBoxMode: Boolean);
+    method PlatformSetMultiSelect(value: Boolean);
     constructor(aOwner: TComponent);
   public
     method AddItem(aValue: String);
@@ -114,12 +115,15 @@ type
   end;
 
   TListBox = public class(TListControl)
+  private
+    method SetMultiSelect(value: Boolean);
+    fMultiSelect: Boolean;
   protected
     method CreateHandle; override;
   public
+    property MultiSelect: Boolean read fMultiSelect write SetMultiSelect;
 
   end;
-
 
 implementation
 
@@ -217,38 +221,38 @@ begin
 
 end;
 
-method TWebControl.PlatformSetWidth(aValue: Integer);
+method TControl.PlatformSetWidth(aValue: Integer);
 begin
   fHandle.style.width := aValue.ToString + 'px';
 end;
 
-method TWebControl.PlatformSetHeight(aValue: Integer);
+method TControl.PlatformSetHeight(aValue: Integer);
 begin
   fHandle.style.height := aValue.ToString + 'px';
 end;
 
-method TWebControl.PlatformSetTop(aValue: Integer);
+method TControl.PlatformSetTop(aValue: Integer);
 begin
   fHandle.style.top := aValue.ToString + 'px';
 end;
 
-method TWebControl.PlatformSetLeft(aValue: Integer);
+method TControl.PlatformSetLeft(aValue: Integer);
 begin
   fHandle.style.left := aValue.ToString + 'px';
 end;
 
-method TWebControl.PlatformSetParent(aValue: TControl);
+method TControl.PlatformSetParent(aValue: TControl);
 begin
-  TWebControl(aValue).Handle.appendChild(fHandle);
+  aValue.Handle.appendChild(fHandle);
 end;
 
-method TWebControl.PlatformSetOnClick(aValue: TNotifyEvent);
+method TControl.PlatformSetOnClick(aValue: TNotifyEvent);
 begin
   var lDelegate := new WebAssemblyDelegate((a) -> aValue(self));
   fHandle.addEventListener("click", lDelegate);
 end;
 
-method TWebControl.GetDefaultName: String;
+method TControl.GetDefaultName: String;
 begin
   var i := 1;
   var lObject := WebAssembly.GetElementById(ClassName + i.ToString);
@@ -259,14 +263,14 @@ begin
   result := ClassName + i.ToString;
 end;
 
-constructor TWebControl(aOwner: TComponent);
+constructor TControl(aOwner: TComponent);
 begin
   Name := GetDefaultName;
   CreateHandle;
   ApplyDefaults;
 end;
 
-method TWebControl.ApplyDefaults;
+method TControl.ApplyDefaults;
 begin
   fHandle.setAttribute('id', Name);
 end;
@@ -320,6 +324,20 @@ end;
 method TComboBox.CreateHandle;
 begin
   internalCreateHandle(false);
+end;
+
+method TListBox.SetMultiSelect(value: Boolean);
+begin
+  fMultiSelect := value;
+  PlatformSetMultiSelect(value);
+end;
+
+method TListControl.PlatformSetMultiSelect(value: Boolean);
+begin
+  if value then
+    fHandle.setAttribute("multiple", "multiple")
+  else
+    fHandle.setAttribute("multiple", "no");
 end;
 
 
