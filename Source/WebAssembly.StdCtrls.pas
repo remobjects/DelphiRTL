@@ -2,11 +2,12 @@
 
 interface
 
+{$GLOBALS ON}
+
 uses
   RemObjects.Elements.RTL.Delphi;
 
-type
-  
+type  
   TControl = public partial class(TComponent)
   protected
     fHandle: dynamic;
@@ -16,6 +17,10 @@ type
     method PlatformSetLeft(aValue: Integer); partial;
     method PlatformSetParent(aValue: TControl); partial;
     method PlatformSetOnClick(aValue: TNotifyEvent); partial;
+    method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial;
+    method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
+    method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
+
     method GetDefaultName: String; virtual;
     method CreateHandle; abstract;
     method ApplyDefaults; virtual;
@@ -42,6 +47,7 @@ type
   protected
     method ClassName: String; override;
     method CreateHandle; override;
+    method PlatformSetCaption(aValue: String);
   public
     class method Create(AOwner: TComponent): TButton;
     property Caption: String read fCaption write setCaption;
@@ -54,6 +60,7 @@ type
  protected
     method ClassName: String; override;
     method CreateHandle; override;
+    method PlatformSetCaption(aValue: String);
   public
     class method Create(aOwner: TComponent): TLabel;
     property Caption: String read fCaption write setCaption;
@@ -125,7 +132,21 @@ type
 
   end;
 
+  TMemo = public class(TControl)
+  private
+  protected
+    method CreateHandle; override;
+  public
+  end;
+
+  procedure ShowMessage(aMessage: String);
+
 implementation
+
+procedure ShowMessage(aMessage: String);
+begin
+  WebAssemblyCalls.ShowMessage(aMessage.FirstChar, aMessage.Length);
+end;
 
 method TButton.CreateHandle;
 begin
@@ -143,7 +164,7 @@ end;
 method TButton.setCaption(aValue: String);
 begin
   fCaption := aValue;
-  fHandle.innerText := fCaption;
+  PlatformSetCaption(aValue);
 end;
 
 method TButton.ClassName: String;
@@ -154,7 +175,7 @@ end;
 method TLabel.setCaption(aValue: String);
 begin
   fCaption := aValue;
-  fHandle.innerHTML := aValue;
+  PlatformSetCaption(aValue);
 end;
 
 method TLabel.CreateHandle;
@@ -163,6 +184,7 @@ begin
   var lCaption := WebAssembly.CreateTextNode(Name);
   fHandle.appendChild(lCaption);
   fCaption := Name;
+  fHandle.style.position := "absolute";
 end;
 
 method TLabel.ClassName: String;
@@ -340,6 +362,39 @@ begin
     fHandle.setAttribute("multiple", "no");
 end;
 
+method TMemo.CreateHandle;
+begin
+  fHandle := WebAssembly.CreateElement("TEXTAREA");
+  fHandle.style.position := "absolute";
+end;
+
+method TLabel.PlatformSetCaption(aValue: String);
+begin
+  fHandle.innerHTML := aValue;
+end;
+
+method TButton.PlatformSetCaption(aValue: String);
+begin
+  fHandle.innerText := fCaption;
+end;
+
+method TControl.PlatformSetOnKeyPress(aValue: TKeyPressEvent);
+begin
+  var lDelegate := new WebAssemblyDelegate((a) -> begin var lX := WebAssemblyCalls.GetIntValue(NativeInt(InternalCalls.Cast(a['keyCode']))); var lKey: Char; aValue(self, var lKey); end);
+  fHandle.addEventListener("keypress", lDelegate);
+end;
+
+method TControl.PlatformSetOnKeyDown(aValue: TKeyEvent);
+begin
+  var lDelegate := new WebAssemblyDelegate((a) -> begin var lKey: Word; var lShiftState: TShiftState; aValue(self, var lKey, lShiftState); end);
+  fHandle.addEventListener("keydown", lDelegate);
+end;
+
+method TControl.PlatformSetOnKeyUp(aValue: TKeyEvent);
+begin
+  var lDelegate := new WebAssemblyDelegate((a) -> begin var lKey: Word; var lShiftState: TShiftState; aValue(self, var lKey, lShiftState); end);
+  fHandle.addEventListener("keyup", lDelegate);
+end;
 
 
 end.
