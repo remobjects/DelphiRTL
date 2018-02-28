@@ -9,6 +9,7 @@ uses
 
 type  
   TControl = public partial class(TComponent)
+  private
   protected
     fHandle: dynamic;
     method PlatformSetWidth(aValue: Integer); partial;
@@ -380,7 +381,7 @@ end;
 
 method TControl.PlatformSetOnKeyPress(aValue: TKeyPressEvent);
 begin
-  var lDelegate := new WebAssemblyDelegate((a) -> begin var lX := WebAssemblyCalls.GetIntValue(NativeInt(InternalCalls.Cast(a['keyCode']))); var lKey: Char; aValue(self, var lKey); end);
+  var lDelegate := new WebAssemblyDelegate((a) -> begin var lObject := new EcmaScriptObject(WebAssemblyCalls.GetArray(a.Handle, 0)); var lKey := chr(Double(lObject['keyCode'])); aValue(self, var lKey); end);
   fHandle.addEventListener("keypress", lDelegate);
 end;
 
