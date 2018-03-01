@@ -10,6 +10,8 @@ uses
 type  
   TControl = public partial class(TComponent)
   private
+    method ProcessKeyboardStatus(aStatus: EcmaScriptObject; var aKey: Word): TShiftState;
+    method InternalSetKeyboardEvent(aEvent: String; aValue: TKeyEvent);
   protected
     fHandle: dynamic;
     method PlatformSetWidth(aValue: Integer); partial;
@@ -76,22 +78,25 @@ type
 
   TEdit = public class(TControl)
   private
-    method setText(value: String);
-    method getText: String;
   protected
     method CreateHandle; override;
+    method PlatformSetText(aValue: String);
+    method PlatformGetText: String;
   public
-    property Text: String read getText write setText;
+    property Text: String read PlatformGetText write PlatformSetText;
   end;
 
   TRadioCheckBox = public abstract class(TControl)
   private
+    fCaption: String;    
     method setCaption(value: String);
-    fCaption: String;
   protected
     method internalCreateHandle(aType: String);
+    method PlatformGetChecked: Boolean;
+    method PlatformSetChecked(value: Boolean);
   public
     property Caption: String read fCaption write setCaption;
+    property Checked: Boolean read PlatformGetChecked write PlatformSetChecked;
   end;
 
   TCheckBox = public class(TRadioCheckBox)
@@ -104,6 +109,16 @@ type
     method CreateHandle; override;  
   end;
 
+  TListControlItems = public class(TStringList)
+  public
+    method &Add(s: DelphiString): Integer; override;
+    method AddObject(const S: DelphiString; aObject: TObject): Integer; override;
+    method Clear; override;
+    method Delete(aIndex: Integer); override;
+    method Insert(aIndex: Integer; const S: DelphiString); override;
+    property ListControl: TListControl read write;
+  end;
+  
   TListControl = public abstract class(TControl)
   private
     fItems: TStrings;
@@ -115,11 +130,17 @@ type
   public
     method AddItem(aValue: String);
   end;
-
+    
   TComboBox = public class(TListControl)
   protected
     method CreateHandle; override;
   public
+    {procedure AddItem(Item: String; AObject: TObject); override;
+    procedure Clear; override;
+    procedure ClearSelection; override;
+    procedure DeleteSelected; override;
+    procedure SelectAll; override;
+    property Items: TStrings read FItems write SetItems;}
   end;
 
   TListBox = public class(TListControl)
@@ -131,6 +152,15 @@ type
   public
     property MultiSelect: Boolean read fMultiSelect write SetMultiSelect;
 
+    {procedure AddItem(Item: String; AObject: TObject); override;
+    procedure Clear; override;
+    procedure ClearSelection; override;
+    procedure DeleteSelected; override;
+    procedure SelectAll; override;
+    property Count: Integer read GetCount write SetCount;
+    property Items: TStrings read FItems write SetItems;
+    property Selected[Index: Integer]: Boolean read GetSelected write SetSelected;
+    }
   end;
 
   TMemo = public class(TControl)
@@ -234,14 +264,14 @@ begin
   internalCreateHandle(true);
 end;
 
-method TEdit.getText: String;
-begin
+method TEdit.PlatformGetText: String;
+begin    
   result := fHandle.value;
 end;
 
-method TEdit.setText(value: String);
+method TEdit.PlatformSetText(aValue: String);
 begin
-
+  fHandle.value := aValue;
 end;
 
 method TControl.PlatformSetWidth(aValue: Integer);
@@ -324,7 +354,8 @@ end;
 
 constructor TListControl(aOwner: TComponent);
 begin
-  fItems := TStringList.Create;
+  fItems := new TListControlItems();
+  TListControlItems(fItems).ListControl := self;
 end;
 
 method TListControl.AddItem(aValue: String);
@@ -381,21 +412,82 @@ end;
 
 method TControl.PlatformSetOnKeyPress(aValue: TKeyPressEvent);
 begin
-  var lDelegate := new WebAssemblyDelegate((a) -> begin var lObject := new EcmaScriptObject(WebAssemblyCalls.GetArray(a.Handle, 0)); var lKey := chr(Double(lObject['keyCode'])); aValue(self, var lKey); end);
+  //'which' in case of using Mozilla FireFox browser
+  var lDelegate := new WebAssemblyDelegate((a) -> begin var lObject := new EcmaScriptObject(WebAssemblyCalls.GetArray(a.Handle, 0)); var lKey := chr(Max(Double(lObject['keyCode']), Double(lObject['which']))); aValue(self, var lKey); end);
   fHandle.addEventListener("keypress", lDelegate);
+end;
+
+method TControl.InternalSetKeyboardEvent(aEvent: String; aValue: TKeyEvent);
+begin
+  var lDelegate := new WebAssemblyDelegate((a) -> begin var lObject := new EcmaScriptObject(WebAssemblyCalls.GetArray(a.Handle, 0)); var lKey: Word; var lShiftState := ProcessKeyboardStatus(lObject, var lKey); aValue(self, var lKey, lShiftState); end);
+  fHandle.addEventListener(aEvent, lDelegate);
 end;
 
 method TControl.PlatformSetOnKeyDown(aValue: TKeyEvent);
 begin
-  var lDelegate := new WebAssemblyDelegate((a) -> begin var lKey: Word; var lShiftState: TShiftState; aValue(self, var lKey, lShiftState); end);
-  fHandle.addEventListener("keydown", lDelegate);
+  InternalSetKeyboardEvent("keydown", aValue);
 end;
 
 method TControl.PlatformSetOnKeyUp(aValue: TKeyEvent);
 begin
-  var lDelegate := new WebAssemblyDelegate((a) -> begin var lKey: Word; var lShiftState: TShiftState; aValue(self, var lKey, lShiftState); end);
-  fHandle.addEventListener("keyup", lDelegate);
+  InternalSetKeyboardEvent("keyup", aValue);
 end;
 
+method TControl.ProcessKeyboardStatus(aStatus: EcmaScriptObject; var aKey: Word): TShiftState;
+begin
+  result := [];
+  if Boolean(aStatus['altKey']) then result := result + [TShiftState.ssAlt];
+  if Boolean(aStatus['ctrlKey']) then result := result + [TShiftState.ssCtrl];
+  if Boolean(aStatus['shiftKey']) then result := result + [TShiftState.ssShift];
+  if Boolean(aStatus['metaKey']) then result := result + [TShiftState.ssCommand];
+  aKey := Integer((Max(Double(aStatus['keyCode']), Double(aStatus['which'])))); 
+end;
+
+method TRadioCheckBox.PlatformSetChecked(value: Boolean);
+begin
+  fHandle.checked := value;  
+end;
+
+method TRadioCheckBox.PlatformGetChecked: Boolean;
+begin
+  result := fHandle.checked;
+end;
+
+method TListControlItems.Add(s: DelphiString): Integer;
+begin
+  inherited;
+  var lOption := WebAssembly.CreateElement("OPTION");
+  lOption.text := s;
+  ListControl.Handle.add(lOption);
+end;
+
+method TListControlItems.Clear;
+begin
+  inherited;
+  for i: Integer := ListControl.Handle.length - 1 downto 0 do
+    ListControl.Handle.remove(i);
+end;
+
+method TListControlItems.Delete(aIndex: Integer);
+begin
+  inherited;
+  ListControl.Handle.remove(aIndex);
+end;
+
+method TListControlItems.Insert(aIndex: Integer; const S: DelphiString);
+begin
+  inherited;
+  var lOption := WebAssembly.CreateElement("OPTION");
+  lOption.text := s;
+  ListControl.Handle.add(lOption, aIndex);
+end;
+
+method TListControlItems.AddObject(const S: DelphiString; aObject: TObject): Integer;
+begin
+  inherited;
+  var lOption := WebAssembly.CreateElement("OPTION");
+  lOption.text := s;
+  ListControl.Handle.add(lOption);
+end;
 
 end.
