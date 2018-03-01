@@ -121,46 +121,38 @@ type
   
   TListControl = public abstract class(TControl)
   private
-    fItems: TStrings;
     fListBoxMode: Boolean;
   protected
+    fItems: TStrings;
     method internalCreateHandle(aListBoxMode: Boolean);
     method PlatformSetMultiSelect(value: Boolean);
     constructor(aOwner: TComponent);
+    method SetItems(aValue: TStrings); virtual;
   public
-    method AddItem(aValue: String);
+    method AddItem(Item: DelphiString; aObject: TObject);
+    method Clear;
+    method ClearSelection; 
+    method DeleteSelected;
+    property Items: TStrings read fItems write SetItems;
   end;
     
   TComboBox = public class(TListControl)
   protected
     method CreateHandle; override;
-  public
-    {procedure AddItem(Item: String; AObject: TObject); override;
-    procedure Clear; override;
-    procedure ClearSelection; override;
-    procedure DeleteSelected; override;
-    procedure SelectAll; override;
-    property Items: TStrings read FItems write SetItems;}
   end;
 
   TListBox = public class(TListControl)
   private
     method SetMultiSelect(value: Boolean);
+    method GetSelected(aIndex: Integer): Boolean;
+    method SetSelected(aIndex: Integer; value: Boolean);
     fMultiSelect: Boolean;
   protected
     method CreateHandle; override;
   public
+    procedure SelectAll;
     property MultiSelect: Boolean read fMultiSelect write SetMultiSelect;
-
-    {procedure AddItem(Item: String; AObject: TObject); override;
-    procedure Clear; override;
-    procedure ClearSelection; override;
-    procedure DeleteSelected; override;
-    procedure SelectAll; override;
-    property Count: Integer read GetCount write SetCount;
-    property Items: TStrings read FItems write SetItems;
-    property Selected[Index: Integer]: Boolean read GetSelected write SetSelected;
-    }
+    property Selected[aIndex: Integer]: Boolean read GetSelected write SetSelected;
   end;
 
   TMemo = public class(TControl)
@@ -358,14 +350,6 @@ begin
   TListControlItems(fItems).ListControl := self;
 end;
 
-method TListControl.AddItem(aValue: String);
-begin
-  fItems.Add(aValue);
-  var lItem := WebAssembly.CreateElement("option");
-  lItem.text := aValue;
-  fHandle.add(lItem);
-end;
-
 method TListControl.internalCreateHandle(aListBoxMode: Boolean);
 begin
   fListBoxMode := aListBoxMode;
@@ -488,6 +472,50 @@ begin
   var lOption := WebAssembly.CreateElement("OPTION");
   lOption.text := s;
   ListControl.Handle.add(lOption);
+end;
+
+method TListBox.SelectAll;
+begin
+  for i: Integer := 0 to fHandle.options.length - 1 do
+    fHandle.options[i].selected := true;
+end;
+
+method TListControl.AddItem(Item: DelphiString; aObject: TObject);
+begin
+  (fItems as TListControlItems).AddObject(Item, aObject);
+end;
+
+method TListControl.Clear;
+begin
+  (fItems as TListControlItems).Clear;
+end;
+
+method TListControl.ClearSelection;
+begin
+  for i: Integer := 0 to fHandle.options.length - 1 do
+    fHandle.options[i].selected := false;
+end;
+
+method TListControl.DeleteSelected;
+begin
+  fHandle.remove(fHandle.options.selectedIndex);
+end;
+
+method TListControl.SetItems(aValue: TStrings);
+begin
+  fItems.Clear;
+  for i: Integer := 0 to aValue.Count - 1 do
+    fItems.AddObject(aValue[i], aValue.Objects[i]);
+end;
+
+method TListBox.GetSelected(aIndex: Integer): Boolean;
+begin
+  result := fHandle.options[aIndex].selected;
+end;
+
+method TListBox.SetSelected(aIndex: Integer; value: Boolean);
+begin
+  fHandle.options[aIndex].selected := value;
 end;
 
 end.
