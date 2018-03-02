@@ -54,11 +54,11 @@
     <DefineConstants>WEBASSEMBLY</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Island">
-      <HintPath>C:\Program Files (x86)\RemObjects Software\Elements\Island\Reference Libraries\WebAssembly\wasm32\Island.fx</HintPath>
-    </Reference>
     <Reference Include="Elements">
       <HintPath>C:\Program Files (x86)\RemObjects Software\Elements\Island\Reference Libraries\WebAssembly\wasm32\Elements.fx</HintPath>
+    </Reference>
+    <Reference Include="Island.fx">
+      <HintPath>C:\dev\ro\IslandRTL\Source\Bin\Debug\WebAssembly\wasm32\Island.fx</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
