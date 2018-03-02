@@ -46,18 +46,10 @@
     <Architecture>x86_64;i386</Architecture>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="gc">
-      <HintPath>C:\Program Files (x86)\RemObjects Software\Elements\Island\Reference Libraries\Windows\i386\gc.fx</HintPath>
-    </Reference>
-    <Reference Include="Island">
-      <HintPath>C:\Program Files (x86)\RemObjects Software\Elements\Island\Reference Libraries\Windows\i386\Island.fx</HintPath>
-    </Reference>
-    <Reference Include="rtl">
-      <HintPath>C:\Program Files (x86)\RemObjects Software\Elements\Island\Reference Libraries\Windows\i386\rtl.fx</HintPath>
-    </Reference>
-    <Reference Include="Elements">
-      <HintPath>C:\Program Files (x86)\RemObjects Software\Elements\Island\Reference Libraries\Windows\i386\Elements.fx</HintPath>
-    </Reference>
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="rtl" />
+    <Reference Include="Elements" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

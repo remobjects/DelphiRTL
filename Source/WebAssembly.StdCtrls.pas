@@ -82,13 +82,7 @@ type
     method CreateHandle; override;
     method PlatformSetText(aValue: String);
     method PlatformGetText: String;
-    method PlatformGetMaxLength: Integer;
-    method PlatformSetMaxLength(aValue: Integer);
-    method PlatformGetReadOnly: Boolean;
-    method PlatformSetReadOnly(aValue: Boolean);
   public
-    property MaxLength: Integer read PlatformGetMaxLength write PlatformSetMaxLength;
-    property &ReadOnly: Boolean read PlatformGetReadOnly write PlatformSetReadOnly;
     property Text: String read PlatformGetText write PlatformSetText;
   end;
 
@@ -100,9 +94,8 @@ type
     method internalCreateHandle(aType: String);
     method PlatformGetChecked: Boolean;
     method PlatformSetChecked(value: Boolean);
-    method PlatformSetCaption(value: String);
   public
-    property Caption: String read fCaption write PlatformSetCaption;
+    property Caption: String read fCaption write setCaption;
     property Checked: Boolean read PlatformGetChecked write PlatformSetChecked;
   end;
 
@@ -118,17 +111,16 @@ type
 
   TListControlItems = public class(TStringList)
   public
-    method AddObject(S: DelphiString; aObject: TObject): Integer; override;
+    method &Add(s: DelphiString): Integer; override;
+    method AddObject(const S: DelphiString; aObject: TObject): Integer; override;
     method Clear; override;
     method Delete(aIndex: Integer); override;
-    method Insert(aIndex: Integer; S: DelphiString); override;
+    method Insert(aIndex: Integer; const S: DelphiString); override;
     property ListControl: TListControl read write;
   end;
   
   TListControl = public abstract class(TControl)
   private
-    method SetItemIndex(value: Integer);
-    method GetItemIndex: Integer;
     fListBoxMode: Boolean;
   protected
     fItems: TStrings;
@@ -142,17 +134,11 @@ type
     method ClearSelection; 
     method DeleteSelected;
     property Items: TStrings read fItems write SetItems;
-    property ItemIndex: Integer read GetItemIndex write SetItemIndex;
   end;
     
   TComboBox = public class(TListControl)
-  private
-    fOnSelect: TNotifyEvent;
-     method SetOnSelect(aValue: TNotifyEvent);
   protected
     method CreateHandle; override;
-  public
-    property OnSelect: TNotifyEvent read fOnSelect write SetOnSelect;
   end;
 
   TListBox = public class(TListControl)
@@ -198,11 +184,6 @@ begin
   result := new TButton(AOwner);
 end;
 
-method TButton.PlatformSetCaption(aValue: String);
-begin
-  fHandle.innerText := fCaption;
-end;
-
 method TButton.setCaption(aValue: String);
 begin
   fCaption := aValue;
@@ -239,27 +220,11 @@ begin
   result := new TLabel(aOwner);
 end;
 
-method TLabel.PlatformSetCaption(aValue: String);
-begin
-  fHandle.innerHTML := aValue;
-end;
-
 method TForm.CreateHandle;
 begin
   fHandle := WebAssembly.CreateElement('div');
   fHandle.style.position := "relative";
   fHandle.style.margin := "0 auto";
-end;
-
-method TForm.setRootView(value: dynamic);
-begin
-  fRootView := value;
-  if fRootView = nil then begin
-
-  end
-  else begin
-     value.appendChild(fHandle);
-  end;
 end;
 
 method TPanel.CreateHandle;
@@ -275,24 +240,15 @@ begin
   fHandle.style.position := "absolute";
 end;
 
-method TEdit.PlatformGetMaxLength: Integer;
+method TForm.setRootView(value: dynamic);
 begin
-  result := fHandle.maxLength;
-end;
+  fRootView := value;
+  if fRootView = nil then begin
 
-method TEdit.PlatformSetMaxLength(aValue: Integer);
-begin
-  fHandle.maxLegth := aValue;
-end;
-
-method TEdit.PlatformGetReadOnly: Boolean;
-begin
-  result := fHandle.readOnly;
-end;
-
-method TEdit.PlatformSetReadOnly(aValue: Boolean);
-begin
-  fHandle.readOnly := aValue;
+  end
+  else begin
+     value.appendChild(fHandle);
+  end;
 end;
 
 method TListBox.CreateHandle;
@@ -369,15 +325,10 @@ begin
   internalCreateHandle("checkbox");
 end;
 
-method TRadioCheckBox.PlatformSetCaption(value: String);
-begin
-  fHandle.setAttribute("value", value);
-end;
-
 method TRadioCheckBox.setCaption(value: String);
 begin
   fCaption := value;
-  PlatformSetCaption(value);
+  fHandle.setAttribute("value", value);
 end;
 
 method TRadioCheckBox.internalCreateHandle(aType: String);
@@ -386,16 +337,6 @@ begin
   fHandle.setAttribute("type", aType);
   fHandle.setAttribute("value", Name);
   fHandle.style.position := "absolute";  
-end;
-
-method TRadioCheckBox.PlatformSetChecked(value: Boolean);
-begin
-  fHandle.checked := value;  
-end;
-
-method TRadioCheckBox.PlatformGetChecked: Boolean;
-begin
-  result := fHandle.checked;
 end;
 
 method TRadioButton.CreateHandle;
@@ -443,6 +384,16 @@ begin
   fHandle.style.position := "absolute";
 end;
 
+method TLabel.PlatformSetCaption(aValue: String);
+begin
+  fHandle.innerHTML := aValue;
+end;
+
+method TButton.PlatformSetCaption(aValue: String);
+begin
+  fHandle.innerText := fCaption;
+end;
+
 method TControl.PlatformSetOnKeyPress(aValue: TKeyPressEvent);
 begin
   //'which' in case of using Mozilla FireFox browser
@@ -476,6 +427,24 @@ begin
   aKey := Integer((Max(Double(aStatus['keyCode']), Double(aStatus['which'])))); 
 end;
 
+method TRadioCheckBox.PlatformSetChecked(value: Boolean);
+begin
+  fHandle.checked := value;  
+end;
+
+method TRadioCheckBox.PlatformGetChecked: Boolean;
+begin
+  result := fHandle.checked;
+end;
+
+method TListControlItems.Add(s: DelphiString): Integer;
+begin
+  inherited;
+  var lOption := WebAssembly.CreateElement("OPTION");
+  lOption.text := s;
+  ListControl.Handle.add(lOption);
+end;
+
 method TListControlItems.Clear;
 begin
   inherited;
@@ -489,19 +458,19 @@ begin
   ListControl.Handle.remove(aIndex);
 end;
 
-method TListControlItems.Insert(aIndex: Integer; S: DelphiString);
+method TListControlItems.Insert(aIndex: Integer; const S: DelphiString);
 begin
   inherited;
   var lOption := WebAssembly.CreateElement("OPTION");
-  lOption.text := String(S);
+  lOption.text := s;
   ListControl.Handle.add(lOption, aIndex);
 end;
 
-method TListControlItems.AddObject(S: DelphiString; aObject: TObject): Integer;
+method TListControlItems.AddObject(const S: DelphiString; aObject: TObject): Integer;
 begin
   inherited;
   var lOption := WebAssembly.CreateElement("OPTION");
-  lOption.text := String(S);
+  lOption.text := s;
   ListControl.Handle.add(lOption);
 end;
 
@@ -547,23 +516,6 @@ end;
 method TListBox.SetSelected(aIndex: Integer; value: Boolean);
 begin
   fHandle.options[aIndex].selected := value;
-end;
-
-method TComboBox.SetOnSelect(aValue: TNotifyEvent);
-begin
-  fOnSelect := aValue;
-  var lDelegate := new WebAssemblyDelegate((a) -> aValue(self));
-  fHandle.addEventListener("onChange", lDelegate);
-end;
-
-method TListControl.GetItemIndex: Integer;
-begin
-  result := fHandle.selectedIndex;
-end;
-
-method TListControl.SetItemIndex(value: Integer);
-begin
-  fHandle.selectedIndex := value;
 end;
 
 end.

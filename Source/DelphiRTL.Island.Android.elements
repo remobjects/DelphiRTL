@@ -50,18 +50,10 @@
     <Architecture>arm64-v8a;armeabi;armeabi-v7a;x86;x86_64</Architecture>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="rtl">
-      <HintPath>C:\Program Files (x86)\RemObjects Software\Elements\Island\Reference Libraries\Android\x86_64\rtl.fx</HintPath>
-    </Reference>
-    <Reference Include="gc">
-      <HintPath>C:\Program Files (x86)\RemObjects Software\Elements\Island\Reference Libraries\Android\x86_64\gc.fx</HintPath>
-    </Reference>
-    <Reference Include="Island">
-      <HintPath>C:\Program Files (x86)\RemObjects Software\Elements\Island\Reference Libraries\Android\x86_64\Island.fx</HintPath>
-    </Reference>
-    <Reference Include="Elements">
-      <HintPath>C:\Program Files (x86)\RemObjects Software\Elements\Island\Reference Libraries\Android\x86_64\Elements.fx</HintPath>
-    </Reference>
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
