@@ -117,6 +117,11 @@ type
   end;
 
   TListControlItems = public class(TStringList)
+  protected
+    method PlatformAddItem(S: DelphiString; aObject: TObject);
+    method PlatformInsert(aIndex: Integer; S: DelphiString);
+    method PlatformClear;
+    method PlatformDelete(aIndex: Integer);
   public
     method AddObject(S: DelphiString; aObject: TObject): Integer; override;
     method Clear; override;
@@ -134,6 +139,8 @@ type
     fItems: TStrings;
     method internalCreateHandle(aListBoxMode: Boolean);
     method PlatformSetMultiSelect(value: Boolean);
+    method PlatformClearSelection;
+    method PlatformDeleteSelected;
     constructor(aOwner: TComponent);
     method SetItems(aValue: TStrings); virtual;
   public
@@ -253,13 +260,17 @@ end;
 
 method TForm.setRootView(value: dynamic);
 begin
-  fRootView := value;
-  if fRootView = nil then begin
-
+  if value = nil then begin
+    // No parent html element provided to 'host' the main div
+    var lWindow := WebAssembly.GetWindowObject;
+    fRootView := WebAssembly.CreateElement('div');
+    fRootView.style.margin := "0 auto";
+    lWindow.document.body.appendChild(fRootView);
   end
-  else begin
-     value.appendChild(fHandle);
-  end;
+  else 
+     fRootView := value;
+  
+  fRootView.appendChild(fHandle);
 end;
 
 method TPanel.CreateHandle;
@@ -479,30 +490,50 @@ end;
 method TListControlItems.Clear;
 begin
   inherited;
-  for i: Integer := ListControl.Handle.length - 1 downto 0 do
-    ListControl.Handle.remove(i);
+  PlatformClear;
 end;
 
 method TListControlItems.Delete(aIndex: Integer);
 begin
   inherited;
+  PlatformDelete(aIndex);
+end;
+
+method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
+begin
+  var lOption := WebAssembly.CreateElement("OPTION");
+  lOption.text := String(S);
+  ListControl.Handle.add(lOption, aIndex);  
+end;
+
+method TListControlItems.PlatformClear;
+begin
+  for i: Integer := ListControl.Handle.length - 1 downto 0 do
+    ListControl.Handle.remove(i);
+end;
+
+method TListControlItems.PlatformDelete(aIndex: Integer);
+begin
   ListControl.Handle.remove(aIndex);
 end;
 
 method TListControlItems.Insert(aIndex: Integer; S: DelphiString);
 begin
   inherited;
+  PlatformInsert(aIndex, S);
+end;
+
+method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
+begin
   var lOption := WebAssembly.CreateElement("OPTION");
   lOption.text := String(S);
-  ListControl.Handle.add(lOption, aIndex);
+  ListControl.Handle.add(lOption);
 end;
 
 method TListControlItems.AddObject(S: DelphiString; aObject: TObject): Integer;
 begin
   inherited;
-  var lOption := WebAssembly.CreateElement("OPTION");
-  lOption.text := String(S);
-  ListControl.Handle.add(lOption);
+  PlatformAddItem(S, aObject);
 end;
 
 method TListBox.SelectAll;
@@ -516,6 +547,17 @@ begin
   (fItems as TListControlItems).AddObject(Item, aObject);
 end;
 
+method TListControl.PlatformClearSelection;
+begin
+  for i: Integer := 0 to fHandle.options.length - 1 do
+    fHandle.options[i].selected := false;
+end;
+
+method TListControl.PlatformDeleteSelected;
+begin
+  fHandle.remove(fHandle.options.selectedIndex);
+end;
+
 method TListControl.Clear;
 begin
   (fItems as TListControlItems).Clear;
@@ -523,13 +565,12 @@ end;
 
 method TListControl.ClearSelection;
 begin
-  for i: Integer := 0 to fHandle.options.length - 1 do
-    fHandle.options[i].selected := false;
+  PlatformClearSelection;
 end;
 
 method TListControl.DeleteSelected;
 begin
-  fHandle.remove(fHandle.options.selectedIndex);
+  PlatformDeleteSelected;
 end;
 
 method TListControl.SetItems(aValue: TStrings);
