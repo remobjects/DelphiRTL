@@ -8,12 +8,18 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type  
+  INotifyPropertyChanged = public interface 
+    event PropertyChanged: Action<TObject, String>;
+  end;
+
   TControl = public partial class(TComponent)
   private
     method ProcessKeyboardStatus(aStatus: EcmaScriptObject; var aKey: Word): TShiftState;
     method InternalSetKeyboardEvent(aEvent: String; aValue: TKeyEvent);
+    method setFont(value: TFont);
   protected
     fHandle: dynamic;
+    fFont: TFont;
     method PlatformSetWidth(aValue: Integer); partial;
     method PlatformSetHeight(aValue: Integer); partial;
     method PlatformSetTop(aValue: Integer); partial;
@@ -24,23 +30,50 @@ type
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
 
+    method PlatformFontSetColor(value: TColor);
+    method PlatformFontSetName(value: String);
+    method PlatformFontSetSize(value: Integer);
+    method PlatformFontSetStyles(value: TFontStyles);
+    
     method GetDefaultName: String; virtual;
     method CreateHandle; abstract;
     method ApplyDefaults; virtual;
+    method Changed(aObject: TObject; propName: String);
 
     constructor(aOwner: TComponent);
   public
     property Handle: dynamic read fHandle;
+    property Font: TFont read fFont write setFont;
+  end;
+
+  TColor = Integer;
+  TFontStyle = public enum(Bold, Italic, Underline, StrikeOut);
+  TFontStyles = set of TFontStyle;
+
+  TFont = public class(TPersistent, INotifyPropertyChanged)
+  private
+    fColor: TColor;
+    fName: String;
+    fSize: Integer;
+    fStyles: TFontStyles;
+    method setColor(value: TColor);
+    method setName(value: String);
+    method setSize(value: Integer);
+    method setStyles(value: TFontStyles);
+    method NotifyChanged(propName: String);
+  public
+    event PropertyChanged: Action<Object, String>;
+    property Color: TColor read fColor write setColor;
+    property Name: String read fName write setName;
+    property Size: Integer read fSize write setSize;
+    property Style: TFontStyles read fStyles write setStyles;
   end;
 
   TForm = public class(TControl)
-  private
-    fRootView: dynamic;
-    method setRootView(value: dynamic);
   protected
     method CreateHandle; override;
   public
-    property RootView: dynamic read fRootView write setRootView;
+    method Show(aRootView: dynamic);
   end;
 
   TButton = public class(TControl)
@@ -176,11 +209,29 @@ type
     property Selected[aIndex: Integer]: Boolean read GetSelected write SetSelected;
   end;
 
+  TMemoStrings = class(TStringList)
+  private
+    fMemo: TMemo;
+  protected
+    method Get(aIndex: Integer): DelphiString; override;
+    method GetTextStr: DelphiString; override;
+    method SetTextStr(value: DelphiString); override;
+  public
+    method AddObject(S: DelphiString; aObject: TObject): Integer; override;
+    method Clear; override;
+    method Delete(aIndex: Integer); override;
+    method Insert(aIndex: Integer; aString: DelphiString); override;
+    property Memo: TMemo read fMemo write fMemo;
+  end;
+
   TMemo = public class(TControl)
   private
+    fLines: TStrings;
   protected
     method CreateHandle; override;
   public
+    constructor(aOwner: TComponent);
+    property Lines: TStrings read fLines write fLines;
   end;
 
   procedure ShowMessage(aMessage: String);
@@ -258,19 +309,18 @@ begin
   fHandle.style.margin := "0 auto";
 end;
 
-method TForm.setRootView(value: dynamic);
+method TForm.Show(aRootView: dynamic);
 begin
-  if value = nil then begin
+  var lRootView := aRootView;
+  if lRootView = nil then begin
     // No parent html element provided to 'host' the main div
     var lWindow := WebAssembly.GetWindowObject;
-    fRootView := WebAssembly.CreateElement('div');
-    fRootView.style.margin := "0 auto";
-    lWindow.document.body.appendChild(fRootView);
-  end
-  else 
-     fRootView := value;
+    lRootView := WebAssembly.CreateElement('div');
+    lRootView.style.margin := "0 auto";
+    lWindow.document.body.appendChild(lRootView);
+  end;
   
-  fRootView.appendChild(fHandle);
+  lRootView.appendChild(fHandle);
 end;
 
 method TPanel.CreateHandle;
@@ -373,6 +423,55 @@ end;
 method TControl.ApplyDefaults;
 begin
   fHandle.setAttribute('id', Name);
+end;
+
+method TControl.setFont(value: TFont);
+begin
+  fFont := value;
+  PlatformFontSetColor(fFont.Color);
+  PlatformFontSetSize(fFont.Size);
+  PlatformFontSetName(fFont.Name);
+  PlatformFontSetStyles(fFont.Style);
+end;
+
+method TControl.PlatformFontSetColor(value: TColor);
+begin
+  fHandle.style.color := value.ToString;
+  fHandle.style.textDecorationColor := value.ToString;
+end;
+
+method TControl.PlatformFontSetName(value: String);
+begin
+  fHandle.style.fontFamily := value;
+end;
+
+method TControl.PlatformFontSetSize(value: Integer);
+begin
+  fHandle.style.fontSize := value.ToString + 'px';
+end;
+
+method TControl.PlatformFontSetStyles(value: TFontStyles);
+begin
+  if (TFontStyle.Italic in value) then fHandle.style.fontStyle := 'italic' else fHandle.style.fontStyle := 'normal';
+  if (TFontStyle.Bold in value) then fHandle.style.fontWeight := 'bold' else fHandle.style.fontWeight := 'normal';
+  if (TFontStyle.StrikeOut in value) or (TFontStyle.Underline in value) then begin
+    if (TFontStyle.StrikeOut in value) then fHandle.style.textDecoration := 'line-throught';
+    if (TFontStyle.Underline in value) then fHandle.style.textDecoration := 'underline';
+  end
+  else
+    fHandle.style.textDecoration := 'none';
+end;
+
+method TControl.Changed(aObject: TObject; propName: String);
+begin
+  if aObject is TFont then begin
+    case propName of
+      'color': PlatformFontSetColor(fFont.Color);
+      'size': PlatformFontSetSize(fFont.Size);
+      'name': PlatformFontSetName(fFont.Name);
+      'styles': PlatformFontSetStyles(fFont.Style);
+    end;
+  end;
 end;
 
 method TCheckBox.CreateHandle;
@@ -605,6 +704,94 @@ end;
 method TListControl.SetItemIndex(value: Integer);
 begin
   fHandle.selectedIndex := value;
+end;
+
+method TFont.NotifyChanged(propName: String);
+begin
+  if PropertyChanged <> nil then
+    PropertyChanged(self, propName);
+end;
+
+method TFont.setColor(value: TColor);
+begin
+  fColor := value;
+  NotifyChanged('color');
+end;
+
+method TFont.setName(value: String);
+begin
+  fName := value;
+  NotifyChanged('name');
+end;
+
+method TFont.setSize(value: Integer);
+begin
+  fSize := value;
+  NotifyChanged('size');
+end;
+
+method TFont.setStyles(value: TFontStyles);
+begin
+  fStyles := value;
+  NotifyChanged('styles');
+end;
+
+constructor TMemo(aOwner: TComponent);
+begin
+  fLines := new TMemoStrings();
+  TMemoStrings(fLines).Memo := self;
+end;
+
+method TMemoStrings.Get(aIndex: Integer): DelphiString;
+begin
+  var lText: String := fMemo.Handle.value;
+  var lTmp := TStringList.Create;
+  lTmp.Text := lText;
+  result := lTmp[aIndex];
+end;
+
+method TMemoStrings.GetTextStr: DelphiString;
+begin
+  result := String(fMemo.Handle.value);
+end;
+
+method TMemoStrings.SetTextStr(value: DelphiString);
+begin
+  inherited;
+  fMemo.Handle.value := String(value);
+end;
+
+method TMemoStrings.Clear;
+begin
+  inherited;
+  fMemo.Handle.value := '';
+end;
+
+method TMemoStrings.Delete(aIndex: Integer);
+begin
+  var lText: String := fMemo.Handle.value;
+  var lTmp := TStringList.Create;
+  lTmp.Text := lText;
+  lTmp.Delete(aIndex);
+  fMemo.Handle.value := String(lTmp.Text);
+end;
+
+method TMemoStrings.Insert(aIndex: Integer; aString: DelphiString);
+begin
+  var lText: String := fMemo.Handle.value;
+  var lTmp := TStringList.Create;
+  lTmp.Text := lText;
+  lTmp.Insert(aIndex, aString);
+  fMemo.Handle.value := String(lTmp.Text);
+end;
+
+method TMemoStrings.AddObject(S: DelphiString; aObject: TObject): Integer;
+begin
+  var lText: String := fMemo.Handle.value;
+  var lTmp := TStringList.Create;
+  lTmp.Text := lText;
+  lTmp.AddObject(S, aObject);
+  fMemo.Handle.value := String(lTmp.Text);
 end;
 
 end.
