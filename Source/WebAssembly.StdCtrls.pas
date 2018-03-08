@@ -234,6 +234,27 @@ type
     property Lines: TStrings read fLines write fLines;
   end;
 
+  TProgressBarStyle = public enum (Normal, Marquee);
+  
+  TProgressBar = public class(TControl)
+  private
+    fStyle: TProgressBarStyle;
+    fPosition: Integer;
+    fMax: Integer;
+    method SetMax(value: Integer);
+    method SetPosition(value: Integer);
+    method setStyle(value: TProgressBarStyle);
+  protected
+    method CreateHandle; override;
+    method PlatformSetPosition(value: Integer);
+    method PlatformSetMax(value: Integer);
+    method PlatformSetStyle(value: TProgressBarStyle);
+  public
+    property Max: Integer read fMax write SetMax;
+    property Position: Integer read fPosition write SetPosition;
+    property Style: TProgressBarStyle read fStyle write setStyle;
+  end;
+
   procedure ShowMessage(aMessage: String);
 
 implementation
@@ -794,6 +815,52 @@ begin
   lTmp.Text := lText;
   lTmp.AddObject(S, aObject);
   fMemo.Handle.value := String(lTmp.Text);
+end;
+
+method TProgressBar.SetMax(value: Integer);
+begin
+  fMax := value;
+  PlatformSetMax(value);
+end;
+
+method TProgressBar.SetPosition(value: Integer);
+begin
+  fPosition := value;
+  PlatformSetPosition(value);
+end;
+
+method TProgressBar.CreateHandle;
+begin
+  fHandle := WebAssembly.CreateElement('PROGRESS');
+  fHandle.style.position := "absolute";
+end;
+
+method TProgressBar.PlatformSetPosition(value: Integer);
+begin
+  fHandle.value := value;
+end;
+
+method TProgressBar.PlatformSetMax(value: Integer);
+begin
+  fHandle.max := value;
+end;
+
+method TProgressBar.setStyle(value: TProgressBarStyle);
+begin
+  fStyle := value;
+  PlatformSetStyle(value);
+end;
+
+method TProgressBar.PlatformSetStyle(value: TProgressBarStyle);
+begin
+  if value = TProgressBarStyle.Marquee then begin
+    fHandle.removeAttribute('value');
+    fHandle.removeAttribute('max');
+  end
+  else begin
+    fHandle.max := fMax;
+    fHandle.value := fPosition;
+  end;
 end;
 
 end.
