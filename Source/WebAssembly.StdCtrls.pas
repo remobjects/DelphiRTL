@@ -416,6 +416,8 @@ end;
 constructor TControl(aOwner: TComponent);
 begin
   Name := GetDefaultName;
+  fFont := new TFont();
+  fFont.PropertyChanged += @Changed;
   CreateHandle;
   ApplyDefaults;
 end;
