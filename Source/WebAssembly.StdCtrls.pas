@@ -43,7 +43,7 @@ type
     constructor(aOwner: TComponent);
   public
     property Handle: dynamic read fHandle;
-    property Font: TFont read fFont write setFont;
+    property Font: TFont read fFont write SetFont;
   end;
 
   TColor = Integer;
@@ -63,10 +63,10 @@ type
     method NotifyChanged(propName: String);
   public
     event PropertyChanged: Action<Object, String>;
-    property Color: TColor read fColor write setColor;
-    property Name: String read fName write setName;
-    property Size: Integer read fSize write setSize;
-    property Style: TFontStyles read fStyles write setStyles;
+    property Color: TColor read fColor write SetColor;
+    property Name: String read fName write SetName;
+    property Size: Integer read fSize write SetSize;
+    property Style: TFontStyles read fStyles write SetStyles;
   end;
 
   TForm = public class(TControl)
@@ -79,27 +79,27 @@ type
   TButton = public class(TControl)
   private
     fCaption: String;
-    method setCaption(aValue: String);    
+    method SetCaption(aValue: String);    
   protected
     method ClassName: String; override;
     method CreateHandle; override;
     method PlatformSetCaption(aValue: String);
   public
     class method Create(AOwner: TComponent): TButton;
-    property Caption: String read fCaption write setCaption;
+    property Caption: String read fCaption write SetCaption;
   end;
 
   TLabel = public class(TControl)
   private
     fCaption: String;
-    method setCaption(aValue: String);
+    method SetCaption(aValue: String);
  protected
     method ClassName: String; override;
     method CreateHandle; override;
     method PlatformSetCaption(aValue: String);
   public
     class method Create(aOwner: TComponent): TLabel;
-    property Caption: String read fCaption write setCaption;
+    property Caption: String read fCaption write SetCaption;
   end;
 
   TPanel = public class(TControl)
@@ -243,7 +243,7 @@ type
     fMax: Integer;
     method SetMax(value: Integer);
     method SetPosition(value: Integer);
-    method setStyle(value: TProgressBarStyle);
+    method SetStyle(value: TProgressBarStyle);
   protected
     method CreateHandle; override;
     method PlatformSetPosition(value: Integer);
@@ -252,7 +252,7 @@ type
   public
     property Max: Integer read fMax write SetMax;
     property Position: Integer read fPosition write SetPosition;
-    property Style: TProgressBarStyle read fStyle write setStyle;
+    property Style: TProgressBarStyle read fStyle write SetStyle;
   end;
 
   procedure ShowMessage(aMessage: String);
@@ -282,7 +282,7 @@ begin
   fHandle.innerText := fCaption;
 end;
 
-method TButton.setCaption(aValue: String);
+method TButton.SetCaption(aValue: String);
 begin
   fCaption := aValue;
   PlatformSetCaption(aValue);
@@ -448,7 +448,7 @@ begin
   fHandle.setAttribute('id', Name);
 end;
 
-method TControl.setFont(value: TFont);
+method TControl.SetFont(value: TFont);
 begin
   fFont := value;
   PlatformFontSetColor(fFont.Color);
@@ -735,25 +735,25 @@ begin
     PropertyChanged(self, propName);
 end;
 
-method TFont.setColor(value: TColor);
+method TFont.SetColor(value: TColor);
 begin
   fColor := value;
   NotifyChanged('color');
 end;
 
-method TFont.setName(value: String);
+method TFont.SetName(value: String);
 begin
   fName := value;
   NotifyChanged('name');
 end;
 
-method TFont.setSize(value: Integer);
+method TFont.SetSize(value: Integer);
 begin
   fSize := value;
   NotifyChanged('size');
 end;
 
-method TFont.setStyles(value: TFontStyles);
+method TFont.SetStyles(value: TFontStyles);
 begin
   fStyles := value;
   NotifyChanged('styles');
@@ -845,7 +845,7 @@ begin
   fHandle.max := value;
 end;
 
-method TProgressBar.setStyle(value: TProgressBarStyle);
+method TProgressBar.SetStyle(value: TProgressBarStyle);
 begin
   fStyle := value;
   PlatformSetStyle(value);
