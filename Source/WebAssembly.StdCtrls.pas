@@ -188,10 +188,12 @@ type
   TComboBox = public class(TListControl)
   private
     fOnSelect: TNotifyEvent;
-     method SetOnSelect(aValue: TNotifyEvent);
+    method SetOnSelect(aValue: TNotifyEvent);
   protected
+    method PlatformGetText: String;
     method CreateHandle; override;
   public
+    property Text: String read PlatformGetText;
     property OnSelect: TNotifyEvent read fOnSelect write SetOnSelect;
   end;
 
@@ -551,6 +553,11 @@ begin
   fHandle.style.position := "absolute";
 end;
 
+method TComboBox.PlatformGetText: String;
+begin
+  result := fHandle.value;
+end;
+
 method TComboBox.CreateHandle;
 begin
   internalCreateHandle(false);
@@ -716,7 +723,7 @@ method TComboBox.SetOnSelect(aValue: TNotifyEvent);
 begin
   fOnSelect := aValue;
   var lDelegate := new WebAssemblyDelegate((a) -> aValue(self));
-  fHandle.addEventListener("onChange", lDelegate);
+  fHandle.addEventListener("change", lDelegate);
 end;
 
 method TListControl.GetItemIndex: Integer;
