@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AnsiString.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes.Persistent.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes.StringList.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Collections.Dictionary.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Collections.Queue.pas" />
@@ -33,8 +34,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)WebAssembly.StdCtrls.pas">
       <Target>Island.WebAssembly</Target>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Classes.Persistent.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components.StdCtrls.pas">
+      <Target>Island.WebAssembly</Target>
+    </Compile>    
   </ItemGroup>
 </Project>
