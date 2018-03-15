@@ -50,9 +50,9 @@ protected
     
     method PlatformSetWidth(aValue: Integer); partial; empty;
     method PlatformSetHeight(aValue: Integer); partial; empty;
-    method PlatformSetTop(aValue: Integer); partial; empty;
-    method PlatformSetLeft(aValue: Integer); partial; empty;
-    method PlatformSetParent(aValue: TControl); partial; empty;
+    method PlatformSetTop(aValue: Integer); virtual; partial; empty;
+    method PlatformSetLeft(aValue: Integer); virtual; partial; empty;
+    method PlatformSetParent(aValue: TControl); virtual; partial; empty;
     method PlatformSetOnClick(aValue: TNotifyEvent); partial; empty;
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial; empty;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial; empty;

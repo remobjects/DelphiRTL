@@ -22,9 +22,9 @@ type
     fFont: TFont;
     method PlatformSetWidth(aValue: Integer); partial;
     method PlatformSetHeight(aValue: Integer); partial;
-    method PlatformSetTop(aValue: Integer); partial;
-    method PlatformSetLeft(aValue: Integer); partial;
-    method PlatformSetParent(aValue: TControl); partial;
+    method PlatformSetTop(aValue: Integer); virtual; partial;
+    method PlatformSetLeft(aValue: Integer); virtual; partial;
+    method PlatformSetParent(aValue: TControl); virtual; partial;
     method PlatformSetOnClick(aValue: TNotifyEvent); partial;
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
@@ -130,10 +130,16 @@ type
     fCaption: String;    
     method setCaption(value: String);
   protected
+    fLabelHandle: dynamic;
     method internalCreateHandle(aType: String);
+    method PlatformSetParent(aValue: TControl); override;
+    method PlatformSetTop(aValue: Integer); override;
+    method PlatformSetLeft(aValue: Integer); override;
+
     method PlatformGetChecked: Boolean;
     method PlatformSetChecked(value: Boolean);
     method PlatformSetCaption(value: String);
+
   public
     property Caption: String read fCaption write PlatformSetCaption;
     property Checked: Boolean read PlatformGetChecked write PlatformSetChecked;
@@ -188,10 +194,12 @@ type
   TComboBox = public class(TListControl)
   private
     fOnSelect: TNotifyEvent;
-     method SetOnSelect(aValue: TNotifyEvent);
+    method SetOnSelect(aValue: TNotifyEvent);
   protected
+    method PlatformGetText: String;
     method CreateHandle; override;
   public
+    property Text: String read PlatformGetText;
     property OnSelect: TNotifyEvent read fOnSelect write SetOnSelect;
   end;
 
@@ -504,7 +512,7 @@ end;
 
 method TRadioCheckBox.PlatformSetCaption(value: String);
 begin
-  fHandle.setAttribute("value", value);
+  fLabelHandle.innerText := value;
 end;
 
 method TRadioCheckBox.setCaption(value: String);
@@ -513,12 +521,32 @@ begin
   PlatformSetCaption(value);
 end;
 
+method TRadioCheckBox.PlatformSetParent(aValue: TControl);
+begin
+  inherited;
+  aValue.Handle.appendChild(fLabelHandle);
+end;
+
+method TRadioCheckBox.PlatformSetTop(aValue: Integer);
+begin
+  inherited;
+  fLabelHandle.style.top := (aValue).ToString + 'px';
+end;
+
+method TRadioCheckBox.PlatformSetLeft(aValue: Integer);
+begin
+  inherited;
+  fLabelHandle.style.left := (aValue + 22).ToString + 'px';
+end;
+
 method TRadioCheckBox.internalCreateHandle(aType: String);
 begin
   fHandle := WebAssembly.CreateElement("INPUT");
   fHandle.setAttribute("type", aType);
-  fHandle.setAttribute("value", Name);
   fHandle.style.position := "absolute";  
+  fLabelHandle := WebAssembly.CreateElement("LABEL");
+  fLabelHandle.style.position := "absolute";  
+  fLabelHandle.innerText := Name;
 end;
 
 method TRadioCheckBox.PlatformSetChecked(value: Boolean);
@@ -549,6 +577,11 @@ begin
   if fListBoxMode then
     fHandle.setAttribute("size", 6);
   fHandle.style.position := "absolute";
+end;
+
+method TComboBox.PlatformGetText: String;
+begin
+  result := fHandle.value;
 end;
 
 method TComboBox.CreateHandle;
@@ -716,7 +749,7 @@ method TComboBox.SetOnSelect(aValue: TNotifyEvent);
 begin
   fOnSelect := aValue;
   var lDelegate := new WebAssemblyDelegate((a) -> aValue(self));
-  fHandle.addEventListener("onChange", lDelegate);
+  fHandle.addEventListener("change", lDelegate);
 end;
 
 method TListControl.GetItemIndex: Integer;
