@@ -55,6 +55,14 @@ type
   public
   end;
 
+  TGroupBox = public class(TControl)
+  private
+    fLabelHandle: dynamic;
+  protected
+    method CreateHandle; override;
+    method PlatformSetCaption(aValue: String);
+  end;
+
   TEdit = public partial class(TControl)
   protected
     method CreateHandle; override;
@@ -203,6 +211,21 @@ method TPanel.CreateHandle;
 begin
   fHandle := WebAssembly.CreateElement('div');
   fHandle.style.position := "absolute";
+end;
+
+method TGroupBox.CreateHandle; override;
+begin
+  fHandle := WebAssembly.CreateElement("FIELDSET");
+  fLabelHandle := WebAssembly.CreateElement("LEGEND");
+  var lText := WebAssembly.CreateTextNode(Name);
+  fLabelHandle.appendChild(lText);
+  fHandle.appendChild(fLabelHandle);
+  fHandle.style.position := "absolute";
+end;
+
+method TGroupBox.PlatformSetCaption(aValue: String);
+begin
+  fLabelHandle.innerText := aValue;
 end;
 
 method TEdit.CreateHandle;

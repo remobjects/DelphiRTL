@@ -72,6 +72,14 @@ type
     property Caption: String read fCaption write SetCaption;
   end;
 
+  TGroupBox = public partial class(TControl)
+  private
+    fCaption: String;
+    method SetCaption(aValue: String);
+  public
+    property Caption: String read fCaption write SetCaption;
+  end;
+
   TEdit = public partial class(TControl)
   public
     property MaxLength: Integer read PlatformGetMaxLength write PlatformSetMaxLength;
@@ -267,6 +275,12 @@ end;
 class method TLabel.Create(aOwner: TComponent): TLabel;
 begin
   result := new TLabel(aOwner);
+end;
+
+method TGroupBox.SetCaption(aValue: String);
+begin
+  fCaption := aValue;
+  PlatformSetCaption(aValue);
 end;
 
 method TRadioCheckBox.setCaption(value: String);
