@@ -9,7 +9,7 @@ type
     fOwner: TComponent;
     method setName(aValue: String);
     method setOwner(aValue: TComponent);
-  protected    
+  protected
     method ClassName: String; virtual;
     method Loaded; virtual;
     constructor(aOwner: TComponent);
@@ -18,11 +18,12 @@ type
     property Owner: TComponent read fOwner write setOwner;
   end;
 
-  TShiftState = set of (ssShift, ssAlt, ssCtrl, ssLeft, ssRight, ssMiddle, ssDouble, ssTouch, ssPen, ssCommand, ssHorizontal);
+  TShiftStateValues = public enum(ssShift, ssAlt, ssCtrl, ssLeft, ssRight, ssMiddle, ssDouble, ssTouch, ssPen, ssCommand, ssHorizontal);
+  TShiftState = public set of TShiftStateValues;
 
   TKeyPressEvent = public block(Sender: TObject; var Key: Char);
   TKeyEvent = public block(Sender: TObject; var Key: Word; Shift: TShiftState);
-  
+
   TControl = public partial class(TComponent)
   private
     fParent: TControl;
@@ -47,7 +48,7 @@ type
 protected
     method ClassName: String; override;
     method Loaded; override;
-    
+
     method PlatformSetWidth(aValue: Integer); partial; empty;
     method PlatformSetHeight(aValue: Integer); partial; empty;
     method PlatformSetTop(aValue: Integer); virtual; partial; empty;
@@ -57,7 +58,7 @@ protected
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial; empty;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial; empty;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial; empty;
-    
+
   public
     property Parent: TControl read fParent write SetParent;
     property Height: Integer read fHeight write SetHeight;
