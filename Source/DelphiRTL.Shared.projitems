@@ -31,7 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Aliases.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)String.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)WebAssembly.StdCtrls.pas">
-      <Target>Island.WebAssembly</Target>
+      <Target>Island-WebAssembly</Target>
     </Compile>
   </ItemGroup>
   <ItemGroup>

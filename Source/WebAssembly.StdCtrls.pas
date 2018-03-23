@@ -7,8 +7,8 @@ interface
 uses
   RemObjects.Elements.RTL.Delphi;
 
-type  
-  INotifyPropertyChanged = public interface 
+type
+  INotifyPropertyChanged = public interface
     event PropertyChanged: Action<TObject, String>;
   end;
 
@@ -34,7 +34,7 @@ type
     method PlatformFontSetName(value: String);
     method PlatformFontSetSize(value: Integer);
     method PlatformFontSetStyles(value: TFontStyles);
-    
+
     method GetDefaultName: String; virtual;
     method CreateHandle; abstract;
     method ApplyDefaults; virtual;
@@ -79,7 +79,7 @@ type
   TButton = public class(TControl)
   private
     fCaption: String;
-    method SetCaption(aValue: String);    
+    method SetCaption(aValue: String);
   protected
     method ClassName: String; override;
     method CreateHandle; override;
@@ -127,7 +127,7 @@ type
 
   TRadioCheckBox = public abstract class(TControl)
   private
-    fCaption: String;    
+    fCaption: String;
     method setCaption(value: String);
   protected
     fLabelHandle: dynamic;
@@ -147,12 +147,12 @@ type
 
   TCheckBox = public class(TRadioCheckBox)
   protected
-    method CreateHandle; override;  
+    method CreateHandle; override;
   end;
 
   TRadioButton = public class(TRadioCheckBox)
   protected
-    method CreateHandle; override;  
+    method CreateHandle; override;
   end;
 
   TListControlItems = public class(TStringList)
@@ -168,7 +168,7 @@ type
     method Insert(aIndex: Integer; S: DelphiString); override;
     property ListControl: TListControl read write;
   end;
-  
+
   TListControl = public abstract class(TControl)
   private
     method SetItemIndex(value: Integer);
@@ -185,12 +185,12 @@ type
   public
     method AddItem(Item: DelphiString; aObject: TObject);
     method Clear;
-    method ClearSelection; 
+    method ClearSelection;
     method DeleteSelected;
     property Items: TStrings read fItems write SetItems;
     property ItemIndex: Integer read GetItemIndex write SetItemIndex;
   end;
-    
+
   TComboBox = public class(TListControl)
   private
     fOnSelect: TNotifyEvent;
@@ -243,7 +243,7 @@ type
   end;
 
   TProgressBarStyle = public enum (Normal, Marquee);
-  
+
   TProgressBar = public class(TControl)
   private
     fStyle: TProgressBarStyle;
@@ -348,7 +348,7 @@ begin
     lRootView.style.margin := "0 auto";
     lWindow.document.body.appendChild(lRootView);
   end;
-  
+
   lRootView.appendChild(fHandle);
 end;
 
@@ -391,7 +391,7 @@ begin
 end;
 
 method TEdit.PlatformGetText: String;
-begin    
+begin
   result := fHandle.value;
 end;
 
@@ -543,15 +543,15 @@ method TRadioCheckBox.internalCreateHandle(aType: String);
 begin
   fHandle := WebAssembly.CreateElement("INPUT");
   fHandle.setAttribute("type", aType);
-  fHandle.style.position := "absolute";  
+  fHandle.style.position := "absolute";
   fLabelHandle := WebAssembly.CreateElement("LABEL");
-  fLabelHandle.style.position := "absolute";  
+  fLabelHandle.style.position := "absolute";
   fLabelHandle.innerText := Name;
 end;
 
 method TRadioCheckBox.PlatformSetChecked(value: Boolean);
 begin
-  fHandle.checked := value;  
+  fHandle.checked := value;
 end;
 
 method TRadioCheckBox.PlatformGetChecked: Boolean;
@@ -639,7 +639,7 @@ begin
   if Boolean(aStatus['ctrlKey']) then result := result + [TShiftState.ssCtrl];
   if Boolean(aStatus['shiftKey']) then result := result + [TShiftState.ssShift];
   if Boolean(aStatus['metaKey']) then result := result + [TShiftState.ssCommand];
-  aKey := Integer((Max(Double(aStatus['keyCode']), Double(aStatus['which'])))); 
+  aKey := Integer((Max(Double(aStatus['keyCode']), Double(aStatus['which']))));
 end;
 
 method TListControlItems.Clear;
@@ -658,7 +658,7 @@ method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
   var lOption := WebAssembly.CreateElement("OPTION");
   lOption.text := String(S);
-  ListControl.Handle.add(lOption, aIndex);  
+  ListControl.Handle.add(lOption, aIndex);
 end;
 
 method TListControlItems.PlatformClear;
