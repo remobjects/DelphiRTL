@@ -15,7 +15,8 @@ type
                                coIgnoreKanatype, coIgnoreNonSpace, coIgnoreSymbols, coIgnoreWidth,
                                coLingCasing, coDigitAsNumbers, coStringSort) of Integer;
   TCompareOptions = public set of TCompareOption;
-  TReplaceFlags = public set of (rfReplaceAll, rfIgnoreCase);
+  TReplaceFlag = public enum(rfReplaceAll, rfIgnoreCase) of Integer;
+  TReplaceFlags = public set of TReplaceFlag;
   //TArray<T> = array of T;
   TStringSplitOptions = public (None, ExcludeEmpty);
 
@@ -119,7 +120,7 @@ type
     class method LowerCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; static; partial; empty;
     class method UpperCase(const S: DelphiString): DelphiString; static;
     class method UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; static; partial; empty;
-    
+
     {$IF COOPER}
     method hashCode: Integer; override;
     {$ELSEIF ECHOES OR ISLAND}
@@ -127,13 +128,13 @@ type
     {$ELSEIF TOFFEE}
     method hash: Foundation.NSUInteger;
     {$ENDIF}
-    
+
     {$IF TOFFEE}
     method isEqual(Obj: id): Boolean;
     {$ELSE}
     method &Equals(Obj: Object): Boolean; override;
-    {$ENDIF} 
-    
+    {$ENDIF}
+
     method CompareTo(const strB: DelphiString): Integer;
     method Contains(const Value: DelphiString): Boolean;
     class method &Copy(const Str: DelphiString): DelphiString; static;
@@ -477,7 +478,7 @@ begin
   var lArray := new Char[lSource.Length];
   for i: Integer := 0 to lSource.Length - 1 do
     lArray[i] := chr(lSource[i]);
-  
+
   result := DelphiString.Create(lArray);
 end;
 
@@ -829,7 +830,7 @@ begin
       end;
       result := lSb.ToString;
   end
-  else 
+  else
     result := '';
 end;
 
@@ -1664,12 +1665,12 @@ end;
 
 
 {$IF COOPER}
-method DelphiString.hashCode: Integer; 
+method DelphiString.hashCode: Integer;
 begin
   result := fData.hashCode;
 end;
 {$ELSEIF ECHOES OR ISLAND}
-method DelphiString.GetHashCode: Integer; 
+method DelphiString.GetHashCode: Integer;
 begin
   result := fData.GetHashCode;
 end;
@@ -1704,6 +1705,6 @@ begin
   var lItem := DelphiString(Obj);
   result := &Equals(lItem);
 end;
-{$ENDIF} 
+{$ENDIF}
 
 end.
