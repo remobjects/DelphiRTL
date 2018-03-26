@@ -170,7 +170,7 @@ type
       Assert.AreEqual(fList.Values['Ford'], 'Focus');
       Assert.AreEqual(fList.Values['Chevrolet'], 'Impala');
       fList.AddPair('Dodge', 'Viper', fList);
-      Assert.AreEqual(FList.Objects[fLastIndex + 3], FList);
+      Assert.AreEqual(fList.Objects[fLastIndex + 3], fList);
     end;
 
     method AppendTests;

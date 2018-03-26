@@ -26,50 +26,50 @@
     <Mode>Cooper</Mode>
     <SubMode>Plain</SubMode>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Island.Windows' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Island-Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <OutputType>staticlibrary</OutputType>
     <Architecture>i386</Architecture>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Island.Linux' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Island-Linux' ">
     <Mode>Island</Mode>
     <SubMode>Linux</SubMode>
     <OutputType>staticlibrary</OutputType>
     <Architecture>x86_64</Architecture>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Island.Android' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Island-Android' ">
     <Mode>Island</Mode>
     <SubMode>Android</SubMode>
     <OutputType>staticlibrary</OutputType>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Island.WebAssembly' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Island-WebAssembly' ">
     <Mode>Island</Mode>
     <SubMode>WebAssembly</SubMode>
     <OutputType>staticlibrary</OutputType>
   </PropertyGroup>-->
-  <PropertyGroup Condition=" '$(Target)' == 'Toffee.macOS' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Toffee-macOS' ">
     <Mode>Toffee</Mode>
     <SubMode>macOS</SubMode>
     <SDK>macOS</SDK>
     <OutputType>staticlibrary</OutputType>
     <DefaultUses>Foundation</DefaultUses>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Toffee.iOS' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Toffee-iOS' ">
     <Mode>Toffee</Mode>
     <SubMode>iOS</SubMode>
     <SDK>iOS</SDK>
     <OutputType>staticlibrary</OutputType>
     <DefaultUses>Foundation</DefaultUses>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Toffee.tvOS' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Toffee-tvOS' ">
     <Mode>Toffee</Mode>
     <SubMode>tvOS</SubMode>
     <SDK>tvOS</SDK>
     <OutputType>staticlibrary</OutputType>
     <DefaultUses>Foundation</DefaultUses>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Toffee.watchOS' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Toffee-watchOS' ">
     <Mode>Toffee</Mode>
     <SubMode>watchOS</SubMode>
     <SDK>watchOS</SDK>
@@ -146,106 +146,106 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="rtl">
-      <Target>Island.Windows</Target>
+      <Target>Island-Windows</Target>
     </Reference>
     <Reference Include="gc">
-      <Target>Island.Windows</Target>
+      <Target>Island-Windows</Target>
     </Reference>
     <Reference Include="Island">
-      <Target>Island.Windows</Target>
+      <Target>Island-Windows</Target>
     </Reference>
     <Reference Include="Elements">
-      <Target>Island.Windows</Target>
+      <Target>Island-Windows</Target>
     </Reference>
     <Reference Include="rtl">
-      <Target>Island.Android</Target>
+      <Target>Island-Android</Target>
     </Reference>
     <Reference Include="gc">
-      <Target>Island.Android</Target>
+      <Target>Island-Android</Target>
     </Reference>
     <Reference Include="Island">
-      <Target>Island.Android</Target>
+      <Target>Island-Android</Target>
     </Reference>
     <Reference Include="Elements">
-      <Target>Island.Android</Target>
+      <Target>Island-Android</Target>
     </Reference>
     <Reference Include="Island">
-      <Target>Island.WebAssembly</Target>
+      <Target>Island-WebAssembly</Target>
     </Reference>
     <Reference Include="Elements">
-      <Target>Island.WebAssembly</Target>
+      <Target>Island-WebAssembly</Target>
     </Reference>
     <Reference Include="rtl">
-      <Target>Island.Linux</Target>
+      <Target>Island-Linux</Target>
     </Reference>
     <Reference Include="gc">
-      <Target>Island.Linux</Target>
+      <Target>Island-Linux</Target>
     </Reference>
     <Reference Include="Island">
-      <Target>Island.Linux</Target>
+      <Target>Island-Linux</Target>
     </Reference>
     <Reference Include="Elements">
-      <Target>Island.Linux</Target>
+      <Target>Island-Linux</Target>
     </Reference>
     <Reference Include="Foundation">
-      <Target>Toffee.iOS</Target>
+      <Target>Toffee-iOS</Target>
     </Reference>
     <Reference Include="rtl">
-      <Target>Toffee.iOS</Target>
+      <Target>Toffee-iOS</Target>
     </Reference>
     <Reference Include="libToffee">
-      <Target>Toffee.iOS</Target>
+      <Target>Toffee-iOS</Target>
     </Reference>
     <Reference Include="libxml2">
-      <Target>Toffee.iOS</Target>
+      <Target>Toffee-iOS</Target>
     </Reference>
     <Reference Include="libElements">
-      <Target>Toffee.iOS</Target>
+      <Target>Toffee-iOS</Target>
     </Reference>
     <Reference Include="Foundation">
-      <Target>Toffee.macOS</Target>
+      <Target>Toffee-macOS</Target>
     </Reference>
     <Reference Include="rtl">
-      <Target>Toffee.macOS</Target>
+      <Target>Toffee-macOS</Target>
     </Reference>
     <Reference Include="libToffee">
-      <Target>Toffee.macOS</Target>
+      <Target>Toffee-macOS</Target>
     </Reference>
     <Reference Include="libxml2">
-      <Target>Toffee.macOS</Target>
+      <Target>Toffee-macOS</Target>
     </Reference>
     <Reference Include="libElements">
-      <Target>Toffee.macOS</Target>
+      <Target>Toffee-macOS</Target>
     </Reference>
     <Reference Include="Foundation">
-      <Target>Toffee.tvOS</Target>
+      <Target>Toffee-tvOS</Target>
     </Reference>
     <Reference Include="rtl">
-      <Target>Toffee.tvOS</Target>
+      <Target>Toffee-tvOS</Target>
     </Reference>
     <Reference Include="libToffee">
-      <Target>Toffee.tvOS</Target>
+      <Target>Toffee-tvOS</Target>
     </Reference>
     <Reference Include="libxml2">
-      <Target>Toffee.tvOS</Target>
+      <Target>Toffee-tvOS</Target>
     </Reference>
     <Reference Include="libElements">
-      <Target>Toffee.tvOS</Target>
+      <Target>Toffee-tvOS</Target>
     </Reference>
     <Reference Include="Foundation">
-      <Target>Toffee.watchOS</Target>
+      <Target>Toffee-watchOS</Target>
     </Reference>
     <Reference Include="rtl">
-      <Target>Toffee.watchOS</Target>
+      <Target>Toffee-watchOS</Target>
     </Reference>
     <Reference Include="libToffee">
-      <Target>Toffee.watchOS</Target>
+      <Target>Toffee-watchOS</Target>
     </Reference>
     <Reference Include="libxml2">
-      <Target>Toffee.watchOS</Target>
+      <Target>Toffee-watchOS</Target>
     </Reference>
     <Reference Include="libElements">
-      <Target>Toffee.watchOS</Target>
+      <Target>Toffee-watchOS</Target>
     </Reference>
   </ItemGroup>
   <ItemGroup>

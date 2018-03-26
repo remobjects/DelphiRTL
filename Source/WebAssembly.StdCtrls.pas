@@ -55,7 +55,7 @@ type
   public
   end;
 
-  TGroupBox = public class(TControl)
+  TGroupBox = public partial class(TControl)
   private
     fLabelHandle: dynamic;
   protected
@@ -213,7 +213,7 @@ begin
   fHandle.style.position := "absolute";
 end;
 
-method TGroupBox.CreateHandle; override;
+method TGroupBox.CreateHandle;
 begin
   fHandle := WebAssembly.CreateElement("FIELDSET");
   fLabelHandle := WebAssembly.CreateElement("LEGEND");

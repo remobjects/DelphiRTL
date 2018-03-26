@@ -271,13 +271,13 @@ type
       var lEqual := new Char[11];
       lEqual := ['T', 'e', 's', 't', ' ', 's', 't', 'r', 'i', 'n', 'g'];
       x.CopyTo(0, var lTarget, 0, 11);
-      for i: integer := 0 to lEqual.length - 1 do
+      for i: Integer := 0 to lEqual.length - 1 do
         Assert.AreEqual(lTarget[i], lEqual[i]);
       var lTarget2 := new Char[6];
       var lEqual2 := new Char[6];
       lEqual2 := ['s', 't', 'r', 'i', 'n', 'g'];
       x.CopyTo(5, var lTarget2, 0, 6);
-      for i: integer := 0 to lEqual2.length - 1 do
+      for i: Integer := 0 to lEqual2.length - 1 do
         Assert.AreEqual(lTarget2[i], lEqual2[i]);
     end;
 
@@ -407,28 +407,28 @@ type
       x := 'one|two|three#four@five%six|seven@eight@nine%ten';
 
       lRes := x.Split(lCharSep);
-      Assert.AreEqual(lRes.Length, 10);
+      Assert.AreEqual(lRes.length, 10);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[9], 'ten');
 
       lRes := x.Split(lCharSep, 4);
-      Assert.AreEqual(lRes.Length, 4);
+      Assert.AreEqual(lRes.length, 4);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[3], 'four@five%six|seven@eight@nine%ten');
 
       x := 'one|two|three##four@five%six|seven@eight@nine%ten';
       lRes := x.Split(lCharSep);
-      Assert.AreEqual(lRes.Length, 11);
+      Assert.AreEqual(lRes.length, 11);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[10], 'ten');
 
       lRes := x.Split(lCharSep, TStringSplitOptions.ExcludeEmpty);
-      Assert.AreEqual(lRes.Length, 10);
+      Assert.AreEqual(lRes.length, 10);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[9], 'ten');
 
       lRes := x.Split(lCharSep, 4, TStringSplitOptions.ExcludeEmpty);
-      Assert.AreEqual(lRes.Length, 4);
+      Assert.AreEqual(lRes.length, 4);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[3], 'four@five%six|seven@eight@nine%ten');
 
@@ -437,28 +437,28 @@ type
 
       x := 'one||two||three##four@@five%%six||seven@@eight@@nine%%ten';
       lRes := x.Split(lStringSep);
-      Assert.AreEqual(lRes.Length, 10);
+      Assert.AreEqual(lRes.length, 10);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[9], 'ten');
 
       lRes := x.Split(lStringSep, 4);
-      Assert.AreEqual(lRes.Length, 4);
+      Assert.AreEqual(lRes.length, 4);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[3], 'four@@five%%six||seven@@eight@@nine%%ten');
 
       x := 'one||two||three####four@@five%%six||seven@@eight@@nine%%ten';
       lRes := x.Split(lStringSep);
-      Assert.AreEqual(lRes.Length, 11);
+      Assert.AreEqual(lRes.length, 11);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[10], 'ten');
 
       lRes := x.Split(lStringSep, TStringSplitOptions.ExcludeEmpty);
-      Assert.AreEqual(lRes.Length, 10);
+      Assert.AreEqual(lRes.length, 10);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[9], 'ten');
 
       lRes := x.Split(lStringSep, 4, TStringSplitOptions.ExcludeEmpty);
-      Assert.AreEqual(lRes.Length, 4);
+      Assert.AreEqual(lRes.length, 4);
       Assert.AreEqual(lRes[0], 'one');
       Assert.AreEqual(lRes[3], 'four@@five%%six||seven@@eight@@nine%%ten');
     end;
@@ -616,12 +616,12 @@ type
     begin
       var lString := TStringList.Create;
       var lContent := new TStringList();
-      var lTestPath := Path.Combine(Environment.TempFolder, 'Test.INI');            
+      var lTestPath := Path.Combine(Environment.TempFolder, 'Test.INI');
       lContent.Add('[Config]');
       lContent.Add('DateTimeFormat=');
       lContent.Add('Language=ENGLISH');
       lContent.Add('RightEdge=80');
-      lContent.Add('AutoSavePos=1');      
+      lContent.Add('AutoSavePos=1');
       lContent.SaveToFile(lTestPath);
       try
         lString.LoadFromFile(lTestPath);
