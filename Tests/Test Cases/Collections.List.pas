@@ -165,7 +165,7 @@ type
       fList.Add('String 3');
       fList.Move(0, 2);
       Assert.AreEqual(fList[1], 'String 1');
-      Assert.AreEqual(FList[2], 'String 3');
+      Assert.AreEqual(fList[2], 'String 3');
       fList.Clear;
 
       fList.Add('String 1');
@@ -173,7 +173,7 @@ type
       fList.Add('String 3');
       fList.Move(2, 0);
       Assert.AreEqual(fList[0], 'String 3');
-      Assert.AreEqual(FList[1], 'String 1');
+      Assert.AreEqual(fList[1], 'String 1');
     end;
 
     method FirstTests;

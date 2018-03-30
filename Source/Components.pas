@@ -18,7 +18,7 @@ type
     property Owner: TComponent read fOwner write setOwner;
   end;
 
-  TShiftStateValues = public enum(ssShift, ssAlt, ssCtrl, ssLeft, ssRight, ssMiddle, ssDouble, ssTouch, ssPen, ssCommand, ssHorizontal);
+  TShiftStateValues = public enum(ssShift, ssAlt, ssCtrl, ssLeft, ssRight, ssMiddle, ssDouble, ssTouch, ssPen, ssCommand, ssHorizontal) of Integer;
   TShiftState = public set of TShiftStateValues;
 
   TKeyPressEvent = public block(Sender: TObject; var Key: Char);

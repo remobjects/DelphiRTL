@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0" DefaultTargets="Build">
-    <PropertyGroup Label="Globals">
-        <ProjectGuid>737C0B8D-F33B-43F9-9C2F-ED382C8E3B48</ProjectGuid>
-    </PropertyGroup>
-    <PropertyGroup>
-        <RootNamespace>DelphiRTL.Tests.Shared</RootNamespace>
-    </PropertyGroup>
-    <Import Project="DelphiRTL.Tests.Shared.projitems" Label="Shared"/>
-    <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.SharedProject.targets"/>
-    <PropertyGroup>
-        <PreBuildEvent/>
-    </PropertyGroup>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" DefaultTargets="Build">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>737C0B8D-F33B-43F9-9C2F-ED382C8E3B48</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>DelphiRTL.Tests.Shared</RootNamespace>
+  </PropertyGroup>
+  <Import Project="DelphiRTL.Tests.Shared.projitems" Label="Shared" />
+  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.SharedProject.targets" />
+  <PropertyGroup>
+    <PreBuildEvent />
+  </PropertyGroup>
 </Project>
