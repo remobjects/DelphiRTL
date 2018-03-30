@@ -6,6 +6,7 @@ interface
 
 type
   TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ENDIF};
+  TPropertyChangedEvent = public block(Sender: TObject; PropName: String);
 
   INotifyPropertyChanged = public interface
     event PropertyChanged: Action<TObject, String>;
@@ -31,7 +32,7 @@ type
   TFontStyle = public enum(Bold, Italic, Underline, StrikeOut);
   TFontStyles = set of TFontStyle;
 
-  TFont = public class(TPersistent, INotifyPropertyChanged)
+  TFont = public class(TPersistent)
   private
     fColor: TColor;
     fName: String;
@@ -43,7 +44,7 @@ type
     method setStyles(value: TFontStyles);
     method NotifyChanged(propName: String);
   public
-    event PropertyChanged: Action<Object, String>;
+    property PropertyChanged: TPropertyChangedEvent;
     property Color: TColor read fColor write SetColor;
     property Name: String read fName write SetName;
     property Size: Integer read fSize write SetSize;
@@ -189,7 +190,7 @@ constructor TControl(aOwner: TComponent);
 begin
   Name := GetDefaultName;
   fFont := new TFont();
-  fFont.PropertyChanged += @Changed;
+  fFont.PropertyChanged := @Changed;
   CreateHandle;
   ApplyDefaults;
 end;
