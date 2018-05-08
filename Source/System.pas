@@ -8,7 +8,7 @@ uses
 {$GLOBALS ON}
 
 type
-  THandle = Int64; // Since native types are not supported on Java, THandle stores a 64 bit integer always
+  THandle = public Int64; // Since native types are not supported on Java, THandle stores a 64 bit integer always
   TArray<T> = array of T;
   TDateTime = public Double;
   TDate = public TDateTime;
