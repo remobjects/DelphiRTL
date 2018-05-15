@@ -8,7 +8,6 @@ uses
 type
   TApplication = public partial class(TComponent)
   public
-    constructor(aOwner: TComponent);
     method CreateForm(InstanceClass: TComponentClass; var FormRef: TComponent); partial;
     method Initialize; partial;
     method Run; partial;
@@ -26,11 +25,6 @@ type
   ComponentCtorHelper = assembly procedure(aInst: Object; aOwner: TComponent);
 
 implementation
-
-constructor TApplication(aOwner: TComponent);
-begin
-
-end;
 
 method TApplication.CreateForm(InstanceClass: TComponentClass; var FormRef: TComponent);
 begin
@@ -83,7 +77,7 @@ end;
 
 constructor TCustomForm(aOwner: TComponent);
 begin
-
+  // TODO selft class from resource
 end;
 
 method TCustomForm.CreateWnd;

@@ -21,7 +21,7 @@ type
     fIgnoreChildren: Boolean;
   protected
     fStream: TStream;
-    method SetRoot(Value: TComponent); virtual;
+    method SetRoot(aValue: TComponent); virtual;
   public
     constructor(aStream: TStream; BufSize: Integer);
     //destructor Destroy; override;
@@ -57,9 +57,9 @@ type
 
 implementation
 
-method TFiler.SetRoot(Value: TComponent);
+method TFiler.SetRoot(aValue: TComponent);
 begin
-
+  fRoot := aValue;
 end;
 
 constructor TFiler(aStream: TStream; BufSize: Integer);
