@@ -1,0 +1,20 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# RemObjects Water
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "ProjectRCL", "ProjectRCL.elements", "{F8CCC42D-68E3-4708-9C96-A85F0AD63095}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AnyCPU = Debug|AnyCPU
+		Release|AnyCPU = Release|AnyCPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F8CCC42D-68E3-4708-9C96-A85F0AD63095}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{F8CCC42D-68E3-4708-9C96-A85F0AD63095}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{F8CCC42D-68E3-4708-9C96-A85F0AD63095}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{F8CCC42D-68E3-4708-9C96-A85F0AD63095}.Release|AnyCPU.Build.0 = Release|AnyCPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
