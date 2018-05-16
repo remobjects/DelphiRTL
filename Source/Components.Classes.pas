@@ -16,7 +16,6 @@ type
   TFiler = public abstract class(TObject)
   private
     fRoot: TComponent;
-    fLookupRoot: TComponent;
     fAncestor: TPersistent;
     fIgnoreChildren: Boolean;
   protected
@@ -29,30 +28,37 @@ type
     method DefineBinaryProperty(Name: String; ReadData, WriteData: TStreamProc; HasData: Boolean); virtual; abstract;
     method FlushBuffer; virtual; abstract;
     property Root: TComponent read fRoot write SetRoot;
-    property LookupRoot: TComponent read fLookupRoot;
     property Ancestor: TPersistent read fAncestor write fAncestor;
     property IgnoreChildren: Boolean read fIgnoreChildren write fIgnoreChildren;
   end;
 
   TReader = public class(TFiler)
   private
-    // TODO change name
+    fParent: TComponent;
+    fOwner: TComponent;
     method ReadComponentData(aInstance: TComponent);
   protected
     method ReadProperty(aInstance: TComponent /*TPersistent*/);
   public
     const FilerSignature: UInt32 = $30465054; // 'TPF0'
     method EndOfList: Boolean;
-    method ReadComponent(Component: TComponent): TComponent;
+    method ReadComponent(aComponent: TComponent): TComponent;
     method ReadData(Instance: TComponent);
+    method ReadPropValue(aValueType: TValueType; aProperty: PropertyInfo): Object;
     method ReadRootComponent(Root: TComponent): TComponent;
     method ReadSignature;
     method ReadStr: String;
     method ReadValue: TValueType;
-
+    property Owner: TComponent read fOwner write fOwner;
   end;
 
   TWriter = public class(TObject)
+  end;
+
+  ComponentsHelper = public static class
+  public
+    class method CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
+    class method CreateComponent(aType: &Type; aOwner: TComponent): TComponent;
   end;
 
 implementation
@@ -70,13 +76,70 @@ end;
 method TReader.ReadComponentData(aInstance: TComponent);
 begin
   while not EndOfList do ReadProperty(aInstance);
+  ReadValue; // skip end of list
+  while not EndOfList do ReadComponent(nil);
+  ReadValue; // skip end of list
+end;
 
+method TReader.ReadPropValue(aValueType: TValueType; aProperty: PropertyInfo): Object;
+begin
+  var lValue: Integer;
+  case aValueType of
+    TValueType.vaInt8: begin
+      fStream.ReadData(var lValue, sizeOf(Byte));
+      exit Byte(lValue);
+    end;
+
+    TValueType.vaInt16: begin
+      fStream.ReadData(var lValue, sizeOf(SmallInt));
+      exit SmallInt(lValue);
+    end;
+
+    TValueType.vaInt32: begin
+      fStream.ReadData(var lValue, sizeOf(Integer));
+      exit lValue;
+    end;
+
+    TValueType.vaInt64: begin
+      var lInt64: Int64;
+      fStream.ReadData(var lInt64, sizeOf(Int64));
+      exit lInt64;
+    end;
+
+    TValueType.vaString, TValueType.vaUTF8String, TValueType.vaLString: begin
+      if aValueType = TValueType.vaLString then
+        fStream.Read(var lValue, sizeOf(Integer))
+      else
+        fStream.ReadData(var lValue, sizeOf(Byte));
+
+      var lBytes := new Byte[lValue];
+      if aValueType = TValueType.vaUTF8String then
+        exit Encoding.UTF8.GetString(lBytes)
+      else
+        exit Encoding.Default.GetString(lBytes);
+    end;
+
+    TValueType.vaWString: begin
+
+    end;
+
+    TValueType.vaIdent: begin
+      fStream.ReadData(var lValue, sizeOf(Byte));
+      var lBytes := new Byte[lValue];
+      exit Encoding.UTF8.GetString(lBytes)
+    end;
+  end;
 end;
 
 method TReader.ReadProperty(aInstance: TComponent/*TPersistent*/);
 begin
   var lName := ReadStr;
-
+  var lValue := ReadValue;
+  var lType := typeOf(aInstance);
+  var lProperty := lType.Properties.Where(a -> (a.Name = lName)).FirstOrDefault;
+  if lProperty = nil then raise new Exception('Can not get property ' + lName);
+  var lPropValue := ReadPropValue(lValue, lProperty);
+  lProperty.SetValue(aInstance, nil, lPropValue);
 end;
 
 method TReader.EndOfList: Boolean;
@@ -87,10 +150,11 @@ end;
 
 method TReader.ReadRootComponent(Root: TComponent): TComponent;
 begin
-  // Skip 'TPF0'
-  ReadSignature;
+  ReadSignature; // Skip 'TPF0'
   ReadStr;
   Root.Name := ReadStr;
+  fOwner := Root;
+  fParent := Root;
   ReadComponentData(Root);
 end;
 
@@ -99,12 +163,20 @@ begin
 
 end;
 
-method TReader.ReadComponent(Component: TComponent): TComponent;
+method TReader.ReadComponent(aComponent: TComponent): TComponent;
 begin
-  ReadStr;
-  Root.Name := ReadStr;
+  var lClass := ReadStr;
+  var lName := ReadStr;
+  result := aComponent;
+  if result = nil then begin
+    result := ComponentsHelper.CreateComponent(lClass, fOwner);
+    result.Name := lName;
+    // TODO setParent!
+  end;
+  var lOldParent := fParent;
+  fParent := result;
   ReadComponentData(Root);
-  // TODO
+  fParent := lOldParent;
 end;
 
 method TReader.ReadSignature;
@@ -131,5 +203,35 @@ begin
   result := TValueType(lByte);
 end;
 
+method ComponentsHelper.CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
+begin
+  var lType := &Type.AllTypes.Where(a -> a.Name = aClassName).FirstOrDefault;
+  if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
+  result := CreateComponent(lType, aOwner);
+end;
+
+method ComponentsHelper.CreateComponent(aType: &Type; aOwner: TComponent): TComponent;
+begin
+  var lCtor: MethodInfo;
+  var lCtors := aType.Methods.Where(a -> ((MethodFlags.Constructor in a.Flags) and (a.Arguments.Count = 1)));
+  if lCtors.Count > 1 then begin
+    for each lTemp in lCtors do begin
+      var lArguments := lTemp.Arguments.ToList;
+      if lArguments[0].Type = typeOf(TComponent) then begin
+        lCtor := lTemp;
+        break;
+      end;
+    end;
+  end
+  else
+    lCtor := lCtors.FirstOrDefault;
+
+  if lCtor = nil then raise new Exception('No default constructor could be found!');
+  var lRealCtor := ComponentCtorHelper(lCtor.Pointer);
+  if lRealCtor = nil then raise new Exception('No default constructor could be found!');
+  var lNew := DefaultGC.New(@result, aType.SizeOfType);
+  result := InternalCalls.Cast<TComponent>(lNew);
+  lRealCtor(result, aOwner);
+end;
 
 end.
