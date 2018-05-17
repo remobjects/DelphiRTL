@@ -96,6 +96,30 @@ protected
     property OnKeyUp: TKeyEvent read fOnKeyUp write setOnKeyUp;
   end;
 
+  TColor = Integer;
+  TFontStyle = public enum(Bold, Italic, Underline, StrikeOut) of Integer;
+  TFontStyles = set of TFontStyle;
+
+  TFont = public class(TPersistent)
+  private
+    fColor: TColor;
+    fName: String;
+    fSize: Integer;
+    fStyles: TFontStyles;
+    method setColor(value: TColor);
+    method setName(value: String);
+    method setSize(value: Integer);
+    method setStyles(value: TFontStyles);
+    method NotifyChanged(propName: String);
+  public
+    property PropertyChanged: TPropertyChangedEvent;
+    property Color: TColor read fColor write setColor;
+    property Name: String read fName write setName;
+    property Size: Integer read fSize write setSize;
+    property Style: TFontStyles read fStyles write setStyles;
+  end;
+
+
 implementation
 
 method TComponent.setName(aValue: String);
@@ -212,6 +236,36 @@ end;
 method TControl.SetOnKeyDown(aValue: TKeyEvent);
 begin
   fOnKeyDown := aValue;
+end;
+
+method TFont.NotifyChanged(propName: String);
+begin
+  if PropertyChanged <> nil then
+    PropertyChanged(self, propName);
+end;
+
+method TFont.SetColor(value: TColor);
+begin
+  fColor := value;
+  NotifyChanged('color');
+end;
+
+method TFont.SetName(value: String);
+begin
+  fName := value;
+  NotifyChanged('name');
+end;
+
+method TFont.SetSize(value: Integer);
+begin
+  fSize := value;
+  NotifyChanged('size');
+end;
+
+method TFont.SetStyles(value: TFontStyles);
+begin
+  fStyles := value;
+  NotifyChanged('styles');
 end;
 
 end.

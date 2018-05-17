@@ -5,29 +5,6 @@ interface
 {$GLOBALS ON}
 
 type
-  TColor = Integer;
-  TFontStyle = public enum(Bold, Italic, Underline, StrikeOut);
-  TFontStyles = set of TFontStyle;
-
-  TFont = public class(TPersistent)
-  private
-    fColor: TColor;
-    fName: String;
-    fSize: Integer;
-    fStyles: TFontStyles;
-    method setColor(value: TColor);
-    method setName(value: String);
-    method setSize(value: Integer);
-    method setStyles(value: TFontStyles);
-    method NotifyChanged(propName: String);
-  public
-    property PropertyChanged: TPropertyChangedEvent;
-    property Color: TColor read fColor write setColor;
-    property Name: String read fName write setName;
-    property Size: Integer read fSize write setSize;
-    property Style: TFontStyles read fStyles write setStyles;
-  end;
-
   TButton = public partial class(TControl)
   private
     fCaption: String;
@@ -167,36 +144,6 @@ begin
   {$IF WEBASSEMBLY}
   PlatformShowMessage(aMessage);
   {$ENDIF}
-end;
-
-method TFont.NotifyChanged(propName: String);
-begin
-  if PropertyChanged <> nil then
-    PropertyChanged(self, propName);
-end;
-
-method TFont.SetColor(value: TColor);
-begin
-  fColor := value;
-  NotifyChanged('color');
-end;
-
-method TFont.SetName(value: String);
-begin
-  fName := value;
-  NotifyChanged('name');
-end;
-
-method TFont.SetSize(value: Integer);
-begin
-  fSize := value;
-  NotifyChanged('size');
-end;
-
-method TFont.SetStyles(value: TFontStyles);
-begin
-  fStyles := value;
-  NotifyChanged('styles');
 end;
 
 class method TButton.Create(AOwner: TComponent): TButton;
