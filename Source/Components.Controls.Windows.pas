@@ -28,7 +28,7 @@ type
     method CreateHandle; virtual; partial;
     method HandleNeeded; virtual; partial;
 
-    {procedure CreateParams(var Params: TCreateParams); virtual;
+    {CreateParams(var Params: TCreateParams); virtual;
     procedure CreateWindowHandle(const Params: TCreateParams); virtual;}
   public
     constructor(aOwner: TComponent);

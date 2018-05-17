@@ -3,7 +3,7 @@
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi;
+  RemObjects.Elements.RTL.Delphi, rtl;
 
 type
   TValueType = public enum(vaNull, vaList, vaInt8, vaInt16, vaInt32, vaExtended, vaString, vaIdent, vaFalse, vaTrue, vaBinary, vaSet, vaLString,
@@ -23,10 +23,9 @@ type
     method SetRoot(aValue: TComponent); virtual;
   public
     constructor(aStream: TStream; BufSize: Integer);
-    //destructor Destroy; override;
-    method DefineProperty(Name: String; ReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean); virtual; abstract;
-    method DefineBinaryProperty(Name: String; ReadData, WriteData: TStreamProc; HasData: Boolean); virtual; abstract;
-    method FlushBuffer; virtual; abstract;
+    //method DefineProperty(Name: String; ReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean); virtual; abstract;
+    //method DefineBinaryProperty(Name: String; ReadData, WriteData: TStreamProc; HasData: Boolean); virtual; abstract;
+    //method FlushBuffer; virtual; abstract;
     property Root: TComponent read fRoot write SetRoot;
     property Ancestor: TPersistent read fAncestor write fAncestor;
     property IgnoreChildren: Boolean read fIgnoreChildren write fIgnoreChildren;
@@ -53,6 +52,15 @@ type
   end;
 
   TWriter = public class(TObject)
+  end;
+
+  TResourceStream = class(TCustomMemoryStream)
+  public
+    constructor(Instance: THandle; ResName: String; ResType: PCHAR);
+    //constructor(Instance: THandle; ResID: Integer; ResType: PChar);
+    //method &Write(Buffer; Count: Longint): Longint; override; final;
+    //method &Write(Buffer: TBytes; Offset, Count: Longint): Longint; override; final;
+    method ReadComponent(aInstance: TComponent);
   end;
 
   ComponentsHelper = public static class
@@ -232,6 +240,24 @@ begin
   var lNew := DefaultGC.New(@result, aType.SizeOfType);
   result := InternalCalls.Cast<TComponent>(lNew);
   lRealCtor(result, aOwner);
+end;
+
+constructor TResourceStream(Instance: THandle; ResName: String; ResType: PChar);
+begin
+  var lModule: rtl.HMODULE := 0;
+  var lResName := ResName.ToCharArray;
+  var lResource := rtl.FindResource(lModule, @lResName[0], LPCWSTR(rtl.RT_RCDATA));
+  if lResource = nil then raise new Exception('Can not locale resource: ' + lResName);
+  var lPointer := rtl.LockResource(lResource);
+  var lSize := rtl.SizeofResource(lModule, lResource);
+  Size := lSize;
+  &Write(lPointer, lSize);
+end;
+
+method TResourceStream.ReadComponent(aInstance: TComponent);
+begin
+  var lReader := new TReader(self, Size);
+  lReader.ReadRootComponent(aInstance);
 end;
 
 end.
