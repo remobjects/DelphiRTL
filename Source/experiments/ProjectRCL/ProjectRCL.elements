@@ -49,7 +49,9 @@
     <Reference Include="Island" />
     <Reference Include="rtl" />
     <Reference Include="Elements" />
-    <Reference Include="Delphi" />
+    <Reference Include="Delphi">
+      <HintPath>..\..\Bin\Debug\WebAssembly\wasm32\Delphi.fx</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />
@@ -59,6 +61,9 @@
     <Compile Include="..\..\Components.Controls.Windows.pas" />
     <Compile Include="..\..\Components.Forms.pas" />
     <Compile Include="Unit5.pas" />
+    <Compile Include="..\..\Components.pas" />
+    <Compile Include="..\..\Components.StdCtrls.pas" />
+    <Compile Include="..\..\Components.StdCtrls.Windows.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
 </Project>

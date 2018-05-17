@@ -24,6 +24,13 @@ type
   TKeyPressEvent = public block(Sender: TObject; var Key: Char);
   TKeyEvent = public block(Sender: TObject; var Key: Word; Shift: TShiftState);
 
+  TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ELSEIF ISLAND AND WINDOWS} NativeInt {$ENDIF};
+  TPropertyChangedEvent = public block(Sender: TObject; PropName: String);
+
+  INotifyPropertyChanged = public interface
+    event PropertyChanged: Action<TObject, String>;
+  end;
+
   TControl = public partial class(TComponent)
   private
     fParent: TControl;
@@ -40,14 +47,22 @@ type
     method SetTop(aValue: Integer);
     method SetLeft(aValue: Integer);
     method SetParent(aValue: TControl);
+    method setFont(value: TFont);
     method SetOnClick(aValue: TNotifyEvent);
     method setOnKeyUp(value: TKeyEvent);
     method SetOnKeyPress(value: TKeyPressEvent);
     method SetOnKeyDown(aValue: TKeyEvent);
 
 protected
+    fHandle: TPlatformHandle;
+    fFont: TFont;
     method ClassName: String; override;
+    method CreateHandle; virtual; partial; empty;
+    method HandleNeeded; virtual; partial; empty;
     method Loaded; override;
+    method Changed(aObject: TObject; propName: String);
+    constructor(aOwner: TComponent);
+
 
     method PlatformSetWidth(aValue: Integer); partial; empty;
     method PlatformSetHeight(aValue: Integer); partial; empty;
@@ -59,11 +74,21 @@ protected
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial; empty;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial; empty;
 
+    method PlatformFontSetColor(value: TColor); partial; empty;
+    method PlatformFontSetName(value: String); partial; empty;
+    method PlatformFontSetSize(value: Integer); partial; empty;
+    method PlatformFontSetStyles(value: TFontStyles); partial; empty;
+
+    method PlatformGetDefaultName: String; virtual; partial; empty;
+    method PlatformApplyDefaults; virtual; partial; empty;
+
   public
+    property Handle: dynamic read fHandle;
+    property Font: TFont read fFont write setFont;
     property Parent: TControl read fParent write SetParent;
     property Height: Integer read fHeight write SetHeight;
     property Width: Integer read fWidth write SetWidth;
-    property Left: Integer read fLeft write setLeft;
+    property Left: Integer read fLeft write SetLeft;
     property Top: Integer read fTop write SetTop;
     property OnClick: TNotifyEvent read fOnClick write SetOnClick;
     property OnKeyPress: TKeyPressEvent read fOnKeyPress write SetOnKeyPress;
@@ -110,6 +135,27 @@ begin
   PlatformSetTop(aValue);
 end;
 
+constructor TControl(aOwner: TComponent);
+begin
+  Name := PlatformGetDefaultName;
+  fFont := new TFont();
+  fFont.PropertyChanged := @Changed;
+  CreateHandle;
+  PlatformApplyDefaults;
+end;
+
+method TControl.Changed(aObject: TObject; propName: String);
+begin
+  if aObject is TFont then begin
+    case propName of
+      'color': PlatformFontSetColor(fFont.Color);
+      'size': PlatformFontSetSize(fFont.Size);
+      'name': PlatformFontSetName(fFont.Name);
+      'styles': PlatformFontSetStyles(fFont.Style);
+    end;
+  end;
+end;
+
 method TControl.Loaded;
 begin
 end;
@@ -117,6 +163,15 @@ end;
 method TControl.ClassName: String;
 begin
   result := 'TControl';
+end;
+
+method TControl.SetFont(value: TFont);
+begin
+  fFont := value;
+  PlatformFontSetColor(fFont.Color);
+  PlatformFontSetSize(fFont.Size);
+  PlatformFontSetName(fFont.Name);
+  PlatformFontSetStyles(fFont.Style);
 end;
 
 method TControl.SetWidth(aValue: Integer);

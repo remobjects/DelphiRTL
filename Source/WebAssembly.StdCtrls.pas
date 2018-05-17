@@ -20,13 +20,13 @@ type
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
 
-    method PlatformFontSetColor(value: TColor);
-    method PlatformFontSetName(value: String);
-    method PlatformFontSetSize(value: Integer);
-    method PlatformFontSetStyles(value: TFontStyles);
+    method PlatformFontSetColor(value: TColor); partial;
+    method PlatformFontSetName(value: String); partial;
+    method PlatformFontSetSize(value: Integer); partial;
+    method PlatformFontSetStyles(value: TFontStyles); partial;
 
-    method GetDefaultName: String; virtual;
-    method ApplyDefaults; virtual;
+    method PlatformGetDefaultName: String; virtual; partial;
+    method PlatformApplyDefaults; virtual; partial;
   end;
 
   TForm = public class(TControl)
@@ -39,7 +39,7 @@ type
   TButton = public partial class(TControl)
   protected
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String);
+    method PlatformSetCaption(aValue: String); partial;
   end;
 
   TLabel = public partial class(TControl)
@@ -296,7 +296,7 @@ begin
   fHandle.addEventListener("click", lDelegate);
 end;
 
-method TControl.GetDefaultName: String;
+method TControl.PlatformGetDefaultName: String;
 begin
   var i := 1;
   var lObject := WebAssembly.GetElementById(ClassName + i.ToString);
@@ -307,7 +307,7 @@ begin
   result := ClassName + i.ToString;
 end;
 
-method TControl.ApplyDefaults;
+method TControl.PlatformApplyDefaults;
 begin
   fHandle.setAttribute('id', Name);
 end;

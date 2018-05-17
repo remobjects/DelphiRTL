@@ -5,29 +5,6 @@ interface
 {$GLOBALS ON}
 
 type
-  TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ENDIF};
-  TPropertyChangedEvent = public block(Sender: TObject; PropName: String);
-
-  INotifyPropertyChanged = public interface
-    event PropertyChanged: Action<TObject, String>;
-  end;
-
-  TControl = public partial class(TComponent)
-  private
-    method setFont(value: TFont);
-  protected
-    fHandle: dynamic;
-    fFont: TFont;
-    method CreateHandle; abstract;
-    method Changed(aObject: TObject; propName: String);
-
-    constructor(aOwner: TComponent);
-  public
-    property Handle: dynamic read fHandle;
-    property Font: TFont read fFont write SetFont;
-  end;
-
-
   TColor = Integer;
   TFontStyle = public enum(Bold, Italic, Underline, StrikeOut);
   TFontStyles = set of TFontStyle;
@@ -45,10 +22,10 @@ type
     method NotifyChanged(propName: String);
   public
     property PropertyChanged: TPropertyChangedEvent;
-    property Color: TColor read fColor write SetColor;
-    property Name: String read fName write SetName;
-    property Size: Integer read fSize write SetSize;
-    property Style: TFontStyles read fStyles write SetStyles;
+    property Color: TColor read fColor write setColor;
+    property Name: String read fName write setName;
+    property Size: Integer read fSize write setSize;
+    property Style: TFontStyles read fStyles write setStyles;
   end;
 
   TButton = public partial class(TControl)
@@ -57,11 +34,13 @@ type
     method SetCaption(aValue: String);
   protected
     method ClassName: String; override;
+    method PlatformSetCaption(aValue: String); virtual; partial; empty;
   public
     class method Create(AOwner: TComponent): TButton;
     property Caption: String read fCaption write SetCaption;
   end;
 
+  {$IF WEBASSEMBLY}
   TLabel = public partial class(TControl)
   private
     fCaption: String;
@@ -176,44 +155,18 @@ type
     property Position: Integer read fPosition write SetPosition;
     property Style: TProgressBarStyle read fStyle write SetStyle;
   end;
+  {$ENDIF}
 
   procedure ShowMessage(aMessage: String);
 
 implementation
 
+
 procedure ShowMessage(aMessage: String);
 begin
+  {$IF WEBASSEMBLY}
   PlatformShowMessage(aMessage);
-end;
-
-constructor TControl(aOwner: TComponent);
-begin
-  Name := GetDefaultName;
-  fFont := new TFont();
-  fFont.PropertyChanged := @Changed;
-  CreateHandle;
-  ApplyDefaults;
-end;
-
-method TControl.Changed(aObject: TObject; propName: String);
-begin
-  if aObject is TFont then begin
-    case propName of
-      'color': PlatformFontSetColor(fFont.Color);
-      'size': PlatformFontSetSize(fFont.Size);
-      'name': PlatformFontSetName(fFont.Name);
-      'styles': PlatformFontSetStyles(fFont.Style);
-    end;
-  end;
-end;
-
-method TControl.SetFont(value: TFont);
-begin
-  fFont := value;
-  PlatformFontSetColor(fFont.Color);
-  PlatformFontSetSize(fFont.Size);
-  PlatformFontSetName(fFont.Name);
-  PlatformFontSetStyles(fFont.Style);
+  {$ENDIF}
 end;
 
 method TFont.NotifyChanged(propName: String);
@@ -262,6 +215,7 @@ begin
   result := 'Button';
 end;
 
+{$IF WEBASSEMBLY}
 method TLabel.setCaption(aValue: String);
 begin
   fCaption := aValue;
@@ -433,6 +387,7 @@ begin
   fPosition := value;
   PlatformSetPosition(value);
 end;
+{$ENDIF}
 
 
 end.

@@ -7,11 +7,11 @@ uses
 
 type
 
-TControl = public partial class(TComponent)
+/*TControl = public partial class(TComponent)
 protected
   method CreateHandle; virtual; partial; empty;
   method HandleNeeded; virtual; partial; empty;
-end;
+end;*/
 
 TWinControl = public partial class(TControl)
 protected
