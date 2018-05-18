@@ -1,4 +1,4 @@
-﻿namespace ProjectRCL;
+﻿namespace RemObjects.Elements.RTL.Delphi;
 
 interface
 

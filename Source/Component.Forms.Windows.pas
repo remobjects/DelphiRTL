@@ -1,4 +1,4 @@
-﻿namespace ProjectRCL;
+﻿namespace RemObjects.Elements.RTL.Delphi;
 
 interface
 
@@ -78,6 +78,10 @@ end;
 constructor TCustomForm(aOwner: TComponent);
 begin
   // TODO selft class from resource
+  var lStream := new TFileStream('c:\dev\ro\dam.res', fmOpenRead);
+  lStream.Position := 76;
+  var lReader := new TReader(lStream, 100);
+  lReader.ReadRootComponent(aOwner);
 end;
 
 method TCustomForm.CreateWnd;

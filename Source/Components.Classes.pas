@@ -1,4 +1,4 @@
-﻿namespace ProjectRCL;
+﻿namespace RemObjects.Elements.RTL.Delphi;
 
 interface
 
@@ -134,7 +134,12 @@ begin
     TValueType.vaIdent: begin
       fStream.ReadData(var lValue, sizeOf(Byte));
       var lBytes := new Byte[lValue];
-      exit Encoding.UTF8.GetString(lBytes)
+      var lIdent := Encoding.UTF8.GetString(lBytes);
+      var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;
+      if lConstant <> nil then
+        exit lConstant.Value
+      else
+        exit 0; // TODO check!!!
     end;
   end;
 end;
@@ -144,7 +149,21 @@ begin
   var lName := ReadStr;
   var lValue := ReadValue;
   var lType := typeOf(aInstance);
-  var lProperty := lType.Properties.Where(a -> (a.Name = lName)).FirstOrDefault;
+  var lProperty: PropertyInfo;
+
+  if lName.IndexOf('.') > 0 then begin
+    var lProps := lName.Split('.');
+    var lInstance := aInstance;
+    for i: Integer := 0 to lProps.Count - 2 do begin
+      lProperty := lType.Properties.Where(a -> (a.Name = lProps[i])).FirstOrDefault;
+      if lProperty = nil then raise new Exception('Can not get property ' + lProps[i]);
+      var lPropValue := lProperty.GetValue(lInstance, nil);
+      lInstance := TComponent(lPropValue);
+      lType := typeOf(lInstance);
+    end;
+  end;
+
+  lProperty := lType.Properties.Where(a -> (a.Name = lName)).FirstOrDefault;
   if lProperty = nil then raise new Exception('Can not get property ' + lName);
   var lPropValue := ReadPropValue(lValue, lProperty);
   lProperty.SetValue(aInstance, nil, lPropValue);
@@ -158,9 +177,14 @@ end;
 
 method TReader.ReadRootComponent(Root: TComponent): TComponent;
 begin
+  writeLn('Read 1');
   ReadSignature; // Skip 'TPF0'
+  writeLn('Read 2');
   ReadStr;
+  writeLn('Read 3');
   Root.Name := ReadStr;
+  writeLn('Read 4');
+  writeLn(Root.Name);
   fOwner := Root;
   fParent := Root;
   ReadComponentData(Root);
@@ -202,6 +226,7 @@ begin
   var lArray := new Byte[lTotal];
   fStream.Read(var lArray, lTotal);
   result := Encoding.UTF8.GetString(lArray);
+  writeLn('Read: ' + result);
 end;
 
 method TReader.ReadValue: TValueType;

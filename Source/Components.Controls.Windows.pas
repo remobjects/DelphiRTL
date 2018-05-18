@@ -1,4 +1,4 @@
-﻿namespace ProjectRCL;
+﻿namespace RemObjects.Elements.RTL.Delphi;
 
 interface
 
@@ -34,8 +34,8 @@ type
     constructor(aOwner: TComponent);
   end;
 
-  TScrollingWinControl = public partial class(TWinControl)
-  end;
+  //TScrollingWinControl = public partial class(TWinControl)
+  //end;
 
 implementation
 
