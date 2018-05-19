@@ -22,32 +22,49 @@ type
     method CreateWnd; override;
   end;
 
-  ComponentCtorHelper = assembly procedure(aInst: Object; aOwner: TComponent);
+  ComponentCtorHelper = public procedure(aInst: Object; aOwner: TComponent);
 
 implementation
 
 method TApplication.CreateForm(InstanceClass: TComponentClass; var FormRef: TComponent);
 begin
   var lCtor: MethodInfo;
-  var lCtors := InstanceClass.Methods.Where(a -> ((MethodFlags.Constructor in a.Flags) and (a.Arguments.Count = 1)));
+  //var FormRef: TForm := TForm(aForm);
+  writeLn(InstanceClass.name);
+
+  var lCtors := InstanceClass.Methods.Where(a -> ((MethodFlags.Constructor in a.Flags) and (a.Arguments.Count > 0)));
   if lCtors.Count > 1 then begin
     for each lTemp in lCtors do begin
       var lArguments := lTemp.Arguments.ToList;
+      writeLn('types:');
+      writeLn(lArguments[0].&Type.Name);
       if lArguments[0].Type = typeOf(TComponent) then begin
         lCtor := lTemp;
+        writeLn('Found!');
         break;
       end;
     end;
   end
-  else
+  else begin
     lCtor := lCtors.FirstOrDefault;
+    WriteLn('Not found..');
+    var lX := lCtor.Arguments.ToList;
+    WriteLn(lX[0].Type.Name);
+  end;
 
   if lCtor = nil then raise new Exception('No default constructor could be found!');
   var lRealCtor := ComponentCtorHelper(lCtor.Pointer);
   if lRealCtor = nil then raise new Exception('No default constructor could be found!');
-  var lNew := DefaultGC.New(@FormRef, InstanceClass.SizeOfType);
+  writeLn('Vamos 1');
+  var lNew := DefaultGC.New(InstanceClass.RTTI, InstanceClass.SizeOfType);
+  writeLn('Vamos 2');
   FormRef := InternalCalls.Cast<TComponent>(lNew);
-  lRealCtor(FormRef, nil);
+  WriteLn('Vamos 3');
+  //lRealCtor(FormRef, nil);
+  writeLn(lCtor.Name);
+  lCtor.Invoke(FormRef, [nil]);
+  WriteLn('Vamos 4');
+  //aForm := FormRef;
 end;
 
 method TApplication.Initialize;
@@ -77,11 +94,14 @@ end;
 
 constructor TCustomForm(aOwner: TComponent);
 begin
+  writeLn('Vamos?');
   // TODO selft class from resource
-  var lStream := new TFileStream('c:\dev\ro\dam.res', fmOpenRead);
-  lStream.Position := 76;
-  var lReader := new TReader(lStream, 100);
-  lReader.ReadRootComponent(aOwner);
+  WriteLn('Yes 1');
+  //var lStream := new TFileStream('c:\dev\ro\dam.res', fmOpenRead);
+  writeLn('Yes 2');
+  //lStream.Position := 76;
+  //var lReader := new TReader(lStream, 100);
+  //lReader.ReadRootComponent(aOwner);
 end;
 
 method TCustomForm.CreateWnd;

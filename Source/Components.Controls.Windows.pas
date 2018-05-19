@@ -10,7 +10,7 @@ type
   TControl = public partial class(TComponent)
   protected
     method GetDefaultName: String;
-    constructor(aOwner: TComponent);
+    //constructor(aOwner: TComponent);
 
     method PlatformSetWidth(aValue: Integer); partial;
     method PlatformSetHeight(aValue: Integer); partial;
@@ -25,8 +25,8 @@ type
 
   TWinControl = public partial class(TControl)
   protected
-    method CreateHandle; virtual; partial;
-    method HandleNeeded; virtual; partial;
+    method CreateHandle; override;
+    method HandleNeeded; override;
 
     {CreateParams(var Params: TCreateParams); virtual;
     procedure CreateWindowHandle(const Params: TCreateParams); virtual;}
@@ -51,12 +51,7 @@ end;
 
 constructor TWinControl(aOwner: TComponent);
 begin
-
-end;
-
-constructor TControl(aOwner: TComponent);
-begin
-
+  writeLn('Hi there 1');
 end;
 
 method TControl.GetDefaultName: String;

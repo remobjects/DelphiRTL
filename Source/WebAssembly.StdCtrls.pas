@@ -4,6 +4,8 @@ interface
 
 {$GLOBALS ON}
 
+{$IF WEBASSEMBLY}
+
 type
   TControl = public partial class(TComponent)
   private
@@ -574,5 +576,6 @@ begin
     fHandle.value := fPosition;
   end;
 end;
+{$ENDIF}
 
 end.

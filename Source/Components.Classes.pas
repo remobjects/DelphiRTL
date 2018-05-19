@@ -116,15 +116,15 @@ begin
 
     TValueType.vaString, TValueType.vaUTF8String, TValueType.vaLString: begin
       if aValueType = TValueType.vaLString then
-        fStream.Read(var lValue, sizeOf(Integer))
+        fStream.ReadData(var lValue, sizeOf(Integer))
       else
         fStream.ReadData(var lValue, sizeOf(Byte));
 
       var lBytes := new Byte[lValue];
       if aValueType = TValueType.vaUTF8String then
-        exit Encoding.UTF8.GetString(lBytes)
+        exit RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes)
       else
-        exit Encoding.Default.GetString(lBytes);
+        exit RemObjects.Elements.RTL.Encoding.Default.GetString(lBytes);
     end;
 
     TValueType.vaWString: begin
@@ -134,7 +134,7 @@ begin
     TValueType.vaIdent: begin
       fStream.ReadData(var lValue, sizeOf(Byte));
       var lBytes := new Byte[lValue];
-      var lIdent := Encoding.UTF8.GetString(lBytes);
+      var lIdent := RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes);
       var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;
       if lConstant <> nil then
         exit lConstant.Value
@@ -225,7 +225,7 @@ begin
   fStream.ReadData(var lTotal);
   var lArray := new Byte[lTotal];
   fStream.Read(var lArray, lTotal);
-  result := Encoding.UTF8.GetString(lArray);
+  result := RemObjects.Elements.RTL.Encoding.UTF8.GetString(lArray);
   writeLn('Read: ' + result);
 end;
 
