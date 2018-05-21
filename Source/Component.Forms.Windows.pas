@@ -55,16 +55,13 @@ begin
   if lCtor = nil then raise new Exception('No default constructor could be found!');
   var lRealCtor := ComponentCtorHelper(lCtor.Pointer);
   if lRealCtor = nil then raise new Exception('No default constructor could be found!');
-  writeLn('Vamos 1');
   var lNew := DefaultGC.New(InstanceClass.RTTI, InstanceClass.SizeOfType);
-  writeLn('Vamos 2');
   FormRef := InternalCalls.Cast<TComponent>(lNew);
-  WriteLn('Vamos 3');
+  WriteLn(FormRef.Name);
   //lRealCtor(FormRef, nil);
-  writeLn(lCtor.Name);
+
   lCtor.Invoke(FormRef, [nil]);
   WriteLn('Vamos 4');
-  //aForm := FormRef;
 end;
 
 method TApplication.Initialize;
@@ -94,14 +91,10 @@ end;
 
 constructor TCustomForm(aOwner: TComponent);
 begin
-  writeLn('Vamos?');
-  // TODO selft class from resource
-  WriteLn('Yes 1');
-  //var lStream := new TFileStream('c:\dev\ro\dam.res', fmOpenRead);
-  writeLn('Yes 2');
-  //lStream.Position := 76;
-  //var lReader := new TReader(lStream, 100);
-  //lReader.ReadRootComponent(aOwner);
+  var lStream := new TFileStream('c:\dev\ro\dam.res', fmOpenRead);
+  lStream.Position := 76;
+  var lReader := new TReader(lStream, 100);
+  lReader.ReadRootComponent(self);
 end;
 
 method TCustomForm.CreateWnd;

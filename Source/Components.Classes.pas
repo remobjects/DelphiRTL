@@ -36,6 +36,7 @@ type
     fParent: TComponent;
     fOwner: TComponent;
     method ReadComponentData(aInstance: TComponent);
+    method FindProperty(aType: &Type; aName: String): PropertyInfo;
   protected
     method ReadProperty(aInstance: TComponent /*TPersistent*/);
   public
@@ -83,7 +84,9 @@ end;
 
 method TReader.ReadComponentData(aInstance: TComponent);
 begin
+  writeLn('Begin ReadComponentData');
   while not EndOfList do ReadProperty(aInstance);
+  writeLn('Begin ReadComponentData 2');
   ReadValue; // skip end of list
   while not EndOfList do ReadComponent(nil);
   ReadValue; // skip end of list
@@ -92,18 +95,22 @@ end;
 method TReader.ReadPropValue(aValueType: TValueType; aProperty: PropertyInfo): Object;
 begin
   var lValue: Integer;
+  var lInt8: Byte;
   case aValueType of
     TValueType.vaInt8: begin
-      fStream.ReadData(var lValue, sizeOf(Byte));
-      exit Byte(lValue);
+      writeLn('Reading byte...');
+      fStream.ReadData(var lInt8);
+      exit lInt8;
     end;
 
     TValueType.vaInt16: begin
+      writeLn('Reading Int16...');
       fStream.ReadData(var lValue, sizeOf(SmallInt));
       exit SmallInt(lValue);
     end;
 
     TValueType.vaInt32: begin
+      writeLn('Reading Int...');
       fStream.ReadData(var lValue, sizeOf(Integer));
       exit lValue;
     end;
@@ -144,6 +151,16 @@ begin
   end;
 end;
 
+method TReader.FindProperty(aType: &Type; aName: String): PropertyInfo;
+begin
+  var lType := aType;
+  while aType <> nil do begin
+    result := lType.Properties.Where(a -> (a.Name = aName)).FirstOrDefault;
+    if result <> nil then exit;
+    lType := new &Type(lType.RTTI^.ParentType);
+  end;
+end;
+
 method TReader.ReadProperty(aInstance: TComponent/*TPersistent*/);
 begin
   var lName := ReadStr;
@@ -163,10 +180,14 @@ begin
     end;
   end;
 
-  lProperty := lType.Properties.Where(a -> (a.Name = lName)).FirstOrDefault;
+  writeLn('Finding property... ' + lName);
+  lProperty := FindProperty(lType, lName);
   if lProperty = nil then raise new Exception('Can not get property ' + lName);
+  writeLn('Reading prop value...');
   var lPropValue := ReadPropValue(lValue, lProperty);
+  writeLn('Setting value...');
   lProperty.SetValue(aInstance, nil, lPropValue);
+  writeLn('Property ok');
 end;
 
 method TReader.EndOfList: Boolean;
@@ -182,7 +203,10 @@ begin
   writeLn('Read 2');
   ReadStr;
   writeLn('Read 3');
-  Root.Name := ReadStr;
+  var lName := ReadStr;
+  writeLn('Read 3.1');
+  Root.Name := lName;
+  //Root.Name := ReadStr;
   writeLn('Read 4');
   writeLn(Root.Name);
   fOwner := Root;
