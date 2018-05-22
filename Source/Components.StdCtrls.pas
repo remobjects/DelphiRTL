@@ -5,7 +5,9 @@ interface
 {$GLOBALS ON}
 
 type
-  TButton = public partial class(TControl)
+  TPlatformBaseControlClass = public {$IF ISLAND AND WINDOWS}TWinControl{$ELSE}TControl{$ENDIF};
+
+  TButton = public partial class(TPlatformBaseControlClass)
   private
     fCaption: String;
     method SetCaption(aValue: String);

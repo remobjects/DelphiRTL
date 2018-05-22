@@ -12,11 +12,14 @@ type
     method GetDefaultName: String;
     //constructor(aOwner: TComponent);
 
+    method PlatformGetCaption: String; partial;
+    method PlatformSetCaption(aValue: String); partial;
     method PlatformSetWidth(aValue: Integer); partial;
     method PlatformSetHeight(aValue: Integer); partial;
     method PlatformSetTop(aValue: Integer); virtual; partial;
     method PlatformSetLeft(aValue: Integer); virtual; partial;
     method PlatformSetParent(aValue: TControl); virtual; partial;
+    method PlatformSetColor(aValue: TColor); virtual; partial;
     method PlatformSetOnClick(aValue: TNotifyEvent); partial;
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
@@ -24,6 +27,8 @@ type
   end;
 
   TWinControl = public partial class(TControl)
+  private
+    fTabOrder: Integer; // TODO
   protected
     method CreateHandle; override;
     method HandleNeeded; override;
@@ -32,6 +37,7 @@ type
     procedure CreateWindowHandle(const Params: TCreateParams); virtual;}
   public
     constructor(aOwner: TComponent);
+    property TabOrder: Integer read fTabOrder write fTabOrder;
   end;
 
   //TScrollingWinControl = public partial class(TWinControl)
@@ -51,7 +57,7 @@ end;
 
 constructor TWinControl(aOwner: TComponent);
 begin
-  writeLn('Hi there 1');
+
 end;
 
 method TControl.GetDefaultName: String;
@@ -100,6 +106,21 @@ begin
 end;
 
 method TControl.PlatformSetOnKeyUp(aValue: TKeyEvent);
+begin
+
+end;
+
+method TControl.PlatformGetCaption: String;
+begin
+
+end;
+
+method TControl.PlatformSetCaption(aValue: String);
+begin
+
+end;
+
+method TControl.PlatformSetColor(aValue: TColor);
 begin
 
 end;

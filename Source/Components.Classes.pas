@@ -84,9 +84,7 @@ end;
 
 method TReader.ReadComponentData(aInstance: TComponent);
 begin
-  writeLn('Begin ReadComponentData');
   while not EndOfList do ReadProperty(aInstance);
-  writeLn('Begin ReadComponentData 2');
   ReadValue; // skip end of list
   while not EndOfList do ReadComponent(nil);
   ReadValue; // skip end of list
@@ -96,38 +94,39 @@ method TReader.ReadPropValue(aValueType: TValueType; aProperty: PropertyInfo): O
 begin
   var lValue: Integer;
   var lInt8: Byte;
+  var lInt16: SmallInt;
   case aValueType of
     TValueType.vaInt8: begin
-      writeLn('Reading byte...');
       fStream.ReadData(var lInt8);
       exit lInt8;
     end;
 
     TValueType.vaInt16: begin
-      writeLn('Reading Int16...');
-      fStream.ReadData(var lValue, sizeOf(SmallInt));
-      exit SmallInt(lValue);
+      fStream.ReadData(var lInt16);
+      exit lInt16;
     end;
 
     TValueType.vaInt32: begin
-      writeLn('Reading Int...');
-      fStream.ReadData(var lValue, sizeOf(Integer));
+      fStream.ReadData(var lValue);
       exit lValue;
     end;
 
     TValueType.vaInt64: begin
       var lInt64: Int64;
-      fStream.ReadData(var lInt64, sizeOf(Int64));
+      fStream.ReadData(var lInt64);
       exit lInt64;
     end;
 
     TValueType.vaString, TValueType.vaUTF8String, TValueType.vaLString: begin
       if aValueType = TValueType.vaLString then
-        fStream.ReadData(var lValue, sizeOf(Integer))
-      else
-        fStream.ReadData(var lValue, sizeOf(Byte));
+        fStream.ReadData(var lValue)
+      else begin
+        fStream.ReadData(var lInt8);
+        lValue := lInt8;
+      end;
 
       var lBytes := new Byte[lValue];
+      fStream.Read(var lBytes, lValue);
       if aValueType = TValueType.vaUTF8String then
         exit RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes)
       else
@@ -139,8 +138,9 @@ begin
     end;
 
     TValueType.vaIdent: begin
-      fStream.ReadData(var lValue, sizeOf(Byte));
-      var lBytes := new Byte[lValue];
+      fStream.ReadData(var lInt8);
+      var lBytes := new Byte[lInt8];
+      fStream.Read(var lBytes, lInt8);
       var lIdent := RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes);
       var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;
       if lConstant <> nil then
@@ -148,6 +148,17 @@ begin
       else
         exit 0; // TODO check!!!
     end;
+
+    TValueType.vaSet: begin
+      fStream.ReadData(var lInt8);
+      exit lInt8;
+    end;
+
+    TValueType.vaFalse:
+      exit false;
+
+    TValueType.vaTrue:
+      exit true;
   end;
 end;
 
@@ -156,7 +167,10 @@ begin
   var lType := aType;
   while aType <> nil do begin
     result := lType.Properties.Where(a -> (a.Name = aName)).FirstOrDefault;
-    if result <> nil then exit;
+    if result <> nil then begin
+      writeLn('Property on class: ' + lType.Name);
+      exit;
+    end;
     lType := new &Type(lType.RTTI^.ParentType);
   end;
 end;
@@ -167,26 +181,33 @@ begin
   var lValue := ReadValue;
   var lType := typeOf(aInstance);
   var lProperty: PropertyInfo;
+  var lInstance: Object := aInstance;
 
   if lName.IndexOf('.') > 0 then begin
     var lProps := lName.Split('.');
-    var lInstance := aInstance;
     for i: Integer := 0 to lProps.Count - 2 do begin
-      lProperty := lType.Properties.Where(a -> (a.Name = lProps[i])).FirstOrDefault;
-      if lProperty = nil then raise new Exception('Can not get property ' + lProps[i]);
+      lProperty := FindProperty(lType, lProps[i]);
+      if lProperty = nil then begin
+        writeLn('property not found...');
+        raise new Exception('Can not get property ' + lProps[i]);
+      end;
       var lPropValue := lProperty.GetValue(lInstance, nil);
-      lInstance := TComponent(lPropValue);
+      lInstance := lPropValue;
       lType := typeOf(lInstance);
     end;
+    lName := lProps[lProps.Count - 1];
   end;
 
   writeLn('Finding property... ' + lName);
+  writeLn('on type: ' + lType.Name);
   lProperty := FindProperty(lType, lName);
   if lProperty = nil then raise new Exception('Can not get property ' + lName);
   writeLn('Reading prop value...');
   var lPropValue := ReadPropValue(lValue, lProperty);
-  writeLn('Setting value...');
-  lProperty.SetValue(aInstance, nil, lPropValue);
+  writeLn('Setting prop value');
+  DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
+
+  //lProperty.SetValue(aInstance, [], lPropValue);
   writeLn('Property ok');
 end;
 
@@ -198,16 +219,11 @@ end;
 
 method TReader.ReadRootComponent(Root: TComponent): TComponent;
 begin
-  writeLn('Read 1');
   ReadSignature; // Skip 'TPF0'
-  writeLn('Read 2');
   ReadStr;
-  writeLn('Read 3');
   var lName := ReadStr;
-  writeLn('Read 3.1');
   Root.Name := lName;
   //Root.Name := ReadStr;
-  writeLn('Read 4');
   writeLn(Root.Name);
   fOwner := Root;
   fParent := Root;
@@ -231,7 +247,7 @@ begin
   end;
   var lOldParent := fParent;
   fParent := result;
-  ReadComponentData(Root);
+  ReadComponentData(result);
   fParent := lOldParent;
 end;
 
@@ -250,7 +266,6 @@ begin
   var lArray := new Byte[lTotal];
   fStream.Read(var lArray, lTotal);
   result := RemObjects.Elements.RTL.Encoding.UTF8.GetString(lArray);
-  writeLn('Read: ' + result);
 end;
 
 method TReader.ReadValue: TValueType;
@@ -262,8 +277,10 @@ end;
 
 method ComponentsHelper.CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
 begin
-  var lType := &Type.AllTypes.Where(a -> a.Name = aClassName).FirstOrDefault;
+  writeLn('Finding type: ' + aClassName);
+  var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.' + aClassName).FirstOrDefault;
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
+  writeLn('Type ok, now creating component');
   result := CreateComponent(lType, aOwner);
 end;
 
@@ -286,9 +303,9 @@ begin
   if lCtor = nil then raise new Exception('No default constructor could be found!');
   var lRealCtor := ComponentCtorHelper(lCtor.Pointer);
   if lRealCtor = nil then raise new Exception('No default constructor could be found!');
-  var lNew := DefaultGC.New(@result, aType.SizeOfType);
+  var lNew := DefaultGC.New(aType.RTTI, aType.SizeOfType);
   result := InternalCalls.Cast<TComponent>(lNew);
-  lRealCtor(result, aOwner);
+  lCtor.Invoke(result, [aOwner]);
 end;
 
 constructor TResourceStream(Instance: THandle; ResName: String; ResType: PChar);

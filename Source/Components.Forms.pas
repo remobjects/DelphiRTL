@@ -9,8 +9,15 @@ type
 TComponentClass = public &Type;
 
 TCustomForm = public partial class({$IFDEF WINDOWS}TScrollingWinControl{$ELSE}TControl{$ENDIF})
+private
+  fPixelsPerInch: Integer;
+  fOldCreateOrder: Boolean;
+  fTextHeight: Integer;
 public
   //constructor(aOwner: TComponent); empty;
+  property OldCreateOrder: Boolean read fOldCreateOrder write fOldCreateOrder;
+  property PixelsPerInch: Integer read fPixelsPerInch write fPixelsPerInch;
+  property TextHeight: Integer read fTextHeight write fTextHeight;
 end;
 
 TForm = public partial class(TCustomForm)

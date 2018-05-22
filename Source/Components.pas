@@ -39,9 +39,12 @@ type
     fHeight: Integer;
     fTop: Integer;
     fLeft: Integer;
+    fColor: TColor;
     fOnKeyPress: TKeyPressEvent;
     fOnKeyDown: TKeyEvent;
     fOnKeyUp: TKeyEvent;
+    method GetCaption: String;
+    method SetCaption(aValue: String);
     method SetWidth(aValue: Integer);
     method SetHeight(aValue: Integer);
     method SetTop(aValue: Integer);
@@ -52,6 +55,11 @@ type
     method setOnKeyUp(value: TKeyEvent);
     method SetOnKeyPress(value: TKeyPressEvent);
     method SetOnKeyDown(aValue: TKeyEvent);
+    method GetClientHeight: Integer;
+    method SetClientHeight(value: Integer);
+    method GetClientWidth: Integer;
+    method SetClientWidth(value: Integer);
+    method SetColor(aValue: TColor);
 
 protected
     fHandle: TPlatformHandle;
@@ -64,11 +72,14 @@ protected
     constructor(aOwner: TComponent);
 
 
+    method PlatformGetCaption: String; partial; empty;
+    method PlatformSetCaption(aValue: String); partial; empty;
     method PlatformSetWidth(aValue: Integer); partial; empty;
     method PlatformSetHeight(aValue: Integer); partial; empty;
     method PlatformSetTop(aValue: Integer); virtual; partial; empty;
     method PlatformSetLeft(aValue: Integer); virtual; partial; empty;
     method PlatformSetParent(aValue: TControl); virtual; partial; empty;
+    method PlatformSetColor(aValue: TColor); virtual; partial; empty;
     method PlatformSetOnClick(aValue: TNotifyEvent); partial; empty;
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial; empty;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial; empty;
@@ -86,10 +97,15 @@ protected
     property Handle: dynamic read fHandle;
     property Font: TFont read fFont write setFont;
     property Parent: TControl read fParent write SetParent;
+    property Caption: String read GetCaption write SetCaption;
     property Height: Integer read fHeight write SetHeight;
     property Width: Integer read fWidth write SetWidth;
+    property ClientHeight: Integer read GetClientHeight write SetClientHeight;
+    property ClientWidth: Integer read GetClientWidth write SetClientWidth;
+    //property ClientRect: RemObjects.TElements.RTL.RTLException
     property Left: Integer read fLeft write SetLeft;
     property Top: Integer read fTop write SetTop;
+    property Color: TColor read fColor write SetColor;
     property OnClick: TNotifyEvent read fOnClick write SetOnClick;
     property OnKeyPress: TKeyPressEvent read fOnKeyPress write SetOnKeyPress;
     property OnKeyDown: TKeyEvent read fOnKeyDown write SetOnKeyDown;
@@ -98,7 +114,8 @@ protected
 
   TColor = Integer;
   TFontStyle = public enum(Bold, Italic, Underline, StrikeOut) of Integer;
-  TFontStyles = set of TFontStyle;
+  TFontStyles = public set of TFontStyle;
+  TFontCharset = public 0..255;
 
   TFont = public class(TPersistent)
   private
@@ -106,6 +123,8 @@ protected
     fName: String;
     fSize: Integer;
     fStyles: TFontStyles;
+    fCharset: TFontCharset; // TODO
+    fHeight: Integer; // TODO
     method setColor(value: TColor);
     method setName(value: String);
     method setSize(value: Integer);
@@ -117,6 +136,8 @@ protected
     property Name: String read fName write setName;
     property Size: Integer read fSize write setSize;
     property Style: TFontStyles read fStyles write setStyles;
+    property Charset: TFontCharset read fCharset write fCharset;
+    property Height: Integer read fHeight write fHeight;
   end;
 
 
@@ -198,6 +219,16 @@ begin
   PlatformFontSetStyles(fFont.Style);
 end;
 
+method TControl.GetCaption: String;
+begin
+  result := PlatformGetCaption;
+end;
+
+method TControl.SetCaption(aValue: String);
+begin
+  PlatformSetCaption(aValue);
+end;
+
 method TControl.SetWidth(aValue: Integer);
 begin
   fWidth := aValue;
@@ -266,6 +297,32 @@ method TFont.SetStyles(value: TFontStyles);
 begin
   fStyles := value;
   NotifyChanged('styles');
+end;
+
+
+method TControl.GetClientHeight: Integer;
+begin
+  // TODO
+end;
+
+method TControl.SetClientHeight(value: Integer);
+begin
+  // TODO
+end;
+
+method TControl.GetClientWidth: Integer;
+begin
+  // TODO
+end;
+
+method TControl.SetClientWidth(value: Integer);
+begin
+  // TODO
+end;
+
+method TControl.SetColor(aValue: TColor);
+begin
+  PlatformSetColor(aValue);
 end;
 
 end.

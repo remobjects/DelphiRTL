@@ -12,6 +12,7 @@ type
   { Private declarations }
   public
   { Public declarations }
+    button1: TButton;
   end;
 
   var

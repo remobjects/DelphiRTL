@@ -30,26 +30,20 @@ method TApplication.CreateForm(InstanceClass: TComponentClass; var FormRef: TCom
 begin
   var lCtor: MethodInfo;
   //var FormRef: TForm := TForm(aForm);
-  writeLn(InstanceClass.name);
 
   var lCtors := InstanceClass.Methods.Where(a -> ((MethodFlags.Constructor in a.Flags) and (a.Arguments.Count > 0)));
   if lCtors.Count > 1 then begin
     for each lTemp in lCtors do begin
       var lArguments := lTemp.Arguments.ToList;
-      writeLn('types:');
-      writeLn(lArguments[0].&Type.Name);
       if lArguments[0].Type = typeOf(TComponent) then begin
         lCtor := lTemp;
-        writeLn('Found!');
         break;
       end;
     end;
   end
   else begin
     lCtor := lCtors.FirstOrDefault;
-    WriteLn('Not found..');
     var lX := lCtor.Arguments.ToList;
-    WriteLn(lX[0].Type.Name);
   end;
 
   if lCtor = nil then raise new Exception('No default constructor could be found!');
@@ -57,11 +51,7 @@ begin
   if lRealCtor = nil then raise new Exception('No default constructor could be found!');
   var lNew := DefaultGC.New(InstanceClass.RTTI, InstanceClass.SizeOfType);
   FormRef := InternalCalls.Cast<TComponent>(lNew);
-  WriteLn(FormRef.Name);
-  //lRealCtor(FormRef, nil);
-
   lCtor.Invoke(FormRef, [nil]);
-  WriteLn('Vamos 4');
 end;
 
 method TApplication.Initialize;

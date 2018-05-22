@@ -6,7 +6,7 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  TButton = public partial class(TControl)
+  TButton = public partial class(TWinControl)
   protected
     method PlatformSetCaption(aValue: String); partial;
   end;
