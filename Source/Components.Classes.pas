@@ -44,8 +44,8 @@ type
     method EndOfList: Boolean;
     method ReadComponent(aComponent: TComponent): TComponent;
     method ReadData(Instance: TComponent);
-    method ReadPropValue(aValueType: TValueType; aProperty: PropertyInfo): Object;
-    method ReadRootComponent(Root: TComponent): TComponent;
+    method ReadPropValue(aInstance: TComponent; aValueType: TValueType; aProperty: PropertyInfo): Object;
+    method ReadRootComponent(aRoot: TComponent): TComponent;
     method ReadSignature;
     method ReadStr: String;
     method ReadValue: TValueType;
@@ -90,7 +90,7 @@ begin
   ReadValue; // skip end of list
 end;
 
-method TReader.ReadPropValue(aValueType: TValueType; aProperty: PropertyInfo): Object;
+method TReader.ReadPropValue(aInstance: TComponent; aValueType: TValueType; aProperty: PropertyInfo): Object;
 begin
   var lValue: Integer;
   var lInt8: Byte;
@@ -142,11 +142,23 @@ begin
       var lBytes := new Byte[lInt8];
       fStream.Read(var lBytes, lInt8);
       var lIdent := RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes);
-      var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;
-      if lConstant <> nil then
-        exit lConstant.Value
-      else
-        exit 0; // TODO check!!!
+
+      if (aProperty.Type.Flags and IslandTypeFlags.Delegate) <> 0 then begin // delegate case
+        writeLn('Delegate!!');
+        writeLn(lIdent);
+        writeLn(typeOf(Root).Name);
+        var lMethod := typeOf(Root).Methods.Where(a -> (a.Name = lIdent)).FirstOrDefault;
+        writeLn(lMethod.name);
+        //exit lMethod;
+        exit 0;
+      end
+      else begin
+        var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;
+        if lConstant <> nil then
+          exit lConstant.Value
+        else
+          exit 0; // TODO check!!!
+      end;
     end;
 
     TValueType.vaSet: begin
@@ -203,7 +215,7 @@ begin
   lProperty := FindProperty(lType, lName);
   if lProperty = nil then raise new Exception('Can not get property ' + lName);
   writeLn('Reading prop value...');
-  var lPropValue := ReadPropValue(lValue, lProperty);
+  var lPropValue := ReadPropValue(TComponent(lInstance), lValue, lProperty);
   writeLn('Setting prop value');
   DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
 
@@ -217,17 +229,18 @@ begin
   fStream.Position := fStream.Position - 1;
 end;
 
-method TReader.ReadRootComponent(Root: TComponent): TComponent;
+method TReader.ReadRootComponent(aRoot: TComponent): TComponent;
 begin
   ReadSignature; // Skip 'TPF0'
   ReadStr;
   var lName := ReadStr;
-  Root.Name := lName;
+  aRoot.Name := lName;
   //Root.Name := ReadStr;
-  writeLn(Root.Name);
-  fOwner := Root;
-  fParent := Root;
-  ReadComponentData(Root);
+  writeLn(aRoot.Name);
+  fOwner := aRoot;
+  fParent := aRoot;
+  Root := aRoot;
+  ReadComponentData(aRoot);
 end;
 
 method TReader.ReadData(Instance: TComponent);
@@ -243,7 +256,8 @@ begin
   if result = nil then begin
     result := ComponentsHelper.CreateComponent(lClass, fOwner);
     result.Name := lName;
-    // TODO setParent!
+    writeLn('Parent:' + fParent.Name);
+    TControl(result).Parent := TControl(fParent);
   end;
   var lOldParent := fParent;
   fParent := result;
@@ -301,8 +315,6 @@ begin
     lCtor := lCtors.FirstOrDefault;
 
   if lCtor = nil then raise new Exception('No default constructor could be found!');
-  var lRealCtor := ComponentCtorHelper(lCtor.Pointer);
-  if lRealCtor = nil then raise new Exception('No default constructor could be found!');
   var lNew := DefaultGC.New(aType.RTTI, aType.SizeOfType);
   result := InternalCalls.Cast<TComponent>(lNew);
   lCtor.Invoke(result, [aOwner]);

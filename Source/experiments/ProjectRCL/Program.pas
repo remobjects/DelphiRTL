@@ -4,12 +4,18 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  TForm55 = public class(TForm)
+  TForm556 = public class(TForm)
       //Button1: TButton;
   private
     { Private declarations }
   public
     { Public declarations }
+    procedure Button1Click(Sender: TObject);
+    begin
+
+    end;
+
+
     {constructor (aOwner: TComponent);
     begin
       writeLn('here..');
@@ -24,7 +30,7 @@ type
       // this is the default VCL prject code
       Application.Initialize;
       //Application.MainFormOnTaskbar := True;
-      Application.CreateForm(typeOf(TForm55), var Form45);
+      Application.CreateForm(typeOf(TForm5), var Form45);
       Application.Run;
     end;
 

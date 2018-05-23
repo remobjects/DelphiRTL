@@ -13,6 +13,7 @@ type
   public
   { Public declarations }
     button1: TButton;
+    procedure Button1Click(Sender: TObject);
   end;
 
   var
@@ -47,5 +48,10 @@ end
 }
 
 implementation
+
+procedure TForm5.Button1Click(Sender: TObject);
+begin
+  //ShowMessage('Clicked!');
+end;
 
 end.

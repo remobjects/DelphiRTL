@@ -13,10 +13,10 @@ protected
   method HandleNeeded; virtual; partial; empty;
 end;*/
 
-TWinControl = public partial class(TControl)
+/*TWinControl = public partial class(TControl)
 protected
   method CreateWnd; virtual; empty;
-end;
+end;*/
 
 TScrollingWinControl = public partial class(TWinControl)
 end;

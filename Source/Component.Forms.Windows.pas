@@ -22,8 +22,6 @@ type
     method CreateWnd; override;
   end;
 
-  ComponentCtorHelper = public procedure(aInst: Object; aOwner: TComponent);
-
 implementation
 
 method TApplication.CreateForm(InstanceClass: TComponentClass; var FormRef: TComponent);
@@ -47,8 +45,6 @@ begin
   end;
 
   if lCtor = nil then raise new Exception('No default constructor could be found!');
-  var lRealCtor := ComponentCtorHelper(lCtor.Pointer);
-  if lRealCtor = nil then raise new Exception('No default constructor could be found!');
   var lNew := DefaultGC.New(InstanceClass.RTTI, InstanceClass.SizeOfType);
   FormRef := InternalCalls.Cast<TComponent>(lNew);
   lCtor.Invoke(FormRef, [nil]);
@@ -89,7 +85,6 @@ end;
 
 method TCustomForm.CreateWnd;
 begin
-  var hWnd: rtl.HWND;
   // this struct holds information for the window class
   var wc: rtl.WNDCLASSEX;
   var hInstance := rtl.GetModuleHandle(nil);
@@ -108,15 +103,13 @@ begin
   var lString: RemObjects.Elements.System.String := 'WindowClass1';
   var lArray := lString.ToCharArray(true);
   wc.lpszClassName := @lArray[0];
-
-  var lTitle: RemObjects.Elements.System.String := 'Good Stuff!!!';
-  var lTitleArray := lTitle.ToCharArray(true);
+  var lTitleArray := 'Test'.ToCharArray(true);
 
   // register the window class
   rtl.RegisterClassEx(@wc);
 
   // create the window and use the result as the handle
-  hWnd := rtl.CreateWindowEx(0,
+  fHandle := rtl.CreateWindowEx(0,
   @lArray[0],    // name of the window class
   @lTitleArray[0],   // title of the window
   rtl.WS_OVERLAPPEDWINDOW,    // window style
@@ -130,7 +123,7 @@ begin
   nil);    // used with multiple windows, NULL
 
   // display the window on the screen
-  rtl.ShowWindow(hWnd, rtl.SW_SHOW);
+  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
 end;
 
 class method TCustomForm.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;

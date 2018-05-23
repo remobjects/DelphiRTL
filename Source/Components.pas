@@ -24,7 +24,7 @@ type
   TKeyPressEvent = public block(Sender: TObject; var Key: Char);
   TKeyEvent = public block(Sender: TObject; var Key: Word; Shift: TShiftState);
 
-  TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ELSEIF ISLAND AND WINDOWS} NativeInt {$ENDIF};
+  TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ELSEIF ISLAND AND WINDOWS} rtl.HWND {$ENDIF};
   TPropertyChangedEvent = public block(Sender: TObject; PropName: String);
 
   INotifyPropertyChanged = public interface
@@ -66,11 +66,10 @@ protected
     fFont: TFont;
     method ClassName: String; override;
     method CreateHandle; virtual; partial; empty;
-    method HandleNeeded; virtual; partial; empty;
+    method HandleNeeded; virtual;
     method Loaded; override;
     method Changed(aObject: TObject; propName: String);
     constructor(aOwner: TComponent);
-
 
     method PlatformGetCaption: String; partial; empty;
     method PlatformSetCaption(aValue: String); partial; empty;
@@ -94,7 +93,7 @@ protected
     method PlatformApplyDefaults; virtual; partial; empty;
 
   public
-    property Handle: dynamic read fHandle;
+    property Handle: TPlatformHandle read fHandle;
     property Font: TFont read fFont write setFont;
     property Parent: TControl read fParent write SetParent;
     property Caption: String read GetCaption write SetCaption;
@@ -210,6 +209,11 @@ begin
   result := 'TControl';
 end;
 
+method TControl.HandleNeeded;
+begin
+  CreateHandle;
+end;
+
 method TControl.SetFont(value: TFont);
 begin
   fFont := value;
@@ -298,7 +302,6 @@ begin
   fStyles := value;
   NotifyChanged('styles');
 end;
-
 
 method TControl.GetClientHeight: Integer;
 begin
