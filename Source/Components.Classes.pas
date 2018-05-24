@@ -144,13 +144,12 @@ begin
       var lIdent := RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes);
 
       if (aProperty.Type.Flags and IslandTypeFlags.Delegate) <> 0 then begin // delegate case
-        writeLn('Delegate!!');
-        writeLn(lIdent);
-        writeLn(typeOf(Root).Name);
-        var lMethod := typeOf(Root).Methods.Where(a -> (a.Name = lIdent)).FirstOrDefault;
-        writeLn(lMethod.name);
-        //exit lMethod;
-        exit 0;
+        var lType := typeOf(Root);
+        var lMethod := lType.Methods.Where(a -> (a.Name = lIdent)).FirstOrDefault;
+        //var lDelegate := Utilities.NewDelegate(lType.RTTI, Root, lMethod.Pointer);
+        var lDelegate := Utilities.NewDelegate(aProperty.Type.RTTI, Root, lMethod.Pointer);
+
+        exit lDelegate;
       end
       else begin
         var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;

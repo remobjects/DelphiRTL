@@ -12,7 +12,7 @@ type
     { Public declarations }
     procedure Button1Click(Sender: TObject);
     begin
-
+      writeLn('Inside Button1Click!!!!');
     end;
 
 

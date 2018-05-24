@@ -253,8 +253,11 @@ end;
 
 method TControl.SetOnClick(aValue: TNotifyEvent);
 begin
+  writeLn('Inside SetOnClick 1');
   fOnClick := aValue;
+  writeLn('Inside SetOnClick 2');
   PlatformSetOnClick(aValue);
+  writeLn('Inside SetOnClick 3');
 end;
 
 method TControl.SetOnKeyPress(value: TKeyPressEvent);

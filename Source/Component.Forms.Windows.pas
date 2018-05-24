@@ -20,7 +20,10 @@ type
   public
     constructor(aOwner: TComponent);
     method CreateWnd; override;
+    method WndProc2(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
   end;
+
+  TMyWndProc = public block(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 
 implementation
 
@@ -96,6 +99,17 @@ begin
   wc.cbSize := sizeOf(rtl.WNDCLASSEX);
   wc.style := rtl.CS_HREDRAW or rtl.CS_VREDRAW;
   wc.lpfnWndProc := @WndProc;
+  /*wc.lpfnWndProc := (hWnd, message, wParam, lParam) -> begin
+    //result := self.WndProc2(hWnd, message, wParam, lParam);
+  end;*/
+  /*var lBlock: TMyWndProc;
+  lBlock := (hWnd, message, wParam, lParam) -> begin
+    self.WndProc2(hWnd, message, wParam, lParam);
+  end;
+
+  wc.lpfnWndProc := @lBlock;*/
+
+
   wc.hInstance := hInstance;
 
   //wc.hCursor = rtl.LoadCursor(nil, rtl.IDC_ARROW.);
@@ -124,6 +138,12 @@ begin
 
   // display the window on the screen
   rtl.ShowWindow(fHandle, rtl.SW_SHOW);
+end;
+
+method TCustomForm.WndProc2(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+begin
+  writeln('lol');
+  result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
 end;
 
 class method TCustomForm.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;

@@ -51,6 +51,7 @@ implementation
 
 procedure TForm5.Button1Click(Sender: TObject);
 begin
+  writeLn('Inside Button1Click!!!!!');
   //ShowMessage('Clicked!');
 end;
 
