@@ -143,7 +143,7 @@ implementation
 
 procedure ShowMessage(aMessage: String);
 begin
-  {$IF WEBASSEMBLY}
+  {$IF WEBASSEMBLY OR (ISLAND AND WINDOWS)}
   PlatformShowMessage(aMessage);
   {$ENDIF}
 end;

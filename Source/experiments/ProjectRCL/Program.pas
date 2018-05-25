@@ -10,6 +10,7 @@ type
     { Private declarations }
   public
     { Public declarations }
+    Button1: TButton;
     procedure Button1Click(Sender: TObject);
     begin
       writeLn('Inside Button1Click!!!!');

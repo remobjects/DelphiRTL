@@ -2,8 +2,10 @@
 
 interface
 
+{$GLOBALS ON}
+
 uses
-  RemObjects.Elements.RTL.Delphi;
+  RemObjects.Elements.RTL.Delphi, rtl;
 
 type
   TCreateParams = public record
@@ -11,8 +13,8 @@ type
 
   TControl = public partial class(TComponent)
   protected
-    method GetDefaultName: String;
     //constructor(aOwner: TComponent);
+    method GetDefaultName: String;
 
     method PlatformGetCaption: String; partial;
     method PlatformSetCaption(aValue: String); partial;
@@ -26,12 +28,14 @@ type
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
+  public
   end;
 
   TWinControl = public partial class(TControl)
   private
     fTabOrder: Integer; // TODO
   protected
+    fOldWndProc: TWndProc;
     method CreateHandle; override;
 
     method CreateParams(var aParams: TCreateParams); virtual;
@@ -39,23 +43,57 @@ type
     method CreateWnd; virtual;
   public
     constructor(aOwner: TComponent);
+    method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT; virtual;
     property TabOrder: Integer read fTabOrder write fTabOrder;
   end;
+
+  TWndProc = public function(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 
   //TScrollingWinControl = public partial class(TWinControl)
   //end;
 
+  function GlobalWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+
+  procedure ShowMessage(aMessage: String);
+
 implementation
+
+procedure ShowMessage(aMessage: String);
+begin
+  var lMessage := aMessage.ToCharArray(true);
+  rtl.MessageBoxW(nil, @lMessage[0], nil, 0);
+end;
+
+function GlobalWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+begin
+  var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
+  if lObject <> 0 then begin
+    var lControl := InternalCalls.Cast<TWinControl>(^Void(lObject));
+    result := lControl.WndProc(hWnd, message, wParam, lParam);
+  end
+  else
+    result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
+end;
 
 method TWinControl.CreateHandle;
 begin
-  writeLn('TWinControl.CreateHandle!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   CreateWnd;
 end;
 
 constructor TWinControl(aOwner: TComponent);
 begin
 
+end;
+
+method TWinControl.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+begin
+  if message = rtl.WM_LBUTTONDOWN then begin
+    if assigned(OnClick) then
+      OnClick(self);
+    result := 0;
+  end
+  else
+    result := rtl.CallWindowProc(fOldWndProc, hWnd, message, wParam, lParam);
 end;
 
 method TControl.GetDefaultName: String;

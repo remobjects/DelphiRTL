@@ -16,14 +16,12 @@ type
 
   TCustomForm = public partial class(TScrollingWinControl)
   protected
-    class method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+    class method FormWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
   public
     constructor(aOwner: TComponent);
     method CreateWnd; override;
     method WndProc2(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
   end;
-
-  TMyWndProc = public block(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 
 implementation
 
@@ -98,18 +96,7 @@ begin
   // fill in the struct with the needed information
   wc.cbSize := sizeOf(rtl.WNDCLASSEX);
   wc.style := rtl.CS_HREDRAW or rtl.CS_VREDRAW;
-  wc.lpfnWndProc := @WndProc;
-  /*wc.lpfnWndProc := (hWnd, message, wParam, lParam) -> begin
-    //result := self.WndProc2(hWnd, message, wParam, lParam);
-  end;*/
-  /*var lBlock: TMyWndProc;
-  lBlock := (hWnd, message, wParam, lParam) -> begin
-    self.WndProc2(hWnd, message, wParam, lParam);
-  end;
-
-  wc.lpfnWndProc := @lBlock;*/
-
-
+  wc.lpfnWndProc := @FormWndProc;
   wc.hInstance := hInstance;
 
   //wc.hCursor = rtl.LoadCursor(nil, rtl.IDC_ARROW.);
@@ -124,31 +111,37 @@ begin
 
   // create the window and use the result as the handle
   fHandle := rtl.CreateWindowEx(0,
-  @lArray[0],    // name of the window class
-  @lTitleArray[0],   // title of the window
-  rtl.WS_OVERLAPPEDWINDOW,    // window style
-  300,    // x-position of the window
-  300,    // y-position of the window
-  500,    // width of the window
-  400,    // height of the window
-  nil,    // we have no parent window, NULL
-  nil,    // we aren't using menus, NULL
-  hInstance,    // application handle
+    @lArray[0],    // name of the window class
+    @lTitleArray[0],   // title of the window
+    rtl.WS_OVERLAPPEDWINDOW,    // window style
+    300,    // x-position of the window
+    300,    // y-position of the window
+    500,    // width of the window
+    400,    // height of the window
+    nil,    // we have no parent window, NULL
+    nil,    // we aren't using menus, NULL
+    hInstance,    // application handle
   nil);    // used with multiple windows, NULL
 
+  rtl.SetWindowLongPtr(fHandle, rtl.GWLP_USERDATA, NativeUInt(InternalCalls.Cast(self)));
   // display the window on the screen
   rtl.ShowWindow(fHandle, rtl.SW_SHOW);
 end;
 
 method TCustomForm.WndProc2(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 begin
-  writeln('lol');
   result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
 end;
 
-class method TCustomForm.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+class method TCustomForm.FormWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 begin
-  result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
+  var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
+  if lObject <> 0 then begin
+    var lControl := InternalCalls.Cast<TCustomForm>(^Void(lObject));
+    result := lControl.WndProc2(hWnd, message, wParam, lParam);
+  end
+  else
+    result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
 end;
 
 

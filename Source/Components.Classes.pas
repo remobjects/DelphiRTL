@@ -290,10 +290,10 @@ end;
 
 method ComponentsHelper.CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
 begin
+  var lTypes := &Type.AllTypes.ToList;
   writeLn('Finding type: ' + aClassName);
   var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.' + aClassName).FirstOrDefault;
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
-  writeLn('Type ok, now creating component');
   result := CreateComponent(lType, aOwner);
 end;
 
