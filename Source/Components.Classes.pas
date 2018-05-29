@@ -64,10 +64,50 @@ type
     method ReadComponent(aInstance: TComponent);
   end;
 
+  TParserToken = public enum(toEOF = Char(0), toSymbol = Char(1), toString = Char(2), toInteger = Char(3), toFloat = Char(4), toWString = Char(5), toOtCharacter = Char(6)) of Integer;
+
+  TParser = public class
+  private
+    fStream: TStream;
+    fFloatType: Char;
+    fSourceLine: Integer;
+    fToken: TParserToken;
+    fTokenValue: String;
+    method PeekChar: Char;
+    method NextChar: Char;
+    method SkipToNext;
+  public
+    constructor(aStream: TStream/*;aOnError: TParserErrorEvent = nil*/);
+    constructor(aStream: TStream; FormatSettings: TFormatSettings/*; aOnError: TParserErrorEvent = nil*/);
+    //destructor Destroy; override;
+    method CheckToken(T: TParserToken);
+    method CheckTokenSymbol(S: string);
+    //method Error(Ident: string);
+    //method ErrorFmt(const Ident: string; const Args: array of const);
+    //method ErrorStr(const Message: string);
+    //method HexToBinary(Stream: TStream);
+    method NextToken: TParserToken;
+    method SourcePos: LongInt;
+    method TokenComponentIdent: string;
+    method TokenFloat: Double;
+    method TokenInt: Int64;
+    method TokenString: String;
+    //method TokenWideString: UnicodeString;
+    method TokenSymbolIs(S: String): Boolean;
+    property FloatType: Char read fFloatType;
+    property SourceLine: Integer read fSourceLine;
+    //property LinePos: Integer read GetLinePos;
+    property Token: TParserToken read fToken;
+  end;
+
   ComponentsHelper = public static class
   public
     class method CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
     class method CreateComponent(aType: &Type; aOwner: TComponent): TComponent;
+  end;
+
+  ObjectConverter = public static class
+    class method ToBinary(aInput: TStream; aOutput: TStream);
   end;
 
 implementation
@@ -290,7 +330,6 @@ end;
 
 method ComponentsHelper.CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
 begin
-  var lTypes := &Type.AllTypes.ToList;
   writeLn('Finding type: ' + aClassName);
   var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.' + aClassName).FirstOrDefault;
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
@@ -319,6 +358,17 @@ begin
   lCtor.Invoke(result, [aOwner]);
 end;
 
+method ObjectConverter.ToBinary(aInput: TStream; aOutput: TStream);
+begin
+  var lParser := new TParser(aInput);
+  //WriteHeader; TPF0
+  lParser.NextToken;
+  if lParser.TokenSymbolIs('object') then begin
+  end;
+  //else
+    //Error
+end;
+
 constructor TResourceStream(Instance: THandle; ResName: String; ResType: PChar);
 begin
   var lModule: rtl.HMODULE := 0;
@@ -335,6 +385,123 @@ method TResourceStream.ReadComponent(aInstance: TComponent);
 begin
   var lReader := new TReader(self, Size);
   lReader.ReadRootComponent(aInstance);
+end;
+
+constructor TParser(aStream: TStream);
+begin
+  fStream := aStream;
+end;
+
+method TParser.CheckToken(T: TParserToken);
+begin
+  if not (fToken = TParserToken.toSymbol) then
+    raise new Exception('Wrong token');
+end;
+
+method TParser.CheckTokenSymbol(S: string);
+begin
+  if not (fToken = TParserToken.toSymbol) and (String.Compare(S, fTokenValue) = 0) then
+    raise new Exception('Wrong token');
+end;
+
+method TParser.NextToken: TParserToken;
+begin
+  var lChar := PeekChar;
+
+  case lChar of
+    '_', 'a'..'z', 'A'..'Z': begin
+      fTokenValue := lChar;
+      NextChar;
+      while PeekChar in ['_', 'a'..'z', 'A'..'Z', '0'..'9'] do
+        fTokenValue := fTokenValue + NextChar;
+
+      fToken := TParserToken.toSymbol;
+    end;
+
+    '0'..'9', '-': begin
+      fTokenValue := lChar;
+      NextChar;
+      while PeekChar in ['0'..'9', '.'] do
+        fTokenValue := fTokenValue + NextChar;
+
+      fToken := if fTokenValue.IndexOf('.') >= 0 then TParserToken.toFloat else TParserToken.toInteger;
+    end;
+
+    "'": begin
+      fTokenValue := lChar;
+      NextChar;
+      while PeekChar <> "'" do
+        fTokenValue := fTokenValue + NextChar;
+
+      result := TParserToken.toString;
+    end;
+
+    ':', '#': begin
+      fTokenValue := lChar;
+      NextChar;
+      fToken := TParserToken.toOtCharacter;
+    end;
+  end;
+
+  result := fToken;
+end;
+
+method TParser.SourcePos: LongInt;
+begin
+
+end;
+
+method TParser.TokenComponentIdent: String;
+begin
+
+end;
+
+method TParser.TokenFloat: Double;
+begin
+  result := Convert.ToDouble(fTokenValue);
+end;
+
+method TParser.TokenInt: Int64;
+begin
+  result:= Convert.ToInt64(fTokenValue);
+end;
+
+method TParser.TokenString: String;
+begin
+  result:= fTokenValue;
+end;
+
+method TParser.TokenSymbolIs(S: String): Boolean;
+begin
+  result := (fToken = TParserToken.toSymbol) and (String.Compare(S, fTokenValue) = 0);
+end;
+
+constructor TParser(aStream: TStream; FormatSettings: TFormatSettings);
+begin
+
+end;
+
+method TParser.PeekChar: Char;
+begin
+  SkipToNext;
+  var lData: Byte;
+  fStream.ReadData(var lData);
+  result := chr(lData);
+  fStream.Position := fStream.Position - 1;
+end;
+
+method TParser.NextChar: Char;
+begin
+  SkipToNext;
+  var lData: Byte;
+  fStream.ReadData(var lData);
+  result := Char(lData);
+end;
+
+method TParser.SkipToNext;
+begin
+  while PeekChar in [#0..#32, ' ', #13, #10] do
+    fStream.Position := fStream.Position + 1;
 end;
 
 end.
