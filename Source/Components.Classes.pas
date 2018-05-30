@@ -434,6 +434,7 @@ begin
   fWriter.WriteSignature;
   fParser.NextToken;
   if fParser.TokenSymbolIs('object') then begin
+    writeLn('object found');
     fParser.NextToken;
     var lValue := fParser.TokenValue; // object name
     fParser.NextToken; // skip ':'
@@ -586,8 +587,9 @@ end;
 
 method TParser.SkipToNext;
 begin
-  while PeekChar in [#0..#32, ' ', #13, #10] do
-    fStream.Position := fStream.Position + 1;
+  var lByte: Byte := fStream.ReadData(var lByte);
+  while (fStream.Position < fStream.Size) and (lByte in [0..32]) do
+    lByte := fStream.ReadData(var lByte);
 end;
 
 method TWriter.WriteListBegin;
