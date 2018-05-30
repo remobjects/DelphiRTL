@@ -22,6 +22,7 @@ type
     fStream: TStream;
     method SetRoot(aValue: TComponent); virtual;
   public
+    const FilerSignature: UInt32 = $30465054; // 'TPF0'
     constructor(aStream: TStream; BufSize: Integer);
     //method DefineProperty(Name: String; ReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean); virtual; abstract;
     //method DefineBinaryProperty(Name: String; ReadData, WriteData: TStreamProc; HasData: Boolean); virtual; abstract;
@@ -40,7 +41,6 @@ type
   protected
     method ReadProperty(aInstance: TComponent /*TPersistent*/);
   public
-    const FilerSignature: UInt32 = $30465054; // 'TPF0'
     method EndOfList: Boolean;
     method ReadComponent(aComponent: TComponent): TComponent;
     method ReadData(Instance: TComponent);
@@ -52,7 +52,17 @@ type
     property Owner: TComponent read fOwner write fOwner;
   end;
 
-  TWriter = public class(TObject)
+  TWriter = public class(TFiler)
+  public
+    method WriteListBegin;
+    method WriteListEnd;
+    method WriteSignature;
+    method WriteUTF8Str(aValue: string);
+    method WriteString(aValue: string);
+    method WriteIdent(aIdent: string);
+    method WriteInteger(aValue: Integer);
+    method WriteInteger(aValue: Int64);
+    method WriteDouble(aValue: Double);
   end;
 
   TResourceStream = class(TCustomMemoryStream)
@@ -69,8 +79,6 @@ type
   TParser = public class
   private
     fStream: TStream;
-    fFloatType: Char;
-    fSourceLine: Integer;
     fToken: TParserToken;
     fTokenValue: String;
     method PeekChar: Char;
@@ -83,8 +91,7 @@ type
     method CheckToken(T: TParserToken);
     method CheckTokenSymbol(S: string);
     //method Error(Ident: string);
-    //method ErrorFmt(const Ident: string; const Args: array of const);
-    //method ErrorStr(const Message: string);
+    //method ErrorStr(Message: string);
     //method HexToBinary(Stream: TStream);
     method NextToken: TParserToken;
     method SourcePos: LongInt;
@@ -92,12 +99,9 @@ type
     method TokenFloat: Double;
     method TokenInt: Int64;
     method TokenString: String;
-    //method TokenWideString: UnicodeString;
     method TokenSymbolIs(S: String): Boolean;
-    property FloatType: Char read fFloatType;
-    property SourceLine: Integer read fSourceLine;
-    //property LinePos: Integer read GetLinePos;
     property Token: TParserToken read fToken;
+    property TokenValue: String read fTokenValue;
   end;
 
   ComponentsHelper = public static class
@@ -106,8 +110,16 @@ type
     class method CreateComponent(aType: &Type; aOwner: TComponent): TComponent;
   end;
 
-  ObjectConverter = public static class
-    class method ToBinary(aInput: TStream; aOutput: TStream);
+  ObjectConverter = public class
+  private
+    fWriter: TWriter;
+    fParser: TParser;
+    method ObjectToBinary;
+    method PropertyToBinary;
+    method PropertyValueToBinary;
+  public
+    constructor(aInput: TStream; aOutput: TStream);
+    method ToBinary;
   end;
 
 implementation
@@ -358,12 +370,86 @@ begin
   lCtor.Invoke(result, [aOwner]);
 end;
 
-method ObjectConverter.ToBinary(aInput: TStream; aOutput: TStream);
+method ObjectConverter.ObjectToBinary;
 begin
-  var lParser := new TParser(aInput);
-  //WriteHeader; TPF0
-  lParser.NextToken;
-  if lParser.TokenSymbolIs('object') then begin
+  fParser.NextToken;
+  var lValue := fParser.TokenValue; // object name
+  fParser.NextToken; // skip ':'
+  fParser.NextToken;
+  var lValue2 := fParser.TokenValue; // class
+  fWriter.WriteString(lValue2);
+  fWriter.WriteString(lValue);
+  fParser.NextToken;
+  while (fParser.Token <> TParserToken.toEOF) and not (fParser.TokenSymbolIs('end')) do begin
+    if fParser.TokenSymbolIs('object') then begin
+      fWriter.WriteListEnd;
+      ObjectToBinary;
+    end
+    else PropertyToBinary;
+  end;
+    fWriter.WriteListEnd;
+end;
+
+method ObjectConverter.PropertyValueToBinary;
+begin
+  case fParser.Token of
+    TParserToken.toString: begin
+      fWriter.WriteString(fParser.TokenValue);
+    end;
+
+    TParserToken.toSymbol: begin
+      fWriter.WriteIdent(fParser.TokenValue);
+    end;
+
+    TParserToken.toInteger: begin
+      fWriter.WriteInteger(fParser.TokenInt);
+    end;
+
+    TParserToken.toFloat: begin
+      fWriter.WriteDouble(fParser.TokenFloat);
+    end;
+  end;
+end;
+
+method ObjectConverter.PropertyToBinary;
+begin
+  fWriter.WriteIdent(fParser.TokenValue);
+  fParser.NextToken;
+  if fParser.TokenSymbolIs('=') then begin
+    fParser.NextToken;
+    PropertyValueToBinary;
+  end;
+  //else
+    //error;
+end;
+
+constructor ObjectConverter(aInput: TStream; aOutput: TStream);
+begin
+  fParser := new TParser(aInput);
+  fWriter := new TWriter(aOutput, 100);
+end;
+
+method ObjectConverter.ToBinary;
+begin
+  fWriter.WriteSignature;
+  fParser.NextToken;
+  if fParser.TokenSymbolIs('object') then begin
+    fParser.NextToken;
+    var lValue := fParser.TokenValue; // object name
+    fParser.NextToken; // skip ':'
+    fParser.NextToken;
+    var lValue2 := fParser.TokenValue; // class
+    fWriter.WriteString(lValue2);
+    fWriter.WriteString(lValue);
+    fParser.NextToken;
+    while (fParser.Token <> TParserToken.toEOF) and not (fParser.TokenSymbolIs('end')) do begin
+      if fParser.TokenSymbolIs('object') then begin
+        fWriter.WriteListEnd;
+        ObjectToBinary;
+      end
+      else PropertyToBinary;
+    end;
+    fWriter.WriteListEnd;
   end;
   //else
     //Error
@@ -427,8 +513,8 @@ begin
       fToken := if fTokenValue.IndexOf('.') >= 0 then TParserToken.toFloat else TParserToken.toInteger;
     end;
 
-    "'": begin
-      fTokenValue := lChar;
+    '''': begin
+      fTokenValue := ''; // dismiss '
       NextChar;
       while PeekChar <> "'" do
         fTokenValue := fTokenValue + NextChar;
@@ -448,12 +534,12 @@ end;
 
 method TParser.SourcePos: LongInt;
 begin
-
+  result := fStream.Position;
 end;
 
 method TParser.TokenComponentIdent: String;
 begin
-
+  result := fTokenValue;
 end;
 
 method TParser.TokenFloat: Double;
@@ -502,6 +588,73 @@ method TParser.SkipToNext;
 begin
   while PeekChar in [#0..#32, ' ', #13, #10] do
     fStream.Position := fStream.Position + 1;
+end;
+
+method TWriter.WriteListBegin;
+begin
+  fStream.WriteData(Byte(TValueType.vaList));
+end;
+
+method TWriter.WriteListEnd;
+begin
+  fStream.WriteData(Byte(TValueType.vaNull));
+end;
+
+method TWriter.WriteSignature;
+begin
+  fStream.WriteData(FilerSignature);
+end;
+
+method TWriter.WriteUTF8Str(aValue: string);
+begin
+  var lBytes := RemObjects.Elements.RTL.Encoding.UTF8.GetBytes(aValue);
+  var lTotal := if length(lBytes) > 255 then 255 else length(lBytes);
+  fStream.WriteData(Byte(lTotal));
+  fStream.Write(lBytes, 0, lTotal);
+end;
+
+method TWriter.WriteString(aValue: string);
+begin
+  var lBytes := RemObjects.Elements.RTL.Encoding.UTF8.GetBytes(aValue);
+  var lTotal := length(lBytes);
+  fStream.WriteData(Byte(TValueType.vaUTF8String));
+  fStream.WriteData(Byte(lTotal));
+  fStream.Write(lBytes, lTotal);
+end;
+
+method TWriter.WriteIdent(aIdent: string);
+begin
+  fStream.WriteData(Byte(TValueType.vaIdent));
+  WriteUTF8Str(aIdent);
+end;
+
+method TWriter.WriteInteger(aValue: Integer);
+begin
+  if (aValue >= Byte.MinValue) and (aValue <= Byte.MaxValue) then begin
+    fStream.WriteData(Byte(TValueType.vaInt8));
+    fStream.WriteData(Byte(aValue));
+  end
+  else
+    if (aValue >= SmallInt.MinValue) and (aValue <= SmallInt.MaxValue) then begin
+      fStream.WriteData(Byte(TValueType.vaInt16));
+      fStream.WriteData(SmallInt(aValue));
+    end
+    else begin
+      fStream.WriteData(Byte(TValueType.vaInt32));
+      fStream.WriteData(aValue);
+    end;
+end;
+
+method TWriter.WriteInteger(aValue: Int64);
+begin
+  fStream.WriteData(Byte(TValueType.vaInt64));
+  fStream.WriteData(aValue);
+end;
+
+method TWriter.WriteDouble(aValue: Double);
+begin
+  fStream.WriteData(Byte(TValueType.vaDouble));
+  fStream.WriteData(aValue);
 end;
 
 end.
