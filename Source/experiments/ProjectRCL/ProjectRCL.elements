@@ -46,15 +46,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="gc" />
-    <Reference Include="Island" />
     <Reference Include="rtl" />
     <Reference Include="Elements" />
     <Reference Include="Delphi">
-      <HintPath>..\..\Windows\x86_64\Delphi.fx</HintPath>
+      <HintPath>..\..\Bin\Debug\Windows\i386\Delphi.fx</HintPath>
+    </Reference>
+    <Reference Include="Island">
+      <HintPath>C:\dev\ro\IslandRTL\Source\Bin\Debug\Windows\i386\Island.fx</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />
+    <Resource Include="dam.res" />
     <Compile Include="Unit5.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
