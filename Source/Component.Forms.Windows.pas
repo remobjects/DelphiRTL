@@ -78,8 +78,11 @@ end;
 
 constructor TCustomForm(aOwner: TComponent);
 begin
-  var lStream := new TFileStream('c:\dev\ro\dam.res', fmOpenRead);
-  lStream.Position := 76;
+  var lName := typeOf(self).Name;
+  lName := lName.Substring(lName.LastIndexOf('.') + 1).ToUpper;
+  writeLn(typeOf(self).Name.ToUpper);
+  var lStream := new TResourceStream(0, lName, rtl.PCHAR(^void(rtl.RT_RCDATA)));
+  lStream.Position := 0;
   var lReader := new TReader(lStream, 100);
   lReader.ReadRootComponent(self);
 end;

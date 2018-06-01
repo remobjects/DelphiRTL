@@ -126,7 +126,7 @@ type
     {$ENDIF}
 
     method WriteBufferData(var Buffer: Integer; Count: LongInt);
-    
+
     method ReadString(Count: LongInt; aEncoding: TEncoding := TEncoding.UTF16LE): DelphiString;
     method WriteString(aString: DelphiString; aEncoding: TEncoding := TEncoding.UTF16LE): LongInt;
 
@@ -181,6 +181,7 @@ type
     method Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; override;
     method SaveToStream(aStream: TStream); virtual;
     method SaveToFile(const aFileName: DelphiString);
+    method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
     property Memory: TBytes read fData.Bytes;
   end;
 
@@ -195,7 +196,6 @@ type
     method LoadFromFile(const aFileName: DelphiString);
     method SetSize(const NewSize: Int64); override;
     method SetSize(NewSize: LongInt); override;
-    method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
   end;
 
   TBytesStream = public class(TMemoryStream)
@@ -1095,6 +1095,11 @@ begin
   SaveToStream(lTmp);
 end;
 
+method TCustomMemoryStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+begin
+  result := fData.Write(Buffer, Offset, Count);
+end;
+
 constructor TMemoryStream;
 begin
   inherited;
@@ -1131,11 +1136,6 @@ end;
 method TMemoryStream.SetSize(NewSize: LongInt);
 begin
   fData.SetLength(NewSize);
-end;
-
-method TMemoryStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
-begin
-  result := fData.Write(Buffer, Offset, Count);
 end;
 
 constructor TBytesStream(const aBytes: TBytes);

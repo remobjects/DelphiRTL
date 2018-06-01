@@ -63,6 +63,7 @@ type
     method WriteInteger(aValue: Integer);
     method WriteInt64(aValue: Int64);
     method WriteDouble(aValue: Double);
+    method WriteSet(aValue: Byte);
   end;
 
   TResourceStream = class(TCustomMemoryStream)
@@ -115,10 +116,13 @@ type
     fWriter: TWriter;
     fParser: TParser;
     fName: String;
+    fMem: TMemoryStream;
+    fOutput: TStream;
     method ObjectToBinary;
     method PropertyToBinary;
     method PropertyValueToBinary;
     method AddResHeader;
+    method WriteResFile;
   public
     constructor(aInput: TStream; aOutput: TStream);
     method ToBinary;
@@ -322,7 +326,8 @@ method TReader.ReadSignature;
 begin
   var lSig: UInt32;
   fStream.ReadData(var lSig);
-  if lSig <> FilerSignature then
+  if lSig <> FilerSignature
+   then
     raise new Exception("Invalid dfm format");
 end;
 
@@ -417,7 +422,7 @@ begin
     TParserToken.toOtCharacter: begin
       if fParser.TokenValue = '[' then begin
         fParser.NextToken;
-        fWriter.WriteString('[]');
+        fWriter.WriteSet(0);
         // TODO
       end;
     end;
@@ -439,7 +444,9 @@ end;
 constructor ObjectConverter(aInput: TStream; aOutput: TStream);
 begin
   fParser := new TParser(aInput);
-  fWriter := new TWriter(aOutput, 100);
+  fOutput := aOutput;
+  fMem := new TMemoryStream;
+  fWriter := new TWriter(fMem, 100);
 end;
 
 /*
@@ -460,17 +467,26 @@ method ObjectConverter.AddResHeader;
 begin
   var lNameBytes := RemObjects.Elements.RTL.Encoding.UTF16LE.GetBytes(fName);
   var lNameLength := length(lNameBytes);
-  fHeader := new TMemoryStream;
-  fHeader.WriteData(DWORD(fOutput.Size));
-  fHeader.WriteData(DWORD(30 + lNameLength));
-  fHeader.WriteData(DWORD(10)); // RT_RCDATA
-  fHeader.Write(lNameBytes, 0);
-  fHeader.Write(Word(0)); // zero terminated string
-  fHeader.Write(WORD(0)); // DataVersion
-  fHeader.Write(WORD(0)); // MemoryFlags
-  fHeader.Write(WORD($0409)); // LanguageID -> English
-  fHeader.Write(DWORD(0)); // Version
-  fHeader.Write(DWORD(0)); // Characteristics
+  fOutput.Write([$00, $00, $00, $00, $20, $00, $00, $00, $FF, $FF, $00, $00, $FF, $FF, $00,
+    $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00], 32); // Standard .res header
+  fOutput.WriteData(DWORD(fMem.Size));
+  fOutput.WriteData(DWORD(30 + lNameLength));
+  fOutput.WriteData(WORD($FFFF)); // RT_RCDATA
+  fOutput.WriteData(WORD(10)); // RT_RCDATA
+  fOutput.WriteData(lNameBytes, length(lNameBytes));
+  fOutput.WriteData(WORD(0)); // zero terminated string
+  fOutput.WriteData(DWORD(0)); // DataVersion
+  fOutput.WriteData(WORD(0)); // MemoryFlags
+  fOutput.WriteData(WORD($0409)); // LanguageID -> English
+  fOutput.WriteData(DWORD(0)); // Version
+  fOutput.WriteData(DWORD(0)); // Characteristics
+end;
+
+method ObjectConverter.WriteResFile;
+begin
+  AddResHeader;
+  fMem.Position := 0;
+  fOutput.CopyFrom(fMem, fMem.Size);
 end;
 
 method ObjectConverter.ToBinary;
@@ -480,10 +496,10 @@ begin
   if fParser.TokenSymbolIs('object') then begin
     fParser.NextToken;
     var lValue := fParser.TokenValue; // object name
-    fName := lValue;
     fParser.NextToken; // skip ':'
     fParser.NextToken;
     var lValue2 := fParser.TokenValue; // class
+    fName := lValue2.ToUpper;
     fWriter.WriteUTF8Str(lValue2);
     fWriter.WriteUTF8Str(lValue);
     fParser.NextToken;
@@ -498,9 +514,11 @@ begin
       fParser.NextToken;
     end;
     fWriter.WriteListEnd;
+    fWriter.WriteListEnd;
   end;
   //else
     //Error
+  WriteResFile;
 end;
 
 constructor TResourceStream(Instance: THandle; ResName: String; ResType: PChar);
@@ -509,7 +527,9 @@ begin
   var lResName := ResName.ToCharArray;
   var lResource := rtl.FindResource(lModule, @lResName[0], LPCWSTR(rtl.RT_RCDATA));
   if lResource = nil then raise new Exception('Can not locale resource: ' + lResName);
-  var lPointer := rtl.LockResource(lResource);
+  var lHandle := rtl.LoadResource(lModule, lResource);
+  if lHandle = nil then raise new Exception('Can not load resource: ' + lResName);
+  var lPointer := rtl.LockResource(lHandle);
   var lSize := rtl.SizeofResource(lModule, lResource);
   Size := lSize;
   &Write(lPointer, lSize);
@@ -664,15 +684,22 @@ method TWriter.WriteString(aValue: string);
 begin
   var lBytes := RemObjects.Elements.RTL.Encoding.UTF8.GetBytes(aValue);
   var lTotal := length(lBytes);
-  fStream.WriteData(Byte(TValueType.vaUTF8String));
+  fStream.WriteData(Byte(TValueType.vaString));
   fStream.WriteData(Byte(lTotal));
   fStream.Write(lBytes, lTotal);
 end;
 
 method TWriter.WriteIdent(aIdent: string);
 begin
-  fStream.WriteData(Byte(TValueType.vaIdent));
-  WriteUTFf8Str(aIdent);
+  if String.Compare(aIdent, 'True') = 0 then
+    fStream.WriteData(Byte(TValueType.vaTrue))
+  else
+    if String.Compare(aIdent, 'False') = 0 then
+      fStream.WriteData(Byte(TValueType.vaFalse))
+    else begin
+      fStream.WriteData(Byte(TValueType.vaIdent));
+      WriteUTF8Str(aIdent);
+    end;
 end;
 
 method TWriter.WriteInteger(aValue: Integer);
@@ -701,6 +728,12 @@ end;
 method TWriter.WriteDouble(aValue: Double);
 begin
   fStream.WriteData(Byte(TValueType.vaDouble));
+  fStream.WriteData(aValue);
+end;
+
+method TWriter.WriteSet(aValue: Byte);
+begin
+  fStream.WriteData(Byte(TValueType.vaSet));
   fStream.WriteData(aValue);
 end;
 
