@@ -6,22 +6,23 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  TForm6 = public class(TForm)
+  TForm7 = public class(TForm)
     //Button1: TButton;
   private
   { Private declarations }
   public
   { Public declarations }
     button1: TButton;
+    edit1: TEdit;
     procedure Button1Click(Sender: TObject);
   end;
 
   var
-    Form6: TForm6;
+    Form7: TForm7;
 
 implementation
 
-procedure TForm6.Button1Click(Sender: TObject);
+procedure TForm7.Button1Click(Sender: TObject);
 begin
   ShowMessage('Clicked!');
 end;

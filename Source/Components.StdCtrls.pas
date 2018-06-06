@@ -19,6 +19,13 @@ type
     property Caption: String read fCaption write SetCaption;
   end;
 
+  TEdit = public partial class(TPlatformBaseControlClass)
+  public
+    property MaxLength: Integer read PlatformGetMaxLength write PlatformSetMaxLength;
+    property &ReadOnly: Boolean read PlatformGetReadOnly write PlatformSetReadOnly;
+    property Text: String read PlatformGetText write PlatformSetText;
+  end;
+
   {$IF WEBASSEMBLY}
   TLabel = public partial class(TControl)
   private
@@ -37,13 +44,6 @@ type
     method SetCaption(aValue: String);
   public
     property Caption: String read fCaption write SetCaption;
-  end;
-
-  TEdit = public partial class(TControl)
-  public
-    property MaxLength: Integer read PlatformGetMaxLength write PlatformSetMaxLength;
-    property &ReadOnly: Boolean read PlatformGetReadOnly write PlatformSetReadOnly;
-    property Text: String read PlatformGetText write PlatformSetText;
   end;
 
   TRadioCheckBox = public partial abstract class(TControl)

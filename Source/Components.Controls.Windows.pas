@@ -54,11 +54,11 @@ type
 
   function GlobalWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 
-  procedure ShowMessage(aMessage: String);
+  procedure PlatformShowMessage(aMessage: String);
 
 implementation
 
-procedure ShowMessage(aMessage: String);
+procedure PlatformShowMessage(aMessage: String);
 begin
   var lMessage := aMessage.ToCharArray(true);
   rtl.MessageBoxW(nil, @lMessage[0], nil, 0);
