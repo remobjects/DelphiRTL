@@ -15,14 +15,12 @@ type
       lConverter.ToBinary;*/
 
       // this is the default VCL prject code
+
       Application.Initialize;
       //Application.MainFormOnTaskbar := True;
-      Application.CreateForm(typeOf(TForm7), var Form45);
+      Application.CreateForm(typeOf(TForm6), var Form45);
       Application.Run;
-
-
     end;
-
   end;
 
 var

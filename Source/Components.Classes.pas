@@ -188,7 +188,7 @@ begin
       if aValueType = TValueType.vaUTF8String then
         exit RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes)
       else
-        exit RemObjects.Elements.RTL.Encoding.Default.GetString(lBytes);
+        exit RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes);
     end;
 
     TValueType.vaWString: begin
@@ -274,6 +274,7 @@ begin
   writeLn('Reading prop value...');
   var lPropValue := ReadPropValue(TComponent(lInstance), lValue, lProperty);
   writeLn('Setting prop value');
+  WriteLn(lPropValue.ToString);
   DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
 
   //lProperty.SetValue(aInstance, [], lPropValue);

@@ -148,13 +148,16 @@ end;
 
 method TControl.PlatformGetCaption: String;
 begin
-
+  var lMaxLength := rtl.GetWindowTextLength(fHandle);
+  var lBuffer := new Char[lMaxLength + 1];
+  rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength);
+  result := String.FromPChar(@lBuffer[0]);
 end;
 
 method TControl.PlatformSetCaption(aValue: String);
 begin
-  //var lText := aValue.ToCharArray(true);
-  //rtl.SetWindowText(fHandle, @lText[0]);
+  var lText := aValue.ToCharArray(true);
+  rtl.SetWindowText(fHandle, @lText[0]);
 end;
 
 method TControl.PlatformSetColor(aValue: TColor);

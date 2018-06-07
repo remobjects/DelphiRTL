@@ -11,6 +11,11 @@ type
     method CreateWindowHandle(aParams: TCreateParams); override;
   end;
 
+  TLabel = public partial class(TWinControl)
+  protected
+    method CreateWindowHandle(aParams: TCreateParams); override;
+  end;
+
   TEdit = public partial class(TWinControl)
   protected
     method CreateWindowHandle(aParams: TCreateParams); override;
@@ -21,7 +26,6 @@ type
     method PlatformGetText: String;
     method PlatformSetText(aValue: String);
   end;
-
 
 implementation
 
@@ -82,12 +86,29 @@ begin
   var lMaxLength := rtl.GetWindowTextLength(fHandle);
   var lBuffer := new Char[lMaxLength + 1];
   rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength);
+  result := String.FromPChar(@lBuffer[0]);
 end;
 
 method TEdit.PlatformSetText(aValue: String);
 begin
   var lBuffer := aValue.ToCharArray(true);
   rtl.SetWindowText(fHandle, @lBuffer[0]);
+end;
+
+method TLabel.CreateWindowHandle(aParams: TCreateParams);
+begin
+  var lArray := 'STATIC'.ToCharArray(true);
+  var lCaption := 'Label1'.ToCharArray(true);
+  var lParent := if Parent <> nil then Parent.Handle else nil;
+  var hInstance := rtl.GetModuleHandle(nil); // TODO
+
+  fHandle := rtl.CreateWindowEx(0, @lArray[0], @lCaption[0], rtl.WS_CHILD or rtl.WS_TABSTOP or rtl.SS_LEFT, Left, Top, 180, 25, lParent, nil, hInstance, nil);
+  //fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
+  //rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
+  rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
+
+  // display the window on the screen
+  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
 end;
 
 end.

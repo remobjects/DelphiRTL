@@ -4,7 +4,7 @@
     <ProductVersion>3.5</ProductVersion>
     <RootNamespace>ProjectRCL</RootNamespace>
     <ProjectGuid>{F8CCC42D-68E3-4708-9C96-A85F0AD63095}</ProjectGuid>
-    <OutputType>WinExecutable</OutputType>
+    <OutputType>Executable</OutputType>
     <AssemblyName>ProjectRCL</AssemblyName>
     <AllowGlobals>False</AllowGlobals>
     <AllowLegacyWith>False</AllowLegacyWith>
@@ -58,8 +58,7 @@
   <ItemGroup>
     <Compile Include="Program.pas" />
     <Compile Include="Unit5.pas" />
-    <Resource Include="withEdit.res" />
-    <Resource Include="manifest.res" />
+    <Resource Include="Unit9.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
 </Project>

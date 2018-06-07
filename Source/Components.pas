@@ -10,7 +10,6 @@ type
     method setName(aValue: String);
     method setOwner(aValue: TComponent);
   protected
-    method ClassName: String; virtual;
     method Loaded; virtual;
     constructor(aOwner: TComponent);
   public
@@ -64,7 +63,6 @@ type
 protected
     fHandle: TPlatformHandle;
     fFont: TFont;
-    method ClassName: String; override;
     method CreateHandle; virtual; partial; empty;
     method HandleNeeded; virtual;
     method Loaded; override;
@@ -152,11 +150,6 @@ begin
   fOwner := aOwner;
 end;
 
-method TComponent.ClassName: String;
-begin
-  result := 'TComponent';
-end;
-
 method TComponent.setOwner(aValue: TComponent);
 begin
   fOwner := aValue;
@@ -202,11 +195,6 @@ end;
 
 method TControl.Loaded;
 begin
-end;
-
-method TControl.ClassName: String;
-begin
-  result := 'TControl';
 end;
 
 method TControl.HandleNeeded;

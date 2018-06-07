@@ -8,15 +8,8 @@ type
   TPlatformBaseControlClass = public {$IF ISLAND AND WINDOWS}TWinControl{$ELSE}TControl{$ENDIF};
 
   TButton = public partial class(TPlatformBaseControlClass)
-  private
-    fCaption: String;
-    method SetCaption(aValue: String);
-  protected
-    method ClassName: String; override;
-    method PlatformSetCaption(aValue: String); virtual; partial; empty;
   public
     class method Create(AOwner: TComponent): TButton;
-    property Caption: String read fCaption write SetCaption;
   end;
 
   TEdit = public partial class(TPlatformBaseControlClass)
@@ -26,18 +19,12 @@ type
     property Text: String read PlatformGetText write PlatformSetText;
   end;
 
-  {$IF WEBASSEMBLY}
-  TLabel = public partial class(TControl)
-  private
-    fCaption: String;
-    method SetCaption(aValue: String);
- protected
-    method ClassName: String; override;
+  TLabel = public partial class(TPlatformBaseControlClass)
   public
     class method Create(aOwner: TComponent): TLabel;
-    property Caption: String read fCaption write SetCaption;
   end;
 
+  {$IF WEBASSEMBLY}
   TGroupBox = public partial class(TControl)
   private
     fCaption: String;
@@ -153,34 +140,12 @@ begin
   result := new TButton(AOwner);
 end;
 
-method TButton.SetCaption(aValue: String);
-begin
-  fCaption := aValue;
-  PlatformSetCaption(aValue);
-end;
-
-method TButton.ClassName: String;
-begin
-  result := 'Button';
-end;
-
-{$IF WEBASSEMBLY}
-method TLabel.setCaption(aValue: String);
-begin
-  fCaption := aValue;
-  PlatformSetCaption(aValue);
-end;
-
-method TLabel.ClassName: String;
-begin
-  result := 'Label';
-end;
-
 class method TLabel.Create(aOwner: TComponent): TLabel;
 begin
   result := new TLabel(aOwner);
 end;
 
+{$IF WEBASSEMBLY}
 method TGroupBox.SetCaption(aValue: String);
 begin
   fCaption := aValue;
