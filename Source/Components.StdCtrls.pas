@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
+
 interface
 
 {$GLOBALS ON}
@@ -309,6 +311,8 @@ begin
   fPosition := value;
   PlatformSetPosition(value);
 end;
+{$ENDIF}
+
 {$ENDIF}
 
 
