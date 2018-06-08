@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IF NOT TOFFEE}
+
 interface
 
 uses
@@ -64,6 +66,8 @@ class method TApplication.Create(aOwner: TComponent): TApplication;
 begin
   result := new TApplication(aOwner);
 end;
+
+{$ENDIF}
 
 
 end.

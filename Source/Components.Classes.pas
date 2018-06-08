@@ -68,7 +68,7 @@ type
     method WriteSet(aValue: Byte);
   end;
 
-  TResourceId = public {$IF ISLAND AND WINDOWS} PCHAR {$ELSE} Object {$ENDIF};
+  TResourceId = public {$IF ISLAND AND WINDOWS} rtl.PCHAR {$ELSE} Object {$ENDIF};
 
   TResourceStream = class(TCustomMemoryStream)
   public
@@ -480,17 +480,17 @@ begin
   var lNameLength := length(lNameBytes);
   fOutput.Write([$00, $00, $00, $00, $20, $00, $00, $00, $FF, $FF, $00, $00, $FF, $FF, $00,
     $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00], 32); // Standard .res header
-  fOutput.WriteData(DWORD(fMem.Size));
-  fOutput.WriteData(DWORD(30 + lNameLength));
-  fOutput.WriteData(WORD($FFFF)); // RT_RCDATA
-  fOutput.WriteData(WORD(10)); // RT_RCDATA
+  fOutput.WriteData(rtl.DWORD(fMem.Size));
+  fOutput.WriteData(rtl.DWORD(30 + lNameLength));
+  fOutput.WriteData(Word($FFFF)); // RT_RCDATA
+  fOutput.WriteData(Word(10)); // RT_RCDATA
   fOutput.WriteData(lNameBytes, length(lNameBytes));
-  fOutput.WriteData(WORD(0)); // zero terminated string
-  fOutput.WriteData(DWORD(0)); // DataVersion
-  fOutput.WriteData(WORD(0)); // MemoryFlags
-  fOutput.WriteData(WORD($0409)); // LanguageID -> English
-  fOutput.WriteData(DWORD(0)); // Version
-  fOutput.WriteData(DWORD(0)); // Characteristics
+  fOutput.WriteData(Word(0)); // zero terminated string
+  fOutput.WriteData(rtl.DWORD(0)); // DataVersion
+  fOutput.WriteData(Word(0)); // MemoryFlags
+  fOutput.WriteData(Word($0409)); // LanguageID -> English
+  fOutput.WriteData(rtl.DWORD(0)); // Version
+  fOutput.WriteData(rtl.DWORD(0)); // Characteristics
   {$ELSE}
   // TODO
   {$ENDIF}
@@ -540,7 +540,7 @@ begin
   {$IF ISLAND AND WINDOWS}
   var lModule: rtl.HMODULE := 0;
   var lResName := ResName.ToCharArray;
-  var lResource := rtl.FindResource(lModule, @lResName[0], LPCWSTR(rtl.RT_RCDATA));
+  var lResource := rtl.FindResource(lModule, @lResName[0], rtl.LPCWSTR(rtl.RT_RCDATA));
   if lResource = nil then raise new Exception('Can not locale resource: ' + lResName);
   var lHandle := rtl.LoadResource(lModule, lResource);
   if lHandle = nil then raise new Exception('Can not load resource: ' + lResName);

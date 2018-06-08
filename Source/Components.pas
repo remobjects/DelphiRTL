@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IF NOT TOFFEE}
+
 interface
 
 type
@@ -320,5 +322,7 @@ method TControl.SetColor(aValue: TColor);
 begin
   PlatformSetColor(aValue);
 end;
+
+{$ENDIF}
 
 end.

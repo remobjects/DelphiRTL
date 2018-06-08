@@ -1,10 +1,10 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IF WEBASSEMBLY}
+
 interface
 
 {$GLOBALS ON}
-
-{$IF WEBASSEMBLY}
 
 type
   TControl = public partial class(TComponent)
