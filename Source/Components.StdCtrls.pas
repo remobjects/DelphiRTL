@@ -24,6 +24,14 @@ type
     class method Create(aOwner: TComponent): TLabel;
   end;
 
+  TButtonControl = public partial class(TPlatformBaseControlClass)
+  protected
+    method PlatformGetChecked: Boolean; virtual; partial; empty;
+    method PlatformSetChecked(aValue: Boolean); virtual; partial; empty;
+  public
+    property Checked: Boolean read PlatformGetChecked write PlatformSetChecked;
+  end;
+
   {$IF WEBASSEMBLY}
   TGroupBox = public partial class(TControl)
   private

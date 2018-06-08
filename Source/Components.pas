@@ -23,11 +23,13 @@ type
   TKeyPressEvent = public block(Sender: TObject; var Key: Char);
   TKeyEvent = public block(Sender: TObject; var Key: Word; Shift: TShiftState);
 
-  TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ELSEIF ISLAND AND WINDOWS} rtl.HWND {$ENDIF};
+  TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ELSEIF ISLAND AND WINDOWS} rtl.HWND {$ELSE} Object {$ENDIF};
   TPropertyChangedEvent = public block(Sender: TObject; PropName: String);
 
   INotifyPropertyChanged = public interface
+    {$IF NOT COOPER}
     event PropertyChanged: Action<TObject, String>;
+    {$ENDIF}
   end;
 
   TControl = public partial class(TComponent)

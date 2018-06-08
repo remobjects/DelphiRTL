@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IF ISLAND AND WINDOWS}
+
 interface
 
 uses
@@ -25,6 +27,22 @@ type
     method PlatformSetReadOnly(aValue: Boolean);
     method PlatformGetText: String;
     method PlatformSetText(aValue: String);
+  end;
+
+  TButtonControl = public partial class(TWinControl)
+  protected
+    method PlatformGetChecked: Boolean; virtual; partial;
+    method PlatformSetChecked(aValue: Boolean); virtual; partial;
+  end;
+
+  TCheckBox = public partial class(TButtonControl)
+  protected
+    method CreateWindowHandle(aParams: TCreateParams); override;
+  end;
+
+  TRadioButton = public partial class(TButtonControl)
+  protected
+    method CreateWindowHandle(aParams: TCreateParams); override;
   end;
 
 implementation
@@ -110,5 +128,46 @@ begin
   // display the window on the screen
   rtl.ShowWindow(fHandle, rtl.SW_SHOW);
 end;
+
+method TCheckBox.CreateWindowHandle(aParams: TCreateParams);
+begin
+  var lArray := 'BUTTON'.ToCharArray(true);
+  var lCaption := 'CheckBox1'.ToCharArray(true);
+  var lParent := if Parent <> nil then Parent.Handle else nil;
+  var hInstance := rtl.GetModuleHandle(nil); // TODO
+
+  fHandle := rtl.CreateWindowEx(0, @lArray[0], @lCaption[0], rtl.WS_CHILD or rtl.WS_TABSTOP or rtl.BS_3STATE, Left, Top, 180, 25, lParent, nil, hInstance, nil);
+  //fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
+  //rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
+  rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
+  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
+end;
+
+method TRadioButton.CreateWindowHandle(aParams: TCreateParams);
+begin
+  var lArray := 'BUTTON'.ToCharArray(true);
+  var lCaption := 'RadioButton1'.ToCharArray(true);
+  var lParent := if Parent <> nil then Parent.Handle else nil;
+  var hInstance := rtl.GetModuleHandle(nil); // TODO
+
+  fHandle := rtl.CreateWindowEx(0, @lArray[0], @lCaption[0], rtl.WS_CHILD or rtl.WS_TABSTOP or rtl.BS_RADIOBUTTON, Left, Top, 180, 25, lParent, nil, hInstance, nil);
+  fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
+  rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
+  rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
+
+  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
+end;
+
+method TButtonControl.PlatformGetChecked: Boolean;
+begin
+
+end;
+
+method TButtonControl.PlatformSetChecked(aValue: Boolean);
+begin
+
+end;
+
+{$ENDIF}
 
 end.

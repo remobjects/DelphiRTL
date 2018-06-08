@@ -13,13 +13,27 @@ object Form6: TForm6
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Button1: TButton
-    Left = 272
-    Top = 144
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
+  object Label1: TLabel
+    Left = 56
+    Top = 120
+    Width = 31
+    Height = 13
+    Caption = 'Label1'
+  end
+  object Edit1: TEdit
+    Left = 200
+    Top = 58
+    Width = 121
+    Height = 21
     TabOrder = 0
-    OnClick = Button1Click
+    Text = 'Edit1'
+  end
+  object CheckBox1: TCheckBox
+    Left = 200
+    Top = 168
+    Width = 97
+    Height = 17
+    Caption = 'CheckBox1'
+    TabOrder = 1
   end
 end

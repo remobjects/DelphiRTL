@@ -1,9 +1,11 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IF ISLAND}
+
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi, rtl;
+  RemObjects.Elements.RTL.Delphi;
 
 type
   TValueType = public enum(vaNull, vaList, vaInt8, vaInt16, vaInt32, vaExtended, vaString, vaIdent, vaFalse, vaTrue, vaBinary, vaSet, vaLString,
@@ -66,9 +68,11 @@ type
     method WriteSet(aValue: Byte);
   end;
 
+  TResourceId = public {$IF ISLAND AND WINDOWS} PCHAR {$ELSE} Object {$ENDIF};
+
   TResourceStream = class(TCustomMemoryStream)
   public
-    constructor(Instance: THandle; ResName: String; ResType: PCHAR);
+    constructor(Instance: THandle; ResName: String; ResType: TResourceId);
     //constructor(Instance: THandle; ResID: Integer; ResType: PChar);
     //method &Write(Buffer; Count: Longint): Longint; override; final;
     //method &Write(Buffer: TBytes; Offset, Count: Longint): Longint; override; final;
@@ -142,6 +146,9 @@ end;
 
 method TReader.ReadComponentData(aInstance: TComponent);
 begin
+  writeLn('Reading:');
+  writeLn(typeOf(aInstance).Name);
+  readLn;
   while not EndOfList do ReadProperty(aInstance);
   ReadValue; // skip end of list
   while not EndOfList do ReadComponent(nil);
@@ -275,6 +282,7 @@ begin
   var lPropValue := ReadPropValue(TComponent(lInstance), lValue, lProperty);
   writeLn('Setting prop value');
   WriteLn(lPropValue.ToString);
+  readLn;
   DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
 
   //lProperty.SetValue(aInstance, [], lPropValue);
@@ -299,6 +307,7 @@ begin
   fParent := aRoot;
   Root := aRoot;
   ReadComponentData(aRoot);
+  writeLn('----------------------------------------------------> END READING');
 end;
 
 method TReader.ReadData(Instance: TComponent);
@@ -466,6 +475,7 @@ typedef struct {
 
 method ObjectConverter.AddResHeader;
 begin
+  {$IF ISLAND AND WINDOWS}
   var lNameBytes := RemObjects.Elements.RTL.Encoding.UTF16LE.GetBytes(fName);
   var lNameLength := length(lNameBytes);
   fOutput.Write([$00, $00, $00, $00, $20, $00, $00, $00, $FF, $FF, $00, $00, $FF, $FF, $00,
@@ -481,6 +491,9 @@ begin
   fOutput.WriteData(WORD($0409)); // LanguageID -> English
   fOutput.WriteData(DWORD(0)); // Version
   fOutput.WriteData(DWORD(0)); // Characteristics
+  {$ELSE}
+  // TODO
+  {$ENDIF}
 end;
 
 method ObjectConverter.WriteResFile;
@@ -522,8 +535,9 @@ begin
   WriteResFile;
 end;
 
-constructor TResourceStream(Instance: THandle; ResName: String; ResType: PChar);
+constructor TResourceStream(Instance: THandle; ResName: String; ResType: TResourceId);
 begin
+  {$IF ISLAND AND WINDOWS}
   var lModule: rtl.HMODULE := 0;
   var lResName := ResName.ToCharArray;
   var lResource := rtl.FindResource(lModule, @lResName[0], LPCWSTR(rtl.RT_RCDATA));
@@ -534,6 +548,9 @@ begin
   var lSize := rtl.SizeofResource(lModule, lResource);
   Size := lSize;
   &Write(lPointer, lSize);
+  {$ELSE}
+  // TODO
+  {$ENDIF}
 end;
 
 method TResourceStream.ReadComponent(aInstance: TComponent);
@@ -737,5 +754,7 @@ begin
   fStream.WriteData(Byte(TValueType.vaSet));
   fStream.WriteData(aValue);
 end;
+
+{$ENDIF}
 
 end.

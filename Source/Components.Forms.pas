@@ -6,7 +6,11 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
+{$IF COOPER}
+TComponentClass = public &Class;
+{$ELSE}
 TComponentClass = public &Type;
+{$ENDIF}
 
 TCustomForm = public partial class({$IFDEF WINDOWS}TScrollingWinControl{$ELSE}TControl{$ENDIF})
 private
@@ -60,5 +64,6 @@ class method TApplication.Create(aOwner: TComponent): TApplication;
 begin
   result := new TApplication(aOwner);
 end;
+
 
 end.

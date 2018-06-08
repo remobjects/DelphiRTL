@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IF ISLAND AND WINDOWS}
+
 interface
 
 {$GLOBALS ON}
@@ -49,8 +51,8 @@ type
 
   TWndProc = public function(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 
-  //TScrollingWinControl = public partial class(TWinControl)
-  //end;
+  TScrollingWinControl = public partial class(TWinControl)
+  end;
 
   function GlobalWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 
@@ -180,5 +182,7 @@ begin
   var lParams: TCreateParams;
   CreateWindowHandle(lParams);
 end;
+
+{$ENDIF}
 
 end.

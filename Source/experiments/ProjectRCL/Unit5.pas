@@ -15,6 +15,8 @@ type
     button1: TButton;
     edit1: TEdit;
     label1: TLabel;
+    radioButton1: TRadioButton;
+    checkBox1: TCheckBox;
     procedure Button1Click(Sender: TObject);
   end;
 

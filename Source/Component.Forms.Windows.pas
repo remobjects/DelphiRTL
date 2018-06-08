@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IF ISLAND AND WINDOWS}
+
 interface
 
 uses
@@ -147,5 +149,6 @@ begin
     result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
 end;
 
+{$ENDIF}
 
 end.
