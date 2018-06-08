@@ -31,7 +31,7 @@ type
     method PlatformApplyDefaults; virtual; partial;
   end;
 
-  TForm = public class(TControl)
+  TForm = public partial class(TCustomForm)
   protected
     method CreateHandle; override;
   public
@@ -171,7 +171,7 @@ end;
 
 method TButton.PlatformSetCaption(aValue: String);
 begin
-  fHandle.innerText := fCaption;
+  fHandle.innerText := aValue;
 end;
 
 method TLabel.CreateHandle;
@@ -179,7 +179,7 @@ begin
   fHandle := WebAssembly.CreateElement('LABEL');
   var lCaption := WebAssembly.CreateTextNode(Name);
   fHandle.appendChild(lCaption);
-  fCaption := Name;
+  Caption := Name;
   fHandle.style.position := "absolute";
 end;
 
@@ -576,6 +576,7 @@ begin
     fHandle.value := fPosition;
   end;
 end;
+
 {$ENDIF}
 
 end.

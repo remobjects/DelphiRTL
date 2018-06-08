@@ -70,6 +70,7 @@ type
 
   TResourceId = public {$IF ISLAND AND WINDOWS} rtl.PCHAR {$ELSE} Object {$ENDIF};
 
+  {$IF NOT WEBASSEMBLY}
   TResourceStream = class(TCustomMemoryStream)
   public
     constructor(Instance: THandle; ResName: String; ResType: TResourceId);
@@ -78,6 +79,7 @@ type
     //method &Write(Buffer: TBytes; Offset, Count: Longint): Longint; override; final;
     method ReadComponent(aInstance: TComponent);
   end;
+  {$ENDIF}
 
   TParserToken = public enum(toEOF = Char(0), toSymbol = Char(1), toString = Char(2), toInteger = Char(3), toFloat = Char(4), toWString = Char(5), toOtCharacter = Char(6)) of Integer;
 
@@ -115,6 +117,7 @@ type
     class method CreateComponent(aType: &Type; aOwner: TComponent): TComponent;
   end;
 
+  {$IF NOT WEBASSEMBLY}
   ObjectConverter = public class
   private
     fWriter: TWriter;
@@ -131,6 +134,7 @@ type
     constructor(aInput: TStream; aOutput: TStream);
     method ToBinary;
   end;
+  {$ENDIF}
 
 implementation
 
@@ -387,6 +391,8 @@ begin
   lCtor.Invoke(result, [aOwner]);
 end;
 
+
+{$IF NOT WEBASSEMBLY}
 method ObjectConverter.ObjectToBinary;
 begin
   fParser.NextToken;
@@ -558,6 +564,7 @@ begin
   var lReader := new TReader(self, Size);
   lReader.ReadRootComponent(aInstance);
 end;
+{$ENDIF}
 
 constructor TParser(aStream: TStream);
 begin
