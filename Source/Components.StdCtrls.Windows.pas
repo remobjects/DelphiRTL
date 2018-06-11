@@ -10,17 +10,20 @@ uses
 type
   TButton = public partial class(TWinControl)
   protected
-    method CreateWindowHandle(aParams: TCreateParams); override;
+    method CreateParams(var aParams: TCreateParams); override;
+    //method CreateWindowHandle(aParams: TCreateParams); override;
   end;
 
   TLabel = public partial class(TWinControl)
   protected
-    method CreateWindowHandle(aParams: TCreateParams); override;
+    method CreateParams(var aParams: TCreateParams); override;
+    //method CreateWindowHandle(aParams: TCreateParams); override;
   end;
 
   TEdit = public partial class(TWinControl)
   protected
-    method CreateWindowHandle(aParams: TCreateParams); override;
+    method CreateParams(var aParams: TCreateParams); override;
+    //method CreateWindowHandle(aParams: TCreateParams); override;
     method PlatformGetMaxLength: Integer;
     method PlatformSetMaxLength(aValue: Integer);
     method PlatformGetReadOnly: Boolean;
@@ -37,17 +40,19 @@ type
 
   TCheckBox = public partial class(TButtonControl)
   protected
-    method CreateWindowHandle(aParams: TCreateParams); override;
+    method CreateParams(var aParams: TCreateParams); override;
+    //method CreateWindowHandle(aParams: TCreateParams); override;
   end;
 
   TRadioButton = public partial class(TButtonControl)
   protected
-    method CreateWindowHandle(aParams: TCreateParams); override;
+    method CreateParams(var aParams: TCreateParams); override;
+    //method CreateWindowHandle(aParams: TCreateParams); override;
   end;
 
 implementation
 
-method TButton.CreateWindowHandle(aParams: TCreateParams);
+{method TButton.CreateWindowHandle(aParams: TCreateParams);
 begin
   var lArray := 'BUTTON'.ToCharArray(true);
   var lCaption := 'Button1'.ToCharArray(true);
@@ -77,7 +82,7 @@ begin
 
   // display the window on the screen
   rtl.ShowWindow(fHandle, rtl.SW_SHOW);
-end;
+end;}
 
 method TEdit.PlatformGetMaxLength: Integer;
 begin
@@ -113,7 +118,7 @@ begin
   rtl.SetWindowText(fHandle, @lBuffer[0]);
 end;
 
-method TLabel.CreateWindowHandle(aParams: TCreateParams);
+{method TLabel.CreateWindowHandle(aParams: TCreateParams);
 begin
   var lArray := 'STATIC'.ToCharArray(true);
   var lCaption := 'Label1'.ToCharArray(true);
@@ -156,7 +161,7 @@ begin
   rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
 
   rtl.ShowWindow(fHandle, rtl.SW_SHOW);
-end;
+end;}
 
 method TButtonControl.PlatformGetChecked: Boolean;
 begin
@@ -166,6 +171,38 @@ end;
 method TButtonControl.PlatformSetChecked(aValue: Boolean);
 begin
 
+end;
+
+method TCheckBox.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
+  aParams.WinClassName := 'BUTTON'.ToCharArray(true);
+  aParams.Style := aParams.Style or rtl.BS_3STATE;
+end;
+
+method TRadioButton.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
+  aParams.WinClassName := 'BUTTON'.ToCharArray(true);
+  aParams.Style := aParams.Style or rtl.BS_RADIOBUTTON;
+end;
+
+method TButton.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
+  aParams.WinClassName := 'BUTTON'.ToCharArray(true);
+end;
+
+method TLabel.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
+  aParams.WinClassName := 'STATIC'.ToCharArray(true);
+end;
+
+method TEdit.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
+  aParams.WinClassName := 'EDIT'.ToCharArray(true);
 end;
 
 {$ENDIF}

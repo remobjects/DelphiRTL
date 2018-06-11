@@ -46,6 +46,7 @@ type
     fOnKeyPress: TKeyPressEvent;
     fOnKeyDown: TKeyEvent;
     fOnKeyUp: TKeyEvent;
+    fVisible: Boolean := true;
     method GetCaption: String;
     method SetCaption(aValue: String);
     method SetWidth(aValue: Integer);
@@ -63,6 +64,7 @@ type
     method GetClientWidth: Integer;
     method SetClientWidth(value: Integer);
     method SetColor(aValue: TColor);
+    method SetVisible(aValue: Boolean);
 
 protected
     fHandle: TPlatformHandle;
@@ -81,6 +83,7 @@ protected
     method PlatformSetLeft(aValue: Integer); virtual; partial; empty;
     method PlatformSetParent(aValue: TControl); virtual; partial; empty;
     method PlatformSetColor(aValue: TColor); virtual; partial; empty;
+    method PlatformSetVisible(aValue: Boolean); virtual; partial; empty;
     method PlatformSetOnClick(aValue: TNotifyEvent); partial; empty;
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial; empty;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial; empty;
@@ -107,6 +110,7 @@ protected
     property Left: Integer read fLeft write SetLeft;
     property Top: Integer read fTop write SetTop;
     property Color: TColor read fColor write SetColor;
+    property Visible: Boolean read fVisible write SetVisible;
     property OnClick: TNotifyEvent read fOnClick write SetOnClick;
     property OnKeyPress: TKeyPressEvent read fOnKeyPress write SetOnKeyPress;
     property OnKeyDown: TKeyEvent read fOnKeyDown write SetOnKeyDown;
@@ -321,6 +325,12 @@ end;
 method TControl.SetColor(aValue: TColor);
 begin
   PlatformSetColor(aValue);
+end;
+
+method TControl.SetVisible(aValue: Boolean);
+begin
+  fVisible := aValue;
+  PlatformSetVisible(aValue);
 end;
 
 {$ENDIF}

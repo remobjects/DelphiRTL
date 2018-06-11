@@ -11,6 +11,15 @@ uses
 
 type
   TCreateParams = public record
+    Caption: array of Char;
+    Style: rtl.DWORD;
+    ExStyle: rtl.DWORD;
+    X, Y: Integer;
+    Width, Height: Integer;
+    WndParent: rtl.HWND;
+    &Param: Pointer;
+    WindowClass: rtl.WNDCLASS;
+    WinClassName: array of Char;
   end;
 
   TControl = public partial class(TComponent)
@@ -26,6 +35,7 @@ type
     method PlatformSetLeft(aValue: Integer); virtual; partial;
     method PlatformSetParent(aValue: TControl); virtual; partial;
     method PlatformSetColor(aValue: TColor); virtual; partial;
+    method PlatformSetVisible(aValue: Boolean); virtual; partial;
     method PlatformSetOnClick(aValue: TNotifyEvent); partial;
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
@@ -36,6 +46,7 @@ type
   TWinControl = public partial class(TControl)
   private
     fTabOrder: Integer; // TODO
+    fClass: rtl.WNDCLASS;
   protected
     fOldWndProc: TWndProc;
     method CreateHandle; override;
@@ -167,19 +178,42 @@ begin
 
 end;
 
+method TControl.PlatformSetVisible(aValue: Boolean);
+begin
+  var lShowValue := if aValue then rtl.SW_SHOW else rtl.SW_HIDE;
+  rtl.ShowWindow(fHandle, lShowValue);
+end;
+
 method TWinControl.CreateParams(var aParams: TCreateParams);
 begin
-
+  aParams.Style := aParams.Style or rtl.WS_CHILD or rtl.WS_TABSTOP;
+  if Visible then aParams.Style := aParams.Style or rtl.WS_VISIBLE;
+  aParams.X := Left;
+  aParams.Y := Top;
+  aParams.Width := Width;
+  aParams.Height := Height;
+  aParams.Caption := Caption.ToCharArray(true);
 end;
 
 method TWinControl.CreateWindowHandle(aParams: TCreateParams);
 begin
+  var lParent := if Parent <> nil then Parent.Handle else nil;
+  var hInstance := rtl.GetModuleHandle(nil); // TODO
 
+  fHandle := rtl.CreateWindowEx(0, @aParams.WinClassName[0], @aParams.Caption[0], aParams.Style, aParams.X, aParams.Y, aParams.Width, aParams.Height, lParent, nil, hInstance, nil);
+  fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
+  rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
+  rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
 end;
 
 method TWinControl.CreateWnd;
 begin
   var lParams: TCreateParams;
+  CreateParams(var lParams);
+  var lInstance := rtl.GetModuleHandle(nil); // TODO
+  var lClass: rtl.WNDCLASS;
+  if rtl.GetClassInfo(lInstance, @lParams.WinClassName[0], @lClass) then begin
+  end;
   CreateWindowHandle(lParams);
 end;
 

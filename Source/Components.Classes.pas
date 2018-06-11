@@ -152,7 +152,6 @@ method TReader.ReadComponentData(aInstance: TComponent);
 begin
   writeLn('Reading:');
   writeLn(typeOf(aInstance).Name);
-  readLn;
   while not EndOfList do ReadProperty(aInstance);
   ReadValue; // skip end of list
   while not EndOfList do ReadComponent(nil);
@@ -286,7 +285,6 @@ begin
   var lPropValue := ReadPropValue(TComponent(lInstance), lValue, lProperty);
   writeLn('Setting prop value');
   WriteLn(lPropValue.ToString);
-  readLn;
   DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
 
   //lProperty.SetValue(aInstance, [], lPropValue);
