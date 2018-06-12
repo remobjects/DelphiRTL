@@ -177,32 +177,38 @@ method TCheckBox.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
   aParams.WinClassName := 'BUTTON'.ToCharArray(true);
+  CreateClass(var aParams, 'BUTTON');
   aParams.Style := aParams.Style or rtl.BS_3STATE;
 end;
 
 method TRadioButton.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WinClassName := 'BUTTON'.ToCharArray(true);
+  aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
+  CreateClass(var aParams, 'BUTTON');
   aParams.Style := aParams.Style or rtl.BS_RADIOBUTTON;
 end;
 
 method TButton.CreateParams(var aParams: TCreateParams);
 begin
+  writeLn('Calling TButton.CreateParams!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   inherited(var aParams);
-  aParams.WinClassName := 'BUTTON'.ToCharArray(true);
+  aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
+  CreateClass(var aParams, 'BUTTON');
 end;
 
 method TLabel.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WinClassName := 'STATIC'.ToCharArray(true);
+  aParams.WidgetClassName := 'STATIC'.ToCharArray(true);
+  CreateClass(var aParams, 'STATIC');
 end;
 
 method TEdit.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WinClassName := 'EDIT'.ToCharArray(true);
+  aParams.WidgetClassName := 'EDIT'.ToCharArray(true);
+  CreateClass(var aParams, 'EDIT');
 end;
 
 {$ENDIF}

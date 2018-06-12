@@ -20,6 +20,7 @@ type
     &Param: Pointer;
     WindowClass: rtl.WNDCLASS;
     WinClassName: array of Char;
+    WidgetClassName: array of Char;
   end;
 
   TControl = public partial class(TComponent)
@@ -50,10 +51,12 @@ type
   protected
     fOldWndProc: TWndProc;
     method CreateHandle; override;
+    method CreateClass(var aParams: TCreateParams; ClassName: String);
 
     method CreateParams(var aParams: TCreateParams); virtual;
     method CreateWindowHandle(aParams: TCreateParams); virtual;
     method CreateWnd; virtual;
+
   public
     constructor(aOwner: TComponent);
     method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT; virtual;
@@ -79,12 +82,12 @@ end;
 
 function GlobalWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 begin
-  var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
+  {var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
   if lObject <> 0 then begin
     var lControl := InternalCalls.Cast<TWinControl>(^Void(lObject));
     result := lControl.WndProc(hWnd, message, wParam, lParam);
   end
-  else
+  else}
     result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
 end;
 
@@ -186,8 +189,9 @@ end;
 
 method TWinControl.CreateParams(var aParams: TCreateParams);
 begin
-  aParams.Style := aParams.Style or rtl.WS_CHILD or rtl.WS_TABSTOP;
-  if Visible then aParams.Style := aParams.Style or rtl.WS_VISIBLE;
+  memset(@aParams, 0, sizeOf(aParams));
+  aParams.Style := aParams.Style or rtl.WS_CHILD or rtl.WS_TABSTOP or rtl.WS_VISIBLE;
+  //if Visible then aParams.Style := aParams.Style or rtl.WS_VISIBLE;
   aParams.X := Left;
   aParams.Y := Top;
   aParams.Width := Width;
@@ -198,11 +202,15 @@ end;
 method TWinControl.CreateWindowHandle(aParams: TCreateParams);
 begin
   var lParent := if Parent <> nil then Parent.Handle else nil;
+  if lParent = nil then
+    writeLn('NO PARENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   var hInstance := rtl.GetModuleHandle(nil); // TODO
 
-  fHandle := rtl.CreateWindowEx(0, @aParams.WinClassName[0], @aParams.Caption[0], aParams.Style, aParams.X, aParams.Y, aParams.Width, aParams.Height, lParent, nil, hInstance, nil);
-  fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
-  rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
+  writeLn('Create using: ' + String.FromCharArray(aParams.WinClassName));
+
+  fHandle := rtl.CreateWindowEx(aParams.ExStyle, @aParams.WinClassName[0], @aParams.Caption[0], aParams.Style, aParams.X, aParams.Y, aParams.Width, aParams.Height, lParent, nil, hInstance, nil);
+  //fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
+  //rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
   rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
 end;
 
@@ -211,10 +219,31 @@ begin
   var lParams: TCreateParams;
   CreateParams(var lParams);
   var lInstance := rtl.GetModuleHandle(nil); // TODO
+
+  var lType := typeOf(self);
+  var lClassName := lType.Name.Substring(lType.Name.LastIndexOf('.') + 1);
+  writeLn('Voy a buscar: ' + lClassName);
+  lParams.WinClassName := lClassName.ToCharArray(true);
   var lClass: rtl.WNDCLASS;
-  if rtl.GetClassInfo(lInstance, @lParams.WinClassName[0], @lClass) then begin
-  end;
+  if not rtl.GetClassInfo(lInstance, @lParams.WinClassName[0], @lClass) then begin
+    writeLn('TOCA REGISTRAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+
+    //lParams.WindowClass.lpfnWndProc := @GlobalWndProc;
+    lParams.WindowClass.lpszClassName := @lParams.WinClassName[0];
+    rtl.RegisterClass(@lParams.WindowClass);
+  end
+  else
+    lParams.WindowClass := lClass;
   CreateWindowHandle(lParams);
+end;
+
+method TWinControl.CreateClass(var aParams: TCreateParams; ClassName: String);
+begin
+  var lInstance := rtl.GetModuleHandle(nil); // TODO
+  if rtl.GetClassInfo(lInstance, @aParams.WidgetClassName[0], @aParams.WindowClass) then
+    writeLn('Clase ' + ClassName + ' ENCONTRADA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  aParams.WindowClass.hInstance := lInstance;
+  aParams.WindowClass.style := aParams.WindowClass.style and not (rtl.CS_OWNDC or rtl.CS_CLASSDC or rtl.CS_PARENTDC or rtl.CS_GLOBALCLASS) or (rtl.CS_VREDRAW or rtl.CS_HREDRAW);
 end;
 
 {$ENDIF}
