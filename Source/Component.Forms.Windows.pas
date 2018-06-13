@@ -80,6 +80,7 @@ end;
 
 constructor TCustomForm(aOwner: TComponent);
 begin
+  HandleNeeded;
   var lName := typeOf(self).Name;
   lName := lName.Substring(lName.LastIndexOf('.') + 1).ToUpper;
   writeLn(typeOf(self).Name.ToUpper);

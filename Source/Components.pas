@@ -47,6 +47,7 @@ type
     fOnKeyDown: TKeyEvent;
     fOnKeyUp: TKeyEvent;
     fVisible: Boolean := true;
+    fCaption: String;
     method GetCaption: String;
     method SetCaption(aValue: String);
     method SetWidth(aValue: Integer);
@@ -185,7 +186,7 @@ begin
   Name := PlatformGetDefaultName;
   fFont := new TFont();
   fFont.PropertyChanged := @Changed;
-  CreateHandle;
+  //CreateHandle; // TODO
   PlatformApplyDefaults;
 end;
 
@@ -226,6 +227,7 @@ end;
 
 method TControl.SetCaption(aValue: String);
 begin
+  fCaption := aValue;
   PlatformSetCaption(aValue);
 end;
 

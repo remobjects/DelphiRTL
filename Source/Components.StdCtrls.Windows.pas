@@ -47,42 +47,11 @@ type
   TRadioButton = public partial class(TButtonControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
+    method CreateWnd; override;
     //method CreateWindowHandle(aParams: TCreateParams); override;
   end;
 
 implementation
-
-{method TButton.CreateWindowHandle(aParams: TCreateParams);
-begin
-  var lArray := 'BUTTON'.ToCharArray(true);
-  var lCaption := 'Button1'.ToCharArray(true);
-  var lParent := if Parent <> nil then Parent.Handle else nil;
-  var hInstance := rtl.GetModuleHandle(nil); // TODO
-
-  fHandle := rtl.CreateWindowEx(0, @lArray[0], @lCaption[0], rtl.WS_CHILD or rtl.WS_TABSTOP, Left, Top, 150, 60, lParent, nil, hInstance, nil);
-  fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
-  rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
-  rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
-
-  // display the window on the screen
-  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
-end;
-
-method TEdit.CreateWindowHandle(aParams: TCreateParams);
-begin
-  var lArray := 'EDIT'.ToCharArray(true);
-  var lCaption := 'Edit1'.ToCharArray(true);
-  var lParent := if Parent <> nil then Parent.Handle else nil;
-  var hInstance := rtl.GetModuleHandle(nil); // TODO
-
-  fHandle := rtl.CreateWindowEx(0, @lArray[0], @lCaption[0], rtl.WS_BORDER or rtl.WS_CHILD or rtl.WS_TABSTOP, Left, Top, 180, 40, lParent, nil, hInstance, nil);
-  //fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
-  //rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
-  rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
-
-  // display the window on the screen
-  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
-end;}
 
 method TEdit.PlatformGetMaxLength: Integer;
 begin
@@ -118,54 +87,9 @@ begin
   rtl.SetWindowText(fHandle, @lBuffer[0]);
 end;
 
-{method TLabel.CreateWindowHandle(aParams: TCreateParams);
-begin
-  var lArray := 'STATIC'.ToCharArray(true);
-  var lCaption := 'Label1'.ToCharArray(true);
-  var lParent := if Parent <> nil then Parent.Handle else nil;
-  var hInstance := rtl.GetModuleHandle(nil); // TODO
-
-  fHandle := rtl.CreateWindowEx(0, @lArray[0], @lCaption[0], rtl.WS_CHILD or rtl.WS_TABSTOP or rtl.SS_LEFT, Left, Top, 180, 25, lParent, nil, hInstance, nil);
-  //fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
-  //rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
-  rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
-
-  // display the window on the screen
-  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
-end;
-
-method TCheckBox.CreateWindowHandle(aParams: TCreateParams);
-begin
-  var lArray := 'BUTTON'.ToCharArray(true);
-  var lCaption := 'CheckBox1'.ToCharArray(true);
-  var lParent := if Parent <> nil then Parent.Handle else nil;
-  var hInstance := rtl.GetModuleHandle(nil); // TODO
-
-  fHandle := rtl.CreateWindowEx(0, @lArray[0], @lCaption[0], rtl.WS_CHILD or rtl.WS_TABSTOP or rtl.BS_3STATE, Left, Top, 180, 25, lParent, nil, hInstance, nil);
-  //fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
-  //rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
-  rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
-  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
-end;
-
-method TRadioButton.CreateWindowHandle(aParams: TCreateParams);
-begin
-  var lArray := 'BUTTON'.ToCharArray(true);
-  var lCaption := 'RadioButton1'.ToCharArray(true);
-  var lParent := if Parent <> nil then Parent.Handle else nil;
-  var hInstance := rtl.GetModuleHandle(nil); // TODO
-
-  fHandle := rtl.CreateWindowEx(0, @lArray[0], @lCaption[0], rtl.WS_CHILD or rtl.WS_TABSTOP or rtl.BS_RADIOBUTTON, Left, Top, 180, 25, lParent, nil, hInstance, nil);
-  fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
-  rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
-  rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
-
-  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
-end;}
-
 method TButtonControl.PlatformGetChecked: Boolean;
 begin
-
+  result := false;
 end;
 
 method TButtonControl.PlatformSetChecked(aValue: Boolean);
@@ -176,7 +100,7 @@ end;
 method TCheckBox.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WinClassName := 'BUTTON'.ToCharArray(true);
+  aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
   CreateClass(var aParams, 'BUTTON');
   aParams.Style := aParams.Style or rtl.BS_3STATE;
 end;
@@ -191,7 +115,6 @@ end;
 
 method TButton.CreateParams(var aParams: TCreateParams);
 begin
-  writeLn('Calling TButton.CreateParams!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   inherited(var aParams);
   aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
   CreateClass(var aParams, 'BUTTON');
@@ -209,6 +132,12 @@ begin
   inherited(var aParams);
   aParams.WidgetClassName := 'EDIT'.ToCharArray(true);
   CreateClass(var aParams, 'EDIT');
+end;
+
+method TRadioButton.CreateWnd;
+begin
+  inherited;
+  rtl.SendMessage(fHandle, rtl.BM_SETCHECK, rtl.WPARAM(1), 0);
 end;
 
 {$ENDIF}

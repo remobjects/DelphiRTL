@@ -27,6 +27,7 @@ type
   protected
     //constructor(aOwner: TComponent);
     method GetDefaultName: String;
+    method HandleAllocated: Boolean;
 
     method PlatformGetCaption: String; partial;
     method PlatformSetCaption(aValue: String); partial;
@@ -82,13 +83,14 @@ end;
 
 function GlobalWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 begin
-  {var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
+  var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
   if lObject <> 0 then begin
     var lControl := InternalCalls.Cast<TWinControl>(^Void(lObject));
     result := lControl.WndProc(hWnd, message, wParam, lParam);
   end
-  else}
+  else begin
     result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
+  end;
 end;
 
 method TWinControl.CreateHandle;
@@ -98,7 +100,7 @@ end;
 
 constructor TWinControl(aOwner: TComponent);
 begin
-
+  fHandle := rtl.HWND(0);
 end;
 
 method TWinControl.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
@@ -110,6 +112,7 @@ begin
   end
   else
     result := rtl.CallWindowProc(fOldWndProc, hWnd, message, wParam, lParam);
+    //result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
 end;
 
 method TControl.GetDefaultName: String;
@@ -119,22 +122,26 @@ end;
 
 method TControl.PlatformSetWidth(aValue: Integer);
 begin
-  rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, Left, Top, aValue, Width, rtl.SWP_NOMOVE or rtl.SWP_NOZORDER);
+  if HandleAllocated then
+    rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, Left, Top, aValue, Width, rtl.SWP_NOMOVE or rtl.SWP_NOZORDER);
 end;
 
 method TControl.PlatformSetHeight(aValue: Integer);
 begin
-  rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, Left, Top, Width, aValue, rtl.SWP_NOMOVE or rtl.SWP_NOZORDER);
+  if HandleAllocated then
+    rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, Left, Top, Width, aValue, rtl.SWP_NOMOVE or rtl.SWP_NOZORDER);
 end;
 
 method TControl.PlatformSetTop(aValue: Integer);
 begin
-  rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, Left, aValue, 0, 0, rtl.SWP_NOSIZE or rtl.SWP_NOZORDER);
+  if HandleAllocated then
+    rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, Left, aValue, 0, 0, rtl.SWP_NOSIZE or rtl.SWP_NOZORDER);
 end;
 
 method TControl.PlatformSetLeft(aValue: Integer);
 begin
-  rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, aValue, Top, 0, 0, rtl.SWP_NOSIZE or rtl.SWP_NOZORDER);
+  if HandleAllocated then
+    rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, aValue, Top, 0, 0, rtl.SWP_NOSIZE or rtl.SWP_NOZORDER);
 end;
 
 method TControl.PlatformSetParent(aValue: TControl);
@@ -164,16 +171,22 @@ end;
 
 method TControl.PlatformGetCaption: String;
 begin
-  var lMaxLength := rtl.GetWindowTextLength(fHandle);
-  var lBuffer := new Char[lMaxLength + 1];
-  rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength);
-  result := String.FromPChar(@lBuffer[0]);
+  if HandleAllocated then begin
+    var lMaxLength := rtl.GetWindowTextLength(fHandle);
+    var lBuffer := new Char[lMaxLength + 1];
+    rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength);
+    result := String.FromPChar(@lBuffer[0]);
+  end
+  else
+    result := fCaption;
 end;
 
 method TControl.PlatformSetCaption(aValue: String);
 begin
-  var lText := aValue.ToCharArray(true);
-  rtl.SetWindowText(fHandle, @lText[0]);
+  if HandleAllocated then begin
+    var lText := aValue.ToCharArray(true);
+    rtl.SetWindowText(fHandle, @lText[0]);
+  end;
 end;
 
 method TControl.PlatformSetColor(aValue: TColor);
@@ -183,35 +196,36 @@ end;
 
 method TControl.PlatformSetVisible(aValue: Boolean);
 begin
-  var lShowValue := if aValue then rtl.SW_SHOW else rtl.SW_HIDE;
-  rtl.ShowWindow(fHandle, lShowValue);
+  if HandleAllocated then begin
+    var lShowValue := if aValue then rtl.SW_SHOW else rtl.SW_HIDE;
+    rtl.ShowWindow(fHandle, lShowValue);
+  end;
 end;
 
 method TWinControl.CreateParams(var aParams: TCreateParams);
 begin
   memset(@aParams, 0, sizeOf(aParams));
-  aParams.Style := aParams.Style or rtl.WS_CHILD or rtl.WS_TABSTOP or rtl.WS_VISIBLE;
+  aParams.Style := aParams.Style or rtl.WS_CHILD or rtl.WS_VISIBLE;
   //if Visible then aParams.Style := aParams.Style or rtl.WS_VISIBLE;
   aParams.X := Left;
   aParams.Y := Top;
   aParams.Width := Width;
   aParams.Height := Height;
-  aParams.Caption := Caption.ToCharArray(true);
+  var lCaption := 'Caption';
+  aParams.Caption := lCaption.ToCharArray(true);
 end;
 
 method TWinControl.CreateWindowHandle(aParams: TCreateParams);
 begin
   var lParent := if Parent <> nil then Parent.Handle else nil;
-  if lParent = nil then
-    writeLn('NO PARENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   var hInstance := rtl.GetModuleHandle(nil); // TODO
 
   writeLn('Create using: ' + String.FromCharArray(aParams.WinClassName));
 
   fHandle := rtl.CreateWindowEx(aParams.ExStyle, @aParams.WinClassName[0], @aParams.Caption[0], aParams.Style, aParams.X, aParams.Y, aParams.Width, aParams.Height, lParent, nil, hInstance, nil);
-  //fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
-  //rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
   rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
+  fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
+  rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
 end;
 
 method TWinControl.CreateWnd;
@@ -222,13 +236,11 @@ begin
 
   var lType := typeOf(self);
   var lClassName := lType.Name.Substring(lType.Name.LastIndexOf('.') + 1);
-  writeLn('Voy a buscar: ' + lClassName);
   lParams.WinClassName := lClassName.ToCharArray(true);
   var lClass: rtl.WNDCLASS;
   if not rtl.GetClassInfo(lInstance, @lParams.WinClassName[0], @lClass) then begin
-    writeLn('TOCA REGISTRAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-
     //lParams.WindowClass.lpfnWndProc := @GlobalWndProc;
+    //lParams.WindowClass.lpfnWndProc := @rtl.DefWindowProc;
     lParams.WindowClass.lpszClassName := @lParams.WinClassName[0];
     rtl.RegisterClass(@lParams.WindowClass);
   end
@@ -240,10 +252,15 @@ end;
 method TWinControl.CreateClass(var aParams: TCreateParams; ClassName: String);
 begin
   var lInstance := rtl.GetModuleHandle(nil); // TODO
-  if rtl.GetClassInfo(lInstance, @aParams.WidgetClassName[0], @aParams.WindowClass) then
-    writeLn('Clase ' + ClassName + ' ENCONTRADA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  rtl.GetClassInfo(lInstance, @aParams.WidgetClassName[0], @aParams.WindowClass);
+
   aParams.WindowClass.hInstance := lInstance;
-  aParams.WindowClass.style := aParams.WindowClass.style and not (rtl.CS_OWNDC or rtl.CS_CLASSDC or rtl.CS_PARENTDC or rtl.CS_GLOBALCLASS) or (rtl.CS_VREDRAW or rtl.CS_HREDRAW);
+  //aParams.WindowClass.style := aParams.WindowClass.style and not (rtl.CS_OWNDC or rtl.CS_CLASSDC or rtl.CS_PARENTDC or rtl.CS_GLOBALCLASS) or (rtl.CS_VREDRAW or rtl.CS_HREDRAW);
+end;
+
+method TControl.HandleAllocated: Boolean;
+begin
+  result := fHandle <> rtl.HWND(0);
 end;
 
 {$ENDIF}
