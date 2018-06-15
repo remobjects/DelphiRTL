@@ -112,7 +112,6 @@ begin
   end
   else
     result := rtl.CallWindowProc(fOldWndProc, hWnd, message, wParam, lParam);
-    //result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
 end;
 
 method TControl.GetDefaultName: String;
@@ -219,8 +218,6 @@ method TWinControl.CreateWindowHandle(aParams: TCreateParams);
 begin
   var lParent := if Parent <> nil then Parent.Handle else nil;
   var hInstance := rtl.GetModuleHandle(nil); // TODO
-
-  writeLn('Create using: ' + String.FromCharArray(aParams.WinClassName));
 
   fHandle := rtl.CreateWindowEx(aParams.ExStyle, @aParams.WinClassName[0], @aParams.Caption[0], aParams.Style, aParams.X, aParams.Y, aParams.Width, aParams.Height, lParent, nil, hInstance, nil);
   rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));

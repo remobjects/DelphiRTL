@@ -11,19 +11,16 @@ type
   TButton = public partial class(TWinControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
-    //method CreateWindowHandle(aParams: TCreateParams); override;
   end;
 
   TLabel = public partial class(TWinControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
-    //method CreateWindowHandle(aParams: TCreateParams); override;
   end;
 
   TEdit = public partial class(TWinControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
-    //method CreateWindowHandle(aParams: TCreateParams); override;
     method PlatformGetMaxLength: Integer;
     method PlatformSetMaxLength(aValue: Integer);
     method PlatformGetReadOnly: Boolean;
@@ -41,14 +38,12 @@ type
   TCheckBox = public partial class(TButtonControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
-    //method CreateWindowHandle(aParams: TCreateParams); override;
   end;
 
   TRadioButton = public partial class(TButtonControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
     method CreateWnd; override;
-    //method CreateWindowHandle(aParams: TCreateParams); override;
   end;
 
 implementation

@@ -83,7 +83,6 @@ begin
   HandleNeeded;
   var lName := typeOf(self).Name;
   lName := lName.Substring(lName.LastIndexOf('.') + 1).ToUpper;
-  writeLn(typeOf(self).Name.ToUpper);
   var lStream := new TResourceStream(0, lName, rtl.PCHAR(^void(rtl.RT_RCDATA)));
   lStream.Position := 0;
   var lReader := new TReader(lStream, 100);

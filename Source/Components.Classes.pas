@@ -150,8 +150,6 @@ end;
 
 method TReader.ReadComponentData(aInstance: TComponent);
 begin
-  writeLn('Reading:');
-  writeLn(typeOf(aInstance).Name);
   while not EndOfList do ReadProperty(aInstance);
   ReadValue; // skip end of list
   while not EndOfList do ReadComponent(nil);
@@ -246,10 +244,8 @@ begin
   var lType := aType;
   while aType <> nil do begin
     result := lType.Properties.Where(a -> (a.Name = aName)).FirstOrDefault;
-    if result <> nil then begin
-      writeLn('Property on class: ' + lType.Name);
+    if result <> nil then
       exit;
-    end;
     lType := new &Type(lType.RTTI^.ParentType);
   end;
 end;
@@ -266,10 +262,9 @@ begin
     var lProps := lName.Split('.');
     for i: Integer := 0 to lProps.Count - 2 do begin
       lProperty := FindProperty(lType, lProps[i]);
-      if lProperty = nil then begin
-        writeLn('property not found...');
+      if lProperty = nil then
         raise new Exception('Can not get property ' + lProps[i]);
-      end;
+
       var lPropValue := lProperty.GetValue(lInstance, nil);
       lInstance := lPropValue;
       lType := typeOf(lInstance);
@@ -277,18 +272,10 @@ begin
     lName := lProps[lProps.Count - 1];
   end;
 
-  writeLn('Finding property... ' + lName);
-  writeLn('on type: ' + lType.Name);
   lProperty := FindProperty(lType, lName);
   if lProperty = nil then raise new Exception('Can not get property ' + lName);
-  writeLn('Reading prop value...');
   var lPropValue := ReadPropValue(TComponent(lInstance), lValue, lProperty);
-  writeLn('Setting prop value');
-  WriteLn(lPropValue.ToString);
   DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
-
-  //lProperty.SetValue(aInstance, [], lPropValue);
-  writeLn('Property ok');
 end;
 
 method TReader.EndOfList: Boolean;
@@ -304,12 +291,10 @@ begin
   var lName := ReadStr;
   aRoot.Name := lName;
   //Root.Name := ReadStr;
-  writeLn(aRoot.Name);
   fOwner := aRoot;
   fParent := aRoot;
   Root := aRoot;
   ReadComponentData(aRoot);
-  writeLn('----------------------------------------------------> END READING');
 end;
 
 method TReader.ReadData(Instance: TComponent);
@@ -325,7 +310,6 @@ begin
   if result = nil then begin
     result := ComponentsHelper.CreateComponent(lClass, fOwner);
     result.Name := lName;
-    writeLn('Parent:' + fParent.Name);
     TControl(result).Parent := TControl(fParent);
   end;
   var lOldParent := fParent;
@@ -361,7 +345,6 @@ end;
 
 method ComponentsHelper.CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
 begin
-  writeLn('Finding type: ' + aClassName);
   var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.' + aClassName).FirstOrDefault;
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
   result := CreateComponent(lType, aOwner);
