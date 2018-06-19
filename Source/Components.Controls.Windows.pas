@@ -21,6 +21,7 @@ type
     WindowClass: rtl.WNDCLASS;
     WinClassName: array of Char;
     WidgetClassName: array of Char;
+    DefaultWndProc: Boolean := false;
   end;
 
   TControl = public partial class(TComponent)
@@ -45,7 +46,14 @@ type
   public
   end;
 
-  TWinControl = public partial class(TControl)
+  TGraphicControl = public class(TControl)
+  protected
+    method Paint; virtual; empty;
+  public
+    //method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT; virtual;
+  end;
+
+  TNativeControl = public partial class(TControl)
   private
     fTabOrder: Integer; // TODO
     fClass: rtl.WNDCLASS;
@@ -64,12 +72,15 @@ type
     property TabOrder: Integer read fTabOrder write fTabOrder;
   end;
 
+  TWinControl = public TNativeControl;
+
   TWndProc = public function(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 
   TScrollingWinControl = public partial class(TWinControl)
   end;
 
   function GlobalWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+  function GlobalGraphicControlWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 
   procedure PlatformShowMessage(aMessage: String);
 
@@ -93,19 +104,24 @@ begin
   end;
 end;
 
-method TWinControl.CreateHandle;
+function GlobalGraphicControlWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+begin
+
+end;
+
+method TNativeControl.CreateHandle;
 begin
   CreateWnd;
 end;
 
-constructor TWinControl(aOwner: TComponent);
+constructor TNativeControl(aOwner: TComponent);
 begin
   fHandle := rtl.HWND(0);
 end;
 
-method TWinControl.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+method TNativeControl.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 begin
-  if message = rtl.WM_LBUTTONDOWN then begin
+  if (message = rtl.WM_LBUTTONUP) and assigned(OnClick) then begin
     if assigned(OnClick) then
       OnClick(self);
     result := 0;
@@ -201,7 +217,7 @@ begin
   end;
 end;
 
-method TWinControl.CreateParams(var aParams: TCreateParams);
+method TNativeControl.CreateParams(var aParams: TCreateParams);
 begin
   memset(@aParams, 0, sizeOf(aParams));
   aParams.Style := aParams.Style or rtl.WS_CHILD or rtl.WS_VISIBLE;
@@ -214,7 +230,7 @@ begin
   aParams.Caption := lCaption.ToCharArray(true);
 end;
 
-method TWinControl.CreateWindowHandle(aParams: TCreateParams);
+method TNativeControl.CreateWindowHandle(aParams: TCreateParams);
 begin
   var lParent := if Parent <> nil then Parent.Handle else nil;
   var hInstance := rtl.GetModuleHandle(nil); // TODO
@@ -222,10 +238,11 @@ begin
   fHandle := rtl.CreateWindowEx(aParams.ExStyle, @aParams.WinClassName[0], @aParams.Caption[0], aParams.Style, aParams.X, aParams.Y, aParams.Width, aParams.Height, lParent, nil, hInstance, nil);
   rtl.SetWindowLongPtr(fHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
   fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
-  rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
+  if not aParams.DefaultWndProc then
+    rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
 end;
 
-method TWinControl.CreateWnd;
+method TNativeControl.CreateWnd;
 begin
   var lParams: TCreateParams;
   CreateParams(var lParams);
@@ -246,7 +263,7 @@ begin
   CreateWindowHandle(lParams);
 end;
 
-method TWinControl.CreateClass(var aParams: TCreateParams; ClassName: String);
+method TNativeControl.CreateClass(var aParams: TCreateParams; ClassName: String);
 begin
   var lInstance := rtl.GetModuleHandle(nil); // TODO
   rtl.GetClassInfo(lInstance, @aParams.WidgetClassName[0], @aParams.WindowClass);
@@ -259,6 +276,16 @@ method TControl.HandleAllocated: Boolean;
 begin
   result := fHandle <> rtl.HWND(0);
 end;
+
+/*method TGraphicControl.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): LRESULT;
+begin
+  if message = rtl.WM_PAINT then begin
+    Paint;
+    result := 0;
+  end
+  else
+    result := rtl.CallWindowProc(fOldWndProc, hWnd, message, wParam, lParam);
+end;*/
 
 {$ENDIF}
 

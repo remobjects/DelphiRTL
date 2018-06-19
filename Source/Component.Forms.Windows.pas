@@ -10,7 +10,7 @@ uses
 type
   TApplication = public partial class(TComponent)
   public
-    method CreateForm(InstanceClass: TComponentClass; var FormRef: TComponent); partial;
+    method CreateForm(InstanceClass: TComponentClass; var aFormRef); partial;
     method Initialize; partial;
     method Run; partial;
     method Terminate; partial;
@@ -27,10 +27,10 @@ type
 
 implementation
 
-method TApplication.CreateForm(InstanceClass: TComponentClass; var FormRef: TComponent);
+method TApplication.CreateForm(InstanceClass: TComponentClass; var aFormRef);
 begin
   var lCtor: MethodInfo;
-  //var FormRef: TForm := TForm(aForm);
+  var FormRef: TForm := TForm(aFormRef);
 
   var lCtors := InstanceClass.Methods.Where(a -> ((MethodFlags.Constructor in a.Flags) and (a.Arguments.Count > 0)));
   if lCtors.Count > 1 then begin
@@ -42,15 +42,14 @@ begin
       end;
     end;
   end
-  else begin
+  else
     lCtor := lCtors.FirstOrDefault;
-    var lX := lCtor.Arguments.ToList;
-  end;
 
   if lCtor = nil then raise new Exception('No default constructor could be found!');
   var lNew := DefaultGC.New(InstanceClass.RTTI, InstanceClass.SizeOfType);
-  FormRef := InternalCalls.Cast<TComponent>(lNew);
+  FormRef := InternalCalls.Cast<TForm>(lNew);
   lCtor.Invoke(FormRef, [nil]);
+  aFormRef := FormRef;
 end;
 
 method TApplication.Initialize;

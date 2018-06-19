@@ -24,7 +24,7 @@ type
   end;
 
 var
-  //Form45: TForm55;
-  Form45: TComponent;
+  //Form45: TComponent;
+  Form45: TForm6;
 
 end.

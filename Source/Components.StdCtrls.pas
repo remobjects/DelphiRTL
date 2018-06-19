@@ -7,26 +7,25 @@ interface
 {$GLOBALS ON}
 
 type
-  TPlatformBaseControlClass = public {$IF ISLAND AND WINDOWS}TWinControl{$ELSE}TControl{$ENDIF};
-
-  TButton = public partial class(TPlatformBaseControlClass)
+  TButton = public partial class(TNativeControl)
   public
     class method Create(AOwner: TComponent): TButton;
   end;
 
-  TEdit = public partial class(TPlatformBaseControlClass)
+  TEdit = public partial class(TNativeControl)
   public
     property MaxLength: Integer read PlatformGetMaxLength write PlatformSetMaxLength;
     property &ReadOnly: Boolean read PlatformGetReadOnly write PlatformSetReadOnly;
     property Text: String read PlatformGetText write PlatformSetText;
   end;
 
-  TLabel = public partial class(TPlatformBaseControlClass)
+  //TLabel = public partial class({$IF ISLAND AND WINDOWS}TGraphicControl{$ELSE}TNativeControl{$ENDIF})
+  TLabel = public partial class(TNativeControl)
   public
     class method Create(aOwner: TComponent): TLabel;
   end;
 
-  TButtonControl = public partial class(TPlatformBaseControlClass)
+  TButtonControl = public partial class(TNativeControl)
   protected
     method PlatformGetChecked: Boolean; virtual; partial; empty;
     method PlatformSetChecked(aValue: Boolean); virtual; partial; empty;

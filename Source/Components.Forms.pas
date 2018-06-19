@@ -14,7 +14,7 @@ TComponentClass = public &Class;
 TComponentClass = public &Type;
 {$ENDIF}
 
-TCustomForm = public partial class({$IFDEF WINDOWS}TScrollingWinControl{$ELSE}TControl{$ENDIF})
+TCustomForm = public partial class({$IFDEF WINDOWS}TScrollingWinControl{$ELSE}TNativeControl{$ENDIF})
 private
   fPixelsPerInch: Integer;
   fOldCreateOrder: Boolean;
@@ -39,7 +39,7 @@ private
 public
   constructor(aOwner: TComponent);
   class method Create(aOwner: TComponent): TApplication;
-  method CreateForm(InstanceClass: TComponentClass; var FormRef: TComponent); partial; empty;
+  method CreateForm(InstanceClass: TComponentClass; var aFormRef); partial; empty;
   method Initialize; partial; empty;
   method Run; partial; empty;
   method Terminate; partial; empty;

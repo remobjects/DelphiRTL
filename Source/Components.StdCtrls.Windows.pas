@@ -13,7 +13,7 @@ type
     method CreateParams(var aParams: TCreateParams); override;
   end;
 
-  TLabel = public partial class(TWinControl)
+  TLabel = public partial class(TNativeControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
   end;
@@ -119,6 +119,7 @@ method TLabel.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
   aParams.WidgetClassName := 'STATIC'.ToCharArray(true);
+  aParams.DefaultWndProc := true;
   CreateClass(var aParams, 'STATIC');
 end;
 

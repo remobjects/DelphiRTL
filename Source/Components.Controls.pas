@@ -5,8 +5,12 @@ interface
 uses
   RemObjects.Elements.RTL.Delphi;
 
-/*type
+type
 
+TNativeControl = public partial class(TControl)
+end;
+
+/*
 TControl = public partial class(TComponent)
 protected
   method CreateHandle; virtual; partial; empty;

@@ -58,7 +58,7 @@
   <ItemGroup>
     <Compile Include="Program.pas" />
     <Compile Include="Unit5.pas" />
-    <Resource Include="OneButton.dfm" />
+    <Resource Include="ButtonLabelCheckBoxNear.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
 </Project>

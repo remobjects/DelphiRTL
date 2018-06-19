@@ -59,6 +59,7 @@ type
     method WriteListBegin;
     method WriteListEnd;
     method WriteSignature;
+    method WriteValue(aValue: TValueType);
     method WriteUTF8Str(aValue: string);
     method WriteString(aValue: string);
     method WriteIdent(aIdent: string);
@@ -227,8 +228,11 @@ begin
     end;
 
     TValueType.vaSet: begin
-      fStream.ReadData(var lInt8);
-      exit lInt8;
+      while not EndOfList do begin
+        var lString := ReadStr;
+      end;
+      ReadValue; // End of List
+      exit 0; // TODO
     end;
 
     TValueType.vaFalse:
@@ -418,9 +422,18 @@ begin
 
     TParserToken.toOtCharacter: begin
       if fParser.TokenValue = '[' then begin
+        fWriter.WriteValue(TValueType.vaSet);
         fParser.NextToken;
-        fWriter.WriteSet(0);
-        // TODO
+        if fParser.TokenString <> ']' then begin
+          fWriter.WriteUTF8Str(fParser.TokenString);
+          fParser.NextToken;
+          while fParser.TokenString = ',' do begin
+            fParser.NextToken;
+            fWriter.WriteUTF8Str(fParser.TokenString);
+            fParser.NextToken;
+          end;
+        end;
+        fWriter.WriteListEnd;
       end;
     end;
   end;
@@ -684,6 +697,11 @@ begin
   var lTotal := if length(lBytes) > 255 then 255 else length(lBytes);
   fStream.WriteData(Byte(lTotal));
   fStream.Write(lBytes, 0, lTotal);
+end;
+
+method TWriter.WriteValue(aValue: TValueType);
+begin
+  fStream.WriteData(Byte(aValue));
 end;
 
 method TWriter.WriteString(aValue: string);

@@ -38,13 +38,13 @@ type
     method Show(aRootView: dynamic);
   end;
 
-  TButton = public partial class(TControl)
+  TButton = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
     method PlatformSetCaption(aValue: String); partial;
   end;
 
-  TLabel = public partial class(TControl)
+  TLabel = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
     method PlatformSetCaption(aValue: String);
@@ -65,7 +65,7 @@ type
     method PlatformSetCaption(aValue: String);
   end;
 
-  TEdit = public partial class(TControl)
+  TEdit = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
     method PlatformSetText(aValue: String);
