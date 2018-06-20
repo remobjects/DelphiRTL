@@ -84,12 +84,12 @@ end;
 
 method TButtonControl.PlatformGetChecked: Boolean;
 begin
-  result := false;
+  result := (rtl.SendMessage(fHandle, rtl.BM_GETCHECK, 0, 0) = rtl.BST_CHECKED);
 end;
 
 method TButtonControl.PlatformSetChecked(aValue: Boolean);
 begin
-
+  rtl.SendMessage(fHandle, rtl.BM_SETCHECK, Convert.ToInt32(aValue), 0);
 end;
 
 method TCheckBox.CreateParams(var aParams: TCreateParams);

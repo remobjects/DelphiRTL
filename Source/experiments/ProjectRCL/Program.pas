@@ -5,8 +5,17 @@ uses
 
 type
 
+  TForm7 = public class(TForm6)
+  end;
+
+  TSicario = class of TForm6;
+
   Program = class
   public
+    class method Check(aValue: TSicario);
+    begin
+      writeLn(aValue.ActualType.Name);
+    end;
     class method Main(args: array of String): Int32;
     begin
       /*var lDfm := new TFileStream('c:\dev\ro\Unit6.dfm', fmOpenRead);
@@ -16,15 +25,17 @@ type
 
       // this is the default VCL prject code
 
+      //Check(TForm7);
+
       Application.Initialize;
       //Application.MainFormOnTaskbar := True;
-      Application.CreateForm(typeOf(TForm6), var Form45);
+      Application.CreateForm(typeOf(TForm6), var Form6);
       Application.Run;
     end;
   end;
 
-var
+//var
   //Form45: TComponent;
-  Form45: TForm6;
+  //Form45: TForm6;
 
 end.

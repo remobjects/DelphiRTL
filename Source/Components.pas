@@ -48,6 +48,7 @@ type
     fOnKeyUp: TKeyEvent;
     fVisible: Boolean := true;
     fCaption: String;
+    fControls: TList<TControl> := nil;
     method GetCaption: String;
     method SetCaption(aValue: String);
     method SetWidth(aValue: Integer);
@@ -61,13 +62,13 @@ type
     method SetOnKeyPress(value: TKeyPressEvent);
     method SetOnKeyDown(aValue: TKeyEvent);
     method GetClientHeight: Integer;
-    method SetClientHeight(value: Integer);
+    method SetClientHeight(aValue: Integer);
     method GetClientWidth: Integer;
-    method SetClientWidth(value: Integer);
+    method SetClientWidth(aValue: Integer);
     method SetColor(aValue: TColor);
     method SetVisible(aValue: Boolean);
 
-protected
+  protected
     fHandle: TPlatformHandle;
     fFont: TFont;
     method CreateHandle; virtual; partial; empty;
@@ -99,6 +100,8 @@ protected
     method PlatformApplyDefaults; virtual; partial; empty;
 
   public
+    method InsertControl(aControl: TControl);
+
     property Handle: TPlatformHandle read fHandle;
     property Font: TFont read fFont write setFont;
     property Parent: TControl read fParent write SetParent;
@@ -107,6 +110,7 @@ protected
     property Width: Integer read fWidth write SetWidth;
     property ClientHeight: Integer read GetClientHeight write SetClientHeight;
     property ClientWidth: Integer read GetClientWidth write SetClientWidth;
+    property Controls: TList<TControl> read fControls;
     //property ClientRect: RemObjects.TElements.RTL.RTLException
     property Left: Integer read fLeft write SetLeft;
     property Top: Integer read fTop write SetTop;
@@ -131,11 +135,11 @@ protected
     fStyles: TFontStyles;
     fCharset: TFontCharset; // TODO
     fHeight: Integer; // TODO
-    method setColor(value: TColor);
-    method setName(value: String);
-    method setSize(value: Integer);
-    method setStyles(value: TFontStyles);
-    method NotifyChanged(propName: String);
+    method setColor(aValue: TColor);
+    method setName(aValue: String);
+    method setSize(aValue: Integer);
+    method setStyles(aValue: TFontStyles);
+    method NotifyChanged(aPropName: String);
   public
     property PropertyChanged: TPropertyChangedEvent;
     property Color: TColor read fColor write setColor;
@@ -246,6 +250,7 @@ end;
 method TControl.SetParent(aValue: TControl);
 begin
   fParent := aValue;
+  aValue.InsertControl(self);
   PlatformSetParent(aValue);
 end;
 
@@ -271,54 +276,54 @@ begin
   fOnKeyDown := aValue;
 end;
 
-method TFont.NotifyChanged(propName: String);
+method TFont.NotifyChanged(aPropName: String);
 begin
   if PropertyChanged <> nil then
-    PropertyChanged(self, propName);
+    PropertyChanged(self, aPropName);
 end;
 
-method TFont.SetColor(value: TColor);
+method TFont.SetColor(aValue: TColor);
 begin
-  fColor := value;
+  fColor := aValue;
   NotifyChanged('color');
 end;
 
-method TFont.SetName(value: String);
+method TFont.SetName(aValue: String);
 begin
-  fName := value;
+  fName := aValue;
   NotifyChanged('name');
 end;
 
-method TFont.SetSize(value: Integer);
+method TFont.SetSize(aValue: Integer);
 begin
-  fSize := value;
+  fSize := aValue;
   NotifyChanged('size');
 end;
 
-method TFont.SetStyles(value: TFontStyles);
+method TFont.SetStyles(aValue: TFontStyles);
 begin
-  fStyles := value;
+  fStyles := aValue;
   NotifyChanged('styles');
 end;
 
 method TControl.GetClientHeight: Integer;
 begin
-  // TODO
+  result := fHeight;
 end;
 
-method TControl.SetClientHeight(value: Integer);
+method TControl.SetClientHeight(aValue: Integer);
 begin
-  // TODO
+  Height := aValue;
 end;
 
 method TControl.GetClientWidth: Integer;
 begin
-  // TODO
+  result := fWidth;
 end;
 
-method TControl.SetClientWidth(value: Integer);
+method TControl.SetClientWidth(aValue: Integer);
 begin
-  // TODO
+  Width := aValue;
 end;
 
 method TControl.SetColor(aValue: TColor);
@@ -332,6 +337,13 @@ begin
   PlatformSetVisible(aValue);
 end;
 
+method TControl.InsertControl(aControl: TControl);
+begin
+  if fControls = nil then
+    fControls := new TList<TControl>();
+
+  fControls.Add(aControl);
+end;
 {$ENDIF}
 
 end.
