@@ -60,7 +60,7 @@ type
   protected
     fOldWndProc: TWndProc;
     method CreateHandle; override;
-    method CreateClass(var aParams: TCreateParams; ClassName: String);
+    method CreateClass(var aParams: TCreateParams);
 
     method CreateParams(var aParams: TCreateParams); virtual;
     method CreateWindowHandle(aParams: TCreateParams); virtual;
@@ -220,8 +220,8 @@ end;
 method TNativeControl.CreateParams(var aParams: TCreateParams);
 begin
   memset(@aParams, 0, sizeOf(aParams));
-  aParams.Style := aParams.Style or rtl.WS_CHILD or rtl.WS_VISIBLE;
-  //if Visible then aParams.Style := aParams.Style or rtl.WS_VISIBLE;
+  aParams.Style := aParams.Style or rtl.WS_CHILD;
+  if Visible then aParams.Style := aParams.Style or rtl.WS_VISIBLE;
   aParams.X := Left;
   aParams.Y := Top;
   aParams.Width := Width;
@@ -263,13 +263,12 @@ begin
   CreateWindowHandle(lParams);
 end;
 
-method TNativeControl.CreateClass(var aParams: TCreateParams; ClassName: String);
+method TNativeControl.CreateClass(var aParams: TCreateParams);
 begin
   var lInstance := rtl.GetModuleHandle(nil); // TODO
   rtl.GetClassInfo(lInstance, @aParams.WidgetClassName[0], @aParams.WindowClass);
 
   aParams.WindowClass.hInstance := lInstance;
-  //aParams.WindowClass.style := aParams.WindowClass.style and not (rtl.CS_OWNDC or rtl.CS_CLASSDC or rtl.CS_PARENTDC or rtl.CS_GLOBALCLASS) or (rtl.CS_VREDRAW or rtl.CS_HREDRAW);
 end;
 
 method TControl.HandleAllocated: Boolean;

@@ -320,6 +320,8 @@ begin
   fParent := result;
   ReadComponentData(result);
   fParent := lOldParent;
+
+  DynamicHelpers.SetMember(fParent, lName, 0, [result]);
 end;
 
 method TReader.ReadSignature;

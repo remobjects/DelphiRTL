@@ -27,7 +27,8 @@ implementation
 
 procedure TForm6.Button1Click(Sender: TObject);
 begin
-  label1.Caption := 'Lol';
+  label1.Width := 200;
+  label1.Caption := 'All right!';
   ShowMessage('Clicked!');
 end;
 
