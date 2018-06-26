@@ -24,8 +24,11 @@ type
     DefaultWndProc: Boolean := false;
   end;
 
+  TWndMethod = public method(var aMessage: TMessage);
+
   TControl = public partial class(TComponent)
   protected
+    fWindowProc: TWndMethod;
     //constructor(aOwner: TComponent);
     method GetDefaultName: String;
     method HandleAllocated: Boolean;
@@ -43,7 +46,14 @@ type
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
+
+    method DefaultHandler(var aMessage: TMessage); virtual;
+
   public
+    method WndProc(var aMessage: TMessage); virtual;
+    method Perform(aMessage: Cardinal; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+    method Perform(var aMessage: TMessage);
+    property WindowProc: TWndMethod read fWindowProc write fWindowProc;
   end;
 
   TGraphicControl = public class(TControl)
@@ -59,6 +69,8 @@ type
     fClass: rtl.WNDCLASS;
   protected
     fOldWndProc: TWndProc;
+    method ControlFromHandle(aHandle: rtl.HWND): TNativeControl;
+
     method CreateHandle; override;
     method CreateClass(var aParams: TCreateParams);
 
@@ -66,9 +78,12 @@ type
     method CreateWindowHandle(aParams: TCreateParams); virtual;
     method CreateWnd; virtual;
 
+    method DefaultHandler(var aMessage: TMessage); override;
+
   public
+    method WndProc(var aMessage: TMessage); override;
     constructor(aOwner: TComponent);
-    method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT; virtual;
+    //method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT; virtual;
     property TabOrder: Integer read fTabOrder write fTabOrder;
   end;
 
@@ -97,7 +112,9 @@ begin
   var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
   if lObject <> 0 then begin
     var lControl := InternalCalls.Cast<TWinControl>(^Void(lObject));
-    result := lControl.WndProc(hWnd, message, wParam, lParam);
+    var lMessage := new TMessage(message, wParam, lParam);
+    lControl.WndProc(var lMessage);
+    result := lMessage.Result;
   end
   else begin
     result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
@@ -119,15 +136,36 @@ begin
   fHandle := rtl.HWND(0);
 end;
 
-method TNativeControl.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+method TNativeControl.WndProc(var aMessage: TMessage);
 begin
-  if (message = rtl.WM_LBUTTONUP) and assigned(OnClick) then begin
-    if assigned(OnClick) then
-      OnClick(self);
-    result := 0;
-  end
+  case aMessage.Msg of
+    rtl.WM_COMMAND: begin
+      // HiWord(WParam): Notification code
+      // LoWord(WParam): Controld ID
+      // LParam: Target Window Handle
+      var lNotification := aMessage.wParam shr 16;
+      var lControl := ControlFromHandle(rtl.HWND(aMessage.lParam));
+      aMessage.Result := lControl.Perform(lNotification, aMessage.wParam, aMessage.lParam);
+    end;
+
+    rtl.BN_CLICKED: begin
+      // we got this message from our parent via WM_COMMAND
+      if assigned(OnClick) then OnClick(self);
+      aMessage.Result := 0;
+    end;
+
+    else
+      inherited(var aMessage);
+  end;
+end;
+
+method TNativeControl.ControlFromHandle(aHandle: rtl.HWND): TNativeControl;
+begin
+  var lObject := rtl.GetWindowLongPtr(aHandle, rtl.GWLP_USERDATA);
+  if lObject <> 0 then
+    result := InternalCalls.Cast<TWinControl>(^Void(lObject))
   else
-    result := rtl.CallWindowProc(fOldWndProc, hWnd, message, wParam, lParam);
+    result := nil;
 end;
 
 method TControl.GetDefaultName: String;
@@ -217,6 +255,29 @@ begin
   end;
 end;
 
+method TControl.Perform(aMessage: Cardinal; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+begin
+  var lMessage := new TMessage(aMessage, wParam, lParam);
+  WndProc(var lMessage);
+  result := lMessage.Result;
+end;
+
+method TControl.Perform(var aMessage: TMessage);
+begin
+  WndProc(var aMessage);
+end;
+
+method TControl.WndProc(var aMessage: TMessage);
+begin
+  // Dispatch messages here to message WM_XXXX functions
+  DefaultHandler(var aMessage);
+end;
+
+method TControl.DefaultHandler(var aMessage: TMessage);
+begin
+
+end;
+
 method TNativeControl.CreateParams(var aParams: TCreateParams);
 begin
   memset(@aParams, 0, sizeOf(aParams));
@@ -269,6 +330,11 @@ begin
   rtl.GetClassInfo(lInstance, @aParams.WidgetClassName[0], @aParams.WindowClass);
 
   aParams.WindowClass.hInstance := lInstance;
+end;
+
+method TNativeControl.DefaultHandler(var aMessage: TMessage);
+begin
+  aMessage.Result := rtl.CallWindowProc(fOldWndProc, fHandle, aMessage.Msg, aMessage.wParam, aMessage.lParam);
 end;
 
 method TControl.HandleAllocated: Boolean;

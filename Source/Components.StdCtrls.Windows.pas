@@ -34,7 +34,6 @@ type
     method PlatformGetChecked: Boolean; virtual; partial;
     method PlatformSetChecked(aValue: Boolean); virtual; partial;
   public
-    method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT; override;
   end;
 
   TCheckBox = public partial class(TButtonControl)
@@ -136,23 +135,6 @@ method TRadioButton.CreateWnd;
 begin
   inherited;
   rtl.SendMessage(fHandle, rtl.BM_SETCHECK, rtl.WPARAM(1), 0);
-end;
-
-method TButtonControl.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
-begin
-  case message of
-    rtl.WM_COMMAND: begin
-      var lNotification := wParam shr 16; // HiWord(wParam);
-      case lNotification of
-        rtl.BN_CLICKED: begin
-
-        end;
-      end;
-    end;
-
-    else
-      result := rtl.CallWindowProc(fOldWndProc, hWnd, message, wParam, lParam);
-  end;
 end;
 
 {$ENDIF}

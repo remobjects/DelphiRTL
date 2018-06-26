@@ -128,6 +128,9 @@ begin
   nil);    // used with multiple windows, NULL
 
   rtl.SetWindowLongPtr(fHandle, rtl.GWLP_USERDATA, NativeUInt(InternalCalls.Cast(self)));
+  fOldWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fHandle, rtl.GWL_WNDPROC)));
+  rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
+
   // display the window on the screen
   rtl.ShowWindow(fHandle, rtl.SW_SHOW);
 end;
