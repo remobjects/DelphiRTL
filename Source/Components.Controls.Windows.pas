@@ -150,7 +150,7 @@ begin
 
     rtl.BN_CLICKED: begin
       // we got this message from our parent via WM_COMMAND
-      if assigned(OnClick) then OnClick(self);
+      Click;
       aMessage.Result := 0;
     end;
 

@@ -33,6 +33,22 @@ type
     property Checked: Boolean read PlatformGetChecked write PlatformSetChecked;
   end;
 
+  TCheckBoxState = public enum (cbUnChecked = 0, cbChecked = 1, cbGrayed = 2) of Integer;
+
+  TCheckBox = public partial class(TButtonControl)
+  private
+    fState: TCheckBoxState;
+    fAllowGrayed: Boolean;
+  protected
+    method PlatformSetState(aValue: TCheckBoxState); partial; empty;
+    method SetState(aValue: TCheckBoxState); virtual;
+  public
+    method Toggle; virtual;
+    method Click; override;
+    property AllowGrayed: Boolean read fAllowGrayed write fAllowGrayed default false;
+    property State: TCheckBoxState read fState write SetState default TCheckBoxState.cbUnchecked;
+  end;
+
   {$IF WEBASSEMBLY}
   TGroupBox = public partial class(TControl)
   private
@@ -152,6 +168,35 @@ end;
 class method TLabel.Create(aOwner: TComponent): TLabel;
 begin
   result := new TLabel(aOwner);
+end;
+
+method TCheckBox.SetState(aValue: TCheckBoxState);
+begin
+  fState := aValue;
+  PlatformSetState(aValue);
+end;
+
+method TCheckBox.Toggle;
+begin
+  case State of
+    TCheckBoxState.cbChecked:
+      SetState(TCheckBoxState.cbUnChecked);
+
+    TCheckBoxState.cbUnChecked:
+      if fAllowGrayed then
+        SetState(TCheckBoxState.cbGrayed)
+      else
+        SetState(TCheckBoxState.cbChecked);
+
+    TCheckBoxState.cbGrayed:
+      SetState(TCheckBoxState.cbChecked);
+  end;
+end;
+
+method TCheckBox.Click;
+begin
+  Toggle;
+  inherited;
 end;
 
 {$IF WEBASSEMBLY}

@@ -99,6 +99,8 @@ type
     method PlatformGetDefaultName: String; virtual; partial; empty;
     method PlatformApplyDefaults; virtual; partial; empty;
 
+    method Click; virtual;
+
   public
     method InsertControl(aControl: TControl);
 
@@ -274,6 +276,12 @@ end;
 method TControl.SetOnKeyDown(aValue: TKeyEvent);
 begin
   fOnKeyDown := aValue;
+end;
+
+method TControl.Click;
+begin
+  if assigned(fOnClick) then
+    fOnClick(self);
 end;
 
 method TFont.NotifyChanged(aPropName: String);

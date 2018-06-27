@@ -29,22 +29,24 @@ type
     method PlatformSetText(aValue: String);
   end;
 
-  TButtonControl = public partial class(TWinControl)
-  protected
-    method PlatformGetChecked: Boolean; virtual; partial;
-    method PlatformSetChecked(aValue: Boolean); virtual; partial;
-  public
-  end;
-
   TCheckBox = public partial class(TButtonControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
+
+    method PlatformGetChecked: Boolean; override; partial;
+    method PlatformSetChecked(aValue: Boolean); override; partial;
+    method PlatformSetState(aValue: TCheckBoxState); partial;
   end;
 
   TRadioButton = public partial class(TButtonControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
     method CreateWnd; override;
+
+    method Click; override;
+
+    method PlatformGetChecked: Boolean; override; partial;
+    method PlatformSetChecked(aValue: Boolean); override; partial;
   end;
 
 implementation
@@ -83,16 +85,6 @@ begin
   rtl.SetWindowText(fHandle, @lBuffer[0]);
 end;
 
-method TButtonControl.PlatformGetChecked: Boolean;
-begin
-  result := (rtl.SendMessage(fHandle, rtl.BM_GETCHECK, 0, 0) = rtl.BST_CHECKED);
-end;
-
-method TButtonControl.PlatformSetChecked(aValue: Boolean);
-begin
-  rtl.SendMessage(fHandle, rtl.BM_SETCHECK, Convert.ToInt32(aValue), 0);
-end;
-
 method TCheckBox.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
@@ -101,12 +93,44 @@ begin
   aParams.Style := aParams.Style or rtl.BS_3STATE;
 end;
 
+method TCheckBox.PlatformGetChecked: Boolean;
+begin
+  result := (rtl.SendMessage(fHandle, rtl.BM_GETCHECK, 0, 0) = rtl.BST_CHECKED);
+end;
+
+method TCheckBox.PlatformSetChecked(aValue: Boolean);
+begin
+  rtl.SendMessage(fHandle, rtl.BM_SETCHECK, Convert.ToInt32(aValue), 0);
+end;
+
+method TCheckBox.PlatformSetState(aValue: TCheckBoxState);
+begin
+  rtl.SendMessage(fHandle, rtl.BM_SETCHECK, Convert.ToInt32(aValue), 0);
+end;
+
 method TRadioButton.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
   aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
   CreateClass(var aParams);
   aParams.Style := aParams.Style or rtl.BS_RADIOBUTTON;
+end;
+
+method TRadioButton.PlatformGetChecked: Boolean;
+begin
+  result := (rtl.SendMessage(fHandle, rtl.BM_GETCHECK, 0, 0) = rtl.BST_CHECKED);
+end;
+
+method TRadioButton.PlatformSetChecked(aValue: Boolean);
+begin
+  var lValue := if aValue then 1 else 0;
+  rtl.SendMessage(fHandle, rtl.BM_SETCHECK, Convert.ToInt32(lValue), 0);
+end;
+
+method TRadioButton.Click;
+begin
+  Checked := not Checked;
+  inherited;
 end;
 
 method TButton.CreateParams(var aParams: TCreateParams);
@@ -134,7 +158,7 @@ end;
 method TRadioButton.CreateWnd;
 begin
   inherited;
-  rtl.SendMessage(fHandle, rtl.BM_SETCHECK, rtl.WPARAM(1), 0);
+  rtl.SendMessage(fHandle, rtl.BM_SETCHECK, rtl.WPARAM(0), 0);
 end;
 
 {$ENDIF}
