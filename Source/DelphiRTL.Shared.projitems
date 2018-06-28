@@ -40,5 +40,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Components.Forms.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Components.StdCtrls.Windows.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Components.Messages.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components.Graphics.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components.Graphics.Windows.pas" />
   </ItemGroup>
 </Project>
