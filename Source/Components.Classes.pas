@@ -290,6 +290,7 @@ end;
 
 method TReader.ReadRootComponent(aRoot: TComponent): TComponent;
 begin
+  aRoot.SetComponentState(TComponentStateEnum.csLoading);
   ReadSignature; // Skip 'TPF0'
   ReadStr;
   var lName := ReadStr;
@@ -299,6 +300,7 @@ begin
   fParent := aRoot;
   Root := aRoot;
   ReadComponentData(aRoot);
+  aRoot.RemoveComponentState(TComponentStateEnum.csLoading);
 end;
 
 method TReader.ReadData(Instance: TComponent);
@@ -316,10 +318,12 @@ begin
     result.Name := lName;
     TControl(result).Parent := TControl(fParent);
   end;
+  result.SetComponentState(TComponentStateEnum.csLoading);
   var lOldParent := fParent;
   fParent := result;
   ReadComponentData(result);
   fParent := lOldParent;
+  result.RemoveComponentState(TComponentStateEnum.csLoading);
 
   DynamicHelpers.SetMember(fParent, lName, 0, [result]);
 end;

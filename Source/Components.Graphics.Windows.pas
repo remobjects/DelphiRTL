@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IF ISLAND AND WINDOWS}
+
 interface
 
 type
@@ -10,10 +12,14 @@ type
   private
     fPixelsPerInch: Integer;
     fFontHandle: rtl.HFONT;
+    fOrientation: Integer;
+    fQuality: TFontQuality;
+    fPitch: TFontPitch;
+
     method GetOrientation: Integer;
-    method SetOrientation(value: Integer);
+    method SetOrientation(aValue: Integer);
     method GetPitch: TFontPitch;
-    method SetPitch(value: TFontPitch);
+    method SetPitch(aValue: TFontPitch);
     method GetQuality: TFontQuality;
     method SetQuality(aValue: TFontQuality);
     method GetFontHandle: rtl.HFONT;
@@ -21,8 +27,12 @@ type
 
     class method CreateFontFromData(aFontName: String; aCharset: TFontCharset; aSize: Integer; aOrientation: Integer; aPitch: TFontPitch; aQuality: TFontQuality; aStyle: TFontStyles): rtl.HFONT;
     class var fDefaultFont: rtl.HFONT := 0;
-    class var fPixelsPerInch: Integer := 0;
+    class var fDevicePixelsPerInch: Integer := 0;
     class constructor;
+
+  protected
+    method PlatformUpdate; virtual; partial;
+
   public
     constructor;
     property FontHandle: rtl.HFONT read GetFontHandle write SetFontHandle;
@@ -36,32 +46,36 @@ implementation
 
 method TFont.GetQuality: TFontQuality;
 begin
-
+  result := fQuality;
 end;
 
 method TFont.SetQuality(aValue: TFontQuality);
 begin
-
+  fQuality := aValue;
+  NotifyChanged('quality');
 end;
 
 method TFont.GetOrientation: Integer;
 begin
-
+  result := fOrientation;
+  NotifyChanged('orientation');
 end;
 
-method TFont.SetOrientation(value: Integer);
+method TFont.SetOrientation(aValue: Integer);
 begin
-
+  fOrientation := aValue;
+  NotifyChanged('orientation');
 end;
 
 method TFont.GetPitch: TFontPitch;
 begin
-
+  result := fPitch;
 end;
 
-method TFont.SetPitch(value: TFontPitch);
+method TFont.SetPitch(aValue: TFontPitch);
 begin
-
+  fPitch := aValue;
+  NotifyChanged('pitch');
 end;
 
 method TFont.GetFontHandle: rtl.HFONT;
@@ -77,13 +91,14 @@ end;
 constructor TFont;
 begin
   FontHandle := fDefaultFont;
+  fPixelsPerInch := fDevicePixelsPerInch;
 end;
 
 class method TFont.CreateFontFromData(aFontName: String; aCharset: TFontCharset; aSize: Integer; aOrientation: Integer; aPitch: TFontPitch; aQuality: TFontQuality; aStyle: TFontStyles): rtl.HFONT;
 begin
   var lFontInfo: rtl.LOGFONT;
   lFontInfo.lfWidth := 0;
-  lFontInfo.lfHeight := -(aSize * fPixelsPerInch) / 72; // A point is very close to 1/72 inch...
+  lFontInfo.lfHeight := -(aSize * fDevicePixelsPerInch) / 72; // A point is very close to 1/72 inch...
   lFontInfo.lfEscapement := 0;
   lFontInfo.lfOrientation := aOrientation;
   lFontInfo.lfWeight := if (TFontStyle.Bold in aStyle) then rtl.FW_BOLD else rtl.FW_NORMAL;
@@ -103,10 +118,20 @@ end;
 class constructor TFont;
 begin
   var lDC := rtl.GetDC(rtl.HWND(0));
-  fPixelsPerInch := rtl.GetDeviceCaps(lDC, rtl.LOGPIXELSY);
+  fDevicePixelsPerInch := rtl.GetDeviceCaps(lDC, rtl.LOGPIXELSY);
   rtl.ReleaseDC(rtl.HWND(0), lDC);
 
   fDefaultFont := CreateFontFromData('Tahoma', 0, 12, 0, TFontPitch.fpDefault, TFontQuality.fqDefault, []);
 end;
+
+method TFont.PlatformUpdate;
+begin
+  var lOldFont := FontHandle;
+  FontHandle := CreateFontFromData(fName, fCharset, fSize, fOrientation, fPitch, fQuality, fStyles);
+  if lOldFont <> fDefaultFont then
+    rtl.DeleteObject(lOldFont);
+end;
+
+{$ENDIF}
 
 end.

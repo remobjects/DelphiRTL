@@ -5,16 +5,24 @@
 interface
 
 type
+
+  TComponentStateEnum = public enum(csLoading, csReading, csWriting, csDestroying, csDesigning, csAncestor, csUpdating, csFixups, csFreeNotification) of integer;
+  TComponentState = set of TComponentStateEnum;
+
   TComponent = public class(TObject)
   private
     fName: String;
     fOwner: TComponent;
+    fComponentState: TComponentState;
     method setName(aValue: String);
     method setOwner(aValue: TComponent);
   protected
     method Loaded; virtual;
     constructor(aOwner: TComponent);
   public
+    method SetComponentState(aState: TComponentStateEnum);
+    method RemoveComponentState(aState: TComponentStateEnum);
+    property ComponentState: TComponentState read fComponentState;
     property Name: String read fName write setName;
     property Owner: TComponent read fOwner write setOwner;
   end;
@@ -91,13 +99,9 @@ type
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial; empty;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial; empty;
 
-    method PlatformFontSetColor(value: TColor); partial; empty;
-    method PlatformFontSetName(value: String); partial; empty;
-    method PlatformFontSetSize(value: Integer); partial; empty;
-    method PlatformFontSetStyles(value: TFontStyles); partial; empty;
-
     method PlatformGetDefaultName: String; virtual; partial; empty;
     method PlatformApplyDefaults; virtual; partial; empty;
+    method PlatformFontChanged; virtual; partial; empty;
 
     method Click; virtual;
 
@@ -148,6 +152,16 @@ begin
   // Nothing
 end;
 
+method TComponent.SetComponentState(aState: TComponentStateEnum);
+begin
+  fComponentState := fComponentState + [aState];
+end;
+
+method TComponent.RemoveComponentState(aState: TComponentStateEnum);
+begin
+  fComponentState := fComponentState - [aState];
+end;
+
 method TControl.SetLeft(aValue: Integer);
 begin
   fLeft := aValue;
@@ -171,14 +185,8 @@ end;
 
 method TControl.Changed(aObject: TObject; propName: String);
 begin
-  if aObject is TFont then begin
-    case propName of
-      'color': PlatformFontSetColor(fFont.Color);
-      'size': PlatformFontSetSize(fFont.Size);
-      'name': PlatformFontSetName(fFont.Name);
-      'styles': PlatformFontSetStyles(fFont.Style);
-    end;
-  end;
+  if aObject is TFont then
+    PlatformFontChanged;
 end;
 
 method TControl.Loaded;
@@ -193,10 +201,7 @@ end;
 method TControl.SetFont(value: TFont);
 begin
   fFont := value;
-  PlatformFontSetColor(fFont.Color);
-  PlatformFontSetSize(fFont.Size);
-  PlatformFontSetName(fFont.Name);
-  PlatformFontSetStyles(fFont.Style);
+  PlatformFontChanged;
 end;
 
 method TControl.GetCaption: String;

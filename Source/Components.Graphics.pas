@@ -22,6 +22,8 @@ type
     method setSize(aValue: Integer);
     method setStyles(aValue: TFontStyles);
     method NotifyChanged(aPropName: String);
+  protected
+    method PlatformUpdate; virtual; partial; empty;
   public
     property PropertyChanged: TPropertyChangedEvent;
     property Color: TColor read fColor write setColor;
@@ -36,6 +38,7 @@ implementation
 
 method TFont.NotifyChanged(aPropName: String);
 begin
+  PlatformUpdate;
   if PropertyChanged <> nil then
     PropertyChanged(self, aPropName);
 end;

@@ -22,10 +22,7 @@ type
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
 
-    method PlatformFontSetColor(value: TColor); partial;
-    method PlatformFontSetName(value: String); partial;
-    method PlatformFontSetSize(value: Integer); partial;
-    method PlatformFontSetStyles(value: TFontStyles); partial;
+    method PlatformFontChanged; virtual; partial;
 
     method PlatformGetDefaultName: String; virtual; partial;
     method PlatformApplyDefaults; virtual; partial;
@@ -314,6 +311,12 @@ begin
   fHandle.setAttribute('id', Name);
 end;
 
+method TControl.PlatformFontChanged;
+begin
+
+end;
+
+/*
 method TControl.PlatformFontSetColor(value: TColor);
 begin
   fHandle.style.color := value.ToString;
@@ -341,6 +344,7 @@ begin
   else
     fHandle.style.textDecoration := 'none';
 end;
+*/
 
 method TCheckBox.CreateHandle;
 begin

@@ -46,6 +46,7 @@ type
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
+    method PlatformFontChanged; virtual; partial;
 
     method DefaultHandler(var aMessage: TMessage); virtual;
 
@@ -79,6 +80,8 @@ type
     method CreateWnd; virtual;
 
     method DefaultHandler(var aMessage: TMessage); override;
+
+    method PlatformFontChanged; override;
 
   public
     method WndProc(var aMessage: TMessage); override;
@@ -222,6 +225,11 @@ begin
 
 end;
 
+method TControl.PlatformFontChanged;
+begin
+  // TODO set control font, invalidate control
+end;
+
 method TControl.PlatformGetCaption: String;
 begin
   if HandleAllocated then begin
@@ -335,6 +343,11 @@ end;
 method TNativeControl.DefaultHandler(var aMessage: TMessage);
 begin
   aMessage.Result := rtl.CallWindowProc(fOldWndProc, fHandle, aMessage.Msg, aMessage.wParam, aMessage.lParam);
+end;
+
+method TNativeControl.PlatformFontChanged;
+begin
+  // TODO set component font from TFont object
 end;
 
 method TControl.HandleAllocated: Boolean;
