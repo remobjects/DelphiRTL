@@ -16,7 +16,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Collections.Queue.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Collections.Stack.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Collections.List.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)DateUtils.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)IniFiles.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.pas" />
@@ -32,15 +31,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Aliases.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)String.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)WebAssembly.StdCtrls.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.StdCtrls.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Forms.Windows.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Classes.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Controls.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Controls.Windows.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Forms.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.StdCtrls.Windows.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Messages.Windows.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Graphics.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Graphics.Windows.pas" />
   </ItemGroup>
 </Project>
