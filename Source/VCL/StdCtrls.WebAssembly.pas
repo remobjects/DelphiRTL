@@ -1,8 +1,11 @@
-﻿namespace RemObjects.Elements.RTL.Delphi;
+﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
 {$IF WEBASSEMBLY}
 
 interface
+
+uses
+  RemObjects.Elements.RTL.Delphi;
 
 {$GLOBALS ON}
 
