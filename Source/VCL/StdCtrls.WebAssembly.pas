@@ -89,7 +89,7 @@ type
     method PlatformSetCaption(value: String);
   end;
 
-  TCheckBox = public class(TRadioCheckBox)
+  TCheckBox = public partial class(TRadioCheckBox)
   protected
     method CreateHandle; override;
   end;

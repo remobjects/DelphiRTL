@@ -4,6 +4,9 @@
 
 interface
 
+uses
+  RemObjects.Elements.RTL.Delphi;
+
 {$GLOBALS ON}
 
 type
@@ -55,7 +58,7 @@ type
     fCaption: String;
     method SetCaption(aValue: String);
   public
-    property Caption: String read fCaption write SetCaption;
+    property Caption: String read fCaption write SetCaption; override;
   end;
 
   TRadioCheckBox = public partial abstract class(TControl)
