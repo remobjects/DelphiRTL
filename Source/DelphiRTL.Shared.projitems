@@ -33,7 +33,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)String.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)WebAssembly.StdCtrls.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Components.StdCtrls.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Component.Forms.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components.Forms.Windows.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Components.Classes.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Components.Controls.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Components.Controls.Windows.pas" />
