@@ -1,8 +1,11 @@
-﻿namespace RemObjects.Elements.RTL.Delphi;
+﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
 {$IF NOT TOFFEE}
 
 interface
+
+uses
+  RemObjects.Elements.RTL.Delphi;
 
 type
   TFontStyle = public enum(Bold, Italic, Underline, StrikeOut) of Integer;

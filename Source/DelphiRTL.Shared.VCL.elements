@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0E930F04-C7D3-43B2-81B9-6BBC40FE20A5}</ProjectGuid>
+    <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
     <RootNamespace>DelphiRTL.Shared.VCL</RootNamespace>

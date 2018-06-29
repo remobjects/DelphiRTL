@@ -1,4 +1,4 @@
-﻿namespace RemObjects.Elements.RTL.Delphi;
+﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
 {$IF ISLAND AND WINDOWS}
 

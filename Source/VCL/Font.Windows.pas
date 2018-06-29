@@ -1,8 +1,11 @@
-﻿namespace RemObjects.Elements.RTL.Delphi;
+﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
 {$IF ISLAND AND WINDOWS}
 
 interface
+
+uses
+  RemObjects.Elements.RTL.Delphi;
 
 type
   TFontPitch = public enum (fpDefault, fpVariable, fpFixed) of Integer;

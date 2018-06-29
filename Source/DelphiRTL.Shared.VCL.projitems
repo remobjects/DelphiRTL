@@ -10,16 +10,18 @@
     <Import_RootNamespace>DelphiRTL.Shared.VCL</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Forms.Windows.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Classes.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Controls.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Controls.Windows.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Forms.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Graphics.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Graphics.Windows.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.Messages.Windows.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.StdCtrls.pas" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components.StdCtrls.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Form.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Component.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Component.ReaderWriter.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Form.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Font.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Font.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Messages.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.Windows.pas" />
   </ItemGroup>
 </Project>

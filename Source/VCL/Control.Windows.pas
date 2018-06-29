@@ -1,4 +1,4 @@
-﻿namespace RemObjects.Elements.RTL.Delphi;
+﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
 {$IF ISLAND AND WINDOWS}
 
@@ -7,7 +7,8 @@ interface
 {$GLOBALS ON}
 
 uses
-  RemObjects.Elements.RTL.Delphi, rtl;
+  rtl,
+  RemObjects.Elements.RTL.Delphi;
 
 type
   TCreateParams = public record
