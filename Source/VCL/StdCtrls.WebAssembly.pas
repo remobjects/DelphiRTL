@@ -312,6 +312,7 @@ end;
 
 method TControl.PlatformApplyDefaults;
 begin
+  HandleNeeded;
   fHandle.setAttribute('id', Name);
 end;
 
