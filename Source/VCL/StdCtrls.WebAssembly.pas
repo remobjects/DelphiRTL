@@ -76,7 +76,7 @@ type
     method PlatformSetReadOnly(aValue: Boolean);
   end;
 
-  TRadioCheckBox = public partial abstract class(TControl)
+  TButtonControl = public partial class(TNativeControl)
   protected
     fLabelHandle: dynamic;
     method internalCreateHandle(aType: String);
@@ -84,17 +84,18 @@ type
     method PlatformSetTop(aValue: Integer); override;
     method PlatformSetLeft(aValue: Integer); override;
 
-    method PlatformGetChecked: Boolean;
-    method PlatformSetChecked(value: Boolean);
+    method PlatformGetChecked: Boolean; virtual; partial;
+    method PlatformSetChecked(value: Boolean); virtual; partial;
+
     method PlatformSetCaption(value: String);
   end;
 
-  TCheckBox = public partial class(TRadioCheckBox)
+  TCheckBox = public partial class(TButtonControl)
   protected
     method CreateHandle; override;
   end;
 
-  TRadioButton = public class(TRadioCheckBox)
+  TRadioButton = public class(TButtonControl)
   protected
     method CreateHandle; override;
   end;
@@ -354,30 +355,30 @@ begin
   internalCreateHandle("checkbox");
 end;
 
-method TRadioCheckBox.PlatformSetCaption(value: String);
+method TButtonControl.PlatformSetCaption(value: String);
 begin
   fLabelHandle.innerText := value;
 end;
 
-method TRadioCheckBox.PlatformSetParent(aValue: TControl);
+method TButtonControl.PlatformSetParent(aValue: TControl);
 begin
   inherited;
   aValue.Handle.appendChild(fLabelHandle);
 end;
 
-method TRadioCheckBox.PlatformSetTop(aValue: Integer);
+method TButtonControl.PlatformSetTop(aValue: Integer);
 begin
   inherited;
   fLabelHandle.style.top := (aValue).ToString + 'px';
 end;
 
-method TRadioCheckBox.PlatformSetLeft(aValue: Integer);
+method TButtonControl.PlatformSetLeft(aValue: Integer);
 begin
   inherited;
   fLabelHandle.style.left := (aValue + 22).ToString + 'px';
 end;
 
-method TRadioCheckBox.internalCreateHandle(aType: String);
+method TButtonControl.internalCreateHandle(aType: String);
 begin
   fHandle := WebAssembly.CreateElement("INPUT");
   fHandle.setAttribute("type", aType);
@@ -387,12 +388,12 @@ begin
   fLabelHandle.innerText := Name;
 end;
 
-method TRadioCheckBox.PlatformSetChecked(value: Boolean);
+method TButtonControl.PlatformSetChecked(value: Boolean);
 begin
   fHandle.checked := value;
 end;
 
-method TRadioCheckBox.PlatformGetChecked: Boolean;
+method TButtonControl.PlatformGetChecked: Boolean;
 begin
   result := fHandle.checked;
 end;

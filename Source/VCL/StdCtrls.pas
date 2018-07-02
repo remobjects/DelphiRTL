@@ -53,23 +53,6 @@ type
   end;
 
   {$IF WEBASSEMBLY}
-  TGroupBox = public partial class(TControl)
-  private
-    fCaption: String;
-    method SetCaption(aValue: String);
-  public
-    property Caption: String read fCaption write SetCaption; override;
-  end;
-
-  TRadioCheckBox = public partial abstract class(TControl)
-  private
-    fCaption: String;
-    method setCaption(value: String);
-  public
-    property Caption: String read fCaption write PlatformSetCaption;
-    property Checked: Boolean read PlatformGetChecked write PlatformSetChecked;
-  end;
-
   TListControlItems = public partial class(TStringList)
   public
     method AddObject(S: DelphiString; aObject: TObject): Integer; override;
@@ -203,18 +186,6 @@ begin
 end;
 
 {$IF WEBASSEMBLY}
-method TGroupBox.SetCaption(aValue: String);
-begin
-  fCaption := aValue;
-  PlatformSetCaption(aValue);
-end;
-
-method TRadioCheckBox.setCaption(value: String);
-begin
-  fCaption := value;
-  PlatformSetCaption(value);
-end;
-
 method TListControlItems.AddObject(S: DelphiString; aObject: TObject): Integer;
 begin
   inherited;

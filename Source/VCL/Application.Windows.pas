@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
+{$IF ISLAND AND WINDOWS}
+
 interface
 
 type
@@ -62,5 +64,7 @@ method TApplication.Terminate;
 begin
   fFinished := true;
 end;
+
+{$ENDIF}
 
 end.
