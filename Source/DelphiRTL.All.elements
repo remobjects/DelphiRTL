@@ -200,9 +200,6 @@
     <Reference Include="libToffee">
       <Target>Toffee-iOS</Target>
     </Reference>
-    <Reference Include="libxml2">
-      <Target>Toffee-iOS</Target>
-    </Reference>
     <Reference Include="libElements">
       <Target>Toffee-iOS</Target>
     </Reference>
@@ -215,9 +212,6 @@
     <Reference Include="libToffee">
       <Target>Toffee-macOS</Target>
     </Reference>
-    <Reference Include="libxml2">
-      <Target>Toffee-macOS</Target>
-    </Reference>
     <Reference Include="libElements">
       <Target>Toffee-macOS</Target>
     </Reference>
@@ -230,9 +224,6 @@
     <Reference Include="libToffee">
       <Target>Toffee-tvOS</Target>
     </Reference>
-    <Reference Include="libxml2">
-      <Target>Toffee-tvOS</Target>
-    </Reference>
     <Reference Include="libElements">
       <Target>Toffee-tvOS</Target>
     </Reference>
@@ -243,9 +234,6 @@
       <Target>Toffee-watchOS</Target>
     </Reference>
     <Reference Include="libToffee">
-      <Target>Toffee-watchOS</Target>
-    </Reference>
-    <Reference Include="libxml2">
       <Target>Toffee-watchOS</Target>
     </Reference>
     <Reference Include="libElements">
