@@ -173,7 +173,7 @@ end;
 
 method TButton.PlatformSetCaption(aValue: String);
 begin
-  fHandle.value := aValue;
+  fHandle.innerText := aValue;
 end;
 
 method TLabel.CreateHandle;
@@ -303,12 +303,12 @@ end;
 method TControl.PlatformGetDefaultName: String;
 begin
   var i := 1;
-  var lObject := WebAssembly.GetElementById(ClassName + i.ToString);
-  while lObject <> nil do begin
-    inc(i);
-    lObject := WebAssembly.GetElementById(ClassName + i.ToString);
-  end;
-  result := ClassName + i.ToString;
+  var lObject: Object;
+  repeat
+    result := InstanceClassName;
+    result := result.Substring(result.LastIndexOf('.') + 2) + i.ToString; // + 2 to remove initial 'T'...
+    lObject := WebAssembly.GetElementById(result);
+  until lObject = nil;
 end;
 
 method TControl.PlatformApplyDefaults;
@@ -430,6 +430,7 @@ end;
 
 method TControl.PlatformSetCaption(aValue: String);
 begin
+  writeLn('TControl PlatformSetcaption');
   fHandle.innerText := aValue;
 end;
 
