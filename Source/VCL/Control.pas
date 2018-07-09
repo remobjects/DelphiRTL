@@ -6,7 +6,7 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  TNativeControl = public partial class(TControl)
+  TNativeControl = public class(TControl)
   end;
 
   TControl = public partial class(TComponent)
@@ -53,7 +53,7 @@ type
     constructor(aOwner: TComponent);
 
     method PlatformGetCaption: String; partial; empty;
-    method PlatformSetCaption(aValue: String); partial; empty;
+    method PlatformSetCaption(aValue: String); virtual; partial; empty;
     method PlatformSetWidth(aValue: Integer); partial; empty;
     method PlatformSetHeight(aValue: Integer); partial; empty;
     method PlatformSetTop(aValue: Integer); virtual; partial; empty;

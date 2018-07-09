@@ -35,7 +35,7 @@ type
     method HandleAllocated: Boolean;
 
     method PlatformGetCaption: String; partial;
-    method PlatformSetCaption(aValue: String); partial;
+    method PlatformSetCaption(aValue: String); virtual; partial;
     method PlatformSetWidth(aValue: Integer); partial;
     method PlatformSetHeight(aValue: Integer); partial;
     method PlatformSetTop(aValue: Integer); virtual; partial;

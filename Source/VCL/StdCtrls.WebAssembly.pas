@@ -24,6 +24,7 @@ type
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
+    method PlatformSetCaption(aValue: String); virtual; partial;
 
     method PlatformFontChanged; virtual; partial;
 
@@ -41,7 +42,7 @@ type
   TButton = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String); partial;
+    method PlatformSetCaption(aValue: String); partial; override;
   end;
 
   TLabel = public partial class(TNativeControl)
@@ -172,7 +173,7 @@ end;
 
 method TButton.PlatformSetCaption(aValue: String);
 begin
-  fHandle.innerText := aValue;
+  fHandle.value := aValue;
 end;
 
 method TLabel.CreateHandle;
@@ -425,6 +426,11 @@ end;
 method TControl.PlatformSetOnKeyUp(aValue: TKeyEvent);
 begin
   InternalSetKeyboardEvent("keyup", aValue);
+end;
+
+method TControl.PlatformSetCaption(aValue: String);
+begin
+  fHandle.innerText := aValue;
 end;
 
 method TControl.ProcessKeyboardStatus(aStatus: EcmaScriptObject; var aKey: Word): TShiftState;
