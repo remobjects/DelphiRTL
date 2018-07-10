@@ -28,9 +28,18 @@ type
     method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; virtual;
     method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; virtual;
 
-    {$IF ISLAND OR TOFFEE}
+    {$IF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
     method &Read(Buffer: Pointer; Count: LongInt): LongInt; virtual;
     method &Write(Buffer: Pointer; Count: LongInt): LongInt; virtual;
+    {$ELSEIF WEBASSEMBLY}
+    method Read1Byte: Byte;
+    method Read2Bytes: UInt16;
+    method Read4Bytes: UInt32;
+    method Read8Bytes: UInt64;
+    method Write1Byte(aValue: Byte);
+    method Write2Bytes(aValue: UInt16);
+    method Write4Bytes(aValue: UInt32);
+    method Write8Bytes(aValue: UInt64);
     {$ENDIF}
 
     method &Read(var Buffer: TBytes; Count: LongInt): LongInt; inline;
@@ -167,6 +176,7 @@ type
     method Close;
     property FileName: DelphiString read fFileName;
   end;
+  {$ENDIF}
 
   TCustomMemoryStream = public class(TStream)
   protected
@@ -175,12 +185,14 @@ type
     constructor;
     class method Create: TCustomMemoryStream; static;
     method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
-    {$IF ISLAND OR TOFFEE}
+    {$IF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
     method &Read(Buffer: Pointer; Count: LongInt): LongInt; override;
     {$ENDIF}
     method Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; override;
     method SaveToStream(aStream: TStream); virtual;
+    {$IF NOT WEBASSEMBLY}
     method SaveToFile(const aFileName: DelphiString);
+    {$ENDIF}
     method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; override;
     property Memory: TBytes read fData.Bytes;
   end;
@@ -193,7 +205,9 @@ type
     class method Create: TCustomMemoryStream; static;
     method Clear;
     method LoadFromStream(aStream: TStream);
+    {$IF NOT WEBASSEMBLY}
     method LoadFromFile(const aFileName: DelphiString);
+    {$ENDIF}
     method SetSize(const NewSize: Int64); override;
     method SetSize(NewSize: LongInt); override;
   end;
@@ -204,7 +218,6 @@ type
     class method Create(const aBytes: TBytes): TBytesStream; static;
     property Bytes: TBytes read fData.Bytes;
   end;
-  {$ENDIF}
 
 implementation
 
@@ -263,7 +276,7 @@ begin
   result := 0;
 end;
 
-{$IF ISLAND OR TOFFEE}
+{$IF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
 method TStream.Read(Buffer: Pointer; Count: LongInt): LongInt;
 begin
   result := 0;
@@ -278,6 +291,58 @@ begin
   memcpy(@lBuf[0], Buffer, Count);
   {$ENDIF}
   result := &Write(lBuf, 0, Count);
+end;
+{$ELSEIF WEBASSEMBLY}
+method TStream.Read1Byte: Byte;
+begin
+  var lBuf := new Byte[sizeOf(result)];
+  &Read(lBuf, 0, lBuf.Length);
+  result := lBuf[0];
+end;
+
+method TStream.Read2Bytes: UInt16;
+begin
+  var lBuf := new Byte[sizeOf(result)];
+  &Read(lBuf, 0, lBuf.Length);
+  result := lBuf[0] or (lBuf[1] shl 8);
+end;
+
+method TStream.Read4Bytes: UInt32;
+begin
+  var lBuf := new Byte[sizeOf(result)];
+  &Read(lBuf, 0, lBuf.Length);
+  result := lBuf[0] or (lBuf[1] shl 8) or (lBuf[2] shl 16) or (lBuf[3] shl 24);
+end;
+
+method TStream.Read8Bytes: UInt64;
+begin
+  var lBuf := new Byte[sizeOf(result)];
+  &Read(lBuf, 0, lBuf.Length);
+  result := lBuf[0] or (lBuf[1] shl 8) or (lBuf[2] shl 16) or (lBuf[3] shl 24) or
+    (UInt64(lBuf[4]) shl 32) or (UInt64(lBuf[5]) shl 40) or (UInt64(lBuf[6]) shl 48) or (UInt64(lBuf[7]) shl 56);
+end;
+
+method TStream.Write1Byte(aValue: Byte);
+begin
+  var lBuf := new Byte[sizeOf(aValue)];
+  lBuf[0] := aValue;
+  &Write(lBuf, sizeOf(aValue));
+end;
+
+method TStream.Write2Bytes(aValue: UInt16);
+begin
+  var lBuf := new Byte[sizeOf(aValue)];
+  lBuf[0] := aValue and $00FF;
+  lBuf[1] := (aValue and $FF00) shr 8;
+end;
+
+method TStream.Write4Bytes(aValue: UInt32);
+begin
+end;
+
+method TStream.Write8Bytes(aValue: UInt64);
+begin
+
 end;
 {$ENDIF}
 
@@ -298,15 +363,16 @@ end;
 
 method TStream.ReadData(var Buffer: Int32): LongInt;
 begin
-  {$IF COOPER}
   result := sizeOf(Buffer);
+  {$IF COOPER}
   var lTemp := java.nio.ByteBuffer.wrap(ReadBytes(result));
   Buffer := lTemp.getInt;
   {$ELSEIF ECHOES}
-  result := sizeOf(Buffer);
   Buffer := BitConverter.ToInt32(ReadBytes(result), 0);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
+  &Read(@Buffer, result);
+  {$ELSEIF WebAssembly}
+  Buffer := Int32(Read4Bytes);
   {$ENDIF}
 end;
 
@@ -328,11 +394,13 @@ end;
 {$IF NOT COOPER}
 method TStream.ReadData(var Buffer: Boolean): LongInt;
 begin
-  {$IF ECHOES}
   result := sizeOf(Buffer);
+  {$IF ECHOES}
   Buffer := BitConverter.ToBoolean(ReadBytes(result), 0);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
+  &Read(@Buffer, result);
+  {$ELSEIF WEBASSEMBLY}
+  Buffer := Boolean(Read1Byte);
   {$ENDIF}
 end;
 
@@ -347,12 +415,14 @@ end;
 
 method TStream.ReadData(var Buffer: Byte): LongInt;
 begin
-  {$IF ECHOES}
-  var lValue := ReadBytes(1);
-  Buffer := lValue[0];
   result := sizeOf(Buffer);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$IF ECHOES}
+  var lValue := ReadBytes(result);
+  Buffer := lValue[0];
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
+  &Read(@Buffer, result);
+  {$ELSEIF WEBASSEMBLY}
+  Buffer := Read1Byte;
   {$ENDIF}
 end;
 
@@ -367,11 +437,13 @@ end;
 
 method TStream.ReadData(var Buffer: Char): LongInt;
 begin
-  {$IF ECHOES}
   result := sizeOf(Buffer);
+  {$IF ECHOES}
   Buffer := BitConverter.ToChar(ReadBytes(result), 0);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
+  result := &Read(@Buffer, result);
+  {$ELSEIF WEBASSEMBLY}
+  Buffer := Char(Read2Bytes);
   {$ENDIF}
 end;
 
@@ -386,12 +458,14 @@ end;
 
 method TStream.ReadData(var Buffer: ShortInt): LongInt;
 begin
-  {$IF ECHOES}
   result := sizeOf(Buffer);
+  {$IF ECHOES}
   var lValue := ReadBytes(result);
   Buffer := ShortInt(lValue[0]);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
+  &Read(@Buffer, result);
+  {$ELSEIF WEBASSEMBLY}
+  Buffer := ShortInt(Read1Byte);
   {$ENDIF}
 end;
 
@@ -406,11 +480,13 @@ end;
 
 method TStream.ReadData(var Buffer: Int16): LongInt;
 begin
-  {$IF ECHOES}
   result := sizeOf(Buffer);
+  {$IF ECHOES}
   Buffer := BitConverter.ToInt16(ReadBytes(result), 0);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY)  OR TOFFEE}
+  &Read(@Buffer, result);
+  {$ELSEIF WEBASSEMBLY}
+  Buffer := Int16(Read2Bytes);
   {$ENDIF}
 end;
 
@@ -425,11 +501,13 @@ end;
 
 method TStream.ReadData(var Buffer: UInt16): LongInt;
 begin
-  {$IF ECHOES}
   result := sizeOf(Buffer);
+  {$IF ECHOES}
   Buffer := BitConverter.ToUInt16(ReadBytes(result), 0);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
+  &Read(@Buffer, result);
+  {$ELSEIF WEBASSEMBLY}
+  Buffer := Read2Bytes;
   {$ENDIF}
 end;
 
@@ -444,11 +522,13 @@ end;
 
 method TStream.ReadData(var Buffer: UInt32): LongInt;
 begin
-  {$IF ECHOES}
   result := sizeOf(Buffer);
+  {$IF ECHOES}
   Buffer := BitConverter.ToUInt32(ReadBytes(result), 0);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
+  &Read(@Buffer, result);
+  {$ELSEIF WEBASSEMBLY}
+  Buffer := Read4Bytes;
   {$ENDIF}
 end;
 
@@ -463,11 +543,13 @@ end;
 
 method TStream.ReadData(var Buffer: Int64): LongInt;
 begin
-  {$IF ECHOES}
   result := sizeOf(Buffer);
+  {$IF ECHOES}
   Buffer := BitConverter.ToInt64(ReadBytes(result), 0);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
+  &Read(@Buffer, result);
+  {$ELSEIF WEBASSEMBLY}
+  Buffer := Int64(Read8Bytes);
   {$ENDIF}
 end;
 
@@ -482,11 +564,13 @@ end;
 
 method TStream.ReadData(var Buffer: UInt64): LongInt;
 begin
-  {$IF ECHOES}
   result := sizeOf(Buffer);
+  {$IF ECHOES}
   Buffer := BitConverter.ToUInt64(ReadBytes(result), 0);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
+  &Read(@Buffer, result);
+  {$ELSEIF WEBASSEMBLY}
+  Buffer := Read4Bytes;
   {$ENDIF}
 end;
 
@@ -501,11 +585,13 @@ end;
 
 method TStream.ReadData(var Buffer: Single): LongInt;
 begin
-  {$IF ECHOES}
   result := sizeOf(Buffer);
+  {$IF ECHOES}
   Buffer := BitConverter.ToSingle(ReadBytes(result), 0);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
+  &Read(@Buffer, result);
+  {$ELSEIF WEBASSEMBLY}
+  Buffer := Single(Read4Bytes);
   {$ENDIF}
 end;
 
@@ -520,11 +606,13 @@ end;
 
 method TStream.ReadData(var Buffer: Double): LongInt;
 begin
-  {$IF ECHOES}
   result := sizeOf(Buffer);
+  {$IF ECHOES}
   Buffer := BitConverter.ToDouble(ReadBytes(result), 0);
-  {$ELSEIF ISLAND OR TOFFEE}
-  result := &Read(@Buffer, sizeOf(Buffer));
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
+  &Read(@Buffer, result);
+  {$ELSEIF WEBASSEMBLY}
+  Buffer := Double(Read8Bytes);
   {$ENDIF}
 end;
 
@@ -555,8 +643,9 @@ begin
   var lBuf := BitConverter.GetBytes(Buffer);
   result := lBuf.Length;
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -576,8 +665,9 @@ begin
   var lBuf := BitConverter.GetBytes(Buffer);
   result := lBuf.Length;
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -596,8 +686,9 @@ begin
   var lBuf := BitConverter.GetBytes(Buffer);
   result := lBuf.Length;
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -617,8 +708,9 @@ begin
   var lBuf := new Byte[result];
   lBuf[0] := Buffer;
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -637,8 +729,9 @@ begin
   var lBuf := BitConverter.GetBytes(Buffer);
   result := lBuf.Length;
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -657,8 +750,9 @@ begin
   var lBuf := BitConverter.GetBytes(Buffer);
   result := lBuf.Length;
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -677,8 +771,9 @@ begin
   var lBuf := BitConverter.GetBytes(Buffer);
   result := lBuf.Length;
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -697,8 +792,9 @@ begin
   var lBuf := BitConverter.GetBytes(Buffer);
   result := lBuf.Length;
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -717,8 +813,9 @@ begin
   var lBuf := BitConverter.GetBytes(Buffer);
   result := sizeOf(Byte);
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -737,8 +834,9 @@ begin
   var lBuf := BitConverter.GetBytes(Buffer);
   result := lBuf.Length;
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -757,8 +855,9 @@ begin
   var lBuf := BitConverter.GetBytes(Buffer);
   result := lBuf.Length;
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -777,8 +876,9 @@ begin
   var lBuf := BitConverter.GetBytes(Buffer);
   result := lBuf.Length;
   &Write(lBuf, 0, result);
-  {$ELSEIF ISLAND OR TOFFEE}
+  {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
+  {$ELSEIF WEBASSEMBLY}
   {$ENDIF}
 end;
 
@@ -1044,6 +1144,7 @@ begin
     fHandle := INVALID_HANDLE_VALUE;
   end;
 end;
+{$ENDIF}
 
 constructor TCustomMemoryStream;
 begin
@@ -1060,7 +1161,7 @@ begin
   result := fData.read(Buffer, Offset, Count);
 end;
 
-{$IF ISLAND OR TOFFEE}
+{$IF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
 method TCustomMemoryStream.&Read(Buffer: Pointer; Count: LongInt): LongInt;
 begin
   {$IF ISLAND}
@@ -1089,11 +1190,13 @@ begin
   aStream.Write(fData.Bytes, 0, fData.Length);
 end;
 
+{$IF NOT WEBASSEMBLY}
 method TCustomMemoryStream.SaveToFile(const aFileName: DelphiString);
 begin
   var lTmp := new TFileStream(aFileName, fmCreate or fmOpenWrite);
   SaveToStream(lTmp);
 end;
+{$ENDIF}
 
 method TCustomMemoryStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
 begin
@@ -1122,11 +1225,13 @@ begin
   CopyFrom(aStream, aStream.Size);
 end;
 
+{$IF NOT WEBASSEMBLY}
 method TMemoryStream.LoadFromFile(const aFileName: DelphiString);
 begin
   var lTmp := new TFileStream(aFileName, fmOpenRead);
   LoadFromStream(lTmp);
 end;
+{$ENDIF}
 
 method TMemoryStream.SetSize(const NewSize: Int64);
 begin
@@ -1148,7 +1253,7 @@ class method TBytesStream.Create(const aBytes: TBytes): TBytesStream;
 begin
   result := new TBytesStream(aBytes);
 end;
-{$ENDIF}
+//{$ENDIF}
 
 
 end.
