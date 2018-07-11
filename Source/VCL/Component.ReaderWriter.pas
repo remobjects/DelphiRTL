@@ -5,7 +5,7 @@
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi;
+  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL;
 
 type
   TValueType = public enum(vaNull, vaList, vaInt8, vaInt16, vaInt32, vaExtended, vaString, vaIdent, vaFalse, vaTrue, vaBinary, vaSet, vaLString,
@@ -71,16 +71,18 @@ type
 
   TResourceId = public {$IF ISLAND AND WINDOWS} rtl.PCHAR {$ELSE} Object {$ENDIF};
 
-  {$IF NOT WEBASSEMBLY}
   TResourceStream = class(TCustomMemoryStream)
   public
+    {$IF ISLAND AND WINDOWS}
     constructor(Instance: THandle; ResName: String; ResType: TResourceId);
+    {$ELSEIF WEBASSEMBLY}
+    constructor(Instance: THandle; aResName: String);
+    {$ENDIF}
     //constructor(Instance: THandle; ResID: Integer; ResType: PChar);
     //method &Write(Buffer; Count: Longint): Longint; override; final;
     //method &Write(Buffer: TBytes; Offset, Count: Longint): Longint; override; final;
     method ReadComponent(aInstance: TComponent);
   end;
-  {$ENDIF}
 
   TParserToken = public enum(toEOF = Char(0), toSymbol = Char(1), toString = Char(2), toInteger = Char(3), toFloat = Char(4), toWString = Char(5), toOtCharacter = Char(6)) of Integer;
 
@@ -118,7 +120,6 @@ type
     class method CreateComponent(aType: &Type; aOwner: TComponent): TComponent;
   end;
 
-  {$IF NOT WEBASSEMBLY}
   ObjectConverter = public class
   private
     fWriter: TWriter;
@@ -135,7 +136,6 @@ type
     constructor(aInput: TStream; aOutput: TStream);
     method ToBinary;
   end;
-  {$ENDIF}
 
 implementation
 
@@ -383,7 +383,6 @@ begin
 end;
 
 
-{$IF NOT WEBASSEMBLY}
 method ObjectConverter.ObjectToBinary;
 begin
   fParser.NextToken;
@@ -498,7 +497,7 @@ begin
   fOutput.WriteData(rtl.DWORD(0)); // Version
   fOutput.WriteData(rtl.DWORD(0)); // Characteristics
   {$ELSE}
-  // TODO
+  // Nothing to do...
   {$ENDIF}
 end;
 
@@ -541,9 +540,9 @@ begin
   WriteResFile;
 end;
 
+{$IF ISLAND AND WINDOWS}
 constructor TResourceStream(Instance: THandle; ResName: String; ResType: TResourceId);
 begin
-  {$IF ISLAND AND WINDOWS}
   var lModule: rtl.HMODULE := 0;
   var lResName := ResName.ToCharArray;
   var lResource := rtl.FindResource(lModule, @lResName[0], rtl.LPCWSTR(rtl.RT_RCDATA));
@@ -554,17 +553,26 @@ begin
   var lSize := rtl.SizeofResource(lModule, lResource);
   Size := lSize;
   &Write(lPointer, lSize);
-  {$ELSE}
-  // TODO
-  {$ENDIF}
 end;
+{$ELSEIF WEBASSEMBLY}
+constructor TResourceStream(Instance: THandle; aResName: String);
+begin
+  var lContent := WebAssembly.AjaxRequest(aResName);
+  var lInput := new TMemoryStream();
+  var lOutput := new TMemoryStream();
+  lInput.WriteString(lContent);
+  lInput.Position := 0;
+  var lConverter := new ObjectConverter(lInput, lOutput);
+  lConverter.ToBinary;
+  CopyFrom(lOutput, lOutput.Size);
+end;
+{$ENDIF}
 
 method TResourceStream.ReadComponent(aInstance: TComponent);
 begin
   var lReader := new TReader(self, Size);
   lReader.ReadRootComponent(aInstance);
 end;
-{$ENDIF}
 
 constructor TParser(aStream: TStream);
 begin
@@ -638,7 +646,7 @@ end;
 
 method TParser.TokenFloat: Double;
 begin
-  result := Convert.ToDouble(fTokenValue);
+  result := Convert.ToDouble(fTokenValue, Locale.Invariant);
 end;
 
 method TParser.TokenInt: Int64;

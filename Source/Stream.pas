@@ -334,15 +334,31 @@ begin
   var lBuf := new Byte[sizeOf(aValue)];
   lBuf[0] := aValue and $00FF;
   lBuf[1] := (aValue and $FF00) shr 8;
+  &Write(lBuf, sizeOf(aValue));
 end;
 
 method TStream.Write4Bytes(aValue: UInt32);
 begin
+  var lBuf := new Byte[sizeOf(aValue)];
+  lBuf[0] := aValue and $000000FF;
+  lBuf[1] := (aValue and $0000FF00) shr 8;
+  lBuf[2] := (aValue and $00FF0000) shr 16;
+  lBuf[3] := (aValue and $FF000000) shr 24;
+  &Write(lBuf, sizeOf(aValue));
 end;
 
 method TStream.Write8Bytes(aValue: UInt64);
 begin
-
+  var lBuf := new Byte[sizeOf(aValue)];
+  lBuf[0] := aValue and $00000000000000FF;
+  lBuf[1] := (aValue and $000000000000FF00) shr 8;
+  lBuf[2] := (aValue and $0000000000FF0000) shr 16;
+  lBuf[3] := (aValue and $00000000FF000000) shr 24;
+  lBuf[4] := (aValue and $000000FF00000000) shr 32;
+  lBuf[5] := (aValue and $0000FF0000000000) shr 40;
+  lBuf[6] := (aValue and $00FF000000000000) shr 48;
+  lBuf[7] := (aValue and $FF00000000000000) shr 56;
+  &Write(lBuf, sizeOf(aValue));
 end;
 {$ENDIF}
 
@@ -646,6 +662,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(Buffer);
+  &Write4Bytes(Buffer);
   {$ENDIF}
 end;
 
@@ -668,6 +686,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(Buffer);
+  &Write1Byte(Byte(Buffer));
   {$ENDIF}
 end;
 
@@ -689,6 +709,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(Buffer);
+  &Write2Bytes(Ord(Buffer));
   {$ENDIF}
 end;
 
@@ -711,6 +733,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(result);
+  &Write1Byte(Buffer);
   {$ENDIF}
 end;
 
@@ -732,6 +756,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(Buffer);
+  &Write2Bytes(Buffer);
   {$ENDIF}
 end;
 
@@ -753,6 +779,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(Buffer);
+  &Write8Bytes(Buffer);
   {$ENDIF}
 end;
 
@@ -774,6 +802,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(Buffer);
+  &Write4Bytes(UInt32(Buffer));
   {$ENDIF}
 end;
 
@@ -795,6 +825,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(Buffer);
+  &Write8Bytes(UInt64(Buffer));
   {$ENDIF}
 end;
 
@@ -816,6 +848,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(Buffer);
+  &Write1Byte(Buffer);
   {$ENDIF}
 end;
 
@@ -837,6 +871,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(Buffer);
+  &Write2Bytes(Buffer);
   {$ENDIF}
 end;
 
@@ -858,6 +894,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(Buffer);
+  &Write4Bytes(Buffer);
   {$ENDIF}
 end;
 
@@ -879,6 +917,8 @@ begin
   {$ELSEIF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
   result := &Write(@Buffer, sizeOf(Buffer));
   {$ELSEIF WEBASSEMBLY}
+  result := sizeOf(Buffer);
+  &Write8Bytes(Buffer);
   {$ENDIF}
 end;
 

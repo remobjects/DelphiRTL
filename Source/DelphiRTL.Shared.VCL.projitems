@@ -24,5 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.Windows.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.WebAssembly.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Form.WebAssembly.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.WebAssembly.pas" />
   </ItemGroup>
 </Project>
