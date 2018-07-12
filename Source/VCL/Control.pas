@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
+{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
+
 interface
 
 uses
@@ -94,20 +96,6 @@ type
     property OnKeyDown: TKeyEvent read fOnKeyDown write SetOnKeyDown;
     property OnKeyUp: TKeyEvent read fOnKeyUp write setOnKeyUp;
   end;
-/*
-TControl = public partial class(TComponent)
-protected
-  method CreateHandle; virtual; partial; empty;
-  method HandleNeeded; virtual; partial; empty;
-end;*/
-
-/*TWinControl = public partial class(TControl)
-protected
-  method CreateWnd; virtual; empty;
-end;
-
-TScrollingWinControl = public partial class(TPlatformBaseControlClass)
-end;*/
 
 
 implementation
@@ -252,5 +240,7 @@ begin
 
   fControls.Add(aControl);
 end;
+
+{$ENDIF}
 
 end.

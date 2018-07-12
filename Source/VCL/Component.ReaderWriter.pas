@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF ISLAND}
+{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
 
 interface
 

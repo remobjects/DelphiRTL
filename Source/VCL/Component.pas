@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF NOT TOFFEE}
+{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
 
 interface
 
@@ -11,11 +11,11 @@ type
   TComponentStateEnum = public enum(csLoading, csReading, csWriting, csDestroying, csDesigning, csAncestor, csUpdating, csFixups, csFreeNotification) of integer;
   TComponentState = set of TComponentStateEnum;
 
-  {$IF COOPER}
-  TComponentClass = public &Class;
-  {$ELSE}
+  //{$IF COOPER}
+  //TComponentClass = public &Class;
+  //{$ELSE}
   TComponentClass = public &Type;
-  {$ENDIF}
+  //{$ENDIF}
 
   TComponent = public class(TObject)
   private
@@ -45,9 +45,9 @@ type
   TPropertyChangedEvent = public block(Sender: TObject; PropName: String);
 
   INotifyPropertyChanged = public interface
-    {$IF NOT COOPER}
+    //{$IF NOT COOPER}
     event PropertyChanged: Action<TObject, String>;
-    {$ENDIF}
+    //{$ENDIF}
   end;
 
   TColor = Integer;
