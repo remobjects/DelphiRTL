@@ -52,6 +52,7 @@
     <Mode>Toffee</Mode>
     <SubMode>macOS</SubMode>
     <SDK>macOS</SDK>
+    <DeploymentTargetVersion>10.10</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
     <DefaultUses>Foundation</DefaultUses>
   </PropertyGroup>
@@ -59,6 +60,7 @@
     <Mode>Toffee</Mode>
     <SubMode>iOS</SubMode>
     <SDK>iOS</SDK>
+    <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
     <DefaultUses>Foundation</DefaultUses>
   </PropertyGroup>
@@ -66,6 +68,7 @@
     <Mode>Toffee</Mode>
     <SubMode>tvOS</SubMode>
     <SDK>tvOS</SDK>
+    <DeploymentTargetVersion>9.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
     <DefaultUses>Foundation</DefaultUses>
   </PropertyGroup>
@@ -73,6 +76,7 @@
     <Mode>Toffee</Mode>
     <SubMode>watchOS</SubMode>
     <SDK>watchOS</SDK>
+    <DeploymentTargetVersion>2.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
     <DefaultUses>Foundation</DefaultUses>
   </PropertyGroup>
@@ -196,9 +200,6 @@
     <Reference Include="libToffee">
       <Target>Toffee-iOS</Target>
     </Reference>
-    <Reference Include="libxml2">
-      <Target>Toffee-iOS</Target>
-    </Reference>
     <Reference Include="libElements">
       <Target>Toffee-iOS</Target>
     </Reference>
@@ -211,9 +212,6 @@
     <Reference Include="libToffee">
       <Target>Toffee-macOS</Target>
     </Reference>
-    <Reference Include="libxml2">
-      <Target>Toffee-macOS</Target>
-    </Reference>
     <Reference Include="libElements">
       <Target>Toffee-macOS</Target>
     </Reference>
@@ -226,9 +224,6 @@
     <Reference Include="libToffee">
       <Target>Toffee-tvOS</Target>
     </Reference>
-    <Reference Include="libxml2">
-      <Target>Toffee-tvOS</Target>
-    </Reference>
     <Reference Include="libElements">
       <Target>Toffee-tvOS</Target>
     </Reference>
@@ -239,9 +234,6 @@
       <Target>Toffee-watchOS</Target>
     </Reference>
     <Reference Include="libToffee">
-      <Target>Toffee-watchOS</Target>
-    </Reference>
-    <Reference Include="libxml2">
       <Target>Toffee-watchOS</Target>
     </Reference>
     <Reference Include="libElements">
