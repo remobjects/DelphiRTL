@@ -1,6 +1,11 @@
-﻿namespace RemObjects.Elements.RTL.Delphi;
+﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
+
+{$IF WEBASSEMBLY}
 
 interface
+
+uses
+  RemObjects.Elements.RTL.Delphi;
 
 {$GLOBALS ON}
 
@@ -19,30 +24,29 @@ type
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
+    method PlatformSetCaption(aValue: String); virtual; partial;
 
-    method PlatformFontSetColor(value: TColor);
-    method PlatformFontSetName(value: String);
-    method PlatformFontSetSize(value: Integer);
-    method PlatformFontSetStyles(value: TFontStyles);
+    method PlatformFontChanged; virtual; partial;
 
-    method GetDefaultName: String; virtual;
-    method ApplyDefaults; virtual;
+    method PlatformGetDefaultName: String; virtual; partial;
+    method PlatformApplyDefaults; virtual; partial;
   end;
 
-  TForm = public class(TControl)
+  TForm = public partial class(TCustomForm)
   protected
     method CreateHandle; override;
+    method PlatformSetCaption(aValue: String); override;
   public
     method Show(aRootView: dynamic);
   end;
 
-  TButton = public partial class(TControl)
+  TButton = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String);
+    method PlatformSetCaption(aValue: String); partial; override;
   end;
 
-  TLabel = public partial class(TControl)
+  TLabel = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
     method PlatformSetCaption(aValue: String);
@@ -63,7 +67,7 @@ type
     method PlatformSetCaption(aValue: String);
   end;
 
-  TEdit = public partial class(TControl)
+  TEdit = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
     method PlatformSetText(aValue: String);
@@ -74,7 +78,7 @@ type
     method PlatformSetReadOnly(aValue: Boolean);
   end;
 
-  TRadioCheckBox = public partial abstract class(TControl)
+  TButtonControl = public partial class(TNativeControl)
   protected
     fLabelHandle: dynamic;
     method internalCreateHandle(aType: String);
@@ -82,17 +86,18 @@ type
     method PlatformSetTop(aValue: Integer); override;
     method PlatformSetLeft(aValue: Integer); override;
 
-    method PlatformGetChecked: Boolean;
-    method PlatformSetChecked(value: Boolean);
+    method PlatformGetChecked: Boolean; virtual; partial;
+    method PlatformSetChecked(value: Boolean); virtual; partial;
+
     method PlatformSetCaption(value: String);
   end;
 
-  TCheckBox = public class(TRadioCheckBox)
+  TCheckBox = public partial class(TButtonControl)
   protected
     method CreateHandle; override;
   end;
 
-  TRadioButton = public class(TRadioCheckBox)
+  TRadioButton = public class(TButtonControl)
   protected
     method CreateHandle; override;
   end;
@@ -169,7 +174,7 @@ end;
 
 method TButton.PlatformSetCaption(aValue: String);
 begin
-  fHandle.innerText := fCaption;
+  fHandle.innerText := aValue;
 end;
 
 method TLabel.CreateHandle;
@@ -177,7 +182,7 @@ begin
   fHandle := WebAssembly.CreateElement('LABEL');
   var lCaption := WebAssembly.CreateTextNode(Name);
   fHandle.appendChild(lCaption);
-  fCaption := Name;
+  Caption := Name;
   fHandle.style.position := "absolute";
 end;
 
@@ -205,6 +210,10 @@ begin
   end;
 
   lRootView.appendChild(fHandle);
+end;
+
+method TForm.PlatformSetCaption(aValue: String);
+begin
 end;
 
 method TPanel.CreateHandle;
@@ -296,22 +305,29 @@ begin
   fHandle.addEventListener("click", lDelegate);
 end;
 
-method TControl.GetDefaultName: String;
+method TControl.PlatformGetDefaultName: String;
 begin
   var i := 1;
-  var lObject := WebAssembly.GetElementById(ClassName + i.ToString);
-  while lObject <> nil do begin
-    inc(i);
-    lObject := WebAssembly.GetElementById(ClassName + i.ToString);
-  end;
-  result := ClassName + i.ToString;
+  var lObject: Object;
+  repeat
+    result := InstanceClassName;
+    result := result.Substring(result.LastIndexOf('.') + 2) + i.ToString; // + 2 to remove initial 'T'...
+    lObject := WebAssembly.GetElementById(result);
+  until lObject = nil;
 end;
 
-method TControl.ApplyDefaults;
+method TControl.PlatformApplyDefaults;
 begin
+  HandleNeeded;
   fHandle.setAttribute('id', Name);
 end;
 
+method TControl.PlatformFontChanged;
+begin
+
+end;
+
+/*
 method TControl.PlatformFontSetColor(value: TColor);
 begin
   fHandle.style.color := value.ToString;
@@ -339,36 +355,37 @@ begin
   else
     fHandle.style.textDecoration := 'none';
 end;
+*/
 
 method TCheckBox.CreateHandle;
 begin
   internalCreateHandle("checkbox");
 end;
 
-method TRadioCheckBox.PlatformSetCaption(value: String);
+method TButtonControl.PlatformSetCaption(value: String);
 begin
   fLabelHandle.innerText := value;
 end;
 
-method TRadioCheckBox.PlatformSetParent(aValue: TControl);
+method TButtonControl.PlatformSetParent(aValue: TControl);
 begin
   inherited;
   aValue.Handle.appendChild(fLabelHandle);
 end;
 
-method TRadioCheckBox.PlatformSetTop(aValue: Integer);
+method TButtonControl.PlatformSetTop(aValue: Integer);
 begin
   inherited;
   fLabelHandle.style.top := (aValue).ToString + 'px';
 end;
 
-method TRadioCheckBox.PlatformSetLeft(aValue: Integer);
+method TButtonControl.PlatformSetLeft(aValue: Integer);
 begin
   inherited;
   fLabelHandle.style.left := (aValue + 22).ToString + 'px';
 end;
 
-method TRadioCheckBox.internalCreateHandle(aType: String);
+method TButtonControl.internalCreateHandle(aType: String);
 begin
   fHandle := WebAssembly.CreateElement("INPUT");
   fHandle.setAttribute("type", aType);
@@ -378,12 +395,12 @@ begin
   fLabelHandle.innerText := Name;
 end;
 
-method TRadioCheckBox.PlatformSetChecked(value: Boolean);
+method TButtonControl.PlatformSetChecked(value: Boolean);
 begin
   fHandle.checked := value;
 end;
 
-method TRadioCheckBox.PlatformGetChecked: Boolean;
+method TButtonControl.PlatformGetChecked: Boolean;
 begin
   result := fHandle.checked;
 end;
@@ -414,6 +431,11 @@ end;
 method TControl.PlatformSetOnKeyUp(aValue: TKeyEvent);
 begin
   InternalSetKeyboardEvent("keyup", aValue);
+end;
+
+method TControl.PlatformSetCaption(aValue: String);
+begin
+  fHandle.innerText := aValue;
 end;
 
 method TControl.ProcessKeyboardStatus(aStatus: EcmaScriptObject; var aKey: Word): TShiftState;
@@ -574,5 +596,7 @@ begin
     fHandle.value := fPosition;
   end;
 end;
+
+{$ENDIF}
 
 end.

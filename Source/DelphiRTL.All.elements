@@ -247,4 +247,5 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
   <Import Project="DelphiRTL.Shared.projitems" Label="Shared" />
+  <Import Project="DelphiRTL.Shared.VCL.projitems" Label="Shared" />
 </Project>

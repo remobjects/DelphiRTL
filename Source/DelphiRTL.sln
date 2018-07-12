@@ -15,6 +15,8 @@ Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Island.Windows", 
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Shared", "DelphiRTL.Shared.elements", "{422C7732-516B-4349-88E8-7F01BA91FF08}"
 EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Shared.VCL", "DelphiRTL.Shared.VCL.elements", "{0E930F04-C7D3-43B2-81B9-6BBC40FE20A5}"
+EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Toffee.iOS", "DelphiRTL.Toffee.iOS.elements", "{632E0AD5-142E-4DB0-A8AC-2AB8E2D29BC4}"
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Toffee.macOS", "DelphiRTL.Toffee.macOS.elements", "{014A45CE-7C50-4A22-9D4D-A617F535907F}"

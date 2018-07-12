@@ -1,102 +1,58 @@
-﻿namespace RemObjects.Elements.RTL.Delphi;
+﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
+
+{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
 
 interface
+
+uses
+  RemObjects.Elements.RTL.Delphi;
 
 {$GLOBALS ON}
 
 type
-  TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ENDIF};
-  TPropertyChangedEvent = public block(Sender: TObject; PropName: String);
-
-  INotifyPropertyChanged = public interface
-    event PropertyChanged: Action<TObject, String>;
-  end;
-
-  TControl = public partial class(TComponent)
-  private
-    method setFont(value: TFont);
-  protected
-    fHandle: dynamic;
-    fFont: TFont;
-    method CreateHandle; abstract;
-    method Changed(aObject: TObject; propName: String);
-
-    constructor(aOwner: TComponent);
-  public
-    property Handle: dynamic read fHandle;
-    property Font: TFont read fFont write SetFont;
-  end;
-
-
-  TColor = Integer;
-  TFontStyle = public enum(Bold, Italic, Underline, StrikeOut);
-  TFontStyles = set of TFontStyle;
-
-  TFont = public class(TPersistent)
-  private
-    fColor: TColor;
-    fName: String;
-    fSize: Integer;
-    fStyles: TFontStyles;
-    method setColor(value: TColor);
-    method setName(value: String);
-    method setSize(value: Integer);
-    method setStyles(value: TFontStyles);
-    method NotifyChanged(propName: String);
-  public
-    property PropertyChanged: TPropertyChangedEvent;
-    property Color: TColor read fColor write SetColor;
-    property Name: String read fName write SetName;
-    property Size: Integer read fSize write SetSize;
-    property Style: TFontStyles read fStyles write SetStyles;
-  end;
-
-  TButton = public partial class(TControl)
-  private
-    fCaption: String;
-    method SetCaption(aValue: String);
-  protected
-    method ClassName: String; override;
+  TButton = public partial class(TNativeControl)
   public
     class method Create(AOwner: TComponent): TButton;
-    property Caption: String read fCaption write SetCaption;
   end;
 
-  TLabel = public partial class(TControl)
-  private
-    fCaption: String;
-    method SetCaption(aValue: String);
- protected
-    method ClassName: String; override;
-  public
-    class method Create(aOwner: TComponent): TLabel;
-    property Caption: String read fCaption write SetCaption;
-  end;
-
-  TGroupBox = public partial class(TControl)
-  private
-    fCaption: String;
-    method SetCaption(aValue: String);
-  public
-    property Caption: String read fCaption write SetCaption;
-  end;
-
-  TEdit = public partial class(TControl)
+  TEdit = public partial class(TNativeControl)
   public
     property MaxLength: Integer read PlatformGetMaxLength write PlatformSetMaxLength;
     property &ReadOnly: Boolean read PlatformGetReadOnly write PlatformSetReadOnly;
     property Text: String read PlatformGetText write PlatformSetText;
   end;
 
-  TRadioCheckBox = public partial abstract class(TControl)
-  private
-    fCaption: String;
-    method setCaption(value: String);
+  //TLabel = public partial class({$IF ISLAND AND WINDOWS}TGraphicControl{$ELSE}TNativeControl{$ENDIF})
+  TLabel = public partial class(TNativeControl)
   public
-    property Caption: String read fCaption write PlatformSetCaption;
+    class method Create(aOwner: TComponent): TLabel;
+  end;
+
+  TButtonControl = public partial class(TNativeControl)
+  protected
+    method PlatformGetChecked: Boolean; virtual; partial; empty;
+    method PlatformSetChecked(aValue: Boolean); virtual; partial; empty;
+  public
     property Checked: Boolean read PlatformGetChecked write PlatformSetChecked;
   end;
 
+  TCheckBoxState = public enum (cbUnChecked = 0, cbChecked = 1, cbGrayed = 2) of Integer;
+
+  TCheckBox = public partial class(TButtonControl)
+  private
+    fState: TCheckBoxState;
+    fAllowGrayed: Boolean;
+  protected
+    method PlatformSetState(aValue: TCheckBoxState); partial; empty;
+    method SetState(aValue: TCheckBoxState); virtual;
+  public
+    method Toggle; virtual;
+    method Click; override;
+    property AllowGrayed: Boolean read fAllowGrayed write fAllowGrayed default false;
+    property State: TCheckBoxState read fState write SetState default TCheckBoxState.cbUnchecked;
+  end;
+
+  {$IF WEBASSEMBLY}
   TListControlItems = public partial class(TStringList)
   public
     method AddObject(S: DelphiString; aObject: TObject): Integer; override;
@@ -176,74 +132,18 @@ type
     property Position: Integer read fPosition write SetPosition;
     property Style: TProgressBarStyle read fStyle write SetStyle;
   end;
+  {$ENDIF}
 
   procedure ShowMessage(aMessage: String);
 
 implementation
 
+
 procedure ShowMessage(aMessage: String);
 begin
+  {$IF WEBASSEMBLY OR (ISLAND AND WINDOWS)}
   PlatformShowMessage(aMessage);
-end;
-
-constructor TControl(aOwner: TComponent);
-begin
-  Name := GetDefaultName;
-  fFont := new TFont();
-  fFont.PropertyChanged := @Changed;
-  CreateHandle;
-  ApplyDefaults;
-end;
-
-method TControl.Changed(aObject: TObject; propName: String);
-begin
-  if aObject is TFont then begin
-    case propName of
-      'color': PlatformFontSetColor(fFont.Color);
-      'size': PlatformFontSetSize(fFont.Size);
-      'name': PlatformFontSetName(fFont.Name);
-      'styles': PlatformFontSetStyles(fFont.Style);
-    end;
-  end;
-end;
-
-method TControl.SetFont(value: TFont);
-begin
-  fFont := value;
-  PlatformFontSetColor(fFont.Color);
-  PlatformFontSetSize(fFont.Size);
-  PlatformFontSetName(fFont.Name);
-  PlatformFontSetStyles(fFont.Style);
-end;
-
-method TFont.NotifyChanged(propName: String);
-begin
-  if PropertyChanged <> nil then
-    PropertyChanged(self, propName);
-end;
-
-method TFont.SetColor(value: TColor);
-begin
-  fColor := value;
-  NotifyChanged('color');
-end;
-
-method TFont.SetName(value: String);
-begin
-  fName := value;
-  NotifyChanged('name');
-end;
-
-method TFont.SetSize(value: Integer);
-begin
-  fSize := value;
-  NotifyChanged('size');
-end;
-
-method TFont.SetStyles(value: TFontStyles);
-begin
-  fStyles := value;
-  NotifyChanged('styles');
+  {$ENDIF}
 end;
 
 class method TButton.Create(AOwner: TComponent): TButton;
@@ -251,45 +151,41 @@ begin
   result := new TButton(AOwner);
 end;
 
-method TButton.SetCaption(aValue: String);
-begin
-  fCaption := aValue;
-  PlatformSetCaption(aValue);
-end;
-
-method TButton.ClassName: String;
-begin
-  result := 'Button';
-end;
-
-method TLabel.setCaption(aValue: String);
-begin
-  fCaption := aValue;
-  PlatformSetCaption(aValue);
-end;
-
-method TLabel.ClassName: String;
-begin
-  result := 'Label';
-end;
-
 class method TLabel.Create(aOwner: TComponent): TLabel;
 begin
   result := new TLabel(aOwner);
 end;
 
-method TGroupBox.SetCaption(aValue: String);
+method TCheckBox.SetState(aValue: TCheckBoxState);
 begin
-  fCaption := aValue;
-  PlatformSetCaption(aValue);
+  fState := aValue;
+  PlatformSetState(aValue);
 end;
 
-method TRadioCheckBox.setCaption(value: String);
+method TCheckBox.Toggle;
 begin
-  fCaption := value;
-  PlatformSetCaption(value);
+  case State of
+    TCheckBoxState.cbChecked:
+      SetState(TCheckBoxState.cbUnChecked);
+
+    TCheckBoxState.cbUnChecked:
+      if fAllowGrayed then
+        SetState(TCheckBoxState.cbGrayed)
+      else
+        SetState(TCheckBoxState.cbChecked);
+
+    TCheckBoxState.cbGrayed:
+      SetState(TCheckBoxState.cbChecked);
+  end;
 end;
 
+method TCheckBox.Click;
+begin
+  Toggle;
+  inherited;
+end;
+
+{$IF WEBASSEMBLY}
 method TListControlItems.AddObject(S: DelphiString; aObject: TObject): Integer;
 begin
   inherited;
@@ -433,6 +329,9 @@ begin
   fPosition := value;
   PlatformSetPosition(value);
 end;
+{$ENDIF}
+
+{$ENDIF}
 
 
 end.
