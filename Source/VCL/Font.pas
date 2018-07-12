@@ -41,7 +41,7 @@ implementation
 
 method TFont.NotifyChanged(aPropName: String);
 begin
-  PlatformUpdate;
+  //PlatformUpdate;
   if PropertyChanged <> nil then
     PropertyChanged(self, aPropName);
 end;

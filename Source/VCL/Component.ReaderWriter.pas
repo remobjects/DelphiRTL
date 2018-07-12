@@ -355,7 +355,7 @@ end;
 
 method ComponentsHelper.CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
 begin
-  var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.' + aClassName).FirstOrDefault;
+  var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.' + aClassName).FirstOrDefault;
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
   result := CreateComponent(lType, aOwner);
 end;

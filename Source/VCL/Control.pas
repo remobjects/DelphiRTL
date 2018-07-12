@@ -6,7 +6,7 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  TNativeControl = public class(TControl)
+  TNativeControl = public partial class(TControl)
   end;
 
   TControl = public partial class(TComponent)
