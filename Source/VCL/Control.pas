@@ -129,7 +129,9 @@ begin
   Name := PlatformGetDefaultName;
   fFont := new TFont();
   fFont.PropertyChanged := @Changed;
-  //CreateHandle; // TODO
+  {$IF WEBASSEMBLY}
+  CreateHandle;
+  {$ENDIF}
   PlatformApplyDefaults;
 end;
 

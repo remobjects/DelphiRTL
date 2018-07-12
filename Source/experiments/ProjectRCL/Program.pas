@@ -1,7 +1,7 @@
 ﻿namespace ProjectRCL;
 
 uses
-  RemObjects.Elements.RTL.Delphi;
+  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL.Delphi.VCL;
 
 type
 

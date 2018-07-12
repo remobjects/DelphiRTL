@@ -3,7 +3,7 @@
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi;
+  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL.Delphi.VCL;
 
 type
   TForm6 = public class(TForm)

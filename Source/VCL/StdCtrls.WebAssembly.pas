@@ -35,6 +35,7 @@ type
   TForm = public partial class(TCustomForm)
   protected
     method CreateHandle; override;
+    method PlatformSetCaption(aValue: String); override;
   public
     method Show(aRootView: dynamic);
   end;
@@ -209,6 +210,10 @@ begin
   end;
 
   lRootView.appendChild(fHandle);
+end;
+
+method TForm.PlatformSetCaption(aValue: String);
+begin
 end;
 
 method TPanel.CreateHandle;
@@ -430,7 +435,6 @@ end;
 
 method TControl.PlatformSetCaption(aValue: String);
 begin
-  writeLn('TControl PlatformSetcaption');
   fHandle.innerText := aValue;
 end;
 

@@ -6,6 +6,7 @@ uses
 type
   [Export]
   Program = public class
+    const FilerSignature: UInt32 = $30465054; // 'TPF0'
   public
 
     method HelloWorld;
@@ -19,8 +20,15 @@ type
       var t2 := WebAssembly.CreateTextNode('Hello from Elements WebAssembly!');
       el.appendChild(t2);
 
+      {var lMem := new TMemoryStream();
+      var lWord: Integer := 1200;
+      lMem.WriteData(FilerSignature);
+      lMem.Position := 0;
+      var lOtWord: UInt32 := 0;
+      lMem.ReadData(var lOtWord);
+      writeLn(lOtWord);}
+
       Application.Initialize;
-      //Application.MainFormOnTaskbar := True;
       Application.CreateForm(typeOf(TForm6), var Form6);
       Application.Run;
     end;

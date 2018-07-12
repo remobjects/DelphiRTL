@@ -557,13 +557,14 @@ end;
 {$ELSEIF WEBASSEMBLY}
 constructor TResourceStream(Instance: THandle; aResName: String);
 begin
-  var lContent := WebAssembly.AjaxRequest(aResName);
+  var lContent := WebAssembly.AjaxRequest('wasm/resources/' + aResName);
   var lInput := new TMemoryStream();
   var lOutput := new TMemoryStream();
-  lInput.WriteString(lContent);
+  lInput.WriteString(lContent, Encoding.UTF8);
   lInput.Position := 0;
   var lConverter := new ObjectConverter(lInput, lOutput);
   lConverter.ToBinary;
+  lOutput.Position := 0;
   CopyFrom(lOutput, lOutput.Size);
 end;
 {$ENDIF}
