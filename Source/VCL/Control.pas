@@ -52,7 +52,6 @@ type
     method HandleNeeded; virtual;
     method Loaded; override;
     method Changed(aObject: TObject; propName: String);
-    method Dodo;
     constructor(aOwner: TComponent);
 
     method PlatformGetCaption: String; partial; empty;
@@ -113,23 +112,13 @@ begin
   PlatformSetTop(aValue);
 end;
 
-method TControl.Dodo;
-begin
-  WriteLn('Inside Dodo');
-  CreateHandle;
-end;
-
 constructor TControl(aOwner: TComponent);
 begin
   Name := PlatformGetDefaultName;
   fFont := new TFont();
-  writeLn('Before!!!!!!!!!!!!!');
   fFont.PropertyChanged := @Changed;
-  writeLn('After!!!!!!!!!!!!!!!');
   //{$IF WEBASSEMBLY}
-  Dodo;
-  //CreateHandle;
-  writeLn('After!!!!!!!!!!!!!!! 222222222222');
+  CreateHandle;
   //{$ENDIF}
   PlatformApplyDefaults;
 end;

@@ -8,6 +8,7 @@ uses
   RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL;
 
 type
+  TControlCtor = procedure(aInst: Object; aOwner: TComponent);
   TValueType = public enum(vaNull, vaList, vaInt8, vaInt16, vaInt32, vaExtended, vaString, vaIdent, vaFalse, vaTrue, vaBinary, vaSet, vaLString,
     vaNil, vaCollection, vaSingle, vaCurrency, vaDate, vaWString, vaInt64, vaUTF8String, vaDouble);
 
@@ -245,16 +246,10 @@ end;
 
 method TReader.FindProperty(aType: &Type; aName: String): PropertyInfo;
 begin
-  writeLn('---------------');
-  writeLn(aName);
-  writeLn(aType.Name);
-  writeLn('----------------');
   var lType := aType;
   while aType <> nil do begin
     result := lType.Properties.Where(a -> (a.Name = aName)).FirstOrDefault;
     if result <> nil then begin
-      writeLn('Encontrado: ');
-      writeLn(result.Name);
       exit;
     end;
     lType := new &Type(lType.RTTI^.ParentType);
@@ -279,9 +274,6 @@ begin
       var lPropValue := lProperty.GetValue(lInstance, nil);
       lInstance := lPropValue;
       lType := typeOf(lInstance);
-      writeLn('property with .');
-      writeLn(lType.Name);
-      writeLn(lInstance.ToString);
     end;
     lName := lProps[lProps.Count - 1];
   end;
@@ -324,7 +316,6 @@ begin
   var lName := ReadStr;
   result := aComponent;
   if result = nil then begin
-    writeLn('Before calling createComponent: ' + lClass);
     result := ComponentsHelper.CreateComponent(lClass, fOwner);
     result.Name := lName;
     TControl(result).Parent := TControl(fParent);
@@ -366,19 +357,13 @@ end;
 
 method ComponentsHelper.CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
 begin
-  writeLn('Inside CreateComponent');
-  writeLn(aClassName);
   var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.' + aClassName).FirstOrDefault;
-  writeLn('Found: ' + lType.Name);
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
-  writeLn('Found 2: ' + lType.Name);
   result := CreateComponent(lType, aOwner);
 end;
 
 method ComponentsHelper.CreateComponent(aType: &Type; aOwner: TComponent): TComponent;
 begin
-  writeLn('CreateComponent: ');
-  writeLn(aType.Name);
   var lCtor: MethodInfo;
   var lCtors := aType.Methods.Where(a -> ((MethodFlags.Constructor in a.Flags) and (a.Arguments.Count = 1)));
   if lCtors.Count > 1 then begin
@@ -396,7 +381,9 @@ begin
   if lCtor = nil then raise new Exception('No default constructor could be found!');
   var lNew := DefaultGC.New(aType.RTTI, aType.SizeOfType);
   result := InternalCalls.Cast<TComponent>(lNew);
-  lCtor.Invoke(result, [aOwner]);
+  //lCtor.Invoke(result, [aOwner]);
+  var lCaller := TControlCtor(lCtor.Pointer);
+  lCaller(result, aOwner);
 end;
 
 

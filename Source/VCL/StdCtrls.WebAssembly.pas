@@ -144,7 +144,6 @@ end;
 
 method TButton.CreateHandle;
 begin
-  WriteLn('TButton.CreateHandle');
   fHandle := WebAssembly.CreateElement('BUTTON');
   var lCaption := WebAssembly.CreateTextNode(Name);
   fHandle.style.position := "absolute";
@@ -158,7 +157,6 @@ end;
 
 method TLabel.CreateHandle;
 begin
-  writeLn('TLabel.CreateHandle');
   fHandle := WebAssembly.CreateElement('LABEL');
   var lCaption := WebAssembly.CreateTextNode(Name);
   fHandle.appendChild(lCaption);
