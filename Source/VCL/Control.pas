@@ -26,6 +26,7 @@ type
     fVisible: Boolean := true;
     fCaption: String;
     fControls: TList<TControl> := nil;
+    fTabOrder: Integer; // TODO
     method GetCaption: String;
     method SetCaption(aValue: String);
     method SetWidth(aValue: Integer);
@@ -95,6 +96,7 @@ type
     property OnKeyPress: TKeyPressEvent read fOnKeyPress write SetOnKeyPress;
     property OnKeyDown: TKeyEvent read fOnKeyDown write SetOnKeyDown;
     property OnKeyUp: TKeyEvent read fOnKeyUp write setOnKeyUp;
+    property TabOrder: Integer read fTabOrder write fTabOrder;
   end;
 
 
