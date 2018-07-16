@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
+{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
+
 interface
 
 type
@@ -38,5 +40,7 @@ class method TApplication.Create(aOwner: TComponent): TApplication;
 begin
   result := new TApplication(aOwner);
 end;
+
+{$ENDIF}
 
 end.

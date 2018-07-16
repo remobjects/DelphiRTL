@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF NOT TOFFEE}
+{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
 
 interface
 
@@ -10,7 +10,8 @@ uses
 type
   TFontStyle = public enum(Bold, Italic, Underline, StrikeOut) of Integer;
   TFontStyles = public set of TFontStyle;
-  TFontCharset = public 0..255;
+  //TFontCharset = public 0..255;
+  TFontCharset = Integer;
 
   TFont = public partial class(TPersistent)
   private

@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF ISLAND}
+{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
 
 interface
 
@@ -8,6 +8,7 @@ uses
   RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL;
 
 type
+  TControlCtor = procedure(aInst: Object; aOwner: TComponent);
   TValueType = public enum(vaNull, vaList, vaInt8, vaInt16, vaInt32, vaExtended, vaString, vaIdent, vaFalse, vaTrue, vaBinary, vaSet, vaLString,
     vaNil, vaCollection, vaSingle, vaCurrency, vaDate, vaWString, vaInt64, vaUTF8String, vaDouble);
 
@@ -248,8 +249,9 @@ begin
   var lType := aType;
   while aType <> nil do begin
     result := lType.Properties.Where(a -> (a.Name = aName)).FirstOrDefault;
-    if result <> nil then
+    if result <> nil then begin
       exit;
+    end;
     lType := new &Type(lType.RTTI^.ParentType);
   end;
 end;
@@ -379,7 +381,9 @@ begin
   if lCtor = nil then raise new Exception('No default constructor could be found!');
   var lNew := DefaultGC.New(aType.RTTI, aType.SizeOfType);
   result := InternalCalls.Cast<TComponent>(lNew);
-  lCtor.Invoke(result, [aOwner]);
+  //lCtor.Invoke(result, [aOwner]);
+  var lCaller := TControlCtor(lCtor.Pointer);
+  lCaller(result, aOwner);
 end;
 
 
