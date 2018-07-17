@@ -152,10 +152,11 @@ end;
 
 method TReader.ReadComponentData(aInstance: TComponent);
 begin
-  while not EndOfList do ReadProperty(aInstance);
-  ReadValue; // skip end of list
-  while not EndOfList do ReadComponent(nil);
-  ReadValue; // skip end of list
+  ReadProperty(aInstance);
+  //while not EndOfList do ReadProperty(aInstance);
+  //ReadValue; // skip end of list
+  //while not EndOfList do ReadComponent(nil);
+  //ReadValue; // skip end of list
 end;
 
 method TReader.ReadPropValue(aInstance: TComponent; aValueType: TValueType; aProperty: PropertyInfo): Object;
@@ -272,7 +273,12 @@ begin
       if lProperty = nil then
         raise new Exception('Can not get property ' + lProps[i]);
 
-      var lPropValue := lProperty.GetValue(lInstance, nil);
+      var lPropValue := lProperty.GetValue(lInstance, []);
+      var lAddr := InternalCalls.Cast(lPropValue);
+      writeLn('ADDRESS:');
+      writeLn(NativeInt(lAddr));
+      writeLn('----------------------');
+      exit;
       lInstance := lPropValue;
       lType := typeOf(lInstance);
     end;
@@ -382,9 +388,16 @@ begin
   if lCtor = nil then raise new Exception('No default constructor could be found!');
   var lNew := DefaultGC.New(aType.RTTI, aType.SizeOfType);
   result := InternalCalls.Cast<TComponent>(lNew);
-  //lCtor.Invoke(result, [aOwner]);
-  var lCaller := TControlCtor(lCtor.Pointer);
-  lCaller(result, aOwner);
+
+  var lResult := InternalCalls.Cast(result);
+  writeLn('Before INVOKE:');
+  writeLn(NativeInt(lResult));
+  var lOwner := InternalCalls.Cast(aOwner);
+  writeLn(NativeInt(lOwner));
+
+  lCtor.Invoke(result, [aOwner]);
+  //var lCaller := TControlCtor(lCtor.Pointer);
+  //lCaller(result, aOwner);
 end;
 
 

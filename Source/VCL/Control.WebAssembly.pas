@@ -15,6 +15,7 @@ type
     method ProcessKeyboardStatus(aStatus: EcmaScriptObject; var aKey: Word): TShiftState;
     method InternalSetKeyboardEvent(aEvent: String; aValue: TKeyEvent);
   protected
+    method HandleAllocated: Boolean; virtual; partial;
     method PlatformSetWidth(aValue: Integer); partial;
     method PlatformSetHeight(aValue: Integer); partial;
     method PlatformSetTop(aValue: Integer); virtual; partial;
@@ -33,6 +34,11 @@ type
   end;
 
 implementation
+
+method TControl.HandleAllocated: Boolean;
+begin
+  result := fHandle ≠ nil;
+end;
 
 method TControl.PlatformSetWidth(aValue: Integer);
 begin

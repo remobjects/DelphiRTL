@@ -32,7 +32,7 @@ type
     fWindowProc: TWndMethod;
     //constructor(aOwner: TComponent);
     method GetDefaultName: String;
-    method HandleAllocated: Boolean;
+    method HandleAllocated: Boolean; virtual; partial;
 
     method PlatformGetCaption: String; partial;
     method PlatformSetCaption(aValue: String); virtual; partial;

@@ -47,10 +47,11 @@ type
     method SetVisible(aValue: Boolean);
 
   protected
-    fHandle: TPlatformHandle;
+    fHandle: TPlatformHandle := {$IF ISLAND AND WINDOWS}0{$ELSE}nil{$ENDIF};
     fFont: TFont;
     method CreateHandle; partial; virtual; empty;
     method HandleNeeded; virtual;
+    method HandleAllocated: Boolean; virtual; partial; empty;
     method Loaded; override;
     method Changed(aObject: TObject; propName: String);
     constructor(aOwner: TComponent);
@@ -116,6 +117,8 @@ end;
 
 constructor TControl(aOwner: TComponent);
 begin
+  writeLn('constructor TControl');
+  writeLn(self.GetType().Name);
   Name := PlatformGetDefaultName;
   fFont := new TFont();
   fFont.PropertyChanged := @Changed;
@@ -137,7 +140,8 @@ end;
 
 method TControl.HandleNeeded;
 begin
-  CreateHandle;
+  if not HandleAllocated then
+    CreateHandle;
 end;
 
 method TControl.SetFont(value: TFont);
