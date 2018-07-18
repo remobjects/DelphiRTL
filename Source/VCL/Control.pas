@@ -117,14 +117,12 @@ end;
 
 constructor TControl(aOwner: TComponent);
 begin
-  writeLn('constructor TControl');
-  writeLn(self.GetType().Name);
   Name := PlatformGetDefaultName;
   fFont := new TFont();
   fFont.PropertyChanged := @Changed;
-  //{$IF WEBASSEMBLY}
+  {$IF WEBASSEMBLY}
   CreateHandle;
-  //{$ENDIF}
+  {$ENDIF}
   PlatformApplyDefaults;
 end;
 

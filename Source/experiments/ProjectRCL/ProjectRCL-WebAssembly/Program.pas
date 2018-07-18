@@ -30,6 +30,7 @@ type
 
       Application.Initialize;
       Application.CreateForm(typeOf(TForm6), var Form6);
+      Form6.Show(el);
       Application.Run;
       writeLn('THE END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     end;

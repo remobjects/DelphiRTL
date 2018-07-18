@@ -17,7 +17,7 @@ begin
   HandleNeeded;
   var lName := typeOf(self).Name;
   lName := lName.Substring(lName.LastIndexOf('.') + 1).ToUpper;
-  var lStream := new TResourceStream(0, 'Unit6.dfm'{lName});
+  var lStream := new TResourceStream(0, lName + '.dfm');
   lStream.Position := 0;
   var lReader := new TReader(lStream, 100);
   lReader.ReadRootComponent(self);

@@ -152,11 +152,10 @@ end;
 
 method TReader.ReadComponentData(aInstance: TComponent);
 begin
-  ReadProperty(aInstance);
-  //while not EndOfList do ReadProperty(aInstance);
-  //ReadValue; // skip end of list
-  //while not EndOfList do ReadComponent(nil);
-  //ReadValue; // skip end of list
+  while not EndOfList do ReadProperty(aInstance);
+  ReadValue; // skip end of list
+  while not EndOfList do ReadComponent(nil);
+  ReadValue; // skip end of list
 end;
 
 method TReader.ReadPropValue(aInstance: TComponent; aValueType: TValueType; aProperty: PropertyInfo): Object;
@@ -274,11 +273,6 @@ begin
         raise new Exception('Can not get property ' + lProps[i]);
 
       var lPropValue := lProperty.GetValue(lInstance, []);
-      var lAddr := InternalCalls.Cast(lPropValue);
-      writeLn('ADDRESS:');
-      writeLn(NativeInt(lAddr));
-      writeLn('----------------------');
-      exit;
       lInstance := lPropValue;
       lType := typeOf(lInstance);
     end;
@@ -388,13 +382,6 @@ begin
   if lCtor = nil then raise new Exception('No default constructor could be found!');
   var lNew := DefaultGC.New(aType.RTTI, aType.SizeOfType);
   result := InternalCalls.Cast<TComponent>(lNew);
-
-  var lResult := InternalCalls.Cast(result);
-  writeLn('Before INVOKE:');
-  writeLn(NativeInt(lResult));
-  var lOwner := InternalCalls.Cast(aOwner);
-  writeLn(NativeInt(lOwner));
-
   lCtor.Invoke(result, [aOwner]);
   //var lCaller := TControlCtor(lCtor.Pointer);
   //lCaller(result, aOwner);
@@ -575,15 +562,22 @@ end;
 {$ELSEIF WEBASSEMBLY}
 constructor TResourceStream(Instance: THandle; aResName: String);
 begin
-  var lContent := WebAssembly.AjaxRequest('wasm/resources/' + aResName);
+  //var lContent := WebAssembly.AjaxRequest('wasm/resources/' + aResName);
+  var lContent := WebAssembly.AjaxRequestBinary('wasm/resources/' + aResName);
   var lInput := new TMemoryStream();
   var lOutput := new TMemoryStream();
-  lInput.WriteString(lContent, Encoding.UTF8);
-  lInput.Position := 0;
-  var lConverter := new ObjectConverter(lInput, lOutput);
-  lConverter.ToBinary;
-  lOutput.Position := 0;
-  CopyFrom(lOutput, lOutput.Size);
+  lInput.Write(lContent, 0, lContent.Length);
+  writeLn('Array AjaxRequest:');
+  writeLn(lInput.Size);
+  //lInput.WriteString(lContent, Encoding.UTF8);
+  //lInput.Position := 0;
+  var lResHeaderSize := 62 + ((aResName.Length - 4) * 2); // -4 because .dfm is not included in resource name
+  lInput.Position := lResHeaderSize;
+  //var lConverter := new ObjectConverter(lInput, lOutput);
+  //lConverter.ToBinary;
+  //lOutput.Position := 0;
+  //CopyFrom(lOutput, lOutput.Size);
+  CopyFrom(lInput, lInput.Size - lResHeaderSize);
 end;
 {$ENDIF}
 
