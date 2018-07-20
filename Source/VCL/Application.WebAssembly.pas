@@ -36,8 +36,16 @@ begin
   if lCtor = nil then raise new Exception('No default constructor could be found!');
   var lNew := DefaultGC.New(InstanceClass.RTTI, InstanceClass.SizeOfType);
   FormRef := InternalCalls.Cast<TForm>(lNew);
-  lCtor.Invoke(FormRef, [nil]);
+  //lCtor.Invoke(FormRef, [nil]);
+  var lCaller := TControlCtor(lCtor.Pointer);
+  lCaller(FormRef, nil);
   aFormRef := FormRef;
+  //var lPtr := IntPtr(InternalCalls.Cast(aFormRef));
+  //SimpleGC.ForceAddRef(lPtr);
+  if fMainForm = nil then begin
+    fMainForm := FormRef;
+    fMainForm.Show;
+  end;
 end;
 
 method TApplication.Initialize;

@@ -10,14 +10,6 @@ uses
 {$GLOBALS ON}
 
 type
-  TForm = public partial class(TCustomForm)
-  protected
-    method CreateHandle; override;
-    method PlatformSetCaption(aValue: String); override;
-  public
-    method Show(aRootView: dynamic);
-  end;
-
   TButton = public partial class(TNativeControl)
   protected
     method CreateHandle; partial; override;
@@ -27,7 +19,7 @@ type
   TLabel = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String);
+    method PlatformSetCaption(aValue: String); override;
   end;
 
   TPanel = public class(TControl)
@@ -42,7 +34,7 @@ type
     fLabelHandle: dynamic;
   protected
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String);
+    method PlatformSetCaption(aValue: String); override;
   end;
 
   TEdit = public partial class(TNativeControl)
@@ -63,11 +55,12 @@ type
     method PlatformSetParent(aValue: TControl); override;
     method PlatformSetTop(aValue: Integer); override;
     method PlatformSetLeft(aValue: Integer); override;
+    method PlatformSetWidth(aValue: Integer); override;
 
     method PlatformGetChecked: Boolean; virtual; partial;
     method PlatformSetChecked(value: Boolean); virtual; partial;
 
-    method PlatformSetCaption(value: String);
+    method PlatformSetCaption(value: String); override;
   end;
 
   TCheckBox = public partial class(TButtonControl)
@@ -152,6 +145,7 @@ end;
 
 method TButton.PlatformSetCaption(aValue: String);
 begin
+  HandleNeeded;
   fHandle.innerText := aValue;
 end;
 
@@ -167,31 +161,6 @@ end;
 method TLabel.PlatformSetCaption(aValue: String);
 begin
   fHandle.innerHTML := aValue;
-end;
-
-method TForm.CreateHandle;
-begin
-  fHandle := WebAssembly.CreateElement('div');
-  fHandle.style.position := "relative";
-  fHandle.style.margin := "0 auto";
-end;
-
-method TForm.Show(aRootView: dynamic);
-begin
-  var lRootView := aRootView;
-  if lRootView = nil then begin
-    // No parent html element provided to 'host' the main div
-    var lWindow := WebAssembly.GetWindowObject;
-    lRootView := WebAssembly.CreateElement('div');
-    lRootView.style.margin := "0 auto";
-    lWindow.document.body.appendChild(lRootView);
-  end;
-
-  lRootView.appendChild(fHandle);
-end;
-
-method TForm.PlatformSetCaption(aValue: String);
-begin
 end;
 
 method TPanel.CreateHandle;
@@ -260,6 +229,8 @@ end;
 
 method TButtonControl.PlatformSetCaption(value: String);
 begin
+  HandleNeeded;
+  inherited;
   fLabelHandle.innerText := value;
 end;
 
@@ -279,6 +250,10 @@ method TButtonControl.PlatformSetLeft(aValue: Integer);
 begin
   inherited;
   fLabelHandle.style.left := (aValue + 22).ToString + 'px';
+end;
+
+method TButtonControl.PlatformSetWidth(aValue: Integer);
+begin
 end;
 
 method TButtonControl.internalCreateHandle(aType: String);

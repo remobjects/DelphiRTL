@@ -26,6 +26,7 @@ type
     fVisible: Boolean := true;
     fCaption: String;
     fControls: TList<TControl> := nil;
+    fTabOrder: Integer; // TODO
     method GetCaption: String;
     method SetCaption(aValue: String);
     method SetWidth(aValue: Integer);
@@ -46,17 +47,18 @@ type
     method SetVisible(aValue: Boolean);
 
   protected
-    fHandle: TPlatformHandle;
+    fHandle: TPlatformHandle := {$IF ISLAND AND WINDOWS}0{$ELSE}nil{$ENDIF};
     fFont: TFont;
     method CreateHandle; partial; virtual; empty;
     method HandleNeeded; virtual;
+    method HandleAllocated: Boolean; virtual; partial; empty;
     method Loaded; override;
     method Changed(aObject: TObject; propName: String);
     constructor(aOwner: TComponent);
 
     method PlatformGetCaption: String; partial; empty;
     method PlatformSetCaption(aValue: String); virtual; partial; empty;
-    method PlatformSetWidth(aValue: Integer); partial; empty;
+    method PlatformSetWidth(aValue: Integer); virtual; partial; empty;
     method PlatformSetHeight(aValue: Integer); partial; empty;
     method PlatformSetTop(aValue: Integer); virtual; partial; empty;
     method PlatformSetLeft(aValue: Integer); virtual; partial; empty;
@@ -76,6 +78,7 @@ type
 
   public
     method InsertControl(aControl: TControl);
+    method Show; virtual; partial; empty;
 
     property Handle: TPlatformHandle read fHandle;
     property Font: TFont read fFont write setFont;
@@ -95,6 +98,7 @@ type
     property OnKeyPress: TKeyPressEvent read fOnKeyPress write SetOnKeyPress;
     property OnKeyDown: TKeyEvent read fOnKeyDown write SetOnKeyDown;
     property OnKeyUp: TKeyEvent read fOnKeyUp write setOnKeyUp;
+    property TabOrder: Integer read fTabOrder write fTabOrder;
   end;
 
 
@@ -117,9 +121,9 @@ begin
   Name := PlatformGetDefaultName;
   fFont := new TFont();
   fFont.PropertyChanged := @Changed;
-  //{$IF WEBASSEMBLY}
+  {$IF WEBASSEMBLY}
   CreateHandle;
-  //{$ENDIF}
+  {$ENDIF}
   PlatformApplyDefaults;
 end;
 
@@ -135,7 +139,8 @@ end;
 
 method TControl.HandleNeeded;
 begin
-  CreateHandle;
+  if not HandleAllocated then
+    CreateHandle;
 end;
 
 method TControl.SetFont(value: TFont);

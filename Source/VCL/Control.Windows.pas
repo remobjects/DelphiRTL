@@ -32,7 +32,7 @@ type
     fWindowProc: TWndMethod;
     //constructor(aOwner: TComponent);
     method GetDefaultName: String;
-    method HandleAllocated: Boolean;
+    method HandleAllocated: Boolean; virtual; partial;
 
     method PlatformGetCaption: String; partial;
     method PlatformSetCaption(aValue: String); virtual; partial;
@@ -67,7 +67,6 @@ type
 
   TNativeControl = public partial class(TControl)
   private
-    fTabOrder: Integer; // TODO
     fClass: rtl.WNDCLASS;
   protected
     fOldWndProc: TWndProc;
@@ -88,7 +87,6 @@ type
     method WndProc(var aMessage: TMessage); override;
     constructor(aOwner: TComponent);
     //method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT; virtual;
-    property TabOrder: Integer read fTabOrder write fTabOrder;
   end;
 
   TWinControl = public TNativeControl;

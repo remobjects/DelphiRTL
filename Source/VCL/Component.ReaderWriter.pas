@@ -271,7 +271,7 @@ begin
       if lProperty = nil then
         raise new Exception('Can not get property ' + lProps[i]);
 
-      var lPropValue := lProperty.GetValue(lInstance, nil);
+      var lPropValue := lProperty.GetValue(lInstance, []);
       lInstance := lPropValue;
       lType := typeOf(lInstance);
     end;
@@ -381,9 +381,9 @@ begin
   if lCtor = nil then raise new Exception('No default constructor could be found!');
   var lNew := DefaultGC.New(aType.RTTI, aType.SizeOfType);
   result := InternalCalls.Cast<TComponent>(lNew);
-  //lCtor.Invoke(result, [aOwner]);
-  var lCaller := TControlCtor(lCtor.Pointer);
-  lCaller(result, aOwner);
+  lCtor.Invoke(result, [aOwner]);
+  //var lCaller := TControlCtor(lCtor.Pointer);
+  //lCaller(result, aOwner);
 end;
 
 
@@ -561,15 +561,13 @@ end;
 {$ELSEIF WEBASSEMBLY}
 constructor TResourceStream(Instance: THandle; aResName: String);
 begin
-  var lContent := WebAssembly.AjaxRequest('wasm/resources/' + aResName);
+  var lContent := WebAssembly.AjaxRequestBinary('wasm/resources/' + aResName);
   var lInput := new TMemoryStream();
   var lOutput := new TMemoryStream();
-  lInput.WriteString(lContent, Encoding.UTF8);
-  lInput.Position := 0;
-  var lConverter := new ObjectConverter(lInput, lOutput);
-  lConverter.ToBinary;
-  lOutput.Position := 0;
-  CopyFrom(lOutput, lOutput.Size);
+  lInput.Write(lContent, 0, lContent.Length);
+  var lResHeaderSize := 62 + ((aResName.Length - 4) * 2); // -4 because .dfm is not included in resource name
+  lInput.Position := lResHeaderSize;
+  CopyFrom(lInput, lInput.Size - lResHeaderSize);
 end;
 {$ENDIF}
 
