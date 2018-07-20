@@ -246,7 +246,6 @@ end;
 
 method TReader.FindProperty(aType: &Type; aName: String): PropertyInfo;
 begin
-  WriteLn('Finding property: ' + aName);
   var lType := aType;
   while aType <> nil do begin
     result := lType.Properties.Where(a -> (a.Name = aName)).FirstOrDefault;
@@ -562,21 +561,12 @@ end;
 {$ELSEIF WEBASSEMBLY}
 constructor TResourceStream(Instance: THandle; aResName: String);
 begin
-  //var lContent := WebAssembly.AjaxRequest('wasm/resources/' + aResName);
   var lContent := WebAssembly.AjaxRequestBinary('wasm/resources/' + aResName);
   var lInput := new TMemoryStream();
   var lOutput := new TMemoryStream();
   lInput.Write(lContent, 0, lContent.Length);
-  writeLn('Array AjaxRequest:');
-  writeLn(lInput.Size);
-  //lInput.WriteString(lContent, Encoding.UTF8);
-  //lInput.Position := 0;
   var lResHeaderSize := 62 + ((aResName.Length - 4) * 2); // -4 because .dfm is not included in resource name
   lInput.Position := lResHeaderSize;
-  //var lConverter := new ObjectConverter(lInput, lOutput);
-  //lConverter.ToBinary;
-  //lOutput.Position := 0;
-  //CopyFrom(lOutput, lOutput.Size);
   CopyFrom(lInput, lInput.Size - lResHeaderSize);
 end;
 {$ENDIF}

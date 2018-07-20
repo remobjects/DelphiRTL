@@ -39,8 +39,13 @@ begin
   //lCtor.Invoke(FormRef, [nil]);
   var lCaller := TControlCtor(lCtor.Pointer);
   lCaller(FormRef, nil);
-
   aFormRef := FormRef;
+  //var lPtr := IntPtr(InternalCalls.Cast(aFormRef));
+  //SimpleGC.ForceAddRef(lPtr);
+  if fMainForm = nil then begin
+    fMainForm := FormRef;
+    fMainForm.Show;
+  end;
 end;
 
 method TApplication.Initialize;

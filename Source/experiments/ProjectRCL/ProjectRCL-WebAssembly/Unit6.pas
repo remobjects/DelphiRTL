@@ -30,6 +30,11 @@ begin
   //label1.Width := 200;
   //label1.Caption := 'All right!';
   button1.Caption := 'Yes!!';
+  if Application.MainForm = nil then
+    writeLn('MainForm nil')
+  else
+    writeLn('MainForm NO nil');
+
   ShowMessage('Clicked!');
 end;
 

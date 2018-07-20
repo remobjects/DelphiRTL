@@ -57,8 +57,8 @@
   <ItemGroup>
     <Compile Include="Program.pas" />
     <None Include="Web\index.html" />
-    <Resource Include="..\OneButton.dfm" />
     <Compile Include="Unit6.pas" />
+    <Resource Include="..\OneButtonLabelCheckBoxAndRadioButton.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.WebAssembly.targets" />
 </Project>

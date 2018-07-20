@@ -16,7 +16,7 @@ type
     method InternalSetKeyboardEvent(aEvent: String; aValue: TKeyEvent);
   protected
     method HandleAllocated: Boolean; virtual; partial;
-    method PlatformSetWidth(aValue: Integer); partial;
+    method PlatformSetWidth(aValue: Integer); virtual; partial;
     method PlatformSetHeight(aValue: Integer); partial;
     method PlatformSetTop(aValue: Integer); virtual; partial;
     method PlatformSetLeft(aValue: Integer); virtual; partial;

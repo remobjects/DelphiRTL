@@ -27,6 +27,7 @@ type
 
       //Check(TForm7);
 
+      Application := new TApplication(nil);
       Application.Initialize;
       //Application.MainFormOnTaskbar := True;
       Application.CreateForm(typeOf(TForm6), var Form6);

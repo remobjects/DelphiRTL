@@ -14,6 +14,13 @@ type
     method WndProc2(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
   end;
 
+  TForm = public partial class(TCustomForm)
+  public
+    //constructor(aOwner: TComponent); empty;
+    method Show; override;
+  end;
+
+
 implementation
 
 constructor TCustomForm(aOwner: TComponent);
@@ -88,6 +95,11 @@ begin
   end
   else
     result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
+end;
+
+method TForm.Show;
+begin
+
 end;
 
 {$ENDIF}

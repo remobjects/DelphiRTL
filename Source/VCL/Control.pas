@@ -58,7 +58,7 @@ type
 
     method PlatformGetCaption: String; partial; empty;
     method PlatformSetCaption(aValue: String); virtual; partial; empty;
-    method PlatformSetWidth(aValue: Integer); partial; empty;
+    method PlatformSetWidth(aValue: Integer); virtual; partial; empty;
     method PlatformSetHeight(aValue: Integer); partial; empty;
     method PlatformSetTop(aValue: Integer); virtual; partial; empty;
     method PlatformSetLeft(aValue: Integer); virtual; partial; empty;
@@ -78,6 +78,7 @@ type
 
   public
     method InsertControl(aControl: TControl);
+    method Show; virtual; partial; empty;
 
     property Handle: TPlatformHandle read fHandle;
     property Font: TFont read fFont write setFont;

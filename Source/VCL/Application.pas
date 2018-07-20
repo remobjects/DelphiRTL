@@ -8,7 +8,7 @@ type
  TApplication = public partial class(TComponent)
 private
   fFinished: Boolean;
-  fMainForm: TForm;
+  fMainForm: TForm := nil;
   class constructor;
 public
   constructor(aOwner: TComponent);
@@ -22,13 +22,13 @@ public
 end;
 
 var
-  Application: TApplication;
+  Application: TApplication := nil;
 
 implementation
 
 class constructor TApplication;
 begin
-  Application := new TApplication(nil);
+  //Application := new TApplication(nil);
 end;
 
 constructor TApplication(aOwner: TComponent);

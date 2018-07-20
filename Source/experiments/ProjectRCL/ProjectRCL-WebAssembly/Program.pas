@@ -28,9 +28,13 @@ type
       lMem.ReadData(var lOtWord);
       writeLn(lOtWord);}
 
+      Application := new TApplication(nil);
       Application.Initialize;
+      //if Application.MainForm = nil then
+        //writeLn('MainForm NIL 2');
+
       Application.CreateForm(typeOf(TForm6), var Form6);
-      Form6.Show(el);
+      //Form6.Show(el);
       Application.Run;
       writeLn('THE END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     end;
