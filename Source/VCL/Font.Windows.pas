@@ -16,7 +16,7 @@ type
     fPixelsPerInch: Integer;
     fFontHandle: rtl.HFONT;
     fOrientation: Integer;
-    fQuality: TFontQuality;
+    fQuality: TFontQuality := TFontQuality.fqClearType;
     fPitch: TFontPitch;
 
     method GetOrientation: Integer;
@@ -28,13 +28,14 @@ type
     method GetFontHandle: rtl.HFONT;
     method SetFontHandle(aValue: rtl.HFONT);
 
-    class method CreateFontFromData(aFontName: String; aCharset: TFontCharset; aSize: Integer; aOrientation: Integer; aPitch: TFontPitch; aQuality: TFontQuality; aStyle: TFontStyles): rtl.HFONT;
+    class method CreateFontFromData(aFontName: String; aCharset: TFontCharset; aHeight: Integer; aOrientation: Integer; aPitch: TFontPitch; aQuality: TFontQuality; aStyle: TFontStyles): rtl.HFONT;
     class var fDefaultFont: rtl.HFONT := 0;
     class var fDevicePixelsPerInch: Integer := 0;
     class constructor;
 
   protected
     method PlatformUpdate; virtual; partial;
+    method PlatformSetHeight(aValue: Integer); virtual; partial;
 
   public
     constructor;
@@ -81,6 +82,11 @@ begin
   NotifyChanged('pitch');
 end;
 
+method TFont.PlatformSetHeight(aValue: Integer);
+begin
+  NotifyChanged('height');
+end;
+
 method TFont.GetFontHandle: rtl.HFONT;
 begin
   result := fFontHandle;
@@ -97,11 +103,11 @@ begin
   fPixelsPerInch := fDevicePixelsPerInch;
 end;
 
-class method TFont.CreateFontFromData(aFontName: String; aCharset: TFontCharset; aSize: Integer; aOrientation: Integer; aPitch: TFontPitch; aQuality: TFontQuality; aStyle: TFontStyles): rtl.HFONT;
+class method TFont.CreateFontFromData(aFontName: String; aCharset: TFontCharset; aHeight: Integer; aOrientation: Integer; aPitch: TFontPitch; aQuality: TFontQuality; aStyle: TFontStyles): rtl.HFONT;
 begin
   var lFontInfo: rtl.LOGFONT;
   lFontInfo.lfWidth := 0;
-  lFontInfo.lfHeight := -(aSize * fDevicePixelsPerInch) / 72; // A point is very close to 1/72 inch...
+  lFontInfo.lfHeight := aHeight;
   lFontInfo.lfEscapement := 0;
   lFontInfo.lfOrientation := aOrientation;
   lFontInfo.lfWeight := if (TFontStyle.Bold in aStyle) then rtl.FW_BOLD else rtl.FW_NORMAL;
@@ -130,7 +136,7 @@ end;
 method TFont.PlatformUpdate;
 begin
   var lOldFont := FontHandle;
-  FontHandle := CreateFontFromData(fName, fCharset, fSize, fOrientation, fPitch, fQuality, fStyles);
+  FontHandle := CreateFontFromData(fName, fCharset, fHeight, fOrientation, fPitch, fQuality, fStyles);
   if lOldFont <> fDefaultFont then
     rtl.DeleteObject(lOldFont);
 end;

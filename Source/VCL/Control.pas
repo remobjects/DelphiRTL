@@ -27,6 +27,7 @@ type
     fCaption: String;
     fControls: TList<TControl> := nil;
     fTabOrder: Integer; // TODO
+    fParentFont: Boolean := true;
     method GetCaption: String;
     method SetCaption(aValue: String);
     method SetWidth(aValue: Integer);
@@ -45,6 +46,7 @@ type
     method SetClientWidth(aValue: Integer);
     method SetColor(aValue: TColor);
     method SetVisible(aValue: Boolean);
+    method SetParentFont(aValue: Boolean);
 
   protected
     fHandle: TPlatformHandle := {$IF ISLAND AND WINDOWS}0{$ELSE}nil{$ENDIF};
@@ -83,6 +85,7 @@ type
     property Handle: TPlatformHandle read fHandle;
     property Font: TFont read fFont write setFont;
     property Parent: TControl read fParent write SetParent;
+    property ParentFont: Boolean read fParentFont write SetParentFont;
     property Caption: String read GetCaption write SetCaption;
     property Height: Integer read fHeight write SetHeight;
     property Width: Integer read fWidth write SetWidth;
@@ -236,6 +239,12 @@ method TControl.SetVisible(aValue: Boolean);
 begin
   fVisible := aValue;
   PlatformSetVisible(aValue);
+end;
+
+method TControl.SetParentFont(aValue: Boolean);
+begin
+  fParentFont := aValue;
+  // PlatformSetParentFont TODO
 end;
 
 method TControl.InsertControl(aControl: TControl);

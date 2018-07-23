@@ -202,6 +202,10 @@ end;
 method TControl.PlatformSetParent(aValue: TControl);
 begin
   HandleNeeded; // TODO
+  if ParentFont then begin
+    Font.FontHandle := aValue.Font.FontHandle;
+    PlatformFontChanged;
+  end;
 end;
 
 method TControl.PlatformSetOnClick(aValue: TNotifyEvent);
@@ -346,7 +350,9 @@ end;
 
 method TNativeControl.PlatformFontChanged;
 begin
-  // TODO set component font from TFont object
+  WriteLn('Updating Font...');
+  rtl.SendMessage(fHandle, rtl.WM_SETFONT, rtl.WPARAM(Font.FontHandle), rtl.LPARAM(true));
+  WriteLn('Updating Font... DONE!!');
 end;
 
 method TControl.HandleAllocated: Boolean;
