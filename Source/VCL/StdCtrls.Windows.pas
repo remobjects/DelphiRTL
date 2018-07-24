@@ -51,6 +51,14 @@ type
 
 implementation
 
+method TEdit.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
+  aParams.ExStyle := rtl.WS_EX_CLIENTEDGE;
+  aParams.WidgetClassName := 'EDIT'.ToCharArray(true);
+  CreateClass(var aParams);
+end;
+
 method TEdit.PlatformGetMaxLength: Integer;
 begin
   result := rtl.SendMessage(fHandle, rtl.EM_GETLIMITTEXT, 0, 0);
@@ -75,7 +83,7 @@ method TEdit.PlatformGetText: String;
 begin
   var lMaxLength := rtl.GetWindowTextLength(fHandle);
   var lBuffer := new Char[lMaxLength + 1];
-  rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength);
+  rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength + 1);
   result := String.FromPChar(@lBuffer[0]);
 end;
 
@@ -145,13 +153,6 @@ begin
   inherited(var aParams);
   aParams.WidgetClassName := 'STATIC'.ToCharArray(true);
   aParams.DefaultWndProc := true;
-  CreateClass(var aParams);
-end;
-
-method TEdit.CreateParams(var aParams: TCreateParams);
-begin
-  inherited(var aParams);
-  aParams.WidgetClassName := 'EDIT'.ToCharArray(true);
   CreateClass(var aParams);
 end;
 
