@@ -49,6 +49,33 @@ type
     method PlatformSetChecked(aValue: Boolean); override; partial;
   end;
 
+  TListControlItems = public partial class(TStringList)
+  private
+    method PlatformAddItem(S: DelphiString; aObject: TObject);
+    method PlatformInsert(aIndex: Integer; S: DelphiString);
+    method PlatformClear;
+    method PlatformDelete(aIndex: Integer);
+  end;
+
+  TListControl = public partial abstract class(TNativeControl)
+  protected
+    //method internalCreateHandle(aListBoxMode: Boolean);
+    method PlatformGetMultiSelect: Boolean;
+    method PlatformSetMultiSelect(value: Boolean);
+    method PlatformClearSelection;
+    method PlatformDeleteSelected;
+    method PlatformSetItemIndex(value: Integer);
+    method PlatformGetItemIndex: Integer;
+  end;
+
+  TListBox = public partial class(TListControl)
+  protected
+    method CreateParams(var aParams: TCreateParams); override;
+    method PlatformSelectAll;
+    method PlatformGetSelected(aIndex: Integer): Boolean;
+    method PlatformSetSelected(aIndex: Integer; value: Boolean);
+  end;
+
 implementation
 
 method TEdit.CreateParams(var aParams: TCreateParams);
@@ -160,6 +187,70 @@ method TRadioButton.CreateWnd;
 begin
   inherited;
   rtl.SendMessage(fHandle, rtl.BM_SETCHECK, rtl.WPARAM(0), 0);
+end;
+
+method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
+begin
+end;
+
+method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
+begin
+end;
+
+method TListControlItems.PlatformClear;
+begin
+end;
+
+method TListControlItems.PlatformDelete(aIndex: Integer);
+begin
+
+end;
+
+//method TListControl.internalCreateHandle(aListBoxMode: Boolean);
+method TListControl.PlatformGetMultiSelect: Boolean;
+begin
+end;
+
+method TListControl.PlatformSetMultiSelect(value: Boolean);
+begin
+end;
+
+method TListControl.PlatformClearSelection;
+begin
+
+end;
+
+method TListControl.PlatformDeleteSelected;
+begin
+end;
+
+method TListControl.PlatformSetItemIndex(value: Integer);
+begin
+end;
+
+method TListControl.PlatformGetItemIndex: Integer;
+begin
+end;
+
+method TListBox.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
+  aParams.WidgetClassName := 'LISTBOX'.ToCharArray(true);
+  aParams.Style := aParams.Style or rtl.ES_AUTOVSCROLL;
+  CreateClass(var aParams);
+end;
+
+method TListBox.PlatformSelectAll;
+begin
+
+end;
+
+method TListBox.PlatformGetSelected(aIndex: Integer): Boolean;
+begin
+end;
+
+method TListBox.PlatformSetSelected(aIndex: Integer; value: Boolean);
+begin
 end;
 
 {$ENDIF}

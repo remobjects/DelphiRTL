@@ -52,7 +52,6 @@ type
     property State: TCheckBoxState read fState write SetState default TCheckBoxState.cbUnchecked;
   end;
 
-  {$IF WEBASSEMBLY}
   TListControlItems = public partial class(TStringList)
   public
     method AddObject(S: DelphiString; aObject: TObject): Integer; override;
@@ -62,7 +61,7 @@ type
     property ListControl: TListControl read write;
   end;
 
-  TListControl = public partial abstract class(TControl)
+  TListControl = public partial abstract class(TNativeControl)
   private
     fListBoxMode: Boolean;
   protected
@@ -78,6 +77,14 @@ type
     property ItemIndex: Integer read PlatformGetItemIndex write PlatformSetItemIndex;
   end;
 
+  TListBox = public partial class(TListControl)
+  public
+    procedure SelectAll;
+    property MultiSelect: Boolean read PlatformGetMultiSelect write PlatformSetMultiSelect;
+    property Selected[aIndex: Integer]: Boolean read PlatformGetSelected write PlatformSetSelected;
+  end;
+
+  {$IF WEBASSEMBLY}
   TComboBox = public partial class(TListControl)
   private
     fOnSelect: TNotifyEvent;
@@ -85,13 +92,6 @@ type
   public
     property Text: String read PlatformGetText;
     property OnSelect: TNotifyEvent read fOnSelect write SetOnSelect;
-  end;
-
-  TListBox = public partial class(TListControl)
-  public
-    procedure SelectAll;
-    property MultiSelect: Boolean read PlatformGetMultiSelect write PlatformSetMultiSelect;
-    property Selected[aIndex: Integer]: Boolean read PlatformGetSelected write PlatformSetSelected;
   end;
 
   TMemoStrings = partial class(TStringList)
@@ -141,9 +141,7 @@ implementation
 
 procedure ShowMessage(aMessage: String);
 begin
-  {$IF WEBASSEMBLY OR (ISLAND AND WINDOWS)}
   PlatformShowMessage(aMessage);
-  {$ENDIF}
 end;
 
 class method TButton.Create(AOwner: TComponent): TButton;
@@ -185,7 +183,6 @@ begin
   inherited;
 end;
 
-{$IF WEBASSEMBLY}
 method TListControlItems.AddObject(S: DelphiString; aObject: TObject): Integer;
 begin
   inherited;
@@ -243,15 +240,16 @@ begin
     fItems.AddObject(aValue[i], aValue.Objects[i]);
 end;
 
+method TListBox.SelectAll;
+begin
+  PlatformSelectAll;
+end;
+
+{$IF WEBASSEMBLY}
 method TComboBox.SetOnSelect(aValue: TNotifyEvent);
 begin
   fOnSelect := aValue;
   PlatformSetOnSelect(aValue);
-end;
-
-method TListBox.SelectAll;
-begin
-  PlatformSelectAll;
 end;
 
 method TMemoStrings.Get(aIndex: Integer): DelphiString;
