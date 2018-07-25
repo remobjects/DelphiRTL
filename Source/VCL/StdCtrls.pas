@@ -86,7 +86,6 @@ type
     property Selected[aIndex: Integer]: Boolean read PlatformGetSelected write PlatformSetSelected;
   end;
 
-  {$IF WEBASSEMBLY}
   TComboBox = public partial class(TListControl)
   private
     fOnSelect: TNotifyEvent;
@@ -96,6 +95,7 @@ type
     property OnSelect: TNotifyEvent read fOnSelect write SetOnSelect;
   end;
 
+  {$IF WEBASSEMBLY}
   TMemoStrings = partial class(TStringList)
   private
     fMemo: TMemo;
@@ -247,13 +247,13 @@ begin
   PlatformSelectAll;
 end;
 
-{$IF WEBASSEMBLY}
 method TComboBox.SetOnSelect(aValue: TNotifyEvent);
 begin
   fOnSelect := aValue;
   PlatformSetOnSelect(aValue);
 end;
 
+{$IF WEBASSEMBLY}
 method TMemoStrings.Get(aIndex: Integer): DelphiString;
 begin
   var lText := PlatformGetText;

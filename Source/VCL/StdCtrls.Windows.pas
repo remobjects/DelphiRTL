@@ -75,6 +75,13 @@ type
     method PlatformSetSelected(aIndex: Integer; value: Boolean);
   end;
 
+  TComboBox = public partial class(TListControl)
+  protected
+    method CreateParams(var aParams: TCreateParams); override;
+    method PlatformGetText: String;
+    method PlatformSetOnSelect(aValue: TNotifyEvent);
+  end;
+
 implementation
 
 method TEdit.CreateParams(var aParams: TCreateParams);
@@ -267,6 +274,25 @@ end;
 method TListBox.PlatformSetSelected(aIndex: Integer; value: Boolean);
 begin
   rtl.SendMessage(fHandle, rtl.LB_SETSEL, Convert.ToInt32(value), aIndex);
+end;
+
+method TComboBox.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
+  aParams.WidgetClassName := 'COMBOBOX'.ToCharArray(true);
+  aParams.Style := aParams.Style or rtl.ES_AUTOVSCROLL or rtl.CBS_DROPDOWN;
+  aParams.ExStyle := rtl.WS_EX_CLIENTEDGE;
+  CreateClass(var aParams);
+end;
+
+method TComboBox.PlatformSetOnSelect(aValue: TNotifyEvent);
+begin
+
+end;
+
+method TComboBox.PlatformGetText: String;
+begin
+
 end;
 {$ENDIF}
 
