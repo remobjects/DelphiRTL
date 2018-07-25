@@ -353,9 +353,7 @@ end;
 
 method TNativeControl.PlatformFontChanged;
 begin
-  WriteLn('Updating Font...');
   rtl.SendMessage(fHandle, rtl.WM_SETFONT, rtl.WPARAM(Font.FontHandle), rtl.LPARAM(true));
-  WriteLn('Updating Font... DONE!!');
 end;
 
 method TControl.HandleAllocated: Boolean;

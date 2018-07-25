@@ -48,11 +48,11 @@
     <Reference Include="gc" />
     <Reference Include="rtl" />
     <Reference Include="Elements" />
-    <Reference Include="Delphi">
-      <HintPath>..\..\Bin\Debug\Windows\i386\Delphi.fx</HintPath>
-    </Reference>
     <Reference Include="Island">
       <HintPath>C:\dev\ro\IslandRTL\Source\Bin\Debug\Windows\i386\Island.fx</HintPath>
+    </Reference>
+    <Reference Include="Delphi">
+      <HintPath>..\..\Bin\Debug\Windows\i386\Delphi.fx</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

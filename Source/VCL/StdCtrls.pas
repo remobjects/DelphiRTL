@@ -64,6 +64,7 @@ type
   TListControl = public partial abstract class(TNativeControl)
   private
     fListBoxMode: Boolean;
+    fItemHeight: Integer;
   protected
     fItems: TStrings;
     constructor(aOwner: TComponent);
@@ -75,6 +76,7 @@ type
     method DeleteSelected;
     property Items: TStrings read fItems write SetItems;
     property ItemIndex: Integer read PlatformGetItemIndex write PlatformSetItemIndex;
+    property ItemHeight: Integer read fItemHeight write fItemHeight;
   end;
 
   TListBox = public partial class(TListControl)

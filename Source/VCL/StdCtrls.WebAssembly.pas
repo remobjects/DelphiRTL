@@ -81,7 +81,7 @@ type
     method PlatformDelete(aIndex: Integer);
   end;
 
-  TListControl = public partial abstract class(TControl)
+  TListControl = public partial abstract class(TNativeControl)
   protected
     method internalCreateHandle(aListBoxMode: Boolean);
     method PlatformGetMultiSelect: Boolean;
