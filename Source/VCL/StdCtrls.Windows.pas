@@ -49,7 +49,41 @@ type
     method PlatformSetChecked(aValue: Boolean); override; partial;
   end;
 
+  TListControlItems = public partial class(TStringList)
+  private
+    method PlatformAddItem(S: DelphiString; aObject: TObject);
+    method PlatformInsert(aIndex: Integer; S: DelphiString);
+    method PlatformClear;
+    method PlatformDelete(aIndex: Integer);
+  end;
+
+  TListControl = public partial abstract class(TNativeControl)
+  protected
+    method PlatformGetMultiSelect: Boolean;
+    method PlatformSetMultiSelect(value: Boolean);
+    method PlatformClearSelection;
+    method PlatformDeleteSelected;
+    method PlatformSetItemIndex(value: Integer);
+    method PlatformGetItemIndex: Integer;
+  end;
+
+  TListBox = public partial class(TListControl)
+  protected
+    method CreateParams(var aParams: TCreateParams); override;
+    method PlatformSelectAll;
+    method PlatformGetSelected(aIndex: Integer): Boolean;
+    method PlatformSetSelected(aIndex: Integer; value: Boolean);
+  end;
+
 implementation
+
+method TEdit.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
+  aParams.ExStyle := rtl.WS_EX_CLIENTEDGE;
+  aParams.WidgetClassName := 'EDIT'.ToCharArray(true);
+  CreateClass(var aParams);
+end;
 
 method TEdit.PlatformGetMaxLength: Integer;
 begin
@@ -75,7 +109,7 @@ method TEdit.PlatformGetText: String;
 begin
   var lMaxLength := rtl.GetWindowTextLength(fHandle);
   var lBuffer := new Char[lMaxLength + 1];
-  rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength);
+  rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength + 1);
   result := String.FromPChar(@lBuffer[0]);
 end;
 
@@ -148,19 +182,92 @@ begin
   CreateClass(var aParams);
 end;
 
-method TEdit.CreateParams(var aParams: TCreateParams);
-begin
-  inherited(var aParams);
-  aParams.WidgetClassName := 'EDIT'.ToCharArray(true);
-  CreateClass(var aParams);
-end;
-
 method TRadioButton.CreateWnd;
 begin
   inherited;
   rtl.SendMessage(fHandle, rtl.BM_SETCHECK, rtl.WPARAM(0), 0);
 end;
 
+method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
+begin
+  var lString := String(S);
+  var lArray := lString.ToCharArray(true);
+  rtl.SendMessage(ListControl.Handle, rtl.LB_ADDSTRING, 0, rtl.LPARAM(@lArray[0]));
+end;
+
+method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
+begin
+  var lString := String(S);
+  var lArray := lString.ToCharArray(true);
+  rtl.SendMessage(ListControl.Handle, rtl.LB_INSERTSTRING, aIndex, rtl.LPARAM(@lArray[0]));
+end;
+
+method TListControlItems.PlatformClear;
+begin
+  rtl.SendMessage(ListControl.Handle, rtl.LB_RESETCONTENT, 0, 0);
+end;
+
+method TListControlItems.PlatformDelete(aIndex: Integer);
+begin
+  rtl.SendMessage(ListControl.Handle, rtl.LB_DELETESTRING, aIndex, 0);
+end;
+
+method TListControl.PlatformGetMultiSelect: Boolean;
+begin
+  // TODO recreateWnd, can not be changed in runtime...
+end;
+
+method TListControl.PlatformSetMultiSelect(value: Boolean);
+begin
+  // TODO recreateWnd, can not be changed in runtime...
+end;
+
+method TListControl.PlatformClearSelection;
+begin
+  rtl.SendMessage(fHandle, rtl.LB_SETSEL, 0, -1); // using -1 as item index does the trick
+end;
+
+method TListControl.PlatformDeleteSelected;
+begin
+  var lIndex := ItemIndex;
+  if lIndex ≥ 0 then
+    Items.Delete(lIndex);
+end;
+
+method TListControl.PlatformSetItemIndex(value: Integer);
+begin
+  rtl.SendMessage(fHandle, rtl.LB_SETCURSEL, value, 0);
+end;
+
+method TListControl.PlatformGetItemIndex: Integer;
+begin
+  result := rtl.SendMessage(fHandle, rtl.LB_GETCURSEL, 0, 0);
+end;
+
+method TListBox.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
+  aParams.WidgetClassName := 'LISTBOX'.ToCharArray(true);
+  aParams.Style := aParams.Style or rtl.ES_AUTOVSCROLL;
+  if MultiSelect then aParams.Style := aParams.Style or rtl.LBS_EXTENDEDSEL;
+  aParams.ExStyle := rtl.WS_EX_CLIENTEDGE;
+  CreateClass(var aParams);
+end;
+
+method TListBox.PlatformSelectAll;
+begin
+  rtl.SendMessage(fHandle, rtl.LB_SETSEL, 1, -1); // using -1 as item index does the trick
+end;
+
+method TListBox.PlatformGetSelected(aIndex: Integer): Boolean;
+begin
+  result := rtl.SendMessage(fHandle, rtl.LB_GETSEL, aIndex, 0) > 0;
+end;
+
+method TListBox.PlatformSetSelected(aIndex: Integer; value: Boolean);
+begin
+  rtl.SendMessage(fHandle, rtl.LB_SETSEL, Convert.ToInt32(value), aIndex);
+end;
 {$ENDIF}
 
 end.

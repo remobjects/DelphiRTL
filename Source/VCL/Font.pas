@@ -16,18 +16,20 @@ type
   TFont = public partial class(TPersistent)
   private
     fColor: TColor;
-    fName: String;
+    fName: String := 'Tahoma';
     fSize: Integer;
-    fStyles: TFontStyles;
+    fStyles: TFontStyles := [];
     fCharset: TFontCharset; // TODO
-    fHeight: Integer; // TODO
+    fHeight: Integer := 12;
     method setColor(aValue: TColor);
     method setName(aValue: String);
     method setSize(aValue: Integer);
     method setStyles(aValue: TFontStyles);
+    method setHeight(aValue: Integer);
     method NotifyChanged(aPropName: String);
   protected
     method PlatformUpdate; virtual; partial; empty;
+    method PlatformSetHeight(aValue: Integer); virtual; partial; empty;
   public
     property PropertyChanged: TPropertyChangedEvent;
     property Color: TColor read fColor write setColor;
@@ -35,14 +37,14 @@ type
     property Size: Integer read fSize write setSize;
     property Style: TFontStyles read fStyles write setStyles;
     property Charset: TFontCharset read fCharset write fCharset;
-    property Height: Integer read fHeight write fHeight;
+    property Height: Integer read fHeight write SetHeight;
   end;
 
 implementation
 
 method TFont.NotifyChanged(aPropName: String);
 begin
-  //PlatformUpdate;
+  PlatformUpdate;
   if PropertyChanged <> nil then
     PropertyChanged(self, aPropName);
 end;
@@ -62,7 +64,17 @@ end;
 method TFont.SetSize(aValue: Integer);
 begin
   fSize := aValue;
+  {$IF WEBASSEMBLY}
   NotifyChanged('size');
+  {$ELSEIF ISLAND AND WINDOWS}
+  SetHeight(-(aValue * fPixelsPerInch) / 72); // A point is very close to 1/72 inch...
+  {$ENDIF}
+end;
+
+method TFont.SetHeight(aValue: Integer);
+begin
+  fHeight := aValue;
+  PlatformSetHeight(aValue);
 end;
 
 method TFont.SetStyles(aValue: TFontStyles);

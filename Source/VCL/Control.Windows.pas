@@ -147,7 +147,10 @@ begin
       // LParam: Target Window Handle
       var lNotification := aMessage.wParam shr 16;
       var lControl := ControlFromHandle(rtl.HWND(aMessage.lParam));
-      aMessage.Result := lControl.Perform(lNotification, aMessage.wParam, aMessage.lParam);
+      if lControl <> nil then
+        aMessage.Result := lControl.Perform(lNotification, aMessage.wParam, aMessage.lParam)
+      else
+        aMessage.Result := 1;
     end;
 
     rtl.BN_CLICKED: begin
@@ -202,6 +205,10 @@ end;
 method TControl.PlatformSetParent(aValue: TControl);
 begin
   HandleNeeded; // TODO
+  if ParentFont then begin
+    Font.FontHandle := aValue.Font.FontHandle;
+    PlatformFontChanged;
+  end;
 end;
 
 method TControl.PlatformSetOnClick(aValue: TNotifyEvent);
@@ -234,7 +241,7 @@ begin
   if HandleAllocated then begin
     var lMaxLength := rtl.GetWindowTextLength(fHandle);
     var lBuffer := new Char[lMaxLength + 1];
-    rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength);
+    rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength + 1);
     result := String.FromPChar(@lBuffer[0]);
   end
   else
@@ -346,7 +353,7 @@ end;
 
 method TNativeControl.PlatformFontChanged;
 begin
-  // TODO set component font from TFont object
+  rtl.SendMessage(fHandle, rtl.WM_SETFONT, rtl.WPARAM(Font.FontHandle), rtl.LPARAM(true));
 end;
 
 method TControl.HandleAllocated: Boolean;
