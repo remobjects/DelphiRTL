@@ -57,22 +57,19 @@ type
     method PlatformDelete(aIndex: Integer);
   end;
 
-  TListControl = public partial abstract class(TNativeControl)
+  TListBox = public partial class(TMultiSelectListControl)
   protected
+    method CreateParams(var aParams: TCreateParams); override;
+    method PlatformSelectAll;
+    method PlatformGetSelected(aIndex: Integer): Boolean;
+    method PlatformSetSelected(aIndex: Integer; value: Boolean);
+    method PlatformGetSelCount: Integer;
     method PlatformGetMultiSelect: Boolean;
     method PlatformSetMultiSelect(value: Boolean);
     method PlatformClearSelection;
     method PlatformDeleteSelected;
     method PlatformSetItemIndex(value: Integer);
     method PlatformGetItemIndex: Integer;
-  end;
-
-  TListBox = public partial class(TListControl)
-  protected
-    method CreateParams(var aParams: TCreateParams); override;
-    method PlatformSelectAll;
-    method PlatformGetSelected(aIndex: Integer): Boolean;
-    method PlatformSetSelected(aIndex: Integer; value: Boolean);
   end;
 
   TComboBox = public partial class(TListControl)
@@ -219,38 +216,6 @@ begin
   rtl.SendMessage(ListControl.Handle, rtl.LB_DELETESTRING, aIndex, 0);
 end;
 
-method TListControl.PlatformGetMultiSelect: Boolean;
-begin
-  // TODO recreateWnd, can not be changed in runtime...
-end;
-
-method TListControl.PlatformSetMultiSelect(value: Boolean);
-begin
-  // TODO recreateWnd, can not be changed in runtime...
-end;
-
-method TListControl.PlatformClearSelection;
-begin
-  rtl.SendMessage(fHandle, rtl.LB_SETSEL, 0, -1); // using -1 as item index does the trick
-end;
-
-method TListControl.PlatformDeleteSelected;
-begin
-  var lIndex := ItemIndex;
-  if lIndex ≥ 0 then
-    Items.Delete(lIndex);
-end;
-
-method TListControl.PlatformSetItemIndex(value: Integer);
-begin
-  rtl.SendMessage(fHandle, rtl.LB_SETCURSEL, value, 0);
-end;
-
-method TListControl.PlatformGetItemIndex: Integer;
-begin
-  result := rtl.SendMessage(fHandle, rtl.LB_GETCURSEL, 0, 0);
-end;
-
 method TListBox.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
@@ -274,6 +239,43 @@ end;
 method TListBox.PlatformSetSelected(aIndex: Integer; value: Boolean);
 begin
   rtl.SendMessage(fHandle, rtl.LB_SETSEL, Convert.ToInt32(value), aIndex);
+end;
+
+method TListBox.PlatformGetSelCount: Integer;
+begin
+  result := 0; // TODO
+end;
+
+method TListBox.PlatformGetMultiSelect: Boolean;
+begin
+  // TODO recreateWnd, can not be changed in runtime...
+end;
+
+method TListBox.PlatformSetMultiSelect(value: Boolean);
+begin
+  // TODO recreateWnd, can not be changed in runtime...
+end;
+
+method TListBox.PlatformClearSelection;
+begin
+  rtl.SendMessage(fHandle, rtl.LB_SETSEL, 0, -1); // using -1 as item index does the trick
+end;
+
+method TListBox.PlatformDeleteSelected;
+begin
+  var lIndex := ItemIndex;
+  if lIndex ≥ 0 then
+    Items.Delete(lIndex);
+end;
+
+method TListBox.PlatformSetItemIndex(value: Integer);
+begin
+  rtl.SendMessage(fHandle, rtl.LB_SETCURSEL, value, 0);
+end;
+
+method TListBox.PlatformGetItemIndex: Integer;
+begin
+  result := rtl.SendMessage(fHandle, rtl.LB_GETCURSEL, 0, 0);
 end;
 
 method TComboBox.CreateParams(var aParams: TCreateParams);

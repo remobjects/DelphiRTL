@@ -62,8 +62,53 @@ type
   end;
 
   TListControl = public partial abstract class(TNativeControl)
+  protected
+    method GetItemIndex: Integer; virtual; abstract;
+    method SetItemIndex(aValue: Integer); virtual; abstract;
+  public
+    method AddItem(Item: DelphiString; aObject: TObject); virtual; abstract;
+    method Clear; virtual; abstract;
+    method ClearSelection; virtual; abstract;
+    method DeleteSelected; virtual; abstract;
+    method GetCount: Integer; virtual; abstract;
+    method SelectAll; virtual; abstract;
+    property ItemIndex: Integer read GetItemIndex write SetItemIndex;
+  end;
+
+  TMultiSelectListControl = public partial abstract class(TListControl)
+  protected
+    fMultiSelect: Boolean;
+    method GetSelCount: Integer; virtual; abstract;
+    method SetMultiSelect(aValue: Boolean); virtual; abstract;
+  public
+    property MultiSelect: Boolean read fMultiSelect write SetMultiSelect default false;
+    property SelCount: Integer read GetSelCount;
+  end;
+
+  TListBox = public partial class(TMultiSelectListControl)
   private
-    fListBoxMode: Boolean;
+    fItems: TStrings;
+    method SetItems(aValue: TStrings);
+  protected
+
+    method GetItemIndex: Integer; override;
+    method SetItemIndex(aValue: Integer); override;
+    method GetSelCount: Integer; override;
+    method SetMultiSelect(aValue: Boolean); override;
+  public
+    constructor(aOwner: TComponent);
+    method AddItem(Item: DelphiString; aObject: TObject); override;
+    method Clear; override;
+    method ClearSelection; override;
+    method DeleteSelected; override;
+    method GetCount: Integer; override;
+    method SelectAll; override;
+    property Items: TStrings read fItems write SetItems;
+    property Selected[aIndex: Integer]: Boolean read PlatformGetSelected write PlatformSetSelected;
+  end;
+
+  /*TListControl = public partial abstract class(TNativeControl)
+  private
     fItemHeight: Integer;
   protected
     fItems: TStrings;
@@ -93,7 +138,7 @@ type
   public
     property Text: String read PlatformGetText;
     property OnSelect: TNotifyEvent read fOnSelect write SetOnSelect;
-  end;
+  end;*/
 
   {$IF WEBASSEMBLY}
   TMemoStrings = partial class(TStringList)
@@ -209,37 +254,63 @@ begin
   PlatformClear;
 end;
 
-constructor TListControl(aOwner: TComponent);
+constructor TListBox(aOwner: TComponent);
 begin
   fItems := new TListControlItems();
   TListControlItems(fItems).ListControl := self;
 end;
 
-method TListControl.AddItem(Item: DelphiString; aObject: TObject);
-begin
-  (fItems as TListControlItems).AddObject(Item, aObject);
-end;
-
-method TListControl.Clear;
-begin
-  (fItems as TListControlItems).Clear;
-end;
-
-method TListControl.ClearSelection;
-begin
-  PlatformClearSelection;
-end;
-
-method TListControl.DeleteSelected;
-begin
-  PlatformDeleteSelected;
-end;
-
-method TListControl.SetItems(aValue: TStrings);
+method TListBox.SetItems(aValue: TStrings);
 begin
   fItems.Clear;
   for i: Integer := 0 to aValue.Count - 1 do
     fItems.AddObject(aValue[i], aValue.Objects[i]);
+end;
+
+method TListBox.GetItemIndex: Integer;
+begin
+  result := PlatformGetItemIndex;
+end;
+
+method TListBox.SetItemIndex(aValue: Integer);
+begin
+  PlatformSetItemIndex(aValue);
+end;
+
+method TListBox.SetMultiSelect(aValue: Boolean);
+begin
+  fMultiSelect := aValue;
+  PlatformSetMultiSelect(aValue);
+end;
+
+method TListBox.GetSelCount: Integer;
+begin
+  result := PlatformGetSelCount;
+end;
+
+method TListBox.AddItem(Item: DelphiString; aObject: TObject);
+begin
+  (fItems as TListControlItems).AddObject(Item, aObject);
+end;
+
+method TListBox.Clear;
+begin
+  (fItems as TListControlItems).Clear;
+end;
+
+method TListBox.ClearSelection;
+begin
+  PlatformClearSelection;
+end;
+
+method TListBox.DeleteSelected;
+begin
+  PlatformDeleteSelected;
+end;
+
+method TListBox.GetCount: Integer;
+begin
+  result := fItems.Count;
 end;
 
 method TListBox.SelectAll;
@@ -247,11 +318,11 @@ begin
   PlatformSelectAll;
 end;
 
-method TComboBox.SetOnSelect(aValue: TNotifyEvent);
+/*method TComboBox.SetOnSelect(aValue: TNotifyEvent);
 begin
   fOnSelect := aValue;
   PlatformSetOnSelect(aValue);
-end;
+end;*/
 
 {$IF WEBASSEMBLY}
 method TMemoStrings.Get(aIndex: Integer): DelphiString;
