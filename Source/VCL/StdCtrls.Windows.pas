@@ -72,11 +72,27 @@ type
     method PlatformGetItemIndex: Integer;
   end;
 
+  TComboBoxItems = public partial class(TStringList)
+  private
+    method PlatformAddItem(S: DelphiString; aObject: TObject);
+    method PlatformInsert(aIndex: Integer; S: DelphiString);
+    method PlatformClear;
+    method PlatformDelete(aIndex: Integer);
+  end;
+
   TComboBox = public partial class(TListControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
     method PlatformGetText: String;
+    method PlatformSetText(aValue: String);
     method PlatformSetOnSelect(aValue: TNotifyEvent);
+    method PlatformSelectAll;
+    method PlatformClearSelection;
+    method PlatformDeleteSelected;
+    method PlatformSetItemIndex(aValue: Integer);
+    method PlatformGetItemIndex: Integer;
+  public
+    method WndProc(var aMessage: TMessage); override;
   end;
 
 implementation
@@ -278,11 +294,35 @@ begin
   result := rtl.SendMessage(fHandle, rtl.LB_GETCURSEL, 0, 0);
 end;
 
+method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
+begin
+  var lString := String(S);
+  var lArray := lString.ToCharArray(true);
+  rtl.SendMessage(ListControl.Handle, rtl.CB_ADDSTRING, 0, rtl.LPARAM(@lArray[0]));
+end;
+
+method TComboBoxItems.PlatformInsert(aIndex: Integer; S: DelphiString);
+begin
+  var lString := String(S);
+  var lArray := lString.ToCharArray(true);
+  rtl.SendMessage(ListControl.Handle, rtl.CB_INSERTSTRING, aIndex, rtl.LPARAM(@lArray[0]));
+end;
+
+method TComboBoxItems.PlatformClear;
+begin
+  rtl.SendMessage(ListControl.Handle, rtl.CB_RESETCONTENT, 0, 0);
+end;
+
+method TComboBoxItems.PlatformDelete(aIndex: Integer);
+begin
+  rtl.SendMessage(ListControl.Handle, rtl.CB_DELETESTRING, aIndex, 0);
+end;
+
 method TComboBox.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
   aParams.WidgetClassName := 'COMBOBOX'.ToCharArray(true);
-  aParams.Style := aParams.Style or rtl.ES_AUTOVSCROLL or rtl.CBS_DROPDOWN;
+  aParams.Style := aParams.Style or rtl.CBS_DROPDOWN;
   aParams.ExStyle := rtl.WS_EX_CLIENTEDGE;
   CreateClass(var aParams);
 end;
@@ -294,7 +334,66 @@ end;
 
 method TComboBox.PlatformGetText: String;
 begin
+  var lMaxLength := rtl.GetWindowTextLength(fHandle);
+  var lBuffer := new Char[lMaxLength + 1];
+  rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength + 1);
+  result := String.FromPChar(@lBuffer[0]);
+end;
 
+method TComboBox.PlatformSetText(aValue: String);
+begin
+  var lBuffer := aValue.ToCharArray(true);
+  rtl.SetWindowText(fHandle, @lBuffer[0]);
+end;
+
+method TComboBox.PlatformSelectAll;
+begin
+  rtl.SendMessage(fHandle, rtl.CB_SETCURSEL, 1, -1);
+end;
+
+method TComboBox.PlatformClearSelection;
+begin
+  rtl.SendMessage(fHandle, rtl.CB_SETCURSEL, -1, -1);
+end;
+
+method TComboBox.PlatformDeleteSelected;
+begin
+  var lIndex := ItemIndex;
+  if lIndex ≥ 0 then
+    Items.Delete(lIndex);
+end;
+
+method TComboBox.PlatformSetItemIndex(aValue: Integer);
+begin
+  rtl.SendMessage(fHandle, rtl.CB_SETCURSEL, aValue, 0);
+end;
+
+method TComboBox.PlatformGetItemIndex: Integer;
+begin
+  result := rtl.SendMessage(fHandle, rtl.CB_GETCURSEL, 0, 0);
+end;
+
+method TComboBox.WndProc(var aMessage: TMessage);
+begin
+  case aMessage.Msg of
+    rtl.CBN_DROPDOWN: begin
+      rtl.PostMessage(fHandle, rtl.CB_SHOWDROPDOWN, 1, 0);
+      aMessage.Result := 0;
+    end;
+
+    rtl.CBN_CLOSEUP: begin
+      rtl.PostMessage(fHandle, rtl.CB_SHOWDROPDOWN, 0, 0);
+      aMessage.Result := 0;
+    end;
+
+    rtl.CBN_SELCHANGE: begin
+      PlatformSetText(fItems[ItemIndex]);
+      aMessage.Result := 0;
+    end;
+
+    else
+      inherited(var aMessage);
+  end;
 end;
 {$ENDIF}
 

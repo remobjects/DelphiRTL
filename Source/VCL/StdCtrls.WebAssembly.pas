@@ -96,11 +96,22 @@ type
     method PlatformGetItemIndex: Integer;
   end;
 
+  TComboBoxItems = public partial class(TStringList)
+  private
+    method PlatformAddItem(S: DelphiString; aObject: TObject);
+    method PlatformInsert(aIndex: Integer; S: DelphiString);
+    method PlatformClear;
+    method PlatformDelete(aIndex: Integer);
+  end;
+
   TComboBox = public partial class(TListControl)
   protected
     method CreateHandle; override;
     method PlatformGetText: String;
+    method PlatformSetText(aValue: String);
     method PlatformSetOnSelect(aValue: TNotifyEvent);
+    method PlatformSelectAll;
+    method PlatformClearSelection;
     method PlatformDeleteSelected;
     method PlatformSetItemIndex(value: Integer);
     method PlatformGetItemIndex: Integer;
@@ -219,7 +230,6 @@ method TEdit.PlatformSetText(aValue: String);
 begin
   fHandle.value := aValue;
 end;
-
 
 method TCheckBox.CreateHandle;
 begin
@@ -367,6 +377,31 @@ begin
   fHandle.selectedIndex := value;
 end;
 
+method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
+begin
+  var lOption := WebAssembly.CreateElement("OPTION");
+  lOption.text := String(S);
+  ListControl.Handle.add(lOption);
+end;
+
+method TComboBoxItems.PlatformInsert(aIndex: Integer; S: DelphiString);
+begin
+  var lOption := WebAssembly.CreateElement("OPTION");
+  lOption.text := String(S);
+  ListControl.Handle.add(lOption, aIndex);
+end;
+
+method TComboBoxItems.PlatformClear;
+begin
+  for i: Integer := ListControl.Handle.length - 1 downto 0 do
+    ListControl.Handle.remove(i);
+end;
+
+method TComboBoxItems.PlatformDelete(aIndex: Integer);
+begin
+  ListControl.Handle.remove(aIndex);
+end;
+
 method TComboBox.CreateHandle;
 begin
   fHandle := WebAssembly.CreateElement("SELECT");
@@ -379,9 +414,22 @@ begin
   fHandle.addEventListener("change", lDelegate);
 end;
 
+method TComboBox.PlatformSelectAll;
+begin
+end;
+
+method TComboBox.PlatformClearSelection;
+begin
+end;
+
 method TComboBox.PlatformGetText: String;
 begin
   result := fHandle.value;
+end;
+
+method TComboBox.PlatformSetText(aValue: String);
+begin
+  fHandle.value := aValue;
 end;
 
 method TComboBox.PlatformDeleteSelected;

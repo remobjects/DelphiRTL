@@ -88,9 +88,9 @@ type
   TListBox = public partial class(TMultiSelectListControl)
   private
     fItems: TStrings;
+    fItemHeight: Integer;
     method SetItems(aValue: TStrings);
   protected
-
     method GetItemIndex: Integer; override;
     method SetItemIndex(aValue: Integer); override;
     method GetSelCount: Integer; override;
@@ -104,41 +104,42 @@ type
     method GetCount: Integer; override;
     method SelectAll; override;
     property Items: TStrings read fItems write SetItems;
-    property Selected[aIndex: Integer]: Boolean read PlatformGetSelected write PlatformSetSelected;
-  end;
-
-  /*TListControl = public partial abstract class(TNativeControl)
-  private
-    fItemHeight: Integer;
-  protected
-    fItems: TStrings;
-    constructor(aOwner: TComponent);
-    method SetItems(aValue: TStrings); virtual;
-  public
-    method AddItem(Item: DelphiString; aObject: TObject);
-    method Clear;
-    method ClearSelection;
-    method DeleteSelected;
-    property Items: TStrings read fItems write SetItems;
-    property ItemIndex: Integer read PlatformGetItemIndex write PlatformSetItemIndex;
     property ItemHeight: Integer read fItemHeight write fItemHeight;
+    property Selected[aIndex: Integer]: Boolean read PlatformGetSelected write PlatformSetSelected;
   end;
 
-  TListBox = public partial class(TListControl)
+  TComboBoxItems = public partial class(TStringList)
   public
-    procedure SelectAll;
-    property MultiSelect: Boolean read PlatformGetMultiSelect write PlatformSetMultiSelect;
-    property Selected[aIndex: Integer]: Boolean read PlatformGetSelected write PlatformSetSelected;
+    method AddObject(S: DelphiString; aObject: TObject): Integer; override;
+    method Clear; override;
+    method Delete(aIndex: Integer); override;
+    method Insert(aIndex: Integer; S: DelphiString); override;
+    property ListControl: TListControl read write;
   end;
 
   TComboBox = public partial class(TListControl)
   private
+    fItems: TStrings;
     fOnSelect: TNotifyEvent;
+    fItemHeight: Integer;
     method SetOnSelect(aValue: TNotifyEvent);
+    method SetItems(aValue: TStrings);
+  protected
+    method GetItemIndex: Integer; override;
+    method SetItemIndex(aValue: Integer); override;
   public
-    property Text: String read PlatformGetText;
+    constructor(aOwner: TComponent);
+    method AddItem(Item: DelphiString; aObject: TObject); override;
+    method Clear; override;
+    method ClearSelection; override;
+    method DeleteSelected; override;
+    method GetCount: Integer; override;
+    method SelectAll; override;
+    property Items: TStrings read fItems write SetItems;
+    property ItemHeight: Integer read fItemHeight write fItemHeight;
+    property Text: String read PlatformGetText write PlatformSetText;
     property OnSelect: TNotifyEvent read fOnSelect write SetOnSelect;
-  end;*/
+  end;
 
   {$IF WEBASSEMBLY}
   TMemoStrings = partial class(TStringList)
@@ -318,11 +319,88 @@ begin
   PlatformSelectAll;
 end;
 
-/*method TComboBox.SetOnSelect(aValue: TNotifyEvent);
+method TComboBoxItems.AddObject(S: DelphiString; aObject: TObject): Integer;
+begin
+  inherited;
+  PlatformAddItem(S, aObject);
+end;
+
+method TComboBoxItems.Clear;
+begin
+  inherited;
+  PlatformClear;
+end;
+
+method TComboBoxItems.Delete(aIndex: Integer);
+begin
+  inherited;
+  PlatformDelete(aIndex);
+end;
+
+method TComboBoxItems.Insert(aIndex: Integer; S: DelphiString);
+begin
+  inherited;
+  PlatformInsert(aIndex, S);
+end;
+
+method TComboBox.SetOnSelect(aValue: TNotifyEvent);
 begin
   fOnSelect := aValue;
   PlatformSetOnSelect(aValue);
-end;*/
+end;
+
+method TComboBox.SetItems(aValue: TStrings);
+begin
+  fItems.Clear;
+  for i: Integer := 0 to aValue.Count - 1 do
+    fItems.AddObject(aValue[i], aValue.Objects[i]);
+end;
+
+method TComboBox.GetItemIndex: Integer;
+begin
+  result := PlatformGetItemIndex;
+end;
+
+method TComboBox.SetItemIndex(aValue: Integer);
+begin
+  PlatformSetItemIndex(aValue);
+end;
+
+constructor TComboBox(aOwner: TComponent);
+begin
+  fItems := new TComboBoxItems();
+  TComboBoxItems(fItems).ListControl := self;
+end;
+
+method TComboBox.AddItem(Item: DelphiString; aObject: TObject);
+begin
+  (fItems as TComboBoxItems).AddObject(Item, aObject);
+end;
+
+method TComboBox.Clear;
+begin
+  (fItems as TComboBoxItems).Clear;
+end;
+
+method TComboBox.ClearSelection;
+begin
+  PlatformClearSelection;
+end;
+
+method TComboBox.DeleteSelected;
+begin
+  PlatformDeleteSelected;
+end;
+
+method TComboBox.GetCount: Integer;
+begin
+  result := fItems.Count;
+end;
+
+method TComboBox.SelectAll;
+begin
+  PlatformSelectAll;
+end;
 
 {$IF WEBASSEMBLY}
 method TMemoStrings.Get(aIndex: Integer): DelphiString;
