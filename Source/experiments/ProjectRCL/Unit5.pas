@@ -19,7 +19,7 @@ type
     radioButton1: TRadioButton;
     checkBox1: TCheckBox;
     listBox1: TListBox;
-    //comboBox1: TComboBox;
+    comboBox1: TComboBox;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
   end;
@@ -36,6 +36,7 @@ begin
   //ShowMessage('Clicked!');
   //ShowMessage(edit1.Text);
   listBox1.Items.Add(edit1.Text);
+  comboBox1.Items.Add(edit1.Text);
 end;
 
 procedure TForm6.Button2Click(Sender: TObject);

@@ -55,7 +55,7 @@ begin
       rtl.DispatchMessage(@lMsg);
     end;
 
-    if lMsg.message = rtl.WM_QUIT then
+    if (lMsg.message = rtl.WM_QUIT) or (lMsg.message = rtl.WM_CLOSE) then
       Terminate;
   end;
 end;

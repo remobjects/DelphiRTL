@@ -81,9 +81,13 @@ type
     method PlatformDelete(aIndex: Integer);
   end;
 
-  TListControl = public partial abstract class(TNativeControl)
+  TListBox = public partial class(TMultiSelectListControl)
   protected
-    method internalCreateHandle(aListBoxMode: Boolean);
+    method CreateHandle; override;
+    method PlatformSelectAll;
+    method PlatformGetSelected(aIndex: Integer): Boolean;
+    method PlatformSetSelected(aIndex: Integer; value: Boolean);
+    method PlatformGetSelCount: Integer;
     method PlatformGetMultiSelect: Boolean;
     method PlatformSetMultiSelect(value: Boolean);
     method PlatformClearSelection;
@@ -92,19 +96,25 @@ type
     method PlatformGetItemIndex: Integer;
   end;
 
-  TComboBox = public partial class(TListControl)
-  protected
-    method PlatformGetText: String;
-    method PlatformSetOnSelect(aValue: TNotifyEvent);
-    method CreateHandle; override;
+  TComboBoxItems = public partial class(TStringList)
+  private
+    method PlatformAddItem(S: DelphiString; aObject: TObject);
+    method PlatformInsert(aIndex: Integer; S: DelphiString);
+    method PlatformClear;
+    method PlatformDelete(aIndex: Integer);
   end;
 
-  TListBox = public partial class(TListControl)
+  TComboBox = public partial class(TListControl)
   protected
     method CreateHandle; override;
+    method PlatformGetText: String;
+    method PlatformSetText(aValue: String);
+    method PlatformSetOnSelect(aValue: TNotifyEvent);
     method PlatformSelectAll;
-    method PlatformGetSelected(aIndex: Integer): Boolean;
-    method PlatformSetSelected(aIndex: Integer; value: Boolean);
+    method PlatformClearSelection;
+    method PlatformDeleteSelected;
+    method PlatformSetItemIndex(value: Integer);
+    method PlatformGetItemIndex: Integer;
   end;
 
   TMemoStrings = partial class(TStringList)
@@ -221,7 +231,6 @@ begin
   fHandle.value := aValue;
 end;
 
-
 method TCheckBox.CreateHandle;
 begin
   internalCreateHandle("checkbox");
@@ -281,7 +290,6 @@ begin
   internalCreateHandle("radio");
 end;
 
-
 method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
   var lOption := WebAssembly.CreateElement("OPTION");
@@ -307,52 +315,11 @@ begin
   ListControl.Handle.add(lOption);
 end;
 
-method TListControl.internalCreateHandle(aListBoxMode: Boolean);
-begin
-  fListBoxMode := aListBoxMode;
-  fHandle := WebAssembly.CreateElement("SELECT");
-  if fListBoxMode then
-    fHandle.setAttribute("size", 6);
-  fHandle.style.position := "absolute";
-end;
-
-method TListControl.PlatformGetMultiSelect: Boolean;
-begin
-  result := fHandle.getAttribute("multiple") = "multiple";
-end;
-
-method TListControl.PlatformSetMultiSelect(value: Boolean);
-begin
-  if value then
-    fHandle.setAttribute("multiple", "multiple")
-  else
-    fHandle.setAttribute("multiple", "no");
-end;
-
-method TListControl.PlatformClearSelection;
-begin
-  for i: Integer := 0 to fHandle.options.length - 1 do
-    fHandle.options[i].selected := false;
-end;
-
-method TListControl.PlatformDeleteSelected;
-begin
-  fHandle.remove(fHandle.options.selectedIndex);
-end;
-
-method TListControl.PlatformGetItemIndex: Integer;
-begin
-  result := fHandle.selectedIndex;
-end;
-
-method TListControl.PlatformSetItemIndex(value: Integer);
-begin
-  fHandle.selectedIndex := value;
-end;
-
 method TListBox.CreateHandle;
 begin
-  internalCreateHandle(true);
+  fHandle := WebAssembly.CreateElement("SELECT");
+  fHandle.setAttribute("size", 6);
+  fHandle.style.position := "absolute";
 end;
 
 method TListBox.PlatformSelectAll;
@@ -371,10 +338,88 @@ begin
   fHandle.options[aIndex].selected := value;
 end;
 
+method TListBox.PlatformGetSelCount: Integer;
+begin
+  result := 0; // TODO
+end;
+
+method TListBox.PlatformGetMultiSelect: Boolean;
+begin
+  result := fHandle.getAttribute("multiple") = "multiple";
+end;
+
+method TListBox.PlatformSetMultiSelect(value: Boolean);
+begin
+  if value then
+    fHandle.setAttribute("multiple", "multiple")
+  else
+    fHandle.setAttribute("multiple", "no");
+end;
+
+method TListBox.PlatformClearSelection;
+begin
+  for i: Integer := 0 to fHandle.options.length - 1 do
+    fHandle.options[i].selected := false;
+end;
+
+method TListBox.PlatformDeleteSelected;
+begin
+  fHandle.remove(fHandle.options.selectedIndex);
+end;
+
+method TListBox.PlatformGetItemIndex: Integer;
+begin
+  result := fHandle.selectedIndex;
+end;
+
+method TListBox.PlatformSetItemIndex(value: Integer);
+begin
+  fHandle.selectedIndex := value;
+end;
+
+method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
+begin
+  var lOption := WebAssembly.CreateElement("OPTION");
+  lOption.text := String(S);
+  ListControl.Handle.add(lOption);
+end;
+
+method TComboBoxItems.PlatformInsert(aIndex: Integer; S: DelphiString);
+begin
+  var lOption := WebAssembly.CreateElement("OPTION");
+  lOption.text := String(S);
+  ListControl.Handle.add(lOption, aIndex);
+end;
+
+method TComboBoxItems.PlatformClear;
+begin
+  for i: Integer := ListControl.Handle.length - 1 downto 0 do
+    ListControl.Handle.remove(i);
+end;
+
+method TComboBoxItems.PlatformDelete(aIndex: Integer);
+begin
+  ListControl.Handle.remove(aIndex);
+end;
+
+method TComboBox.CreateHandle;
+begin
+  fHandle := WebAssembly.CreateElement("SELECT");
+  fHandle.style.position := "absolute";
+end;
+
 method TComboBox.PlatformSetOnSelect(aValue: TNotifyEvent);
 begin
   var lDelegate := new WebAssemblyDelegate((a) -> aValue(self));
   fHandle.addEventListener("change", lDelegate);
+end;
+
+method TComboBox.PlatformSelectAll;
+begin
+end;
+
+method TComboBox.PlatformClearSelection;
+begin
 end;
 
 method TComboBox.PlatformGetText: String;
@@ -382,9 +427,24 @@ begin
   result := fHandle.value;
 end;
 
-method TComboBox.CreateHandle;
+method TComboBox.PlatformSetText(aValue: String);
 begin
-  internalCreateHandle(false);
+  fHandle.value := aValue;
+end;
+
+method TComboBox.PlatformDeleteSelected;
+begin
+  fHandle.remove(fHandle.options.selectedIndex);
+end;
+
+method TComboBox.PlatformSetItemIndex(value: Integer);
+begin
+  fHandle.selectedIndex := value;
+end;
+
+method TComboBox.PlatformGetItemIndex: Integer;
+begin
+  result := fHandle.selectedIndex;
 end;
 
 method TMemoStrings.PlatformGetText: String;

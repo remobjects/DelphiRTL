@@ -19,6 +19,7 @@ type
     checkBox1: TCheckBox;
     listbox1: TListBox;
     button2: TButton;
+    comboBox1: TComboBox;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
   end;
@@ -34,6 +35,7 @@ begin
   //label1.Caption := 'All right!';
   //button1.Caption := 'Yes!!';
   listbox1.Items.Add(edit1.Text);
+  comboBox1.Items.Add(edit1.Text);
   if Application.MainForm = nil then
     writeLn('MainForm nil')
   else
@@ -44,7 +46,7 @@ end;
 
 procedure TForm6.Button2Click(Sender: TObject);
 begin
-
+  comboBox1.Items.Add(edit1.Text);
 end;
 
 end.
