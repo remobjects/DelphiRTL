@@ -27,10 +27,12 @@ begin
   HandleNeeded;
   var lName := typeOf(self).Name;
   lName := lName.Substring(lName.LastIndexOf('.') + 1).ToUpper;
-  var lStream := new TResourceStream(0, lName + '.dfm');
-  lStream.Position := 0;
-  var lReader := new TReader(lStream, 100);
-  lReader.ReadRootComponent(self);
+  if lName.ToUpper <> 'TFORM' then begin
+    var lStream := new TResourceStream(0, lName + '.dfm');
+    lStream.Position := 0;
+    var lReader := new TReader(lStream, 100);
+    lReader.ReadRootComponent(self);
+  end;
 end;
 
 method TCustomForm.PlatformSetCaption(aValue: String);

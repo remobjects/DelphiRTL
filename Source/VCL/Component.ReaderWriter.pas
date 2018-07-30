@@ -381,9 +381,9 @@ begin
   if lCtor = nil then raise new Exception('No default constructor could be found!');
   var lNew := DefaultGC.New(aType.RTTI, aType.SizeOfType);
   result := InternalCalls.Cast<TComponent>(lNew);
-  lCtor.Invoke(result, [aOwner]);
-  //var lCaller := TControlCtor(lCtor.Pointer);
-  //lCaller(result, aOwner);
+  //lCtor.Invoke(result, [aOwner]);
+  var lCaller := TControlCtor(lCtor.Pointer);
+  lCaller(result, aOwner);
 end;
 
 

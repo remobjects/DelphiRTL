@@ -75,7 +75,7 @@ type
 
   TListControlItems = public partial class(TStringList)
   private
-    method PlatformAddItem(S: DelphiString; aObject: TObject);
+    method PlatformAddItem(S: String; aObject: TObject);
     method PlatformInsert(aIndex: Integer; S: DelphiString);
     method PlatformClear;
     method PlatformDelete(aIndex: Integer);
@@ -94,6 +94,8 @@ type
     method PlatformDeleteSelected;
     method PlatformSetItemIndex(value: Integer);
     method PlatformGetItemIndex: Integer;
+
+    method PlatformAddOneItem(S: String);
   end;
 
   TComboBoxItems = public partial class(TStringList)
@@ -308,11 +310,11 @@ begin
   ListControl.Handle.remove(aIndex);
 end;
 
-method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
+method TListControlItems.PlatformAddItem(S: String; aObject: TObject);
 begin
   var lOption := WebAssembly.CreateElement("OPTION");
   lOption.text := String(S);
-  ListControl.Handle.add(lOption);
+  ListControl.Handle.add(Object(lOption));
 end;
 
 method TListBox.CreateHandle;
@@ -375,6 +377,13 @@ end;
 method TListBox.PlatformSetItemIndex(value: Integer);
 begin
   fHandle.selectedIndex := value;
+end;
+
+method TListBox.PlatformAddOneItem(S: String);
+begin
+  var lOption := WebAssembly.CreateElement("OPTION");
+  lOption.text := S;
+  Handle.add(lOption);
 end;
 
 method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
