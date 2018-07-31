@@ -98,7 +98,6 @@ type
   public
     constructor(aOwner: TComponent);
     method AddItem(Item: DelphiString; aObject: TObject); override;
-    method AddOneItem(S: String);
     method Clear; override;
     method ClearSelection; override;
     method DeleteSelected; override;
@@ -288,11 +287,6 @@ end;
 method TListBox.GetSelCount: Integer;
 begin
   result := PlatformGetSelCount;
-end;
-
-method TListBox.AddOneItem(S: String);
-begin
-  PlatformAddOneItem(S);
 end;
 
 method TListBox.AddItem(Item: DelphiString; aObject: TObject);
