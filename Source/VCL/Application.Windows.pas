@@ -38,6 +38,10 @@ begin
   FormRef := InternalCalls.Cast<TForm>(lNew);
   lCtor.Invoke(FormRef, [nil]);
   aFormRef := FormRef;
+  if fMainForm = nil then begin
+    fMainForm := FormRef;
+    fMainForm.Show;
+  end;
 end;
 
 method TApplication.Initialize;
@@ -55,8 +59,9 @@ begin
       rtl.DispatchMessage(@lMsg);
     end;
 
-    if (lMsg.message = rtl.WM_QUIT) or (lMsg.message = rtl.WM_CLOSE) then
+    if (lMsg.message = rtl.WM_QUIT) or (lMsg.message = rtl.WM_CLOSE) then begin
       Terminate;
+    end;
   end;
 end;
 

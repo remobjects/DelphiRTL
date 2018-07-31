@@ -82,7 +82,9 @@ type
 
   TComboBox = public partial class(TListControl)
   protected
+    fEditHandle: rtl.HWND;
     method CreateParams(var aParams: TCreateParams); override;
+    method CreateHandle; override;
     method PlatformGetText: String;
     method PlatformSetText(aValue: String);
     method PlatformSetOnSelect(aValue: TNotifyEvent);
@@ -327,6 +329,16 @@ begin
   CreateClass(var aParams);
 end;
 
+method TComboBox.CreateHandle;
+begin
+  inherited;
+  // Here we get the handle of the edit component
+  var lInfo: rtl.COMBOBOXINFO;
+  lInfo.cbSize := sizeOf(lInfo);
+  rtl.GetComboBoxInfo(fHandle, @lInfo);
+  fEditHandle := lInfo.hwndItem;
+end;
+
 method TComboBox.PlatformSetOnSelect(aValue: TNotifyEvent);
 begin
 
@@ -383,11 +395,11 @@ begin
 
     rtl.CBN_CLOSEUP: begin
       rtl.PostMessage(fHandle, rtl.CB_SHOWDROPDOWN, 0, 0);
-      aMessage.Result := 0;
-    end;
-
-    rtl.CBN_SELCHANGE: begin
-      PlatformSetText(fItems[ItemIndex]);
+      if ItemIndex >= 0 then begin
+        var lBuffer := String(fItems[ItemIndex]).ToCharArray(true);
+        rtl.SetWindowText(fEditHandle, @lBuffer[0]);
+        rtl.PostMessage(fEditHandle, rtl.EM_SETSEL, 0, -1);
+      end;
       aMessage.Result := 0;
     end;
 
