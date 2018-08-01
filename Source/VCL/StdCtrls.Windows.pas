@@ -388,7 +388,7 @@ end;
 
 method TComboBox.WndProc(var aMessage: TMessage);
 begin
-  case aMessage.Msg of
+  {case aMessage.Msg of
     rtl.CBN_DROPDOWN: begin
       //rtl.PostMessage(fHandle, rtl.CB_SHOWDROPDOWN, 1, 0);
       aMessage.Result := 0;
@@ -417,10 +417,9 @@ begin
       WriteLn('Changed! 222');
       //aMessage.Result := 0;
     end;
+  end;}
 
-    else
-      inherited(var aMessage);
-  end;
+  inherited(var aMessage);
 end;
 {$ENDIF}
 

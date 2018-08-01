@@ -50,6 +50,7 @@ type
     method PlatformFontChanged; virtual; partial;
 
     method DefaultHandler(var aMessage: TMessage); virtual;
+    method WantMessage(var aMessage: TMessage): Boolean; virtual;
 
   public
     method WndProc(var aMessage: TMessage); virtual;
@@ -80,6 +81,7 @@ type
     method CreateWnd; virtual;
 
     method DefaultHandler(var aMessage: TMessage); override;
+    method WantMessage(var aMessage: TMessage): Boolean; override;
 
     method PlatformFontChanged; override;
 
@@ -140,7 +142,7 @@ end;
 
 method TNativeControl.WndProc(var aMessage: TMessage);
 begin
-  case aMessage.Msg of
+  {case aMessage.Msg of
     rtl.WM_COMMAND: begin
       // HiWord(WParam): Notification code
       // LoWord(WParam): Controld ID
@@ -158,10 +160,8 @@ begin
       Click;
       aMessage.Result := 0;
     end;
-
-    else
-      inherited(var aMessage);
-  end;
+  end;}
+  inherited(var aMessage);
 end;
 
 method TNativeControl.ControlFromHandle(aHandle: rtl.HWND): TNativeControl;
@@ -284,12 +284,18 @@ end;
 method TControl.WndProc(var aMessage: TMessage);
 begin
   // Dispatch messages here to message WM_XXXX functions
-  DefaultHandler(var aMessage);
+  if not WantMessage(var aMessage) then
+    DefaultHandler(var aMessage);
 end;
 
 method TControl.DefaultHandler(var aMessage: TMessage);
 begin
 
+end;
+
+method TControl.WantMessage(var aMessage: TMessage): Boolean;
+begin
+  result := false;
 end;
 
 method TNativeControl.CreateParams(var aParams: TCreateParams);
@@ -349,6 +355,28 @@ end;
 method TNativeControl.DefaultHandler(var aMessage: TMessage);
 begin
   aMessage.Result := rtl.CallWindowProc(fOldWndProc, fHandle, aMessage.Msg, aMessage.wParam, aMessage.lParam);
+end;
+
+method TNativeControl.WantMessage(var aMessage: TMessage): Boolean;
+begin
+  result := true;
+  case aMessage.msg of
+    rtl.WM_COMMAND: begin
+      // HiWord(WParam): Notification code
+      // LoWord(WParam): Controld ID
+      // LParam: Target Window Handle
+      var lNotification := aMessage.wParam shr 16;
+      var lControl := ControlFromHandle(rtl.HWND(aMessage.lParam));
+      if lControl = nil then result := false;
+      if lControl <> nil then
+        {aMessage.Result := }lControl.Perform(lNotification, aMessage.wParam, aMessage.lParam);
+      //else
+        //result := false;}
+    end;
+
+  else
+    result := false;
+  end;
 end;
 
 method TNativeControl.PlatformFontChanged;
