@@ -82,6 +82,7 @@ type
 
   TComboBox = public partial class(TListControl)
   protected
+    fOldItemIndex: Integer := -1;
     fEditHandle: rtl.HWND;
     method CreateParams(var aParams: TCreateParams); override;
     method CreateHandle; override;
@@ -324,7 +325,7 @@ method TComboBox.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
   aParams.WidgetClassName := 'COMBOBOX'.ToCharArray(true);
-  aParams.Style := aParams.Style or rtl.CBS_DROPDOWN;
+  aParams.Style := aParams.Style or rtl.CBS_DROPDOWN or rtl.CBS_HASSTRINGS or rtl.CBS_AUTOHSCROLL;
   aParams.ExStyle := rtl.WS_EX_CLIENTEDGE;
   CreateClass(var aParams);
 end;
@@ -389,18 +390,32 @@ method TComboBox.WndProc(var aMessage: TMessage);
 begin
   case aMessage.Msg of
     rtl.CBN_DROPDOWN: begin
-      rtl.PostMessage(fHandle, rtl.CB_SHOWDROPDOWN, 1, 0);
+      //rtl.PostMessage(fHandle, rtl.CB_SHOWDROPDOWN, 1, 0);
       aMessage.Result := 0;
     end;
 
     rtl.CBN_CLOSEUP: begin
-      rtl.PostMessage(fHandle, rtl.CB_SHOWDROPDOWN, 0, 0);
-      if ItemIndex >= 0 then begin
-        var lBuffer := String(fItems[ItemIndex]).ToCharArray(true);
-        rtl.SetWindowText(fEditHandle, @lBuffer[0]);
-        rtl.PostMessage(fEditHandle, rtl.EM_SETSEL, 0, -1);
-      end;
-      aMessage.Result := 0;
+      //rtl.SendMessage(fHandle, rtl.CB_SHOWDROPDOWN, 0, 0);
+      //if fOldItemIndex <> ItemIndex then begin
+        //if assigned(fOnSelect) then fOnSelect(self);
+        WriteLn('CloseUp!');
+        //if ItemIndex >= 0 then begin
+          //var lBuffer := String(fItems[ItemIndex]).ToCharArray(true);
+          //rtl.SetWindowText(fEditHandle, @lBuffer[0]);
+          //rtl.PostMessage(fEditHandle, rtl.EM_SETSEL, 0, -1);
+        //end;
+      //end;
+      //aMessage.Result := 0;
+    end;
+
+    rtl.CBN_SELENDOK: begin
+      WriteLn('Changed!');
+      //aMessage.Result := 0;
+    end;
+
+    rtl.CBN_SELCHANGE: begin
+      WriteLn('Changed! 222');
+      //aMessage.Result := 0;
     end;
 
     else
