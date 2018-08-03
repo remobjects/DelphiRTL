@@ -28,6 +28,7 @@ object Form6: TForm6
     Height = 21
     TabOrder = 1
     Text = 'ComboBox1'
+    OnSelect = ComboBox1Select    
   end
   object Edit1: TEdit
     Left = 152

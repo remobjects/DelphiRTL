@@ -121,8 +121,10 @@ type
   private
     fItems: TStrings;
     fOnSelect: TNotifyEvent;
+    fOnChange: TNotifyEvent;
     fItemHeight: Integer;
     method SetOnSelect(aValue: TNotifyEvent);
+    method SetOnChange(aValue: TNotifyEvent);
     method SetItems(aValue: TStrings);
   protected
     method GetItemIndex: Integer; override;
@@ -139,6 +141,7 @@ type
     property ItemHeight: Integer read fItemHeight write fItemHeight;
     property Text: String read PlatformGetText write PlatformSetText;
     property OnSelect: TNotifyEvent read fOnSelect write SetOnSelect;
+    property OnChange: TNotifyEvent read fOnChange write SetOnChange;
   end;
 
   {$IF WEBASSEMBLY}
@@ -347,6 +350,12 @@ method TComboBox.SetOnSelect(aValue: TNotifyEvent);
 begin
   fOnSelect := aValue;
   PlatformSetOnSelect(aValue);
+end;
+
+method TComboBox.SetOnChange(aValue: TNotifyEvent);
+begin
+  fOnChange := aValue;
+  PlatformSetOnChange(aValue);
 end;
 
 method TComboBox.SetItems(aValue: TStrings);

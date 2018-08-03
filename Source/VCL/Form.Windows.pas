@@ -11,7 +11,7 @@ type
   public
     constructor(aOwner: TComponent);
     method CreateWnd; override;
-    method WndProc2(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+    method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
   end;
 
   TForm = public partial class(TCustomForm)
@@ -81,9 +81,12 @@ begin
   rtl.ShowWindow(fHandle, rtl.SW_SHOW);
 end;
 
-method TCustomForm.WndProc2(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+method TCustomForm.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 begin
-  result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
+  if (message = rtl.WM_CLOSE) and (Application.MainForm = self) then
+    Application.Terminate
+  else
+    result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
 end;
 
 class method TCustomForm.FormWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
@@ -91,7 +94,7 @@ begin
   var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
   if lObject <> 0 then begin
     var lControl := InternalCalls.Cast<TCustomForm>(^Void(lObject));
-    result := lControl.WndProc2(hWnd, message, wParam, lParam);
+    result := lControl.WndProc(hWnd, message, wParam, lParam);
   end
   else
     result := rtl.DefWindowProc(hWnd, message, wParam, lParam);

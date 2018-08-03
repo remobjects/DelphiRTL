@@ -26,6 +26,7 @@ type
   end;
 
   TWndMethod = public method(var aMessage: TMessage);
+  TMessageMethod = public method(aInst: Object; var aMessage: TMessage);
 
   TControl = public partial class(TComponent)
   protected
@@ -50,7 +51,7 @@ type
     method PlatformFontChanged; virtual; partial;
 
     method DefaultHandler(var aMessage: TMessage); virtual;
-
+    method WantMessage(var aMessage: TMessage): Boolean; virtual;
   public
     method WndProc(var aMessage: TMessage); virtual;
     method Perform(aMessage: Cardinal; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
@@ -83,6 +84,9 @@ type
 
     method PlatformFontChanged; override;
 
+    [MessageAttribute(rtl.WM_COMMAND)]
+    method WMCommand(var aMessage: TMessage);
+
   public
     method WndProc(var aMessage: TMessage); override;
     constructor(aOwner: TComponent);
@@ -94,6 +98,23 @@ type
   TWndProc = public function(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 
   TScrollingWinControl = public partial class(TWinControl)
+  end;
+
+  [AttributeUsage(AttributeTargets.Method)]
+  MessageAttribute = public class(Attribute)
+  private
+    fMessage: Cardinal;
+  public
+    constructor (aMessage: Cardinal);
+    property Message: Cardinal read fMessage;
+  end;
+
+  TMessageTable = public List<KeyValuePair<Cardinal, MethodInfo>>;
+  TMessageTableCache = public static class
+  private
+    class var fCache: Dictionary<&Type, TMessageTable> := new Dictionary<&Type, TMessageTable>();
+  public
+    class method MessageTableFor(aType: &Type): TMessageTable;
   end;
 
   function GlobalWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
@@ -140,28 +161,7 @@ end;
 
 method TNativeControl.WndProc(var aMessage: TMessage);
 begin
-  case aMessage.Msg of
-    rtl.WM_COMMAND: begin
-      // HiWord(WParam): Notification code
-      // LoWord(WParam): Controld ID
-      // LParam: Target Window Handle
-      var lNotification := aMessage.wParam shr 16;
-      var lControl := ControlFromHandle(rtl.HWND(aMessage.lParam));
-      if lControl <> nil then
-        aMessage.Result := lControl.Perform(lNotification, aMessage.wParam, aMessage.lParam)
-      else
-        aMessage.Result := 1;
-    end;
-
-    rtl.BN_CLICKED: begin
-      // we got this message from our parent via WM_COMMAND
-      Click;
-      aMessage.Result := 0;
-    end;
-
-    else
-      inherited(var aMessage);
-  end;
+  inherited(var aMessage);
 end;
 
 method TNativeControl.ControlFromHandle(aHandle: rtl.HWND): TNativeControl;
@@ -284,12 +284,41 @@ end;
 method TControl.WndProc(var aMessage: TMessage);
 begin
   // Dispatch messages here to message WM_XXXX functions
-  DefaultHandler(var aMessage);
+  if not WantMessage(var aMessage) then
+    DefaultHandler(var aMessage);
 end;
 
 method TControl.DefaultHandler(var aMessage: TMessage);
 begin
 
+end;
+
+method TControl.WantMessage(var aMessage: TMessage): Boolean;
+begin
+  var lTable := TMessageTableCache.MessageTableFor(typeOf(self));
+  if lTable = nil then
+    raise new Exception('Fatal error getting message table!');
+
+  var lMethod: MethodInfo;
+  for lValue in lTable do
+    if lValue.Key = aMessage.Msg then begin
+      lMethod := lValue.Value;
+      break;
+    end;
+
+  if lMethod ≠ nil then begin
+    var lCaller := TMessageMethod(lMethod.Pointer);
+    lCaller(self, var aMessage);
+    //aMessage.Result := 0;
+    result := true;
+  end
+  else
+    result := false;
+end;
+
+method TControl.HandleAllocated: Boolean;
+begin
+  result := fHandle <> rtl.HWND(0);
 end;
 
 method TNativeControl.CreateParams(var aParams: TCreateParams);
@@ -356,9 +385,17 @@ begin
   rtl.SendMessage(fHandle, rtl.WM_SETFONT, rtl.WPARAM(Font.FontHandle), rtl.LPARAM(true));
 end;
 
-method TControl.HandleAllocated: Boolean;
+method TNativeControl.WMCommand(var aMessage: TMessage);
 begin
-  result := fHandle <> rtl.HWND(0);
+  // HiWord(WParam): Notification code
+  // LoWord(WParam): Controld ID
+  // LParam: Target Window Handle
+  var lNotification := aMessage.wParam shr 16;
+  var lControl := ControlFromHandle(rtl.HWND(aMessage.lParam));
+  if lControl <> nil then
+    lControl.Perform(CN_COMMAND, lNotification, aMessage.lParam)
+  else
+    DefaultHandler(var aMessage); // the message is not for us!
 end;
 
 /*method TGraphicControl.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): LRESULT;
@@ -371,6 +408,30 @@ begin
     result := rtl.CallWindowProc(fOldWndProc, hWnd, message, wParam, lParam);
 end;*/
 
+constructor MessageAttribute(aMessage: Cardinal);
+begin
+  fMessage := aMessage;
+end;
+
+class method TMessageTableCache.MessageTableFor(aType: &Type): TMessageTable;
+begin
+  fCache.TryGetValue(aType, out result);
+  if result = nil then begin
+    result := new TMessageTable();
+    var lType: &Type := aType;
+    while lType <> nil do begin
+      for lMethodInfo in lType.Methods do begin
+        var lAttrs := lMethodInfo.Attributes.Where(b->b.Type = typeOf(MessageAttribute)).ToList;
+        if (lAttrs ≠ nil) and (lAttrs.Count > 0) then begin
+          result.add(new KeyValuePair<Cardinal, MethodInfo>(Cardinal(Int64(lAttrs[0].Arguments[0].Value)), lMethodInfo));
+        end;
+      end;
+      lType := if lType.RTTI^.ParentType <> nil then new &Type(lType.RTTI^.ParentType) else nil;
+    end;
+
+    fCache.Add(aType, result);
+  end;
+end;
 {$ENDIF}
 
 end.

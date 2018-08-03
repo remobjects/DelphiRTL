@@ -22,6 +22,7 @@ type
     comboBox1: TComboBox;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure ComboBox1Select(Sender: TObject);
   end;
 
   var
@@ -44,5 +45,9 @@ begin
   edit1.Text := 'Blah!';
 end;
 
+procedure TForm6.ComboBox1Select(Sender: TObject);
+begin
+  ShowMessage('Yes!');
+end;
 
 end.

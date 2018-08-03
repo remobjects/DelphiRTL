@@ -11,6 +11,8 @@ type
   TButton = public partial class(TWinControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
+    [MessageAttribute(CN_COMMAND)]
+    method NCCommand(var aMessage: TMessage);
   end;
 
   TLabel = public partial class(TNativeControl)
@@ -82,17 +84,24 @@ type
 
   TComboBox = public partial class(TListControl)
   protected
+    fOldItemIndex: Integer := -1;
+    fEditHandle: rtl.HWND;
     method CreateParams(var aParams: TCreateParams); override;
+    method CreateHandle; override;
     method PlatformGetText: String;
     method PlatformSetText(aValue: String);
     method PlatformSetOnSelect(aValue: TNotifyEvent);
+    method PlatformSetOnChange(aValue: TNotifyEvent);
     method PlatformSelectAll;
     method PlatformClearSelection;
     method PlatformDeleteSelected;
     method PlatformSetItemIndex(aValue: Integer);
     method PlatformGetItemIndex: Integer;
-  public
-    method WndProc(var aMessage: TMessage); override;
+
+    [MessageAttribute(CN_COMMAND)]
+    method CNCOMMAND(var aMessage: TMessage);
+
+    class constructor;
   end;
 
 implementation
@@ -192,6 +201,17 @@ begin
   inherited(var aParams);
   aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
   CreateClass(var aParams);
+end;
+
+method TButton.NCCommand(var aMessage: TMessage);
+begin
+  // wParam: WM_COMMAND notification, the important matter here!
+  case aMessage.wParam of
+    rtl.BN_CLICKED: begin
+      if assigned(OnClick) then
+        OnClick(self);
+    end;
+  end;
 end;
 
 method TLabel.CreateParams(var aParams: TCreateParams);
@@ -322,12 +342,27 @@ method TComboBox.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
   aParams.WidgetClassName := 'COMBOBOX'.ToCharArray(true);
-  aParams.Style := aParams.Style or rtl.CBS_DROPDOWN;
+  aParams.Style := aParams.Style or rtl.CBS_DROPDOWN or rtl.CBS_HASSTRINGS or rtl.CBS_AUTOHSCROLL;
   aParams.ExStyle := rtl.WS_EX_CLIENTEDGE;
   CreateClass(var aParams);
 end;
 
+method TComboBox.CreateHandle;
+begin
+  inherited;
+  // Here we get the handle of the edit component
+  var lInfo: rtl.COMBOBOXINFO;
+  lInfo.cbSize := sizeOf(lInfo);
+  rtl.GetComboBoxInfo(fHandle, @lInfo);
+  fEditHandle := lInfo.hwndItem;
+end;
+
 method TComboBox.PlatformSetOnSelect(aValue: TNotifyEvent);
+begin
+
+end;
+
+method TComboBox.PlatformSetOnChange(aValue: TNotifyEvent);
 begin
 
 end;
@@ -373,27 +408,27 @@ begin
   result := rtl.SendMessage(fHandle, rtl.CB_GETCURSEL, 0, 0);
 end;
 
-method TComboBox.WndProc(var aMessage: TMessage);
+method TComboBox.CNCommand(var aMessage: TMessage);
 begin
-  case aMessage.Msg of
+  case aMessage.wParam of
     rtl.CBN_DROPDOWN: begin
-      rtl.PostMessage(fHandle, rtl.CB_SHOWDROPDOWN, 1, 0);
-      aMessage.Result := 0;
     end;
 
     rtl.CBN_CLOSEUP: begin
-      rtl.PostMessage(fHandle, rtl.CB_SHOWDROPDOWN, 0, 0);
-      aMessage.Result := 0;
+    end;
+
+    rtl.CBN_SELENDOK: begin
+      if assigned(fOnSelect) then fOnSelect(self);
     end;
 
     rtl.CBN_SELCHANGE: begin
-      PlatformSetText(fItems[ItemIndex]);
-      aMessage.Result := 0;
     end;
-
-    else
-      inherited(var aMessage);
   end;
+end;
+
+class constructor TComboBox;
+begin
+  TMessageTableCache.MessageTableFor(typeOf(self));
 end;
 {$ENDIF}
 
