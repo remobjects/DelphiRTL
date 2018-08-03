@@ -11,6 +11,8 @@ type
   TButton = public partial class(TWinControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
+    [MessageAttribute(CN_COMMAND)]
+    method NCCommand(var aMessage: TMessage);
   end;
 
   TLabel = public partial class(TNativeControl)
@@ -89,13 +91,17 @@ type
     method PlatformGetText: String;
     method PlatformSetText(aValue: String);
     method PlatformSetOnSelect(aValue: TNotifyEvent);
+    method PlatformSetOnChange(aValue: TNotifyEvent);
     method PlatformSelectAll;
     method PlatformClearSelection;
     method PlatformDeleteSelected;
     method PlatformSetItemIndex(aValue: Integer);
     method PlatformGetItemIndex: Integer;
-  public
-    method WndProc(var aMessage: TMessage); override;
+
+    [MessageAttribute(CN_COMMAND)]
+    method CNCOMMAND(var aMessage: TMessage);
+
+    class constructor;
   end;
 
 implementation
@@ -195,6 +201,17 @@ begin
   inherited(var aParams);
   aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
   CreateClass(var aParams);
+end;
+
+method TButton.NCCommand(var aMessage: TMessage);
+begin
+  // wParam: WM_COMMAND notification, the important matter here!
+  case aMessage.wParam of
+    rtl.BN_CLICKED: begin
+      if assigned(OnClick) then
+        OnClick(self);
+    end;
+  end;
 end;
 
 method TLabel.CreateParams(var aParams: TCreateParams);
@@ -345,6 +362,11 @@ begin
 
 end;
 
+method TComboBox.PlatformSetOnChange(aValue: TNotifyEvent);
+begin
+
+end;
+
 method TComboBox.PlatformGetText: String;
 begin
   var lMaxLength := rtl.GetWindowTextLength(fHandle);
@@ -386,40 +408,27 @@ begin
   result := rtl.SendMessage(fHandle, rtl.CB_GETCURSEL, 0, 0);
 end;
 
-method TComboBox.WndProc(var aMessage: TMessage);
+method TComboBox.CNCommand(var aMessage: TMessage);
 begin
-  {case aMessage.Msg of
+  case aMessage.wParam of
     rtl.CBN_DROPDOWN: begin
-      //rtl.PostMessage(fHandle, rtl.CB_SHOWDROPDOWN, 1, 0);
-      aMessage.Result := 0;
     end;
 
     rtl.CBN_CLOSEUP: begin
-      //rtl.SendMessage(fHandle, rtl.CB_SHOWDROPDOWN, 0, 0);
-      //if fOldItemIndex <> ItemIndex then begin
-        //if assigned(fOnSelect) then fOnSelect(self);
-        WriteLn('CloseUp!');
-        //if ItemIndex >= 0 then begin
-          //var lBuffer := String(fItems[ItemIndex]).ToCharArray(true);
-          //rtl.SetWindowText(fEditHandle, @lBuffer[0]);
-          //rtl.PostMessage(fEditHandle, rtl.EM_SETSEL, 0, -1);
-        //end;
-      //end;
-      //aMessage.Result := 0;
     end;
 
     rtl.CBN_SELENDOK: begin
-      WriteLn('Changed!');
-      //aMessage.Result := 0;
+      if assigned(fOnSelect) then fOnSelect(self);
     end;
 
     rtl.CBN_SELCHANGE: begin
-      WriteLn('Changed! 222');
-      //aMessage.Result := 0;
     end;
-  end;}
+  end;
+end;
 
-  inherited(var aMessage);
+class constructor TComboBox;
+begin
+  TMessageTableCache.MessageTableFor(typeOf(self));
 end;
 {$ENDIF}
 

@@ -110,6 +110,7 @@ type
     method PlatformGetText: String;
     method PlatformSetText(aValue: String);
     method PlatformSetOnSelect(aValue: TNotifyEvent);
+    method PlatformSetOnChange(aValue: TNotifyEvent);
     method PlatformSelectAll;
     method PlatformClearSelection;
     method PlatformDeleteSelected;
@@ -412,6 +413,10 @@ method TComboBox.PlatformSetOnSelect(aValue: TNotifyEvent);
 begin
   var lDelegate := new WebAssemblyDelegate((a) -> aValue(self));
   fHandle.addEventListener("change", lDelegate);
+end;
+
+method TComboBox.PlatformSetOnChange(aValue: TNotifyEvent);
+begin
 end;
 
 method TComboBox.PlatformSelectAll;

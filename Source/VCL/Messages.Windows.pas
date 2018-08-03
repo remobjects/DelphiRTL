@@ -13,6 +13,10 @@ type
     constructor(aMsg: Cardinal; aWParam: rtl.WPARAM; aLParam: rtl.LPARAM);
   end;
 
+const
+  CN_BASE: Cardinal = 48128;
+  CN_COMMAND: Cardinal = CN_BASE + rtl.WM_COMMAND;
+
 implementation
 
 constructor TMessage(aMsg: Cardinal; aWParam: rtl.WPARAM; aLParam: rtl.LPARAM);
