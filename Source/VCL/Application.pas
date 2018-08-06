@@ -21,8 +21,16 @@ public
   property MainForm: TForm read fMainForm;
 end;
 
+TScreen = public partial class(TComponent)
+private
+  fPixelsPerInch: Integer;
+public
+  property PixelsPerInch: Integer read fPixelsPerInch write fPixelsPerInch;
+end;
+
 var
   Application: TApplication := nil;
+  Screen: TScreen := nil;
 
 implementation
 

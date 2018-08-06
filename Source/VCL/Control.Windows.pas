@@ -31,6 +31,7 @@ type
   TControl = public partial class(TComponent)
   protected
     fWindowProc: TWndMethod;
+    fCurrentPPI: Integer := 0;
     //constructor(aOwner: TComponent);
     method GetDefaultName: String;
     method HandleAllocated: Boolean; virtual; partial;
@@ -53,6 +54,7 @@ type
     method DefaultHandler(var aMessage: TMessage); virtual;
     method WantMessage(var aMessage: TMessage): Boolean; virtual;
   public
+    method ScaleForPPI(newPPI: Integer); virtual;
     method WndProc(var aMessage: TMessage); virtual;
     method Perform(aMessage: Cardinal; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
     method Perform(var aMessage: TMessage);
@@ -181,7 +183,7 @@ end;
 method TControl.PlatformSetWidth(aValue: Integer);
 begin
   if HandleAllocated then
-    rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, Left, Top, aValue, Width, rtl.SWP_NOMOVE or rtl.SWP_NOZORDER);
+    rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, Left, Top, aValue, Height, rtl.SWP_NOMOVE or rtl.SWP_NOZORDER);
 end;
 
 method TControl.PlatformSetHeight(aValue: Integer);
@@ -209,6 +211,7 @@ begin
     Font.FontHandle := aValue.Font.FontHandle;
     PlatformFontChanged;
   end;
+  ScaleForPPI(Screen.PixelsPerInch);
 end;
 
 method TControl.PlatformSetOnClick(aValue: TNotifyEvent);
@@ -319,6 +322,31 @@ end;
 method TControl.HandleAllocated: Boolean;
 begin
   result := fHandle <> rtl.HWND(0);
+end;
+
+method TControl.ScaleForPPI(newPPI: Integer);
+begin
+  if TComponentState.csLoading in ComponentState then
+    exit;
+
+  if fCurrentPPI = 0 then
+    fCurrentPPI := 96; // TODO!!!!!!!!!!!! get design ppi...
+
+  if newPPI ≠ fCurrentPPI then begin
+    Width := (Width * newPPI) / fCurrentPPI;
+    Height := (Height * newPPI) / fCurrentPPI;
+    Top := (Top * newPPI) / fCurrentPPI;
+    Left := (Left * newPPI) / fCurrentPPI;
+
+    Font.Height := (Font.Height * newPPI) / fCurrentPPI;
+
+    if fControls ≠ nil then begin
+      for i: Integer := 0 to fControls.Count - 1 do
+        fControls[i].ScaleForPPI(newPPI);
+    end;
+
+    fCurrentPPI := newPPI;
+  end;
 end;
 
 method TNativeControl.CreateParams(var aParams: TCreateParams);

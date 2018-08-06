@@ -4,6 +4,9 @@
 
 interface
 
+uses
+  RemObjects.Elements.RTL.Delphi;
+
 type
   TApplication = public partial class(TComponent)
   public
@@ -46,7 +49,16 @@ end;
 
 method TApplication.Initialize;
 begin
+  rtl.SetProcessDpiAwarenessContext(rtl.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+  Screen := new TScreen(self);
+  var lDC := rtl.GetDC(rtl.HWND(0));
+  Screen.PixelsPerInch := rtl.GetDeviceCaps(lDC, rtl.LOGPIXELSY);
+  rtl.ReleaseDC(rtl.HWND(0), lDC);
 
+  //Windows 8.1 + :
+  // SetProcessDpiAwareness(rtl.PROCESS_PER_MONITOR_DPI_AWARE);
+  // earlier versions
+  // SetProcessDpiAware
 end;
 
 method TApplication.Run;

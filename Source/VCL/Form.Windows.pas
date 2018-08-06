@@ -78,7 +78,7 @@ begin
   rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
 
   // display the window on the screen
-  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
+  //rtl.ShowWindow(fHandle, rtl.SW_SHOW);
 end;
 
 method TCustomForm.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
@@ -102,7 +102,8 @@ end;
 
 method TForm.Show;
 begin
-
+  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
+  ScaleForPPI(Screen.PixelsPerInch);
 end;
 
 {$ENDIF}
