@@ -318,9 +318,10 @@ begin
   if result = nil then begin
     result := ComponentsHelper.CreateComponent(lClass, fOwner);
     result.Name := lName;
-    TControl(result).Parent := TControl(fParent);
+    //TControl(result).Parent := TControl(fParent);
   end;
   result.SetComponentState(TComponentStateEnum.csLoading);
+  TControl(result).Parent := TControl(fParent);
   var lOldParent := fParent;
   fParent := result;
   ReadComponentData(result);

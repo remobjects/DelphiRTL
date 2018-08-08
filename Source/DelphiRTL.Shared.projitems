@@ -30,5 +30,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)TObject.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Aliases.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)String.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)System.HighDPI.Windows.pas" />
   </ItemGroup>
 </Project>

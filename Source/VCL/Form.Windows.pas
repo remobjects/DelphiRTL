@@ -4,6 +4,9 @@
 
 interface
 
+uses
+  RemObjects.Elements.RTL.Delphi;
+
 type
   TCustomForm = public partial class(TScrollingWinControl)
   protected
@@ -19,7 +22,6 @@ type
     //constructor(aOwner: TComponent); empty;
     method Show; override;
   end;
-
 
 implementation
 
@@ -78,15 +80,43 @@ begin
   rtl.SetWindowLongPtr(fHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@GlobalWndProc)));
 
   // display the window on the screen
-  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
+  //rtl.ShowWindow(fHandle, rtl.SW_SHOW);
 end;
 
 method TCustomForm.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 begin
-  if (message = rtl.WM_CLOSE) and (Application.MainForm = self) then
-    Application.Terminate
-  else
-    result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
+  case message of
+    rtl.WM_CLOSE: begin
+      if Application.MainForm = self then
+        Application.Terminate
+    end;
+
+    rtl.WM_DPICHANGED: begin
+      // This message occurs:
+      //  - moving the window to another monitor with different dpi
+      //  - changing dpi of current monitor
+      //
+      // HiWord(WParam): Y-axis new DPI
+      // LoWord(WParam): X-axis new DPI. For Windows, both values are identical.
+      // LParam: Pointer to a TRect with suggested new window size
+      var lNewDPI := wParam shr 16;
+      var lNewRect: ^rtl.RECT := ^rtl.RECT(^Void(lParam));
+      Top := lNewRect^.top;
+      Left := lNewRect^.left;
+      Width := lNewRect^.right - lNewRect^.left;
+      Height := lNewRect^.bottom - lNewRect^.top;
+      fCurrentPPI := lNewDPI;
+      if Controls ≠ nil then begin
+        for i: Integer := 0 to Controls.Count - 1 do
+          Controls[i].ScaleForPPI(lNewDPI);
+      end;
+
+      result := 0;
+    end;
+
+    else
+      result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
+  end;
 end;
 
 class method TCustomForm.FormWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
@@ -102,7 +132,8 @@ end;
 
 method TForm.Show;
 begin
-
+  rtl.ShowWindow(fHandle, rtl.SW_SHOW);
+  ScaleForPPI(THighDPI.MonitorPPIForHandle(fHandle));
 end;
 
 {$ENDIF}

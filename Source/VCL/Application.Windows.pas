@@ -4,6 +4,9 @@
 
 interface
 
+uses
+  RemObjects.Elements.RTL.Delphi;
+
 type
   TApplication = public partial class(TComponent)
   public
@@ -46,7 +49,7 @@ end;
 
 method TApplication.Initialize;
 begin
-
+  THighDPI.Initialize;
 end;
 
 method TApplication.Run;

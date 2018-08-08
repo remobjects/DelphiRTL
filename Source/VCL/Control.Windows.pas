@@ -31,6 +31,7 @@ type
   TControl = public partial class(TComponent)
   protected
     fWindowProc: TWndMethod;
+    fCurrentPPI: Integer := 0;
     //constructor(aOwner: TComponent);
     method GetDefaultName: String;
     method HandleAllocated: Boolean; virtual; partial;
@@ -52,11 +53,14 @@ type
 
     method DefaultHandler(var aMessage: TMessage); virtual;
     method WantMessage(var aMessage: TMessage): Boolean; virtual;
+    method GetDesignPPI: Integer;
   public
+    method ScaleForPPI(newPPI: Integer); virtual;
     method WndProc(var aMessage: TMessage); virtual;
     method Perform(aMessage: Cardinal; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
     method Perform(var aMessage: TMessage);
     property WindowProc: TWndMethod read fWindowProc write fWindowProc;
+    property CurrentPPI: Integer read fCurrentPPI;
   end;
 
   TGraphicControl = public class(TControl)
@@ -181,7 +185,7 @@ end;
 method TControl.PlatformSetWidth(aValue: Integer);
 begin
   if HandleAllocated then
-    rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, Left, Top, aValue, Width, rtl.SWP_NOMOVE or rtl.SWP_NOZORDER);
+    rtl.SetWindowPos(fHandle, rtl.HWND_NOTOPMOST, Left, Top, aValue, Height, rtl.SWP_NOMOVE or rtl.SWP_NOZORDER);
 end;
 
 method TControl.PlatformSetHeight(aValue: Integer);
@@ -204,10 +208,13 @@ end;
 
 method TControl.PlatformSetParent(aValue: TControl);
 begin
-  HandleNeeded; // TODO
-  if ParentFont then begin
-    Font.FontHandle := aValue.Font.FontHandle;
-    PlatformFontChanged;
+  if aValue ≠ nil then begin
+    HandleNeeded; // TODO
+    if ParentFont then begin
+      Font.FontHandle := aValue.Font.FontHandle;
+      PlatformFontChanged;
+    end;
+    ScaleForPPI(if Parent.CurrentPPI <> 0 then Parent.CurrentPPI else THighDPI.MainMonitorPPI);
   end;
 end;
 
@@ -319,6 +326,40 @@ end;
 method TControl.HandleAllocated: Boolean;
 begin
   result := fHandle <> rtl.HWND(0);
+end;
+
+method TControl.ScaleForPPI(newPPI: Integer);
+begin
+  if TComponentState.csLoading in ComponentState then
+    exit;
+
+  if fCurrentPPI = 0 then
+    fCurrentPPI := GetDesignPPI;
+
+  if newPPI ≠ fCurrentPPI then begin
+    Width := (Width * newPPI) / fCurrentPPI;
+    Height := (Height * newPPI) / fCurrentPPI;
+    Top := (Top * newPPI) / fCurrentPPI;
+    Left := (Left * newPPI) / fCurrentPPI;
+    Font.Height := (Font.Height * newPPI) / fCurrentPPI;
+
+    if fControls ≠ nil then begin
+      for i: Integer := 0 to fControls.Count - 1 do
+        fControls[i].ScaleForPPI(newPPI);
+    end;
+    fCurrentPPI := newPPI;
+  end;
+end;
+
+method TControl.GetDesignPPI: Integer;
+begin
+  var lControl := self;
+  while lControl.Parent <> nil do
+    lControl := lControl.Parent;
+  if (lControl is TCustomForm) then
+    result := (lControl as TCustomForm).PixelsPerInch
+  else
+    result := 96;
 end;
 
 method TNativeControl.CreateParams(var aParams: TCreateParams);
