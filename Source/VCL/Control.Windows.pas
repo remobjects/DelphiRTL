@@ -72,6 +72,7 @@ type
 
   TNativeControl = public partial class(TControl)
   private
+    method GetSpecialKeysStatus: TShiftState;
     fClass: rtl.WNDCLASS;
   protected
     fOldWndProc: TWndProc;
@@ -165,7 +166,51 @@ end;
 
 method TNativeControl.WndProc(var aMessage: TMessage);
 begin
+  case aMessage.Msg of
+    rtl.WM_KEYDOWN: begin
+      // wParam: virtual key code
+      if assigned(OnKeyDown) then begin
+        var lKey: UInt16 := aMessage.wParam;
+        var lShiftState := GetSpecialKeysStatus;
+        OnKeyDown(self, var lKey, lShiftState);
+        aMessage.wParam := lKey;
+      end;
+    end;
+
+    rtl.WM_KEYUP: begin
+      // wParam: virtual key code
+      if assigned(OnKeyUp) then begin
+        var lKey: UInt16 := aMessage.wParam;
+        var lShiftState := GetSpecialKeysStatus;
+        OnKeyUp(self, var lKey, lShiftState);
+        aMessage.wParam := lKey;
+      end;
+    end;
+
+    rtl.WM_CHAR: begin
+      // wParam: the character code
+      var lKey: Char := Char(aMessage.wParam);
+      if assigned(OnKeyPress) then begin
+        OnKeyPress(self, var lKey);
+        aMessage.wParam := rtl.UINT(lKey);
+      end;
+    end;
+  end;
+
   inherited(var aMessage);
+end;
+
+method TNativeControl.GetSpecialKeysStatus: TShiftState;
+begin
+  result := [];
+  if (rtl.GetKeyState(rtl.VK_MENU) and $8000) > 0 then
+    result := result + [TShiftStateValues.ssAlt];
+
+  if (rtl.GetKeyState(rtl.VK_SHIFT) and $8000) > 0 then
+    result := result + [TShiftStateValues.ssShift];
+
+  if (rtl.GetKeyState(rtl.VK_CONTROL) and $8000) > 0 then
+    result := result + [TShiftStateValues.ssCtrl];
 end;
 
 method TNativeControl.ControlFromHandle(aHandle: rtl.HWND): TNativeControl;
@@ -220,22 +265,22 @@ end;
 
 method TControl.PlatformSetOnClick(aValue: TNotifyEvent);
 begin
-
+  // Nothing to do here...
 end;
 
 method TControl.PlatformSetOnKeyPress(aValue: TKeyPressEvent);
 begin
-
+  // Nothing to do here...
 end;
 
 method TControl.PlatformSetOnKeyDown(aValue: TKeyEvent);
 begin
-
+  // Nothing to do here...
 end;
 
 method TControl.PlatformSetOnKeyUp(aValue: TKeyEvent);
 begin
-
+  // Nothing to do here...
 end;
 
 method TControl.PlatformFontChanged;

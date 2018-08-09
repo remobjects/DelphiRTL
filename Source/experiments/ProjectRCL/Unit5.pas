@@ -23,6 +23,7 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ComboBox1Select(Sender: TObject);
+    procedure Edit1OnKeyPress(Sender: TObject; var key: Char);
   end;
 
   var
@@ -38,6 +39,7 @@ begin
   //ShowMessage(edit1.Text);
   listBox1.Items.Add(edit1.Text);
   comboBox1.Items.Add(edit1.Text);
+  edit1.OnKeyPress := @Edit1OnKeyPress;
 end;
 
 procedure TForm6.Button2Click(Sender: TObject);
@@ -48,6 +50,11 @@ end;
 procedure TForm6.ComboBox1Select(Sender: TObject);
 begin
   ShowMessage('Yes!');
+end;
+
+procedure TForm6.Edit1OnKeyPress(Sender: TObject; var key: Char);
+begin
+  ShowMessage(key);
 end;
 
 end.
