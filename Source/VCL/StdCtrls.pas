@@ -237,7 +237,8 @@ end;
 method TListControlItems.AddObject(S: DelphiString; aObject: TObject): Integer;
 begin
   inherited;
-  PlatformAddItem(S, aObject);
+  if not (TComponentState.csLoading in self.ListControl.ComponentState) then
+    PlatformAddItem(S, aObject);
 end;
 
 method TListControlItems.Insert(aIndex: Integer; S: DelphiString);
@@ -325,7 +326,8 @@ end;
 method TComboBoxItems.AddObject(S: DelphiString; aObject: TObject): Integer;
 begin
   inherited;
-  PlatformAddItem(S, aObject);
+  if not (TComponentState.csLoading in self.ListControl.ComponentState) then
+    PlatformAddItem(S, aObject);
 end;
 
 method TComboBoxItems.Clear;

@@ -18,8 +18,8 @@ type
     end;
     class method Main(args: array of String): Int32;
     begin
-      /*var lDfm := new TFileStream('c:\dev\ro\Unit6.dfm', fmOpenRead);
-      var lRes := new TFileStream('C:\Users\Diego\Documents\ok.res', fmCreate or fmOpenWrite);
+      /*var lDfm := new TFileStream('C:\dev\ro\DelphiRTL\Source\experiments\ProjectRCL\Unit2-strings.dfm', fmOpenRead);
+      var lRes := new TFileStream('C:\dev\ro\DelphiRTL\Source\experiments\ProjectRCL\Unit2-strings.res', fmCreate or fmOpenWrite);
       var lConverter := new ObjectConverter(lDfm, lRes);
       lConverter.ToBinary;*/
 
