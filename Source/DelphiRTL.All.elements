@@ -30,13 +30,18 @@
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <OutputType>staticlibrary</OutputType>
-    <Architecture>i386</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island-Linux' ">
     <Mode>Island</Mode>
     <SubMode>Linux</SubMode>
     <OutputType>staticlibrary</OutputType>
-    <Architecture>x86_64</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Island-Darwin' ">
+    <Mode>Island</Mode>
+    <SubMode>Darwin</SubMode>
+    <SDK>macOS</SDK>
+    <DeploymentTargetVersion>10.10</DeploymentTargetVersion>
+    <OutputType>staticlibrary</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island-Android' ">
     <Mode>Island</Mode>
@@ -47,7 +52,7 @@
     <Mode>Island</Mode>
     <SubMode>WebAssembly</SubMode>
     <OutputType>staticlibrary</OutputType>
-  </PropertyGroup>-->
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Toffee-macOS' ">
     <Mode>Toffee</Mode>
     <SubMode>macOS</SubMode>
@@ -190,6 +195,18 @@
     </Reference>
     <Reference Include="Elements">
       <Target>Island-Linux</Target>
+    </Reference>
+    <Reference Include="rtl">
+      <Target>Island-Darwin</Target>
+    </Reference>
+    <Reference Include="gc">
+      <Target>Island-Darwin</Target>
+    </Reference>
+    <Reference Include="Island">
+      <Target>Island-Darwin</Target>
+    </Reference>
+    <Reference Include="Elements">
+      <Target>Island-Darwin</Target>
     </Reference>
     <Reference Include="Foundation">
       <Target>Toffee-iOS</Target>
