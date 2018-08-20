@@ -78,6 +78,7 @@ begin
   repeat
     result := InstanceClassName;
     result := result.Substring(result.LastIndexOf('.') + 2) + i.ToString; // + 2 to remove initial 'T'...
+    inc(i);
     lObject := WebAssembly.GetElementById(result);
   until lObject = nil;
 end;

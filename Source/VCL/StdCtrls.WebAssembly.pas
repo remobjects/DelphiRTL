@@ -22,7 +22,7 @@ type
     method PlatformSetCaption(aValue: String); override;
   end;
 
-  TPanel = public class(TControl)
+  TPanel = public class(TNativeControl)
   private
   protected
     method CreateHandle; override;
