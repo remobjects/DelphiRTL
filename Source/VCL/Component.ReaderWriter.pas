@@ -42,7 +42,7 @@ type
     method ReadComponentData(aInstance: TComponent);
     method FindProperty(aType: &Type; aName: String): PropertyInfo;
   protected
-    method ReadProperty(aInstance: TComponent /*TPersistent*/);
+    method ReadProperty(aInstance: TPersistent);
   public
     method EndOfList: Boolean;
     method ReadComponent(aComponent: TComponent): TComponent;
@@ -237,7 +237,7 @@ begin
     end;
 
     TValueType.vaList: begin
-      if (aInstance is TStrings) then begin
+      if typeOf(aInstance).IsSubclassOf(typeOf(TStrings)) then begin
         var lStrings := aInstance as TStrings;
         while not EndOfList do begin
           ReadValue;
@@ -268,7 +268,7 @@ begin
   end;
 end;
 
-method TReader.ReadProperty(aInstance: TComponent/*TPersistent*/);
+method TReader.ReadProperty(aInstance: TPersistent);
 begin
   var lName := ReadStr;
   var lValue := ReadValue;
@@ -290,9 +290,11 @@ begin
     lName := lProps[lProps.Count - 1];
   end;
 
-  lProperty := FindProperty(lType, lName);
-  if lProperty = nil then raise new Exception('Can not get property ' + lName);
-  var lPropValue := ReadPropValue(TComponent(lInstance), lValue, lProperty);
+  if not lType.IsSubclassOf(typeOf(TStrings)) then begin
+    lProperty := FindProperty(lType, lName);
+    if lProperty = nil then raise new Exception('Can not get property ' + lName);
+  end;
+  var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
   if lValue ≠ TValueType.vaList then
     DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
 end;
@@ -342,6 +344,7 @@ begin
   result.RemoveComponentState(TComponentStateEnum.csLoading);
 
   DynamicHelpers.SetMember(fParent, lName, 0, [result]);
+  result.Loaded;
 end;
 
 method TReader.ReadSignature;

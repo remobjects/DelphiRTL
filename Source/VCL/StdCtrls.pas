@@ -97,6 +97,7 @@ type
     method SetMultiSelect(aValue: Boolean); override;
   public
     constructor(aOwner: TComponent);
+    method Loaded; override;
     method AddItem(Item: DelphiString; aObject: TObject); override;
     method Clear; override;
     method ClearSelection; override;
@@ -131,6 +132,7 @@ type
     method SetItemIndex(aValue: Integer); override;
   public
     constructor(aOwner: TComponent);
+    method Loaded; override;
     method AddItem(Item: DelphiString; aObject: TObject); override;
     method Clear; override;
     method ClearSelection; override;
@@ -188,7 +190,6 @@ type
   procedure ShowMessage(aMessage: String);
 
 implementation
-
 
 procedure ShowMessage(aMessage: String);
 begin
@@ -293,6 +294,13 @@ begin
   result := PlatformGetSelCount;
 end;
 
+method TListBox.Loaded;
+begin
+  inherited;
+  for i: Integer := 0 to Items.Count - 1 do
+    AddItem(Items[i], Items.Objects[i]);
+end;
+
 method TListBox.AddItem(Item: DelphiString; aObject: TObject);
 begin
   (fItems as TListControlItems).AddObject(Item, aObject);
@@ -381,6 +389,13 @@ constructor TComboBox(aOwner: TComponent);
 begin
   fItems := new TComboBoxItems();
   TComboBoxItems(fItems).ListControl := self;
+end;
+
+method TComboBox.Loaded;
+begin
+  inherited;
+  for i: Integer := 0 to Items.Count - 1 do
+    AddItem(Items[i], Items.Objects[i]);
 end;
 
 method TComboBox.AddItem(Item: DelphiString; aObject: TObject);
