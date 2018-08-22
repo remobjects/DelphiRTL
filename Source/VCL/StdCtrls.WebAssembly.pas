@@ -29,7 +29,7 @@ type
   public
   end;
 
-  TGroupBox = public partial class(TControl)
+  TGroupBox = public partial class(TNativeControl)
   private
     fLabelHandle: dynamic;
   protected

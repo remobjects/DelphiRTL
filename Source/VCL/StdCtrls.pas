@@ -146,6 +146,10 @@ type
     property OnChange: TNotifyEvent read fOnChange write SetOnChange;
   end;
 
+  TGroupBox = public partial class(TNativeControl)
+  protected
+  end;
+
   {$IF WEBASSEMBLY}
   TMemoStrings = partial class(TStringList)
   private
