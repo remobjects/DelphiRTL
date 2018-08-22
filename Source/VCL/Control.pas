@@ -54,7 +54,6 @@ type
     method CreateHandle; partial; virtual; empty;
     method HandleNeeded; virtual;
     method HandleAllocated: Boolean; virtual; partial; empty;
-    method Loaded; override;
     method Changed(aObject: TObject; propName: String);
     constructor(aOwner: TComponent);
 
@@ -134,10 +133,6 @@ method TControl.Changed(aObject: TObject; propName: String);
 begin
   if aObject is TFont then
     PlatformFontChanged;
-end;
-
-method TControl.Loaded;
-begin
 end;
 
 method TControl.HandleNeeded;

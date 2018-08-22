@@ -97,6 +97,7 @@ type
     method SetMultiSelect(aValue: Boolean); override;
   public
     constructor(aOwner: TComponent);
+    method Loaded; override;
     method AddItem(Item: DelphiString; aObject: TObject); override;
     method Clear; override;
     method ClearSelection; override;
@@ -131,6 +132,7 @@ type
     method SetItemIndex(aValue: Integer); override;
   public
     constructor(aOwner: TComponent);
+    method Loaded; override;
     method AddItem(Item: DelphiString; aObject: TObject); override;
     method Clear; override;
     method ClearSelection; override;
@@ -189,7 +191,6 @@ type
 
 implementation
 
-
 procedure ShowMessage(aMessage: String);
 begin
   PlatformShowMessage(aMessage);
@@ -237,7 +238,8 @@ end;
 method TListControlItems.AddObject(S: DelphiString; aObject: TObject): Integer;
 begin
   inherited;
-  PlatformAddItem(S, aObject);
+  if not (TComponentState.csLoading in self.ListControl.ComponentState) then
+    PlatformAddItem(S, aObject);
 end;
 
 method TListControlItems.Insert(aIndex: Integer; S: DelphiString);
@@ -292,6 +294,13 @@ begin
   result := PlatformGetSelCount;
 end;
 
+method TListBox.Loaded;
+begin
+  inherited;
+  for i: Integer := 0 to Items.Count - 1 do
+    AddItem(Items[i], Items.Objects[i]);
+end;
+
 method TListBox.AddItem(Item: DelphiString; aObject: TObject);
 begin
   (fItems as TListControlItems).AddObject(Item, aObject);
@@ -325,7 +334,8 @@ end;
 method TComboBoxItems.AddObject(S: DelphiString; aObject: TObject): Integer;
 begin
   inherited;
-  PlatformAddItem(S, aObject);
+  if not (TComponentState.csLoading in self.ListControl.ComponentState) then
+    PlatformAddItem(S, aObject);
 end;
 
 method TComboBoxItems.Clear;
@@ -379,6 +389,13 @@ constructor TComboBox(aOwner: TComponent);
 begin
   fItems := new TComboBoxItems();
   TComboBoxItems(fItems).ListControl := self;
+end;
+
+method TComboBox.Loaded;
+begin
+  inherited;
+  for i: Integer := 0 to Items.Count - 1 do
+    AddItem(Items[i], Items.Objects[i]);
 end;
 
 method TComboBox.AddItem(Item: DelphiString; aObject: TObject);

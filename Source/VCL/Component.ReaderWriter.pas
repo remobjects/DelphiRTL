@@ -42,12 +42,12 @@ type
     method ReadComponentData(aInstance: TComponent);
     method FindProperty(aType: &Type; aName: String): PropertyInfo;
   protected
-    method ReadProperty(aInstance: TComponent /*TPersistent*/);
+    method ReadProperty(aInstance: TPersistent);
   public
     method EndOfList: Boolean;
     method ReadComponent(aComponent: TComponent): TComponent;
     method ReadData(Instance: TComponent);
-    method ReadPropValue(aInstance: TComponent; aValueType: TValueType; aProperty: PropertyInfo): Object;
+    method ReadPropValue(aInstance: TObject; aValueType: TValueType; aProperty: PropertyInfo): Object;
     method ReadRootComponent(aRoot: TComponent): TComponent;
     method ReadSignature;
     method ReadStr: String;
@@ -158,7 +158,7 @@ begin
   ReadValue; // skip end of list
 end;
 
-method TReader.ReadPropValue(aInstance: TComponent; aValueType: TValueType; aProperty: PropertyInfo): Object;
+method TReader.ReadPropValue(aInstance: TObject; aValueType: TValueType; aProperty: PropertyInfo): Object;
 begin
   var lValue: Integer;
   var lInt8: Byte;
@@ -236,6 +236,18 @@ begin
       exit 0; // TODO
     end;
 
+    TValueType.vaList: begin
+      if typeOf(aInstance).IsSubclassOf(typeOf(TStrings)) then begin
+        var lStrings := aInstance as TStrings;
+        while not EndOfList do begin
+          ReadValue;
+          lStrings.Add(ReadStr);
+        end;
+        ReadValue; // End of List
+      end;
+      exit nil;
+    end;
+
     TValueType.vaFalse:
       exit false;
 
@@ -256,7 +268,7 @@ begin
   end;
 end;
 
-method TReader.ReadProperty(aInstance: TComponent/*TPersistent*/);
+method TReader.ReadProperty(aInstance: TPersistent);
 begin
   var lName := ReadStr;
   var lValue := ReadValue;
@@ -278,10 +290,13 @@ begin
     lName := lProps[lProps.Count - 1];
   end;
 
-  lProperty := FindProperty(lType, lName);
-  if lProperty = nil then raise new Exception('Can not get property ' + lName);
-  var lPropValue := ReadPropValue(TComponent(lInstance), lValue, lProperty);
-  DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
+  if not lType.IsSubclassOf(typeOf(TStrings)) then begin
+    lProperty := FindProperty(lType, lName);
+    if lProperty = nil then raise new Exception('Can not get property ' + lName);
+  end;
+  var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
+  if lValue ≠ TValueType.vaList then
+    DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
 end;
 
 method TReader.EndOfList: Boolean;
@@ -329,6 +344,7 @@ begin
   result.RemoveComponentState(TComponentStateEnum.csLoading);
 
   DynamicHelpers.SetMember(fParent, lName, 0, [result]);
+  result.Loaded;
 end;
 
 method TReader.ReadSignature;
@@ -444,7 +460,19 @@ begin
           end;
         end;
         fWriter.WriteListEnd;
-      end;
+      end
+      else
+        if fParser.TokenValue = '(' then begin
+          fWriter.WriteListBegin;
+          fParser.NextToken;
+          while fParser.TokenString ≠ ')' do begin
+            fWriter.WriteString(fParser.TokenString);
+            fParser.NextToken;
+            if fParser.TokenString = ',' then
+              fParser.NextToken;
+          end;
+          fWriter.WriteListEnd;
+        end;
     end;
   end;
 end;
@@ -628,7 +656,7 @@ begin
       fToken := TParserToken.toString;
     end;
 
-    ':', '#', '=', '[', ']': begin
+    ':', '#', '=', '[', ']', '(', ')': begin
       fTokenValue := lChar;
       NextChar;
       fToken := TParserToken.toOtCharacter;

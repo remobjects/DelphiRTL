@@ -17,7 +17,7 @@ type
   TComponentClass = public &Type;
   //{$ENDIF}
 
-  TComponent = public class(TObject)
+  TComponent = public class(TPersistent)
   private
     fName: String;
     fOwner: TComponent;
@@ -25,9 +25,9 @@ type
     method setName(aValue: String);
     method setOwner(aValue: TComponent);
   protected
-    method Loaded; virtual;
     constructor(aOwner: TComponent);
   public
+    method Loaded; virtual;
     method SetComponentState(aState: TComponentStateEnum);
     method RemoveComponentState(aState: TComponentStateEnum);
     property ComponentState: TComponentState read fComponentState;
