@@ -228,15 +228,11 @@ begin
           exit 0; // TODO check!!!
       end;
       {$ELSEIF ECHOESWPF}
-      if false then begin
-      {if (aProperty.Type.Flags and IslandTypeFlags.Delegate) <> 0 then begin // delegate case
-        var lType := typeOf(Root);
-        var lMethod := lType.Methods.Where(a -> (a.Name = lIdent)).FirstOrDefault;
-        //var lDelegate := Utilities.NewDelegate(lType.RTTI, Root, lMethod.Pointer);
-        var lDelegate := Utilities.NewDelegate(aProperty.Type.RTTI, Root, lMethod.Pointer);
-
-        exit lDelegate; }
-        exit nil;
+      var lType := aProperty.GetType();
+      var lEventInfo := lType.GetEvent(aProperty.Name);
+      if lEventInfo ≠ nil then begin
+        var lMethod := lType.GetMethod(lIdent, BindingFlags.Public or BindingFlags.Instance);
+        exit System.Delegate.CreateDelegate(lType, lMethod);
       end
       else begin
         var lConstants := aProperty.GetType().GetEnumNames();
