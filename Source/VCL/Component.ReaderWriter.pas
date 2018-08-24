@@ -1,11 +1,11 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
 
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL;
+  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL{$IF ECHOESWPF}, System.Reflection{$ENDIF};
 
 type
   TControlCtor = procedure(aInst: Object; aOwner: TComponent);
@@ -211,6 +211,7 @@ begin
       fStream.Read(var lBytes, lInt8);
       var lIdent := RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes);
 
+      {$IF ISLAND}
       if (aProperty.Type.Flags and IslandTypeFlags.Delegate) <> 0 then begin // delegate case
         var lType := typeOf(Root);
         var lMethod := lType.Methods.Where(a -> (a.Name = lIdent)).FirstOrDefault;
@@ -226,6 +227,28 @@ begin
         else
           exit 0; // TODO check!!!
       end;
+      {$ELSEIF ECHOESWPF}
+      if false then begin
+      {if (aProperty.Type.Flags and IslandTypeFlags.Delegate) <> 0 then begin // delegate case
+        var lType := typeOf(Root);
+        var lMethod := lType.Methods.Where(a -> (a.Name = lIdent)).FirstOrDefault;
+        //var lDelegate := Utilities.NewDelegate(lType.RTTI, Root, lMethod.Pointer);
+        var lDelegate := Utilities.NewDelegate(aProperty.Type.RTTI, Root, lMethod.Pointer);
+
+        exit lDelegate; }
+        exit nil;
+      end
+      else begin
+        var lConstants := aProperty.GetType().GetEnumNames();
+        var lIndex := System.Array.IndexOf(lConstants, lIdent);
+        if lIndex ≥ 0 then begin
+          var lValues := aProperty.GetType().GetEnumValues();
+          exit lValues.GetValue(lIndex);
+        end
+        else
+          exit 0;
+      end;
+      {$ENDIF}
     end;
 
     TValueType.vaSet: begin
@@ -258,6 +281,7 @@ end;
 
 method TReader.FindProperty(aType: &Type; aName: String): PropertyInfo;
 begin
+  {$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS))}
   var lType := aType;
   while aType <> nil do begin
     result := lType.Properties.Where(a -> (a.Name = aName)).FirstOrDefault;
@@ -266,6 +290,16 @@ begin
     end;
     lType := new &Type(lType.RTTI^.ParentType);
   end;
+  {$ELSEIF ECHOESWPF}
+  var lType := aType;
+  while aType <> nil do begin
+    result := lType.GetProperty(aName);
+    if result <> nil then begin
+      exit;
+    end;
+    lType := lType.BaseType;
+  end;
+  {$ENDIF}
 end;
 
 method TReader.ReadProperty(aInstance: TPersistent);
@@ -296,7 +330,14 @@ begin
   end;
   var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
   if lValue ≠ TValueType.vaList then
+    {$IF ISLAND}
     DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
+    {$ELSEIF ECHOESWPF}
+    var lCurrentProp := lType.GetProperty(lName, BindingFlags.Public or BindingFlags.Instance);
+    if lCurrentProp = nil then
+      raise new Exception('Can not get property ' + lName);
+    lCurrentProp.SetValue(lInstance, lPropValue, nil);
+    {$ENDIF}
 end;
 
 method TReader.EndOfList: Boolean;
@@ -343,7 +384,14 @@ begin
   fParent := lOldParent;
   result.RemoveComponentState(TComponentStateEnum.csLoading);
 
+  {$IF ISLAND}
   DynamicHelpers.SetMember(fParent, lName, 0, [result]);
+  {$ELSEIF ECHOESWPF}
+  var lCurrentProp := fParent.GetType().GetProperty(lName, BindingFlags.Public or BindingFlags.Instance);
+  if lCurrentProp = nil then
+    raise new Exception('Can not get property ' + lName);
+  lCurrentProp.SetValue(fParent, result, nil);
+  {$ENDIF}
   result.Loaded;
 end;
 
@@ -374,13 +422,18 @@ end;
 
 method ComponentsHelper.CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
 begin
+  {$IF ISLAND}
   var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.' + aClassName).FirstOrDefault;
+  {$ELSEIF ECHOESWPF}
+  var lType := &Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.' + aClassName);
+  {$ENDIF}
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
   result := CreateComponent(lType, aOwner);
 end;
 
 method ComponentsHelper.CreateComponent(aType: &Type; aOwner: TComponent): TComponent;
 begin
+  {$IF ISLAND}
   var lCtor: MethodInfo;
   var lCtors := aType.Methods.Where(a -> ((MethodFlags.Constructor in a.Flags) and (a.Arguments.Count = 1)));
   if lCtors.Count > 1 then begin
@@ -401,8 +454,10 @@ begin
   //lCtor.Invoke(result, [aOwner]);
   var lCaller := TControlCtor(lCtor.Pointer);
   lCaller(result, aOwner);
+  {$ELSEIF ECHOESWPF}
+  result := TComponent(Activator.CreateInstance(aType, [aOwner]));
+  {$ENDIF}
 end;
-
 
 method ObjectConverter.ObjectToBinary;
 begin
