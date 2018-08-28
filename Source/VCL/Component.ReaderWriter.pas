@@ -152,7 +152,9 @@ end;
 
 method TReader.ReadComponentData(aInstance: TComponent);
 begin
+  writeLn('ReadComponentData');
   while not EndOfList do ReadProperty(aInstance);
+  writeLn('End reading properties');
   ReadValue; // skip end of list
   while not EndOfList do ReadComponent(nil);
   ReadValue; // skip end of list
@@ -160,6 +162,7 @@ end;
 
 method TReader.ReadPropValue(aInstance: TObject; aValueType: TValueType; aProperty: PropertyInfo): Object;
 begin
+  writeLn('Reading value: ' + aProperty.Name);
   var lValue: Integer;
   var lInt8: Byte;
   var lInt16: SmallInt;
@@ -235,13 +238,19 @@ begin
         exit System.Delegate.CreateDelegate(lType, lMethod);
       end
       else begin
+        WriteLn('Read 1');
+        // TODO!
+        {writeLn(aProperty.PropertyType.Name);
         var lConstants := aProperty.GetType().GetEnumNames();
+        WriteLn('Read 2');
         var lIndex := System.Array.IndexOf(lConstants, lIdent);
+        WriteLn('Read 3');
         if lIndex ≥ 0 then begin
+          WriteLn('Read 4');
           var lValues := aProperty.GetType().GetEnumValues();
           exit lValues.GetValue(lIndex);
         end
-        else
+        else}
           exit 0;
       end;
       {$ENDIF}
@@ -287,10 +296,12 @@ begin
     lType := new &Type(lType.RTTI^.ParentType);
   end;
   {$ELSEIF ECHOESWPF}
+  WriteLn('Finding property: ' + aName);
   var lType := aType;
   while aType <> nil do begin
     result := lType.GetProperty(aName);
     if result <> nil then begin
+      writeLn('Found: ' + aName);
       exit;
     end;
     lType := lType.BaseType;
@@ -325,7 +336,8 @@ begin
     if lProperty = nil then raise new Exception('Can not get property ' + lName);
   end;
   var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
-  if lValue ≠ TValueType.vaList then
+  writeLn('value ok: ' + lName);
+  if lValue ≠ TValueType.vaList then begin
     {$IF ISLAND}
     DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
     {$ELSEIF ECHOESWPF}
@@ -334,6 +346,7 @@ begin
       raise new Exception('Can not get property ' + lName);
     lCurrentProp.SetValue(lInstance, lPropValue, nil);
     {$ENDIF}
+  end;
 end;
 
 method TReader.EndOfList: Boolean;
@@ -344,10 +357,12 @@ end;
 
 method TReader.ReadRootComponent(aRoot: TComponent): TComponent;
 begin
+  writeLn('Begin ReadRootComponent!');
   aRoot.SetComponentState(TComponentStateEnum.csLoading);
   ReadSignature; // Skip 'TPF0'
   ReadStr;
   var lName := ReadStr;
+  writeLn('Form: ' + lName);
   aRoot.Name := lName;
   //Root.Name := ReadStr;
   fOwner := aRoot;

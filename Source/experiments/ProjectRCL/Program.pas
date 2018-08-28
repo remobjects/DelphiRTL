@@ -31,8 +31,8 @@ type
       Application.Initialize;
       //Application.MainFormOnTaskbar := True;
       Application.CreateForm(typeOf(TForm6), var Form6);
-      Form6.comboBox1.Items.Add('Vamos 1');
-      Form6.comboBox1.Items.Add('Vamos 2');
+      //Form6.comboBox1.Items.Add('Vamos 1');
+      //Form6.comboBox1.Items.Add('Vamos 2');
       Application.Run;
     end;
   end;

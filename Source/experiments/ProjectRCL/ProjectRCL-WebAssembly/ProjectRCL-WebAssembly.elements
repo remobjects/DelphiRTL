@@ -44,15 +44,9 @@
     <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Island">
-      <HintPath>C:\dev\ro\IslandRTL\Source\Bin\Debug\WebAssembly\wasm32\Island.fx</HintPath>
-    </Reference>
-    <Reference Include="Elements">
-      <HintPath>C:\dev\ro\RTL2\Source\bin\Debug\WebAssembly\wasm32\Elements.fx</HintPath>
-    </Reference>
-    <Reference Include="Delphi">
-      <HintPath>C:\dev\ro\DelphiRTL\Source\Bin\Debug\WebAssembly\wasm32\Delphi.fx</HintPath>
-    </Reference>
+    <Reference Include="Elements" />
+    <Reference Include="Delphi" />
+    <Reference Include="Island" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />
