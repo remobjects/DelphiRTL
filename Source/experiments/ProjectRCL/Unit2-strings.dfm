@@ -1,4 +1,4 @@
-object Form2: TForm2
+object Form6: TForm6
   Left = 0
   Top = 0
   Caption = 'Form2'

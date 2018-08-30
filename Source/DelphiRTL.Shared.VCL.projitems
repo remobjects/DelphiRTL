@@ -30,5 +30,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.WPF.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Form.WPF.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.WPF.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.WPF.pas" />
   </ItemGroup>
 </Project>
