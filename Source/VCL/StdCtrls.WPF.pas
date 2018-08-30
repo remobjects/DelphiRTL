@@ -133,7 +133,7 @@ end;
 
 method TGroupBox.CreateHandle;
 begin
-
+  fHandle := new GroupBox();
 end;
 
 method TGroupBox.PlatformSetCaption(aValue: String);
@@ -208,7 +208,7 @@ end;
 
 method TListBox.CreateHandle;
 begin
-
+  fHandle := new ListBox();
 end;
 
 method TListBox.PlatformSelectAll;
@@ -283,7 +283,7 @@ end;
 
 method TComboBox.CreateHandle;
 begin
-
+  fHandle := new ComboBox();
 end;
 
 method TComboBox.PlatformGetText: String;
