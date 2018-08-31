@@ -215,7 +215,6 @@ begin
       if (aProperty.Type.Flags and IslandTypeFlags.Delegate) <> 0 then begin // delegate case
         var lType := typeOf(Root);
         var lMethod := lType.Methods.Where(a -> (a.Name = lIdent)).FirstOrDefault;
-        //var lDelegate := Utilities.NewDelegate(lType.RTTI, Root, lMethod.Pointer);
         var lDelegate := Utilities.NewDelegate(aProperty.Type.RTTI, Root, lMethod.Pointer);
 
         exit lDelegate;
@@ -233,18 +232,19 @@ begin
         exit System.Delegate.CreateDelegate(lType, Root, lIdent, true);
       end
       else begin
-        // TODO!
-        {writeLn(aProperty.PropertyType.Name);
-        var lConstants := aProperty.GetType().GetEnumNames();
-        WriteLn('Read 2');
-        var lIndex := System.Array.IndexOf(lConstants, lIdent);
-        WriteLn('Read 3');
-        if lIndex ≥ 0 then begin
-          WriteLn('Read 4');
-          var lValues := aProperty.GetType().GetEnumValues();
-          exit lValues.GetValue(lIndex);
-        end
-        else}
+        var lGlobals := System.Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.__Global', false);
+
+        var lFields := lGlobals.GetFields(BindingFlags.Public or BindingFlags.Static or BindingFlags.FlattenHierarchy);
+        var lConstant: FieldInfo := nil;
+        for each lField in lFields do
+          if (lField.IsLiteral) and (not lField.IsInitOnly) and (lField.Name = lIdent) then begin
+            lConstant := lField;
+            break;
+          end;
+
+        if lConstant ≠ nil then
+          exit lConstant.GetRawConstantValue()
+        else
           exit 0;
       end;
       {$ENDIF}

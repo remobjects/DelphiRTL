@@ -79,12 +79,20 @@ end;
 
 method TControl.PlatformSetOnKeyDown(aValue: TKeyEvent);
 begin
-
+  fHandle.KeyDown += new System.Windows.Input.KeyEventHandler((s, e)-> begin
+    var lState: TShiftState := [];
+    var lKey: Word := Word(e.Key);
+    if assigned(fOnKeyDown) then fOnKeyDown(self, var lKey, lState);
+  end);
 end;
 
 method TControl.PlatformSetOnKeyUp(aValue: TKeyEvent);
 begin
-
+  fHandle.KeyUp += new System.Windows.Input.KeyEventHandler((s, e)-> begin
+    var lState: TShiftState := [];
+    var lKey: Word := Word(e.Key);
+    if assigned(fOnKeyUp) then fOnKeyUp(self, var lKey, lState);
+  end);
 end;
 
 method TControl.PlatformSetCaption(aValue: String);
@@ -104,7 +112,7 @@ end;
 
 method TControl.PlatformApplyDefaults;
 begin
-
+  // Nothing to do here...
 end;
 
 {$ENDIF}

@@ -39,12 +39,16 @@ type
     method PlatformSetReadOnly(aValue: Boolean);
   end;
 
+  TButtonControl = public partial class(TNativeControl)
+  protected
+    method PlatformGetChecked: Boolean; virtual; partial;
+    method PlatformSetChecked(aValue: Boolean); virtual; partial;
+  end;
+
   TCheckBox = public partial class(TButtonControl)
   protected
     method CreateHandle; override;
 
-    method PlatformGetChecked: Boolean; override; partial;
-    method PlatformSetChecked(aValue: Boolean); override; partial;
     method PlatformSetState(aValue: TCheckBoxState); partial;
   end;
 
@@ -53,9 +57,6 @@ type
     method CreateHandle; override;
 
     method Click; override;
-
-    method PlatformGetChecked: Boolean; override; partial;
-    method PlatformSetChecked(aValue: Boolean); override; partial;
   end;
 
   TListControlItems = public partial class(TStringList)
@@ -128,6 +129,8 @@ end;
 
 method TLabel.PlatformSetCaption(aValue: String);
 begin
+  Width := 31;
+  Height := 13;
   (fHandle as Label).Content := aValue;
 end;
 
@@ -138,7 +141,7 @@ end;
 
 method TGroupBox.PlatformSetCaption(aValue: String);
 begin
-
+  (fHandle as GroupBox).Content := aValue;
 end;
 
 method TEdit.CreateHandle;
@@ -158,22 +161,32 @@ end;
 
 method TEdit.PlatformGetMaxLength: Integer;
 begin
-
+  result := (fHandle as TextBox).MaxLength;
 end;
 
 method TEdit.PlatformSetMaxLength(aValue: Integer);
 begin
-
+  (fHandle as TextBox).MaxLength := aValue;
 end;
 
 method TEdit.PlatformGetReadOnly: Boolean;
 begin
-
+  result := (fHandle as TextBox).IsReadOnly;
 end;
 
 method TEdit.PlatformSetReadOnly(aValue: Boolean);
 begin
+  (fHandle as TextBox).IsReadOnly := aValue;
+end;
 
+method TButtonControl.PlatformGetChecked: Boolean;
+begin
+  result := (fHandle as System.Windows.Controls.Primitives.ToggleButton).IsChecked
+end;
+
+method TButtonControl.PlatformSetChecked(aValue: Boolean);
+begin
+  (fHandle as System.Windows.Controls.Primitives.ToggleButton).IsChecked := aValue;
 end;
 
 method TCheckBox.CreateHandle;
@@ -181,9 +194,19 @@ begin
   fHandle := new CheckBox();
 end;
 
+method TCheckBox.PlatformSetState(aValue: TCheckBoxState);
+begin
+
+end;
+
 method TRadioButton.CreateHandle;
 begin
   fHandle := new RadioButton();
+end;
+
+method TRadioButton.Click;
+begin
+
 end;
 
 method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
@@ -327,36 +350,6 @@ begin
 end;
 
 method TComboBox.PlatformGetItemIndex: Integer;
-begin
-
-end;
-
-method TCheckBox.PlatformGetChecked: Boolean;
-begin
-
-end;
-
-method TCheckBox.PlatformSetChecked(aValue: Boolean);
-begin
-
-end;
-
-method TCheckBox.PlatformSetState(aValue: TCheckBoxState);
-begin
-
-end;
-
-method TRadioButton.Click;
-begin
-
-end;
-
-method TRadioButton.PlatformGetChecked: Boolean;
-begin
-
-end;
-
-method TRadioButton.PlatformSetChecked(aValue: Boolean);
 begin
 
 end;
