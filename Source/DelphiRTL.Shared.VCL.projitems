@@ -32,5 +32,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.WPF.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.WPF.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Graphics.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ExtCtrls.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ExtCtrls.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ExtCtrls.WPF.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ExtCtrls.WebAssembly.pas" />
   </ItemGroup>
 </Project>
