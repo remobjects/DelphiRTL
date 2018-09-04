@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS) OR ECHOESWPF}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
 
 interface
 
@@ -8,7 +8,7 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  TPanel = public partial class(TNativeControl)
+  TPanel = public partial class(TCustomControl)
   protected
   end;
 

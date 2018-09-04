@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS) OR ECHOESWPF}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
 
 interface
 
@@ -101,6 +101,11 @@ type
     property OnKeyDown: TKeyEvent read fOnKeyDown write SetOnKeyDown;
     property OnKeyUp: TKeyEvent read fOnKeyUp write setOnKeyUp;
     property TabOrder: Integer read fTabOrder write fTabOrder;
+  end;
+
+  TCustomControl = public class(TNativeControl)
+  private
+    //fCanvas: TCanvas;
   end;
 
 

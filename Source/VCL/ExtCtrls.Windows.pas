@@ -8,7 +8,7 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  TPanel = public partial class(TNativeControl)
+  TPanel = public partial class(TCustomControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
   end;
@@ -18,7 +18,7 @@ implementation
 method TPanel.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WidgetClassName := 'STATIC'.ToCharArray(true);
+  aParams.WidgetClassName := 'WindowClassPanel'.ToCharArray(true);
   aParams.DefaultWndProc := true;
   CreateClass(var aParams);
 end;
