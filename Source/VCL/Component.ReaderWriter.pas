@@ -377,7 +377,7 @@ begin
     //TControl(result).Parent := TControl(fParent);
   end;
   result.SetComponentState(TComponentStateEnum.csLoading);
-  TControl(result).Parent := TControl(fParent);
+  TControl(result).Parent := TNativeControl(fParent);
   var lOldParent := fParent;
   fParent := result;
   ReadComponentData(result);

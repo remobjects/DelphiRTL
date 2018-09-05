@@ -8,12 +8,12 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  TNativeControl = public partial class(TControl)
-  end;
+
+  TAlign = public enum (alNone, alTop, alBottom, alLeft, alRight, alClient, alCustom) of Integer;
 
   TControl = public partial class(TComponent)
   private
-    fParent: TControl;
+    fParent: TNativeControl;
     fOnClick: TNotifyEvent;
     fWidth: Integer;
     fHeight: Integer;
@@ -28,13 +28,14 @@ type
     fControls: TList<TControl> := nil;
     fTabOrder: Integer; // TODO
     fParentFont: Boolean := true;
+    fAlign: TAlign;
     method GetCaption: String;
     method SetCaption(aValue: String);
     method SetWidth(aValue: Integer);
     method SetHeight(aValue: Integer);
     method SetTop(aValue: Integer);
     method SetLeft(aValue: Integer);
-    method SetParent(aValue: TControl);
+    method SetParent(aValue: TNativeControl);
     method setFont(value: TFont);
     method SetOnClick(aValue: TNotifyEvent);
     method setOnKeyUp(value: TKeyEvent);
@@ -47,6 +48,7 @@ type
     method SetColor(aValue: TColor);
     method SetVisible(aValue: Boolean);
     method SetParentFont(aValue: Boolean);
+    method SetAlign(value: TAlign);
 
   protected
     fHandle: TPlatformHandle := {$IF ISLAND AND WINDOWS}0{$ELSE}nil{$ENDIF};
@@ -55,6 +57,7 @@ type
     method HandleNeeded; virtual;
     method HandleAllocated: Boolean; virtual; partial; empty;
     method Changed(aObject: TObject; propName: String);
+    method RequestAlign; virtual;
     constructor(aOwner: TComponent);
 
     method PlatformGetCaption: String; partial; empty;
@@ -83,7 +86,7 @@ type
 
     property Handle: TPlatformHandle read fHandle;
     property Font: TFont read fFont write setFont;
-    property Parent: TControl read fParent write SetParent;
+    property Parent: TNativeControl read fParent write SetParent;
     property ParentFont: Boolean read fParentFont write SetParentFont;
     property Caption: String read GetCaption write SetCaption;
     property Height: Integer read fHeight write SetHeight;
@@ -96,18 +99,24 @@ type
     property Top: Integer read fTop write SetTop;
     property Color: TColor read fColor write SetColor;
     property Visible: Boolean read fVisible write SetVisible;
+    property TabOrder: Integer read fTabOrder write fTabOrder;
+    property Align: TAlign read fAlign write SetAlign;
     property OnClick: TNotifyEvent read fOnClick write SetOnClick;
     property OnKeyPress: TKeyPressEvent read fOnKeyPress write SetOnKeyPress;
     property OnKeyDown: TKeyEvent read fOnKeyDown write SetOnKeyDown;
     property OnKeyUp: TKeyEvent read fOnKeyUp write setOnKeyUp;
-    property TabOrder: Integer read fTabOrder write fTabOrder;
+  end;
+
+  TNativeControl = public partial class(TControl)
+  public
+    method AlignControl(aControl: TControl); virtual;
+    method AlignControls(aControl: TControl; var Rect: TRect); virtual;
   end;
 
   TCustomControl = public class(TNativeControl)
   private
     //fCanvas: TCanvas;
   end;
-
 
 implementation
 
@@ -175,7 +184,7 @@ begin
   PlatformSetHeight(aValue);
 end;
 
-method TControl.SetParent(aValue: TControl);
+method TControl.SetParent(aValue: TNativeControl);
 begin
   fParent := aValue;
   aValue.InsertControl(self);
@@ -253,6 +262,29 @@ begin
     fControls := new TList<TControl>();
 
   fControls.Add(aControl);
+end;
+
+method TControl.SetAlign(value: TAlign);
+begin
+  if value <> fAlign then
+    RequestAlign;
+end;
+
+method TControl.RequestAlign;
+begin
+  if Parent ≠ nil then
+    Parent.AlignControl(self);
+end;
+
+method TNativeControl.AlignControl(aControl: TControl);
+begin
+  var lRect: TRect;
+  AlignControls(aControl, var lRect);
+end;
+
+method TNativeControl.AlignControls(aControl: TControl; var Rect: TRect);
+begin
+
 end;
 
 {$ENDIF}
