@@ -10,6 +10,33 @@ uses
 type
 
   TAlign = public enum (alNone, alTop, alBottom, alLeft, alRight, alClient, alCustom) of Integer;
+  TMarginSize = public Cardinal;
+
+  TMargins = public class(TPersistent)
+  private
+    method SetBottom(value: TMarginSize);
+    method SetRight(value: TMarginSize);
+    method SetTop(value: TMarginSize);
+    method SetLeft(value: TMarginSize);
+  protected
+    fLeft: TMarginSize;
+    fTop: TMarginSize;
+    fRight: TMarginSize;
+    fBottom: TMarginSize;
+    class method InitDefaults(Margins: TMargins); virtual;
+  public
+    property Left: TMarginSize read fLeft write SetLeft;
+    property Top: TMarginSize read fTop write SetTop;
+    property Right: TMarginSize read fRight write SetRight;
+    property Bottom: TMarginSize read fBottom write SetBottom;
+  end;
+
+  TPadding = public class(TMargins)
+  protected
+    class method InitDefaults(Margins: TMargins); override;
+  public
+    constructor;
+  end;
 
   TControl = public partial class(TComponent)
   private
@@ -29,6 +56,8 @@ type
     fTabOrder: Integer; // TODO
     fParentFont: Boolean := true;
     fAlign: TAlign;
+    fMargins: TMargins;
+    fAlignWithMargins: Boolean := false;
     method GetCaption: String;
     method SetCaption(aValue: String);
     method SetWidth(aValue: Integer);
@@ -49,6 +78,8 @@ type
     method SetVisible(aValue: Boolean);
     method SetParentFont(aValue: Boolean);
     method SetAlign(value: TAlign);
+    method SetMargins(aValue: TMargins);
+    method SetAlignWithMargins(value: Boolean);
 
   protected
     fHandle: TPlatformHandle := {$IF ISLAND AND WINDOWS}0{$ELSE}nil{$ENDIF};
@@ -101,6 +132,8 @@ type
     property Visible: Boolean read fVisible write SetVisible;
     property TabOrder: Integer read fTabOrder write fTabOrder;
     property Align: TAlign read fAlign write SetAlign;
+    property Margins: TMargins read fMargins write SetMargins;
+    property AlignWithMargins: Boolean read fAlignWithMargins write SetAlignWithMargins;
     property OnClick: TNotifyEvent read fOnClick write SetOnClick;
     property OnKeyPress: TKeyPressEvent read fOnKeyPress write SetOnKeyPress;
     property OnKeyDown: TKeyEvent read fOnKeyDown write SetOnKeyDown;
@@ -108,9 +141,16 @@ type
   end;
 
   TNativeControl = public partial class(TControl)
+  private
+    fPadding: TPadding;
+    method SetPadding(value: TPadding);
+  protected
+    method DoAlign(aAlign: TAlign; var aRect: TRect);
   public
     method AlignControl(aControl: TControl); virtual;
     method AlignControls(aControl: TControl; var Rect: TRect); virtual;
+
+    property Padding: TPadding read fPadding write SetPadding;
   end;
 
   TCustomControl = public class(TNativeControl)
@@ -163,7 +203,7 @@ end;
 
 method TControl.GetCaption: String;
 begin
-  result := PlatformGetCaption;
+  result := fCaption;
 end;
 
 method TControl.SetCaption(aValue: String);
@@ -241,6 +281,7 @@ end;
 
 method TControl.SetColor(aValue: TColor);
 begin
+  fColor := aValue;
   PlatformSetColor(aValue);
 end;
 
@@ -270,6 +311,17 @@ begin
     RequestAlign;
 end;
 
+method TControl.SetMargins(aValue: TMargins);
+begin
+  fMargins := aValue;
+end;
+
+method TControl.SetAlignWithMargins(value: Boolean);
+begin
+  fAlignWithMargins := value;
+  // TODO update align!
+end;
+
 method TControl.RequestAlign;
 begin
   if Parent ≠ nil then
@@ -279,12 +331,156 @@ end;
 method TNativeControl.AlignControl(aControl: TControl);
 begin
   var lRect: TRect;
+  lRect.Top := 0;
+  lRect.Left := 0;
+  lRect.Right := Width;
+  lRect.Bottom := Height;
   AlignControls(aControl, var lRect);
 end;
 
 method TNativeControl.AlignControls(aControl: TControl; var Rect: TRect);
 begin
+  inc(Rect.Left, Padding.Left);
+  inc(Rect.Top, Padding.Top);
+  dec(Rect.Right, Padding.Right);
+  dec(Rect.Bottom, Padding.Bottom);
 
+  DoAlign(TAlign.alTop, var Rect);
+  DoAlign(TAlign.alBottom, var Rect);
+  DoAlign(TAlign.alLeft, var Rect);
+  DoAlign(TAlign.alRight, var Rect);
+  DoAlign(TAlign.alClient, var Rect);
+end;
+
+method TNativeControl.DoALign(aAlign: TAlign; var aRect: TRect);
+begin
+  var lControls := new TList<TControl>();
+
+  for i: Integer := 0 to Controls.Count - 1 do
+    if Controls[i].Align = aAlign then
+      lControls.Add(Controls[i]);
+
+  var lNewLeft, lNewTop, lNewWidth, lNewHeight, lDelta: Int32;
+
+  for each lControl in lControls do begin
+    case aAlign of
+      TAlign.alTop: begin
+        lNewTop := aRect.Top;
+        lNewLeft := aRect.Left;
+        lNewWidth := aRect.Right - aRect.Left;
+        if lControl.AlignWithMargins then begin
+          inc(lNewTop, lControl.Margins.Top);
+          inc(lNewLeft, lControl.Margins.Left);
+          lNewWidth := lNewWidth - (lControl.Margins.Left + lControl.Margins.Right);
+          lDelta := lControl.Margins.Bottom;
+        end
+        else
+          lDelta := 0;
+
+        lControl.Width := lNewWidth;
+        aRect.Top := lNewTop + lControl.Height + lDelta;
+      end;
+
+      TAlign.alBottom: begin
+        lNewTop := aRect.Bottom - lControl.Height;
+        lNewLeft := aRect.Left;
+        lNewWidth := aRect.Right - aRect.Left;
+        if lControl.AlignWithMargins then begin
+          dec(lNewTop, lControl.Margins.Bottom);
+          inc(lNewLeft, lControl.Margins.Left);
+          lNewWidth := lNewWidth - (lControl.Margins.Left + lControl.Margins.Right);
+          lDelta := lControl.Margins.Top;
+        end
+        else
+          lDelta := 0;
+
+        lControl.Width := lNewWidth;
+        aRect.Bottom := lNewTop - lDelta;
+      end;
+
+      TAlign.alLeft: begin
+        lNewTop := aRect.Top;
+        lNewLeft := aRect.Left;
+        lNewHeight := aRect.Bottom - aRect.Top;
+        if lControl.AlignWithMargins then begin
+          inc(lNewTop, lControl.Margins.Top);
+          inc(lNewLeft, lControl.Margins.Left);
+          lNewHeight := lNewHeight - (lControl.Margins.Top + lControl.Margins.Bottom);
+          lDelta := lControl.Margins.Right;
+        end
+        else
+          lDelta := 0;
+
+        lControl.Height := lNewHeight;
+        aRect.Left := lNewLeft + lDelta;
+      end;
+
+      TAlign.alRight: begin
+        lNewTop := aRect.Top;
+        lNewLeft := aRect.Right;
+        lNewHeight := aRect.Bottom - aRect.Top;
+        if lControl.AlignWithMargins then begin
+          inc(lNewTop, lControl.Margins.Top);
+          dec(lNewLeft, lControl.Margins.Right);
+          lNewHeight := lNewHeight - (lControl.Margins.Top + lControl.Margins.Bottom);
+          lDelta := lControl.Margins.Left;
+        end
+        else
+          lDelta := 0;
+
+        lControl.Height := lNewHeight;
+        aRect.Left := lNewLeft - lDelta;
+      end;
+    end;
+    lControl.Top := lNewTop;
+    lControl.Left := lNewLeft;
+  end;
+end;
+
+method TNativeControl.SetPadding(value: TPadding);
+begin
+  fPadding := value;
+end;
+
+method TMargins.SetLeft(value: TMarginSize);
+begin
+  fLeft := value;
+end;
+
+method TMargins.SetTop(value: TMarginSize);
+begin
+  fTop := value;
+end;
+
+method TMargins.setRight(value: TMarginSize);
+begin
+  fRight := value;
+end;
+
+method TMargins.SetBottom(value: TMarginSize);
+begin
+  fBottom := value;
+end;
+
+class method TMargins.InitDefaults(Margins: TMargins);
+begin
+  Margins.Left := TMarginSize(3);
+  Margins.Top := TMarginSize(3);
+  Margins.Right := TMarginSize(3);
+  Margins.Bottom := TMarginSize(3);
+end;
+
+class method TPadding.InitDefaults(Margins: TMargins);
+begin
+
+end;
+
+constructor TPadding;
+begin
+  fLeft := 0;
+  fTop := 0;
+  fRight := 0;
+  fBottom := 0;
 end;
 
 {$ENDIF}
