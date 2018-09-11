@@ -57,7 +57,7 @@
     <Compile Include="Program.pas" />
     <Compile Include="Unit5.pas" />
     <Resource Include="manifest.res" />
-    <Resource Include="withGroupBox.dfm" />
+    <Resource Include="PanelAndButton.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
 </Project>

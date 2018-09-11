@@ -385,17 +385,17 @@ begin
   result.RemoveComponentState(TComponentStateEnum.csLoading);
 
   {$IF ISLAND}
-  DynamicHelpers.SetMember(fParent, lName, 0, [result]);
+  DynamicHelpers.SetMember(Root, lName, 0, [result]);
   {$ELSEIF ECHOESWPF}
-  var lCurrentField := fParent.GetType().GetField(lName, BindingFlags.Public or BindingFlags.Instance or BindingFlags.IgnoreCase);
+  var lCurrentField := Root.GetType().GetField(lName, BindingFlags.Public or BindingFlags.Instance or BindingFlags.IgnoreCase);
   if lCurrentField ≠ nil then
-    lCurrentField.SetValue(fParent, result)
+    lCurrentField.SetValue(Root, result)
   else begin
-    var lCurrentProp := fParent.GetType().GetProperty(lName, BindingFlags.Public or BindingFlags.Instance or BindingFlags.IgnoreCase);
+    var lCurrentProp := Root.GetType().GetProperty(lName, BindingFlags.Public or BindingFlags.Instance or BindingFlags.IgnoreCase);
     if lCurrentProp = nil then
       raise new Exception('Can not get property ' + lName)
     else
-      lCurrentProp.SetValue(fParent, result, nil);
+      lCurrentProp.SetValue(Root, result, nil);
   end;
   {$ENDIF}
   result.Loaded;
@@ -405,8 +405,7 @@ method TReader.ReadSignature;
 begin
   var lSig: UInt32;
   fStream.ReadData(var lSig);
-  if lSig <> FilerSignature
-   then
+  if lSig <> FilerSignature then
     raise new Exception("Invalid dfm format");
 end;
 
