@@ -21,6 +21,7 @@ type
     listBox1: TListBox;
     comboBox1: TComboBox;
     groupBox1: TGroupBox;
+    Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ComboBox1Select(Sender: TObject);

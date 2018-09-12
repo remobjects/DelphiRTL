@@ -50,7 +50,7 @@ type
     //{$ENDIF}
   end;
 
-  TColor = Integer;
+  TColor = public Integer;
 
 implementation
 

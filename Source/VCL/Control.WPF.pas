@@ -102,7 +102,9 @@ end;
 
 method TControl.PlatformFontChanged;
 begin
-  (fHandle as System.Windows.Controls.Control).FontFamily := new System.Windows.Media.FontFamily(fFont.Name);
+
+  //TODO check!!
+  {(fHandle as System.Windows.Controls.Control).FontFamily := new System.Windows.Media.FontFamily(fFont.Name);
   (fHandle as System.Windows.Controls.Control).FontSize := fFont.Size;
 
   if TFontStyle.Bold in fFont.Style then
@@ -113,7 +115,7 @@ begin
  if TFontStyle.Italic in fFont.Style then
    (fHandle as System.Windows.Controls.Control).FontStyle := System.Windows.FontStyles.Italic
   else
-   (fHandle as System.Windows.Controls.Control).FontStyle := System.Windows.FontStyles.Normal;
+   (fHandle as System.Windows.Controls.Control).FontStyle := System.Windows.FontStyles.Normal;}
 end;
 
 method TControl.PlatformGetDefaultName: String;

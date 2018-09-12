@@ -10,28 +10,23 @@ uses
 type
   TPanel = public partial class(TCustomControl)
   protected
-    fPanel: Canvas;
     method CreateHandle; override;
-    method HandleAllocated: Boolean; override;
-    method PlatformSetParent(aValue: TControl); override;
+    method PlatformSetCaption(aValue: String); override;
   end;
 
 implementation
 
 method TPanel.CreateHandle;
 begin
-  // WPF, Panel does not descend from Control...
+  // We use a ContentControl and add a Canvas as Content.
+  fHandle := new ContentControl();
   fPanel := new Canvas();
+  (fHandle as System.Windows.Controls.ContentControl).Content := fPanel;
 end;
 
-method TPanel.HandleAllocated: Boolean;
+method TPanel.PlatformSetCaption(aValue: String);
 begin
-  result := fPanel ≠ nil;
-end;
-
-method TPanel.PlatformSetParent(aValue: TControl);
-begin
-  fPanel.Children.Add(aValue.Handle);
+  // do nothing
 end;
 
 {$ENDIF}

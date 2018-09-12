@@ -328,6 +328,7 @@ begin
     if lProperty = nil then raise new Exception('Can not get property ' + lName);
   end;
   var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
+
   if lValue ≠ TValueType.vaList then begin
     {$IF ISLAND}
     DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
