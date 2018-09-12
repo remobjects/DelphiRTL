@@ -212,7 +212,7 @@ begin
       var lIdent := RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes);
 
       {$IF ISLAND}
-      if (aProperty.Type.Flags and IslandTypeFlags.Delegate) <> 0 then begin // delegate case
+        if (aProperty.Type.Flags and IslandTypeFlags.TypeKindMask) = IslandTypeFlags.Delegate then begin // delegate case
         var lType := typeOf(Root);
         var lMethod := lType.Methods.Where(a -> (a.Name = lIdent)).FirstOrDefault;
         var lDelegate := Utilities.NewDelegate(aProperty.Type.RTTI, Root, lMethod.Pointer);

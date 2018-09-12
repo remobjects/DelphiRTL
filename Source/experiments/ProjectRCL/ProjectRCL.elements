@@ -48,16 +48,18 @@
     <Reference Include="gc" />
     <Reference Include="rtl" />
     <Reference Include="Elements" />
-    <Reference Include="Island" />
     <Reference Include="Delphi">
       <HintPath>..\..\bin\Debug\Windows\i386\Delphi.fx</HintPath>
+    </Reference>
+    <Reference Include="Island">
+      <HintPath>C:\dev\ro\IslandRTL\Source\Bin\Debug\Windows\i386\Island.fx</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />
     <Compile Include="Unit5.pas" />
     <Resource Include="manifest.res" />
-    <Resource Include="PanelAndButton.dfm" />
+    <Resource Include="PanelAndTwoAlignedTopButton.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
 </Project>

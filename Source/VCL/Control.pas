@@ -84,6 +84,10 @@ type
   protected
     fHandle: TPlatformHandle := {$IF ISLAND AND WINDOWS}0{$ELSE}nil{$ENDIF};
     fFont: TFont;
+    fExplicitLeft: Integer;
+    fExplicitTop: Integer;
+    fExplicitHeight: Integer;
+    fExplicitWidth: Integer;
     method CreateHandle; partial; virtual; empty;
     method HandleNeeded; virtual;
     method HandleAllocated: Boolean; virtual; partial; empty;
@@ -134,6 +138,10 @@ type
     property Align: TAlign read fAlign write SetAlign;
     property Margins: TMargins read fMargins write SetMargins;
     property AlignWithMargins: Boolean read fAlignWithMargins write SetAlignWithMargins;
+    property ExplicitLeft: Integer read fExplicitLeft write fExplicitLeft;
+    property ExplicitTop: Integer read fExplicitTop write fExplicitTop;
+    property ExplicitWidth: Integer read fExplicitWidth write fExplicitWidth;
+    property ExplicitHeight: Integer read fExplicitHeight write fExplicitHeight;
     property OnClick: TNotifyEvent read fOnClick write SetOnClick;
     property OnKeyPress: TKeyPressEvent read fOnKeyPress write SetOnKeyPress;
     property OnKeyDown: TKeyEvent read fOnKeyDown write SetOnKeyDown;
@@ -307,8 +315,10 @@ end;
 
 method TControl.SetAlign(value: TAlign);
 begin
-  if value <> fAlign then
+  if value <> fAlign then begin
+    fAlign := value;
     RequestAlign;
+  end;
 end;
 
 method TControl.SetMargins(aValue: TMargins);
