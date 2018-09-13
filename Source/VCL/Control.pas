@@ -334,7 +334,7 @@ end;
 
 method TControl.RequestAlign;
 begin
-  if Parent ≠ nil then
+  if (Parent ≠ nil) and (not TComponentState.csLoading in ComponentState) then
     Parent.AlignControl(self);
 end;
 

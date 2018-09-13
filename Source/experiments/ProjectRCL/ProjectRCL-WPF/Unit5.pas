@@ -35,15 +35,15 @@ implementation
 
 procedure TForm6.Button1Click(Sender: TObject);
 begin
-  ShowMessage('WPF!!');
+  //ShowMessage('WPF!!');
   //label1.Width := 200;
   //label1.Caption := 'All right!';
   //ShowMessage('Clicked!');
   //ShowMessage(edit1.Text);
 
-  {listBox1.Items.Add(edit1.Text);
+  listBox1.Items.Add(edit1.Text);
   comboBox1.Items.Add(edit1.Text);
-  edit1.OnKeyPress := @Edit1OnKeyPress;}
+  edit1.OnKeyPress := @Edit1OnKeyPress;
 end;
 
 procedure TForm6.Button2Click(Sender: TObject);

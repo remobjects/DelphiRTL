@@ -9,11 +9,22 @@ type
     [STAThread]
     class method Main(args: array of String): Int32;
     begin
+
       Application := new TApplication(nil);
       Application.Initialize;
       Application.CreateForm(typeOf(TForm6), var Form6);
       Application.Run;
       writeLn('The magic happens here.');
+
+
+      {Application := new TApplication(nil);
+      Application.Initialize;
+      var lForm := new TForm(nil);
+
+      Application.Run;
+      writeLn('The magic happens here.');
+      }
+
     end;
   end;
 

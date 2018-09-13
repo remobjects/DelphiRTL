@@ -220,11 +220,26 @@ begin
         exit lDelegate;
       end
       else begin
-        var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;
-        if lConstant <> nil then
-          exit lConstant.Value
-        else
-          exit 0; // TODO check!!!
+        if (aProperty.Type.Flags and IslandTypeFlags.TypeKindMask) = IslandTypeFlags.EnumFlags then begin
+          var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;
+          if lConstant <> nil then begin
+            exit lConstant.Value;
+            //exit lConstant.Value;
+          end
+        end
+        else begin
+          var lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.__Global')).FirstOrDefault;
+          var lConstant := lGlobals.Constants.Where(a -> a.Name = lIdent).FirstOrDefault;
+          if lConstant = nil then begin
+            lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.__Global')).FirstOrDefault;
+            lConstant := lGlobals.Constants.Where(a -> a.Name = lIdent).FirstOrDefault;
+          end;
+
+          if lConstant ≠ nil then
+            exit lConstant.Value
+          else
+            exit 0;
+        end;
       end;
       {$ELSEIF ECHOESWPF}
       var lType := aProperty.PropertyType;
@@ -232,20 +247,24 @@ begin
         exit System.Delegate.CreateDelegate(lType, Root, lIdent, true);
       end
       else begin
-        var lGlobals := System.Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.__Global', false);
-
-        var lFields := lGlobals.GetFields(BindingFlags.Public or BindingFlags.Static or BindingFlags.FlattenHierarchy);
         var lConstant: FieldInfo := nil;
-        for each lField in lFields do
-          if (lField.IsLiteral) and (not lField.IsInitOnly) and (lField.Name = lIdent) then begin
-            lConstant := lField;
-            break;
+        if lType.IsEnum then
+          exit &Enum.Parse(lType, lIdent, true)
+        else begin
+          var lGlobals := System.Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.__Global', false);
+          var lFields := lGlobals.GetFields(BindingFlags.Public or BindingFlags.Static or BindingFlags.FlattenHierarchy);
+          lConstant := lFields.Where(a -> a.Name = lIdent).FirstOrDefault;
+          if lConstant = nil then begin
+            lGlobals := System.Type.GetType('RemObjects.Elements.RTL.Delphi.__Global', false);
+            lFields := lGlobals.GetFields(BindingFlags.Public or BindingFlags.Static or BindingFlags.FlattenHierarchy);
+            lConstant := lFields.Where(a -> a.Name = lIdent).FirstOrDefault;
           end;
 
-        if lConstant ≠ nil then
-          exit lConstant.GetRawConstantValue()
-        else
-          exit 0;
+          if lConstant ≠ nil then
+            exit lConstant.GetRawConstantValue()
+          else
+            exit 0;
+        end;
       end;
       {$ENDIF}
     end;

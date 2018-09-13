@@ -31,17 +31,18 @@ begin
   HandleNeeded;
   var lName := typeOf(self).Name;
   lName := lName.Substring(lName.LastIndexOf('.') + 1).ToUpper;
-
-  // the resource is on the .exe, not here!
-  var lAssembly := System.Reflection.Assembly.GetEntryAssembly();
-  var lResStream := lAssembly.GetManifestResourceStream(lName);
-  var lBuffer := new Byte[lResStream.Length];
-  lResStream.Read(lBuffer, 0, lResStream.Length);
-  var lStream := new TMemoryStream();
-  lStream.Write(lBuffer, lResStream.Length);
-  lStream.Position := 74; // Discard header
-  var lReader := new TReader(lStream, 100);
-  lReader.ReadRootComponent(self);
+  if lName.ToUpper <> 'TFORM' then begin
+    // the resource is on the .exe, not here!
+    var lAssembly := System.Reflection.Assembly.GetEntryAssembly();
+    var lResStream := lAssembly.GetManifestResourceStream(lName);
+    var lBuffer := new Byte[lResStream.Length];
+    lResStream.Read(lBuffer, 0, lResStream.Length);
+    var lStream := new TMemoryStream();
+    lStream.Write(lBuffer, lResStream.Length);
+    lStream.Position := 74; // Discard header
+    var lReader := new TReader(lStream, 100);
+    lReader.ReadRootComponent(self);
+  end;
 end;
 
 method TCustomForm.PlatformSetTop(aValue: Integer);

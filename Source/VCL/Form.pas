@@ -22,10 +22,16 @@ type
 
   TForm = public partial class(TCustomForm)
   public
-    //constructor(aOwner: TComponent); empty;
+    constructor(aOwner: TComponent);
   end;
 
 implementation
+
+constructor TForm(aOwner: TComponent);
+begin
+  if Application.MainForm = nil then
+    Application.MainForm := self;
+end;
 
 {$ENDIF}
 
