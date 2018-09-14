@@ -25,7 +25,7 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ComboBox1Select(Sender: TObject);
-    procedure Edit1OnKeyPress(Sender: TObject; var key: Char);
+    procedure Edit1KeyPress(Sender: TObject; var key: Char);
   end;
 
   var
@@ -56,7 +56,7 @@ begin
   ShowMessage('Yes!');
 end;
 
-procedure TForm6.Edit1OnKeyPress(Sender: TObject; var key: Char);
+procedure TForm6.Edit1KeyPress(Sender: TObject; var key: Char);
 begin
   ShowMessage(key);
 end;

@@ -74,7 +74,14 @@ end;
 
 method TControl.PlatformSetOnKeyPress(aValue: TKeyPressEvent);
 begin
-
+  // Here we use PreviewTextInput event, for two main reasons:
+  // 1) KeyDown just gives the key ('D' upper D key always, no way to detect real text)
+  // 2) TextInput will not fire on TextBox because control is using
+  fHandle.PreviewTextInput += new System.Windows.Input.TextCompositionEventHandler((s, e) -> begin
+    var lKey: Char := #0;
+    if Char.TryParse(e.Text, out lKey) then
+      if assigned(fOnKeyPress) then fOnKeyPress(self, var lKey);
+  end);
 end;
 
 method TControl.PlatformSetOnKeyDown(aValue: TKeyEvent);
