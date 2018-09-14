@@ -1,7 +1,7 @@
 object Form6: TForm6
   Left = 0
   Top = 0
-  Caption = 'Form2'
+  Caption = 'Form6'
   ClientHeight = 299
   ClientWidth = 635
   Color = clBtnFace
@@ -13,16 +13,12 @@ object Form6: TForm6
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object ComboBox1: TComboBox
-    Left = 264
-    Top = 120
-    Width = 145
-    Height = 21
+  object GroupBox1: TGroupBox
+    Left = 80
+    Top = 40
+    Width = 217
+    Height = 145
+    Caption = 'Groupi!'
     TabOrder = 0
-    Text = 'ComboBox1'
-    Items.Strings = (
-      'uno'
-      'dos'
-      'tres')
   end
 end

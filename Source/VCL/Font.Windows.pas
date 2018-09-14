@@ -8,23 +8,10 @@ uses
   RemObjects.Elements.RTL.Delphi;
 
 type
-  TFontPitch = public enum (fpDefault, fpVariable, fpFixed) of Integer;
-  TFontQuality = public enum(fqDefault, fqDraft, fqProof, fqNonAntialiased, fqAntialiased, fqClearType, fqClearTypeNatural) of Integer;
-
   TFont = public partial class(TPersistent)
   private
-    fPixelsPerInch: Integer;
     fFontHandle: rtl.HFONT;
-    fOrientation: Integer;
-    fQuality: TFontQuality := TFontQuality.fqClearType;
-    fPitch: TFontPitch;
 
-    method GetOrientation: Integer;
-    method SetOrientation(aValue: Integer);
-    method GetPitch: TFontPitch;
-    method SetPitch(aValue: TFontPitch);
-    method GetQuality: TFontQuality;
-    method SetQuality(aValue: TFontQuality);
     method GetFontHandle: rtl.HFONT;
     method SetFontHandle(aValue: rtl.HFONT);
 
@@ -40,47 +27,9 @@ type
   public
     constructor;
     property FontHandle: rtl.HFONT read GetFontHandle write SetFontHandle;
-    property PixelsPerInch: Integer read fPixelsPerInch write fPixelsPerInch;
-    property Orientation: Integer read GetOrientation write SetOrientation default 0;
-    property Pitch: TFontPitch read GetPitch write SetPitch default fpDefault;
-    property Quality: TFontQuality read GetQuality write SetQuality default TFontQuality.fqDefault;
   end;
 
 implementation
-
-method TFont.GetQuality: TFontQuality;
-begin
-  result := fQuality;
-end;
-
-method TFont.SetQuality(aValue: TFontQuality);
-begin
-  fQuality := aValue;
-  NotifyChanged('quality');
-end;
-
-method TFont.GetOrientation: Integer;
-begin
-  result := fOrientation;
-  NotifyChanged('orientation');
-end;
-
-method TFont.SetOrientation(aValue: Integer);
-begin
-  fOrientation := aValue;
-  NotifyChanged('orientation');
-end;
-
-method TFont.GetPitch: TFontPitch;
-begin
-  result := fPitch;
-end;
-
-method TFont.SetPitch(aValue: TFontPitch);
-begin
-  fPitch := aValue;
-  NotifyChanged('pitch');
-end;
 
 method TFont.PlatformSetHeight(aValue: Integer);
 begin

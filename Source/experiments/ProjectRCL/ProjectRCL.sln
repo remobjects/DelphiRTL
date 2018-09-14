@@ -5,6 +5,8 @@ Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "ProjectRCL", "ProjectRCL.el
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "ProjectRCL-WebAssembly", "ProjectRCL-WebAssembly\ProjectRCL-WebAssembly.elements", "{D7B1C184-E5F3-4D08-99E4-A7ECE64331CB}"
 EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "ProjectRCL-WPF", "ProjectRCL-WPF\ProjectRCL-WPF.elements", "{FD73BC12-8AB0-4A8B-BA64-69F37508B442}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AnyCPU = Debug|AnyCPU
@@ -19,6 +21,10 @@ Global
 		{D7B1C184-E5F3-4D08-99E4-A7ECE64331CB}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
 		{D7B1C184-E5F3-4D08-99E4-A7ECE64331CB}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
 		{D7B1C184-E5F3-4D08-99E4-A7ECE64331CB}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{FD73BC12-8AB0-4A8B-BA64-69F37508B442}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{FD73BC12-8AB0-4A8B-BA64-69F37508B442}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{FD73BC12-8AB0-4A8B-BA64-69F37508B442}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{FD73BC12-8AB0-4A8B-BA64-69F37508B442}.Release|AnyCPU.Build.0 = Release|AnyCPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

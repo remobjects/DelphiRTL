@@ -43,7 +43,6 @@ begin
   aFormRef := FormRef;
   if fMainForm = nil then begin
     fMainForm := FormRef;
-    fMainForm.Show;
   end;
 end;
 
@@ -54,6 +53,9 @@ end;
 
 method TApplication.Run;
 begin
+  if fMainForm <> nil then
+    fMainForm.Show;
+
   var lMsg: rtl.MSG;
 
   while not Finished do begin

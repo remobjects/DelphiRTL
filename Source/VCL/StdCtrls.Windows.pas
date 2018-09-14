@@ -104,6 +104,11 @@ type
     class constructor;
   end;
 
+  TGroupBox = public partial class(TWinControl)
+  protected
+    method CreateParams(var aParams: TCreateParams); override;
+  end;
+
 implementation
 
 method TEdit.CreateParams(var aParams: TCreateParams);
@@ -429,6 +434,14 @@ end;
 class constructor TComboBox;
 begin
   TMessageTableCache.MessageTableFor(typeOf(self));
+end;
+
+method TGroupBox.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
+  aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
+  aParams.Style := aParams.Style or rtl.BS_GROUPBOX or rtl.WS_GROUP or rtl.WS_CHILD;
+  CreateClass(var aParams);
 end;
 {$ENDIF}
 

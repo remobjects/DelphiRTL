@@ -22,14 +22,7 @@ type
     method PlatformSetCaption(aValue: String); override;
   end;
 
-  TPanel = public class(TNativeControl)
-  private
-  protected
-    method CreateHandle; override;
-  public
-  end;
-
-  TGroupBox = public partial class(TControl)
+  TGroupBox = public partial class(TNativeControl)
   private
     fLabelHandle: dynamic;
   protected
@@ -172,12 +165,6 @@ end;
 method TLabel.PlatformSetCaption(aValue: String);
 begin
   fHandle.innerHTML := aValue;
-end;
-
-method TPanel.CreateHandle;
-begin
-  fHandle := WebAssembly.CreateElement('div');
-  fHandle.style.position := "absolute";
 end;
 
 method TGroupBox.CreateHandle;

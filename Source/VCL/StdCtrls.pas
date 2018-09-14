@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
 
 interface
 
@@ -144,6 +144,10 @@ type
     property Text: String read PlatformGetText write PlatformSetText;
     property OnSelect: TNotifyEvent read fOnSelect write SetOnSelect;
     property OnChange: TNotifyEvent read fOnChange write SetOnChange;
+  end;
+
+  TGroupBox = public partial class(TNativeControl)
+  protected
   end;
 
   {$IF WEBASSEMBLY}

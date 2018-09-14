@@ -1,4 +1,4 @@
-﻿namespace ProjectRCL;
+﻿namespace ProjectRCLWPF;
 
 interface
 
@@ -12,20 +12,20 @@ type
   { Private declarations }
   public
   { Public declarations }
-    button1: TButton;
+    Button1: TButton;
     button2: TButton;
     edit1: TEdit;
     label1: TLabel;
     radioButton1: TRadioButton;
-    checkBox1: TCheckBox;
+    CheckBox1: TCheckBox;
     listBox1: TListBox;
     comboBox1: TComboBox;
     groupBox1: TGroupBox;
-    panel1: TPanel;
+    Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ComboBox1Select(Sender: TObject);
-    procedure Edit1OnKeyPress(Sender: TObject; var key: Char);
+    procedure Edit1KeyPress(Sender: TObject; var key: Char);
   end;
 
   var
@@ -35,10 +35,12 @@ implementation
 
 procedure TForm6.Button1Click(Sender: TObject);
 begin
+  //ShowMessage('WPF!!');
   //label1.Width := 200;
   //label1.Caption := 'All right!';
   //ShowMessage('Clicked!');
   //ShowMessage(edit1.Text);
+
   listBox1.Items.Add(edit1.Text);
   comboBox1.Items.Add(edit1.Text);
   edit1.OnKeyPress := @Edit1OnKeyPress;
@@ -54,7 +56,7 @@ begin
   ShowMessage('Yes!');
 end;
 
-procedure TForm6.Edit1OnKeyPress(Sender: TObject; var key: Char);
+procedure TForm6.Edit1KeyPress(Sender: TObject; var key: Char);
 begin
   ShowMessage(key);
 end;

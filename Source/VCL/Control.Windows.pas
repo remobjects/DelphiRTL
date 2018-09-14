@@ -124,6 +124,7 @@ type
 
   function GlobalWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
   function GlobalGraphicControlWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+  function DefaultControlWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 
   procedure PlatformShowMessage(aMessage: String);
 
@@ -152,6 +153,11 @@ end;
 function GlobalGraphicControlWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 begin
 
+end;
+
+function DefaultControlWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+begin
+  result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
 end;
 
 method TNativeControl.CreateHandle;
@@ -445,6 +451,7 @@ begin
   if not rtl.GetClassInfo(lInstance, @lParams.WinClassName[0], @lClass) then begin
     //lParams.WindowClass.lpfnWndProc := @GlobalWndProc;
     //lParams.WindowClass.lpfnWndProc := @rtl.DefWindowProc;
+    //lParams.WindowClass.lpfnWndProc := @DefaultControlWndProc;
     lParams.WindowClass.lpszClassName := @lParams.WinClassName[0];
     rtl.RegisterClass(@lParams.WindowClass);
   end

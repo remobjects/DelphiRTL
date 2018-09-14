@@ -1,11 +1,11 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
 
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL;
+  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL{$IF ECHOESWPF}, System.Reflection{$ENDIF};
 
 type
   TControlCtor = procedure(aInst: Object; aOwner: TComponent);
@@ -211,21 +211,62 @@ begin
       fStream.Read(var lBytes, lInt8);
       var lIdent := RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes);
 
-      if (aProperty.Type.Flags and IslandTypeFlags.Delegate) <> 0 then begin // delegate case
+      {$IF ISLAND}
+        if (aProperty.Type.Flags and IslandTypeFlags.TypeKindMask) = IslandTypeFlags.Delegate then begin // delegate case
         var lType := typeOf(Root);
         var lMethod := lType.Methods.Where(a -> (a.Name = lIdent)).FirstOrDefault;
-        //var lDelegate := Utilities.NewDelegate(lType.RTTI, Root, lMethod.Pointer);
         var lDelegate := Utilities.NewDelegate(aProperty.Type.RTTI, Root, lMethod.Pointer);
 
         exit lDelegate;
       end
       else begin
-        var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;
-        if lConstant <> nil then
-          exit lConstant.Value
-        else
-          exit 0; // TODO check!!!
+        if (aProperty.Type.Flags and IslandTypeFlags.TypeKindMask) = IslandTypeFlags.EnumFlags then begin
+          var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;
+          if lConstant <> nil then begin
+            exit lConstant.Value;
+            //exit lConstant.Value;
+          end
+        end
+        else begin
+          var lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.__Global')).FirstOrDefault;
+          var lConstant := lGlobals.Constants.Where(a -> a.Name = lIdent).FirstOrDefault;
+          if lConstant = nil then begin
+            lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.__Global')).FirstOrDefault;
+            lConstant := lGlobals.Constants.Where(a -> a.Name = lIdent).FirstOrDefault;
+          end;
+
+          if lConstant ≠ nil then
+            exit lConstant.Value
+          else
+            exit 0;
+        end;
       end;
+      {$ELSEIF ECHOESWPF}
+      var lType := aProperty.PropertyType;
+      if lType.IsSubclassOf(TypeOf(MulticastDelegate)) then begin
+        exit System.Delegate.CreateDelegate(lType, Root, lIdent, true);
+      end
+      else begin
+        var lConstant: FieldInfo := nil;
+        if lType.IsEnum then
+          exit &Enum.Parse(lType, lIdent, true)
+        else begin
+          var lGlobals := System.Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.__Global', false);
+          var lFields := lGlobals.GetFields(BindingFlags.Public or BindingFlags.Static or BindingFlags.FlattenHierarchy);
+          lConstant := lFields.Where(a -> a.Name = lIdent).FirstOrDefault;
+          if lConstant = nil then begin
+            lGlobals := System.Type.GetType('RemObjects.Elements.RTL.Delphi.__Global', false);
+            lFields := lGlobals.GetFields(BindingFlags.Public or BindingFlags.Static or BindingFlags.FlattenHierarchy);
+            lConstant := lFields.Where(a -> a.Name = lIdent).FirstOrDefault;
+          end;
+
+          if lConstant ≠ nil then
+            exit lConstant.GetRawConstantValue()
+          else
+            exit 0;
+        end;
+      end;
+      {$ENDIF}
     end;
 
     TValueType.vaSet: begin
@@ -258,6 +299,7 @@ end;
 
 method TReader.FindProperty(aType: &Type; aName: String): PropertyInfo;
 begin
+  {$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS))}
   var lType := aType;
   while aType <> nil do begin
     result := lType.Properties.Where(a -> (a.Name = aName)).FirstOrDefault;
@@ -266,6 +308,16 @@ begin
     end;
     lType := new &Type(lType.RTTI^.ParentType);
   end;
+  {$ELSEIF ECHOESWPF}
+  var lType := aType;
+  while aType <> nil do begin
+    result := lType.GetProperty(aName);
+    if result <> nil then begin
+      exit;
+    end;
+    lType := lType.BaseType;
+  end;
+  {$ENDIF}
 end;
 
 method TReader.ReadProperty(aInstance: TPersistent);
@@ -295,8 +347,17 @@ begin
     if lProperty = nil then raise new Exception('Can not get property ' + lName);
   end;
   var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
-  if lValue ≠ TValueType.vaList then
+
+  if lValue ≠ TValueType.vaList then begin
+    {$IF ISLAND}
     DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
+    {$ELSEIF ECHOESWPF}
+    var lCurrentProp := lType.GetProperty(lName, BindingFlags.Public or BindingFlags.Instance);
+    if lCurrentProp = nil then
+      raise new Exception('Can not get property ' + lName);
+    lCurrentProp.SetValue(lInstance, lPropValue, nil);
+    {$ENDIF}
+  end;
 end;
 
 method TReader.EndOfList: Boolean;
@@ -336,14 +397,27 @@ begin
     //TControl(result).Parent := TControl(fParent);
   end;
   result.SetComponentState(TComponentStateEnum.csLoading);
-  TControl(result).Parent := TControl(fParent);
+  TControl(result).Parent := TNativeControl(fParent);
   var lOldParent := fParent;
   fParent := result;
   ReadComponentData(result);
   fParent := lOldParent;
   result.RemoveComponentState(TComponentStateEnum.csLoading);
 
-  DynamicHelpers.SetMember(fParent, lName, 0, [result]);
+  {$IF ISLAND}
+  DynamicHelpers.SetMember(Root, lName, 0, [result]);
+  {$ELSEIF ECHOESWPF}
+  var lCurrentField := Root.GetType().GetField(lName, BindingFlags.Public or BindingFlags.Instance or BindingFlags.IgnoreCase);
+  if lCurrentField ≠ nil then
+    lCurrentField.SetValue(Root, result)
+  else begin
+    var lCurrentProp := Root.GetType().GetProperty(lName, BindingFlags.Public or BindingFlags.Instance or BindingFlags.IgnoreCase);
+    if lCurrentProp = nil then
+      raise new Exception('Can not get property ' + lName)
+    else
+      lCurrentProp.SetValue(Root, result, nil);
+  end;
+  {$ENDIF}
   result.Loaded;
 end;
 
@@ -351,8 +425,7 @@ method TReader.ReadSignature;
 begin
   var lSig: UInt32;
   fStream.ReadData(var lSig);
-  if lSig <> FilerSignature
-   then
+  if lSig <> FilerSignature then
     raise new Exception("Invalid dfm format");
 end;
 
@@ -374,13 +447,18 @@ end;
 
 method ComponentsHelper.CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
 begin
+  {$IF ISLAND}
   var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.' + aClassName).FirstOrDefault;
+  {$ELSEIF ECHOESWPF}
+  var lType := &Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.' + aClassName);
+  {$ENDIF}
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
   result := CreateComponent(lType, aOwner);
 end;
 
 method ComponentsHelper.CreateComponent(aType: &Type; aOwner: TComponent): TComponent;
 begin
+  {$IF ISLAND}
   var lCtor: MethodInfo;
   var lCtors := aType.Methods.Where(a -> ((MethodFlags.Constructor in a.Flags) and (a.Arguments.Count = 1)));
   if lCtors.Count > 1 then begin
@@ -401,8 +479,10 @@ begin
   //lCtor.Invoke(result, [aOwner]);
   var lCaller := TControlCtor(lCtor.Pointer);
   lCaller(result, aOwner);
+  {$ELSEIF ECHOESWPF}
+  result := TComponent(Activator.CreateInstance(aType, [aOwner]));
+  {$ENDIF}
 end;
-
 
 method ObjectConverter.ObjectToBinary;
 begin

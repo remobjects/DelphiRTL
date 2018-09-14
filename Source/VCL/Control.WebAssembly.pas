@@ -91,7 +91,16 @@ end;
 
 method TControl.PlatformFontChanged;
 begin
-
+  fHandle.style.fontFamily := fFont.Name;
+  fHandle.style.fontSize := fFont.Size + 'px';
+  if (TFontStyle.Italic in fFont.Style) then fHandle.style.fontStyle := 'italic' else fHandle.style.fontStyle := 'normal';
+  if (TFontStyle.Bold in fFont.Style) then fHandle.style.fontWeight := 'bold' else fHandle.style.fontWeight := 'normal';
+  if (TFontStyle.StrikeOut in fFont.Style) or (TFontStyle.Underline in fFont.Style) then begin
+    if (TFontStyle.StrikeOut in fFont.Style) then fHandle.style.textDecoration := 'line-throught';
+    if (TFontStyle.Underline in fFont.Style) then fHandle.style.textDecoration := 'underline';
+  end
+  else
+    fHandle.style.textDecoration := 'none';
 end;
 
 /*
@@ -99,30 +108,7 @@ method TControl.PlatformFontSetColor(value: TColor);
 begin
   fHandle.style.color := value.ToString;
   fHandle.style.textDecorationColor := value.ToString;
-end;
-
-method TControl.PlatformFontSetName(value: String);
-begin
-  fHandle.style.fontFamily := value;
-end;
-
-method TControl.PlatformFontSetSize(value: Integer);
-begin
-  fHandle.style.fontSize := value.ToString + 'px';
-end;
-
-method TControl.PlatformFontSetStyles(value: TFontStyles);
-begin
-  if (TFontStyle.Italic in value) then fHandle.style.fontStyle := 'italic' else fHandle.style.fontStyle := 'normal';
-  if (TFontStyle.Bold in value) then fHandle.style.fontWeight := 'bold' else fHandle.style.fontWeight := 'normal';
-  if (TFontStyle.StrikeOut in value) or (TFontStyle.Underline in value) then begin
-    if (TFontStyle.StrikeOut in value) then fHandle.style.textDecoration := 'line-throught';
-    if (TFontStyle.Underline in value) then fHandle.style.textDecoration := 'underline';
-  end
-  else
-    fHandle.style.textDecoration := 'none';
-end;
-*/
+end;*/
 
 method TControl.PlatformSetOnKeyPress(aValue: TKeyPressEvent);
 begin

@@ -1,7 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF ISLAND AND (WEBASSEMBLY OR WINDOWS)}
-
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
 interface
 
 type
@@ -18,7 +17,7 @@ public
   method Run; partial; empty;
   method Terminate; partial; empty;
   property Finished: Boolean read fFinished;
-  property MainForm: TForm read fMainForm;
+  property MainForm: TForm read fMainForm write fMainForm;
 end;
 
 TScreen = public partial class(TComponent)
