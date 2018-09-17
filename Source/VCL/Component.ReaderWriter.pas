@@ -224,7 +224,6 @@ begin
           var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;
           if lConstant <> nil then begin
             exit lConstant.Value;
-            //exit lConstant.Value;
           end
         end
         else begin
@@ -390,6 +389,8 @@ method TReader.ReadComponent(aComponent: TComponent): TComponent;
 begin
   var lClass := ReadStr;
   var lName := ReadStr;
+  WebAssemblyCalls.ConsoleLog('Reading', ExternalCalls.wcslen('Reading'));
+  writeLn('Reading: ' + lName);
   result := aComponent;
   if result = nil then begin
     result := ComponentsHelper.CreateComponent(lClass, fOwner);
@@ -397,7 +398,9 @@ begin
     //TControl(result).Parent := TControl(fParent);
   end;
   result.SetComponentState(TComponentStateEnum.csLoading);
+  writeLn('Setting parent: ' + lName);
   TControl(result).Parent := TNativeControl(fParent);
+  writeLn('after setting paren: ' + lName);
   var lOldParent := fParent;
   fParent := result;
   ReadComponentData(result);
@@ -419,6 +422,7 @@ begin
   end;
   {$ENDIF}
   result.Loaded;
+  writeLn('End Reading: ' + lName);
 end;
 
 method TReader.ReadSignature;

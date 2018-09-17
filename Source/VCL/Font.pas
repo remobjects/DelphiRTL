@@ -90,7 +90,11 @@ end;
 method TFont.SetHeight(aValue: Integer);
 begin
   fHeight := aValue;
+  {$IF ISLAND AND WINDOWS}
   PlatformSetHeight(aValue);
+  {$ELSE}
+  SetSize(-aValue);
+  {$ENDIF}
 end;
 
 method TFont.SetStyles(aValue: TFontStyles);

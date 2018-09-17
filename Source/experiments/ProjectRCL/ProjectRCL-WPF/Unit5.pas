@@ -22,6 +22,19 @@ type
     comboBox1: TComboBox;
     groupBox1: TGroupBox;
     Panel1: TPanel;
+
+    panel2: TPanel;
+    label2: TLabel;
+    label3: TLabel;
+    label4: TLabel;
+    label5: TLabel;
+    label6: TLabel;
+    checkBox2: TCheckBox;
+    checkBox3: TCheckBox;
+    checkBox4: TCheckBox;
+    edit2: TEdit;
+    edit3: TEdit;
+
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ComboBox1Select(Sender: TObject);
