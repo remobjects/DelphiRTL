@@ -224,14 +224,15 @@ begin
           var lConstant := aProperty.Type.Constants.Where(a -> (a.Name = lIdent)).FirstOrDefault;
           if lConstant <> nil then begin
             exit lConstant.Value;
-            //exit lConstant.Value;
           end
         end
         else begin
-          var lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.__Global')).FirstOrDefault;
+          //var lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.__Global')).FirstOrDefault;
+          var lGlobals := typeOf(RemObjects.Elements.RTL.Delphi.VCL.__Global);
           var lConstant := lGlobals.Constants.Where(a -> a.Name = lIdent).FirstOrDefault;
           if lConstant = nil then begin
-            lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.__Global')).FirstOrDefault;
+            //lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.__Global')).FirstOrDefault;
+            lGlobals := typeOf(RemObjects.Elements.RTL.Delphi.__Global);
             lConstant := lGlobals.Constants.Where(a -> a.Name = lIdent).FirstOrDefault;
           end;
 

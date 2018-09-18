@@ -86,8 +86,8 @@ method TFont.PlatformUpdate;
 begin
   var lOldFont := FontHandle;
   FontHandle := CreateFontFromData(fName, fCharset, fHeight, fOrientation, fPitch, fQuality, fStyles);
-  if lOldFont <> fDefaultFont then
-    rtl.DeleteObject(lOldFont);
+  //if lOldFont <> fDefaultFont then
+    //rtl.DeleteObject(lOldFont);
 end;
 
 {$ENDIF}

@@ -129,19 +129,21 @@ end;
 
 method TLabel.PlatformSetCaption(aValue: String);
 begin
-  Width := 31;
-  Height := 13;
+  (fHandle as Label).Width := Double.NaN;
+  (fHandle as Label).Height := Double.NaN;
   (fHandle as Label).Content := aValue;
 end;
 
 method TGroupBox.CreateHandle;
 begin
   fHandle := new GroupBox();
+  fPanel := new Canvas();
+  (fHandle as System.Windows.Controls.GroupBox).Content := fPanel;
 end;
 
 method TGroupBox.PlatformSetCaption(aValue: String);
 begin
-  (fHandle as GroupBox).Content := aValue;
+  //(fHandle as GroupBox).Content := aValue;
 end;
 
 method TEdit.CreateHandle;

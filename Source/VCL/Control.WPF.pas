@@ -30,7 +30,6 @@ type
     method PlatformGetDefaultName: String; virtual; partial;
     method PlatformApplyDefaults; virtual; partial;
   public
-
   end;
 
 implementation
@@ -109,11 +108,11 @@ end;
 
 method TControl.PlatformFontChanged;
 begin
-  if TComponentState.csLoading in ComponentState then
-    exit;
-
   (fHandle as System.Windows.Controls.Control).FontFamily := new System.Windows.Media.FontFamily(fFont.Name);
-  (fHandle as System.Windows.Controls.Control).FontSize := fFont.Size;
+  if fFont.Size <> 0 then
+    (fHandle as System.Windows.Controls.Control).FontSize := fFont.Size
+  else
+    (fHandle as System.Windows.Controls.Control).FontSize := 12;
 
   if TFontStyle.Bold in fFont.Style then
     (fHandle as System.Windows.Controls.Control).FontWeight := System.Windows.FontWeights.Bold

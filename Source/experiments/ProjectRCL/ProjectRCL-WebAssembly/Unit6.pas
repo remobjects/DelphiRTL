@@ -13,13 +13,28 @@ type
   public
   { Public declarations }
     button1: TButton;
+    button2: TButton;
     edit1: TEdit;
     label1: TLabel;
     radioButton1: TRadioButton;
     checkBox1: TCheckBox;
     listbox1: TListBox;
-    button2: TButton;
     comboBox1: TComboBox;
+    panel1: TPanel;
+    groupbox1: TGroupBox;
+
+    panel2: TPanel;
+    label2: TLabel;
+    label3: TLabel;
+    label4: TLabel;
+    label5: TLabel;
+    label6: TLabel;
+    checkBox2: TCheckBox;
+    checkBox3: TCheckBox;
+    checkBox4: TCheckBox;
+    edit2: TEdit;
+    edit3: TEdit;
+
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ComboBox1Select(Sender: TObject);
