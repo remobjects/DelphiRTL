@@ -59,9 +59,6 @@ begin
   lFontInfo.lfHeight := aHeight;
   lFontInfo.lfEscapement := 0;
   lFontInfo.lfOrientation := aOrientation;
-  if (TFontStyle.Bold in aStyle) then writeLn('Creating font with bold')
-  else writeLn('Creating font no bold!!');
-  WriteLn(aFontName);
   lFontInfo.lfWeight := if (TFontStyle.Bold in aStyle) then rtl.FW_BOLD else rtl.FW_NORMAL;
   lFontInfo.lfItalic := if (TFontStyle.Italic in aStyle) then 1 else 0;
   lFontInfo.lfUnderline := if (TFontStyle.Underline in aStyle) then 1 else 0;
@@ -87,7 +84,6 @@ end;
 
 method TFont.PlatformUpdate;
 begin
-  writeln('TFont.PlatformUpdate!');
   var lOldFont := FontHandle;
   FontHandle := CreateFontFromData(fName, fCharset, fHeight, fOrientation, fPitch, fQuality, fStyles);
   //if lOldFont <> fDefaultFont then

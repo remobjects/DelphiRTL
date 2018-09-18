@@ -44,7 +44,7 @@ begin
   //SimpleGC.ForceAddRef(lPtr);
   if fMainForm = nil then begin
     fMainForm := FormRef;
-    fMainForm.Show;
+    //fMainForm.Show;
   end;
 end;
 
@@ -55,6 +55,8 @@ end;
 
 method TApplication.Run;
 begin
+  if fMainForm <> nil then
+    fMainForm.Show;
 end;
 
 method TApplication.Terminate;

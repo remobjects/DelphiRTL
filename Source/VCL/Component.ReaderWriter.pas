@@ -227,10 +227,12 @@ begin
           end
         end
         else begin
-          var lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.__Global')).FirstOrDefault;
+          //var lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.__Global')).FirstOrDefault;
+          var lGlobals := typeOf(RemObjects.Elements.RTL.Delphi.VCL.__Global);
           var lConstant := lGlobals.Constants.Where(a -> a.Name = lIdent).FirstOrDefault;
           if lConstant = nil then begin
-            lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.__Global')).FirstOrDefault;
+            //lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.__Global')).FirstOrDefault;
+            lGlobals := typeOf(RemObjects.Elements.RTL.Delphi.__Global);
             lConstant := lGlobals.Constants.Where(a -> a.Name = lIdent).FirstOrDefault;
           end;
 
@@ -389,8 +391,6 @@ method TReader.ReadComponent(aComponent: TComponent): TComponent;
 begin
   var lClass := ReadStr;
   var lName := ReadStr;
-  WebAssemblyCalls.ConsoleLog('Reading', ExternalCalls.wcslen('Reading'));
-  writeLn('Reading: ' + lName);
   result := aComponent;
   if result = nil then begin
     result := ComponentsHelper.CreateComponent(lClass, fOwner);
@@ -398,9 +398,7 @@ begin
     //TControl(result).Parent := TControl(fParent);
   end;
   result.SetComponentState(TComponentStateEnum.csLoading);
-  writeLn('Setting parent: ' + lName);
   TControl(result).Parent := TNativeControl(fParent);
-  writeLn('after setting paren: ' + lName);
   var lOldParent := fParent;
   fParent := result;
   ReadComponentData(result);
@@ -422,7 +420,6 @@ begin
   end;
   {$ENDIF}
   result.Loaded;
-  writeLn('End Reading: ' + lName);
 end;
 
 method TReader.ReadSignature;
