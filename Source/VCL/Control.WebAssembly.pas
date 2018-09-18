@@ -26,6 +26,7 @@ type
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
     method PlatformSetCaption(aValue: String); virtual; partial;
+    method PlatformSetTabOrder(aValue: Integer); virtual; partial;
 
     method PlatformFontChanged; virtual; partial;
 
@@ -136,6 +137,11 @@ end;
 method TControl.PlatformSetCaption(aValue: String);
 begin
   fHandle.innerText := aValue;
+end;
+
+method TControl.PlatformSetTabOrder(aValue: Integer);
+begin
+  fHandle.tabindex := aValue;
 end;
 
 method TControl.ProcessKeyboardStatus(aStatus: EcmaScriptObject; var aKey: Word): TShiftState;

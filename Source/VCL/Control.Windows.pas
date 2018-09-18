@@ -416,7 +416,7 @@ end;
 method TNativeControl.CreateParams(var aParams: TCreateParams);
 begin
   memset(@aParams, 0, sizeOf(aParams));
-  aParams.Style := aParams.Style or rtl.WS_CHILD;
+  aParams.Style := aParams.Style or rtl.WS_CHILD or rtl.WS_TABSTOP;
   if Visible then aParams.Style := aParams.Style or rtl.WS_VISIBLE;
   aParams.X := Left;
   aParams.Y := Top;

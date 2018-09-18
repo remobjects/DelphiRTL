@@ -60,8 +60,10 @@ begin
 
   while not Finished do begin
     if rtl.PeekMessageW(@lMsg, nil, 0, 0, rtl.PM_REMOVE) then begin
-      rtl.TranslateMessage(@lMsg);
-      rtl.DispatchMessage(@lMsg);
+      if not rtl.IsDialogMessage(lMsg.hwnd, @lMsg) then begin
+        rtl.TranslateMessage(@lMsg);
+        rtl.DispatchMessage(@lMsg);
+      end;
     end;
 
     if (lMsg.message = rtl.WM_QUIT) or (lMsg.message = rtl.WM_CLOSE) then begin

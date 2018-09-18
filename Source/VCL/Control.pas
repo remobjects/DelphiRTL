@@ -80,6 +80,7 @@ type
     method SetAlign(value: TAlign);
     method SetMargins(aValue: TMargins);
     method SetAlignWithMargins(value: Boolean);
+    method SetTabOrder(aValue: Integer);
 
   protected
     fHandle: TPlatformHandle := {$IF ISLAND AND WINDOWS}0{$ELSE}nil{$ENDIF};
@@ -104,6 +105,7 @@ type
     method PlatformSetParent(aValue: TControl); virtual; partial; empty;
     method PlatformSetColor(aValue: TColor); virtual; partial; empty;
     method PlatformSetVisible(aValue: Boolean); virtual; partial; empty;
+    method PlatformSetTabOrder(aValue: Integer); virtual; partial; empty;
     method PlatformSetOnClick(aValue: TNotifyEvent); partial; empty;
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial; empty;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial; empty;
@@ -134,7 +136,7 @@ type
     property Top: Integer read fTop write SetTop;
     property Color: TColor read fColor write SetColor;
     property Visible: Boolean read fVisible write SetVisible;
-    property TabOrder: Integer read fTabOrder write fTabOrder;
+    property TabOrder: Integer read fTabOrder write SetTabOrder;
     property Align: TAlign read fAlign write SetAlign;
     property Margins: TMargins read fMargins write SetMargins;
     property AlignWithMargins: Boolean read fAlignWithMargins write SetAlignWithMargins;
@@ -303,6 +305,14 @@ method TControl.SetParentFont(aValue: Boolean);
 begin
   fParentFont := aValue;
   // PlatformSetParentFont TODO
+end;
+
+method TControl.SetTabOrder(aValue: Integer);
+begin
+  fTabOrder := aValue;
+  // Platforms that support tab order can do itself, just pass the value to the platform
+  // Win32 need to handle internally, so save the value here and PlatformSetTabOrder will be empty.
+  PlatformSetTabOrder(aValue);
 end;
 
 method TControl.InsertControl(aControl: TControl);

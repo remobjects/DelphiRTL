@@ -139,6 +139,9 @@ begin
   fHandle := new GroupBox();
   fPanel := new Canvas();
   (fHandle as System.Windows.Controls.GroupBox).Content := fPanel;
+  // need to set tab navigation locally for the groupbox & panel.
+  // if not, tabindex property is global and won't be compatible with win32 "standard".
+  System.Windows.Input.KeyboardNavigation.SetTabNavigation(fHandle, System.Windows.Input.KeyboardNavigationMode.Local);
 end;
 
 method TGroupBox.PlatformSetCaption(aValue: String);
