@@ -16,6 +16,7 @@ type
 const
   CN_BASE: Cardinal = 48128;
   CN_COMMAND: Cardinal = CN_BASE + rtl.WM_COMMAND;
+  CN_KEYDOWN: Cardinal = CN_BASE + rtl.WM_KEYDOWN;
 
 implementation
 

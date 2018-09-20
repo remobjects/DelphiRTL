@@ -9,12 +9,16 @@ uses
 
 type
   TCustomForm = public partial class(TScrollingWinControl)
+  private
+    fActiveControl: TWinControl;
+    method SetActiveControl(aValue: TWinControl);
   protected
     class method FormWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
   public
     constructor(aOwner: TComponent);
     method CreateWnd; override;
     method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+    property ActiveControl: TWinControl read fActiveControl write SetActiveControl
   end;
 
   TForm = public partial class(TCustomForm)
@@ -112,6 +116,13 @@ begin
       end;
 
       result := 0;
+    end;
+
+    CN_KEYDOWN: begin
+      if wParam = rtl.VK_TAB then
+        result := 0
+      else
+        result := 1;
     end;
 
     else

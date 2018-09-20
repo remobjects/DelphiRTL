@@ -9,6 +9,8 @@ uses
 
 type
   TApplication = public partial class(TComponent)
+  protected
+    method IsKeyMsg(var aMsg: rtl.MSG): Boolean;
   public
     method CreateForm(InstanceClass: TComponentClass; var aFormRef); partial;
     method Initialize; partial;
@@ -60,7 +62,7 @@ begin
 
   while not Finished do begin
     if rtl.PeekMessageW(@lMsg, nil, 0, 0, rtl.PM_REMOVE) then begin
-      if not rtl.IsDialogMessage(lMsg.hwnd, @lMsg) then begin
+      if not IsKeyMsg(var lMsg) then begin
         rtl.TranslateMessage(@lMsg);
         rtl.DispatchMessage(@lMsg);
       end;
@@ -75,6 +77,25 @@ end;
 method TApplication.Terminate;
 begin
   fFinished := true;
+end;
+
+method TApplication.IsKeyMsg(var aMsg: rtl.MSG): Boolean;
+begin
+  result := false;
+
+  //if aMsg.message in [rtl.WM_KEYFIRST..rtl.WM_KEYLAST] then begin
+  if aMsg.message = rtl.WM_KEYDOWN then begin
+    var lObject := rtl.GetWindowLongPtr(aMsg.hwnd, rtl.GWLP_USERDATA);
+    if lObject <> 0 then begin
+      var lControl := InternalCalls.Cast<TWinControl>(^Void(lObject));
+      var lParentForm := lControl;
+      while (not (lParentForm is TCustomForm)) and (lParentForm.Parent ≠ nil) do
+        lParentForm := lParentForm.Parent;
+
+      if lParentForm is TCustomForm then
+        result := (lParentForm.Perform(CN_BASE + aMsg.message, aMsg.wParam, aMsg.lParam) = 0);
+    end;
+  end;
 end;
 
 {$ENDIF}
