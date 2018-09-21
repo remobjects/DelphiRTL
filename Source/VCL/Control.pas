@@ -154,13 +154,17 @@ type
   private
     fPadding: TPadding;
     method SetPadding(value: TPadding);
+    method SetTabStop(value: Boolean);
   protected
+    fTabStop: Boolean;
     method DoAlign(aAlign: TAlign; var aRect: TRect);
+    method PlatformSetTapStop(value: Boolean); virtual; partial; empty;
   public
     method AlignControl(aControl: TControl); virtual;
     method AlignControls(aControl: TControl; var Rect: TRect); virtual;
 
     property Padding: TPadding read fPadding write SetPadding;
+    property TabStop: Boolean read fTabStop write SetTabStop default false;
   end;
 
   TCustomControl = public class(TNativeControl)
@@ -460,6 +464,12 @@ end;
 method TNativeControl.SetPadding(value: TPadding);
 begin
   fPadding := value;
+end;
+
+method TNativeControl.SetTabStop(value: Boolean);
+begin
+  fTabStop := value;
+  PlatformSetTapStop(value);
 end;
 
 method TMargins.SetLeft(value: TMarginSize);

@@ -14,11 +14,12 @@ type
     method SetActiveControl(aValue: TWinControl);
   protected
     class method FormWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+    method SelectNextControl(aControl: TWinControl; reverseMode: Boolean);
   public
     constructor(aOwner: TComponent);
     method CreateWnd; override;
     method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
-    property ActiveControl: TWinControl read fActiveControl write SetActiveControl
+    property ActiveControl: TWinControl read fActiveControl write SetActiveControl;
   end;
 
   TForm = public partial class(TCustomForm)
@@ -119,8 +120,11 @@ begin
     end;
 
     CN_KEYDOWN: begin
-      if wParam = rtl.VK_TAB then
-        result := 0
+      if wParam = rtl.VK_TAB then begin
+        var lShiftState := GetSpecialKeysStatus;
+        SelectNextControl(ActiveControl, TShiftStateValues.ssShift in lShiftState);
+        result := 0;
+      end
       else
         result := 1;
     end;
@@ -139,6 +143,18 @@ begin
   end
   else
     result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
+end;
+
+method TCustomForm.SetActiveControl(aValue: TWinControl);
+begin
+  fActiveControl := aValue;
+end;
+
+method TCustomForm.SelectNextControl(aControl: TWinControl; reverseMode: Boolean);
+begin
+  for each lControl in Controls do begin
+  end;
+
 end;
 
 method TForm.Show;

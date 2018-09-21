@@ -88,11 +88,9 @@ begin
     var lObject := rtl.GetWindowLongPtr(aMsg.hwnd, rtl.GWLP_USERDATA);
     if lObject <> 0 then begin
       var lControl := InternalCalls.Cast<TWinControl>(^Void(lObject));
-      var lParentForm := lControl;
-      while (not (lParentForm is TCustomForm)) and (lParentForm.Parent ≠ nil) do
-        lParentForm := lParentForm.Parent;
+      var lParentForm := lControl.GetParentForm;
 
-      if lParentForm is TCustomForm then
+      if lParentForm ≠ nil then
         result := (lParentForm.Perform(CN_BASE + aMsg.message, aMsg.wParam, aMsg.lParam) = 0);
     end;
   end;

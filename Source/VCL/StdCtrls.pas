@@ -12,11 +12,13 @@ uses
 type
   TButton = public partial class(TNativeControl)
   public
+    constructor(aOwner: TComponent);
     class method Create(AOwner: TComponent): TButton;
   end;
 
   TEdit = public partial class(TNativeControl)
   public
+    constructor(aOwner: TComponent);
     property MaxLength: Integer read PlatformGetMaxLength write PlatformSetMaxLength;
     property &ReadOnly: Boolean read PlatformGetReadOnly write PlatformSetReadOnly;
     property Text: String read PlatformGetText write PlatformSetText;
@@ -33,6 +35,7 @@ type
     method PlatformGetChecked: Boolean; virtual; partial; empty;
     method PlatformSetChecked(aValue: Boolean); virtual; partial; empty;
   public
+    constructor(aOwner: TComponent);
     property Checked: Boolean read PlatformGetChecked write PlatformSetChecked;
   end;
 
@@ -66,6 +69,7 @@ type
     method GetItemIndex: Integer; virtual; abstract;
     method SetItemIndex(aValue: Integer); virtual; abstract;
   public
+    constructor(aOwner: TComponent);
     method AddItem(Item: DelphiString; aObject: TObject); virtual; abstract;
     method Clear; virtual; abstract;
     method ClearSelection; virtual; abstract;
@@ -200,14 +204,29 @@ begin
   PlatformShowMessage(aMessage);
 end;
 
+constructor TButton(aOwner: TComponent);
+begin
+  fTabStop := true;
+end;
+
 class method TButton.Create(AOwner: TComponent): TButton;
 begin
   result := new TButton(AOwner);
 end;
 
+constructor TEdit(aOwner: TComponent);
+begin
+  fTabStop := true;
+end;
+
 class method TLabel.Create(aOwner: TComponent): TLabel;
 begin
   result := new TLabel(aOwner);
+end;
+
+constructor TButtonControl(aOwner: TComponent);
+begin
+  fTabStop := true;
 end;
 
 method TCheckBox.SetState(aValue: TCheckBoxState);
@@ -237,6 +256,11 @@ method TCheckBox.Click;
 begin
   Toggle;
   inherited;
+end;
+
+constructor TListControl(aOwner: TComponent);
+begin
+  fTabStop := true;
 end;
 
 method TListControlItems.AddObject(S: DelphiString; aObject: TObject): Integer;
