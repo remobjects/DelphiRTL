@@ -2,6 +2,8 @@
 
 {$IF ISLAND AND WINDOWS}
 
+{$GLOBALS ON}
+
 interface
 
 uses
@@ -86,6 +88,7 @@ type
   protected
     fOldItemIndex: Integer := -1;
     fEditHandle: rtl.HWND;
+    fOldEditWndProc: TWndProc;
     method CreateParams(var aParams: TCreateParams); override;
     method CreateHandle; override;
     method PlatformGetText: String;
@@ -102,12 +105,16 @@ type
     method CNCOMMAND(var aMessage: TMessage);
 
     class constructor;
+  public
+    method EditWndProc(var aMessage: TMessage): rtl.LRESULT;
   end;
 
   TGroupBox = public partial class(TWinControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
   end;
+
+  function ComboWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 
 implementation
 
@@ -360,6 +367,9 @@ begin
   lInfo.cbSize := sizeOf(lInfo);
   rtl.GetComboBoxInfo(fHandle, @lInfo);
   fEditHandle := lInfo.hwndItem;
+  fOldEditWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fEditHandle, rtl.GWL_WNDPROC)));
+  rtl.SetWindowLongPtr(fEditHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
+  rtl.SetWindowLongPtr(fEditHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@ComboWndProc)));
 end;
 
 method TComboBox.PlatformSetOnSelect(aValue: TNotifyEvent);
@@ -443,6 +453,26 @@ begin
   aParams.Style := aParams.Style or rtl.BS_GROUPBOX or rtl.WS_GROUP or rtl.WS_CHILD;
   CreateClass(var aParams);
 end;
+
+method TComboBox.EditWndProc(var aMessage: TMessage): rtl.LRESULT;
+begin
+  result := rtl.CallWindowProc(fOldEditWndProc, fEditHandle, aMessage.Msg, aMessage.wParam, aMessage.lParam);
+end;
+
+function ComboWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+begin
+  var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
+  if lObject <> 0 then begin
+    var lControl := InternalCalls.Cast<TComboBox>(^Void(lObject));
+    var lMessage := new TMessage(message, wParam, lParam);
+    lControl.EditWndProc(var lMessage);
+    result := lMessage.Result;
+  end
+  else begin
+    result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
+  end;
+end;
+
 {$ENDIF}
 
 end.

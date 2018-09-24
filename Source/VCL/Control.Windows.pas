@@ -207,6 +207,8 @@ begin
       var lParentForm := GetParentForm;
       if lParentForm ≠ nil then
         lParentForm.ActiveControl := self;
+      // pass the message to default wndproc in order to draw focus rect...
+      inherited(var aMessage);
     end;
   end;
 
@@ -427,7 +429,9 @@ begin
     lParentForm := lParentForm.Parent;
 
   if not (lParentForm is TCustomForm) then
-    result := nil;
+    result := nil
+  else
+    result := lParentForm as TCustomForm;
 end;
 
 method TNativeControl.CreateParams(var aParams: TCreateParams);

@@ -12,6 +12,7 @@ type
   private
     fActiveControl: TWinControl;
     method SetActiveControl(aValue: TWinControl);
+    method AddControls(aControl: TControl; aList: TList<TWinControl>);
   protected
     class method FormWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
     method SelectNextControl(aControl: TWinControl; reverseMode: Boolean);
@@ -150,11 +151,44 @@ begin
   fActiveControl := aValue;
 end;
 
+method TCustomForm.AddControls(aControl: TControl; aList: TList<TWinControl>);
+begin
+  for each lControl in aControl.Controls do begin
+    aList.Add(TWinControl(lControl));
+    AddControls(lControl, aList);
+  end;
+end;
+
 method TCustomForm.SelectNextControl(aControl: TWinControl; reverseMode: Boolean);
 begin
-  for each lControl in Controls do begin
-  end;
+  var lControlList := new TList<TWinControl>();
+  AddControls(self, lControlList);
+  var lIndex := lControlList.IndexOf(aControl);
+  if lIndex >= 0 then begin
+    if not reverseMode then begin
+      inc(lIndex);
+      if lIndex ≥ lControlList.Count then
+        lIndex := 0;
 
+      while not lControlList[lIndex].TabStop do begin
+        inc(lIndex);
+        if lIndex ≥ lControlList.Count then
+          lIndex := 0;
+      end;
+    end
+    else begin
+      dec(lIndex);
+      if lIndex ≤ 0 then
+        lIndex := lControlList.Count - 1;
+
+      while not lControlList[lIndex].TabStop do begin
+        dec(lIndex);
+        if lIndex ≤ 0 then
+          lIndex := lControlList.Count;
+      end;
+    end;
+    rtl.SetFocus(lControlList[lIndex].Handle);
+  end;
 end;
 
 method TForm.Show;
