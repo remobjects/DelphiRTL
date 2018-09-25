@@ -1287,6 +1287,7 @@ constructor TBytesStream(const aBytes: TBytes);
 begin
   fData := new MemoryStream(aBytes.Length);
   fData.Write(aBytes, aBytes.Length);
+  fData.Position := 0;
 end;
 
 class method TBytesStream.Create(const aBytes: TBytes): TBytesStream;
