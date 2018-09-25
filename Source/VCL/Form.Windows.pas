@@ -178,12 +178,12 @@ begin
     end
     else begin
       dec(lIndex);
-      if lIndex ≤ 0 then
+      if lIndex < 0 then
         lIndex := lControlList.Count - 1;
 
       while not lControlList[lIndex].TabStop do begin
         dec(lIndex);
-        if lIndex ≤ 0 then
+        if lIndex < 0 then
           lIndex := lControlList.Count;
       end;
     end;
