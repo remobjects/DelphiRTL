@@ -107,6 +107,7 @@ type
     class constructor;
   public
     method EditWndProc(var aMessage: TMessage): rtl.LRESULT;
+    method WndProc(var aMessage: TMessage); override;
   end;
 
   TGroupBox = public partial class(TWinControl)
@@ -369,8 +370,55 @@ begin
   fEditHandle := lInfo.hwndItem;
   fOldEditWndProc := InternalCalls.Cast<TWndProc>(^Void(rtl.GetWindowLongPtr(fEditHandle, rtl.GWL_WNDPROC)));
   rtl.SetWindowLongPtr(fEditHandle, rtl.GWL_USERDATA, NativeUInt(InternalCalls.Cast(self)));
-  rtl.SetWindowLongPtr(fEditHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@ComboWndProc)));
+  fOldEditWndProc := TWndProc(^Void(rtl.SetWindowLongPtr(fEditHandle, rtl.GWL_WNDPROC, NativeUInt(^Void(@ComboWndProc)))));
 end;
+
+method TComboBox.EditWndProc(var aMessage: TMessage): rtl.LRESULT;
+begin
+  result := rtl.CallWindowProc(fOldEditWndProc, fEditHandle, aMessage.Msg, aMessage.wParam, aMessage.lParam);
+end;
+
+method TComboBox.WndProc(var aMessage: TMessage);
+begin
+  if aMessage.hWnd = fEditHandle then begin
+    case aMessage.Msg of
+      rtl.WM_KEYDOWN: begin
+        if aMessage.wParam = rtl.VK_TAB then begin
+          var lShiftState := GetSpecialKeysStatus;
+          var lParentForm := GetParentForm;
+          if lParentForm ≠ nil then
+            lParentForm.SelectNextControl(self, TShiftStateValues.ssShift in lShiftState);
+        end;
+      end;
+
+      rtl.WM_SETFOCUS: begin
+        var lParentForm := GetParentForm;
+        if lParentForm ≠ nil then
+          lParentForm.ActiveControl := self;
+      end;
+    end;
+
+    aMessage.Result := rtl.CallWindowProc(fOldEditWndProc, fEditHandle, aMessage.Msg, aMessage.wParam, aMessage.lParam);
+  end
+  else
+    //aMessage.Result := rtl.CallWindowProc(fOldWndProc, fHandle, aMessage.Msg, aMessage.wParam, aMessage.lParam);
+    inherited(var aMessage);
+end;
+
+function ComboWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+begin
+  var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
+  if lObject <> 0 then begin
+    var lControl := InternalCalls.Cast<TComboBox>(^Void(lObject));
+    var lMessage := new TMessage(hWnd, message, wParam, lParam);
+    lControl.WndProc(var lMessage);
+    result := lMessage.Result;
+  end
+  else begin
+    result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
+  end;
+end;
+
 
 method TComboBox.PlatformSetOnSelect(aValue: TNotifyEvent);
 begin
@@ -452,25 +500,6 @@ begin
   aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
   aParams.Style := aParams.Style or rtl.BS_GROUPBOX or rtl.WS_GROUP or rtl.WS_CHILD;
   CreateClass(var aParams);
-end;
-
-method TComboBox.EditWndProc(var aMessage: TMessage): rtl.LRESULT;
-begin
-  result := rtl.CallWindowProc(fOldEditWndProc, fEditHandle, aMessage.Msg, aMessage.wParam, aMessage.lParam);
-end;
-
-function ComboWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
-begin
-  var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
-  if lObject <> 0 then begin
-    var lControl := InternalCalls.Cast<TComboBox>(^Void(lObject));
-    var lMessage := new TMessage(message, wParam, lParam);
-    lControl.EditWndProc(var lMessage);
-    result := lMessage.Result;
-  end
-  else begin
-    result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
-  end;
 end;
 
 {$ENDIF}

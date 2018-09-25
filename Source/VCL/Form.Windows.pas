@@ -15,11 +15,11 @@ type
     method AddControls(aControl: TControl; aList: TList<TWinControl>);
   protected
     class method FormWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
-    method SelectNextControl(aControl: TWinControl; reverseMode: Boolean);
   public
     constructor(aOwner: TComponent);
     method CreateWnd; override;
     method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+    method SelectNextControl(aControl: TWinControl; reverseMode: Boolean);
     property ActiveControl: TWinControl read fActiveControl write SetActiveControl;
   end;
 
@@ -188,6 +188,7 @@ begin
       end;
     end;
     rtl.SetFocus(lControlList[lIndex].Handle);
+    rtl.InvalidateRect(lControlList[lIndex].Handle, nil, true);
   end;
 end;
 

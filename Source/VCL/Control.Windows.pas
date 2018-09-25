@@ -142,7 +142,7 @@ begin
   var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
   if lObject <> 0 then begin
     var lControl := InternalCalls.Cast<TWinControl>(^Void(lObject));
-    var lMessage := new TMessage(message, wParam, lParam);
+    var lMessage := new TMessage(hWnd, message, wParam, lParam);
     lControl.WndProc(var lMessage);
     result := lMessage.Result;
   end
@@ -208,7 +208,8 @@ begin
       if lParentForm ≠ nil then
         lParentForm.ActiveControl := self;
       // pass the message to default wndproc in order to draw focus rect...
-      inherited(var aMessage);
+      //aMessage.Result := rtl.CallWindowProc(fOldWndProc, fHandle, aMessage.Msg, aMessage.wParam, aMessage.lParam);
+      //exit;
     end;
   end;
 
@@ -338,7 +339,7 @@ end;
 
 method TControl.Perform(aMessage: Cardinal; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 begin
-  var lMessage := new TMessage(aMessage, wParam, lParam);
+  var lMessage := new TMessage(fHandle, aMessage, wParam, lParam);
   WndProc(var lMessage);
   result := lMessage.Result;
 end;
@@ -351,7 +352,8 @@ end;
 method TControl.WndProc(var aMessage: TMessage);
 begin
   // Dispatch messages here to message WM_XXXX functions
-  if not WantMessage(var aMessage) then
+  //if not WantMessage(var aMessage) then
+  WantMessage(var aMessage);
     DefaultHandler(var aMessage);
 end;
 
@@ -437,7 +439,7 @@ end;
 method TNativeControl.CreateParams(var aParams: TCreateParams);
 begin
   memset(@aParams, 0, sizeOf(aParams));
-  aParams.Style := aParams.Style or rtl.WS_CHILD;
+  aParams.Style := aParams.Style or rtl.WS_CHILD or WS_CLIPSIBLINGS;
   if fTabStop then
     aParams.Style := aParams.Style or rtl.WS_TABSTOP;
   if Visible then
@@ -471,6 +473,7 @@ begin
   var lType := typeOf(self);
   var lClassName := lType.Name.Substring(lType.Name.LastIndexOf('.') + 1);
   lParams.WinClassName := lClassName.ToCharArray(true);
+  lParams.WindowClass.style := rtl.CS_VREDRAW or rtl.CS_HREDRAW;
   var lClass: rtl.WNDCLASS;
   if not rtl.GetClassInfo(lInstance, @lParams.WinClassName[0], @lClass) then begin
     //lParams.WindowClass.lpfnWndProc := @GlobalWndProc;
