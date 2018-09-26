@@ -15,6 +15,7 @@ type
     method AddControls(aControl: TControl; aList: TList<TWinControl>);
   protected
     class method FormWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+    method PlatformInitControl; override;
   public
     constructor(aOwner: TComponent);
     method CreateWnd; override;
@@ -87,6 +88,25 @@ begin
 
   // display the window on the screen
   //rtl.ShowWindow(fHandle, rtl.SW_SHOW);
+end;
+
+method TCustomForm.PlatformInitControl;
+begin
+  // For forms we can use ClientHeight and ClientWidth instead of regular width and height
+  // (in fact, dfm's use them allways), but we need to add the border, caption, ... size
+  // AdjustWindowRect will help us here...
+  var lRect: rtl.RECT;
+  // just sample coordinates and size
+  lRect.left := 100;
+  lRect.Top := 100;
+  lRect.bottom := 300;
+  lRect.right := 300;
+  var lNewRect := lRect;
+
+  if rtl.AdjustWindowRectEx(@lNewRect, rtl.WS_OVERLAPPEDWINDOW, false, 0) then begin
+    fWidthDelta := (lNewRect.right - lNewRect.left) - (lRect.right - lRect.left);
+    fHeightDelta := (lNewRect.bottom - lNewRect.top) - (lRect.bottom - lRect.top);
+  end;
 end;
 
 method TCustomForm.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;

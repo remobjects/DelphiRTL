@@ -70,10 +70,6 @@ type
     method setOnKeyUp(value: TKeyEvent);
     method SetOnKeyPress(value: TKeyPressEvent);
     method SetOnKeyDown(aValue: TKeyEvent);
-    method GetClientHeight: Integer;
-    method SetClientHeight(aValue: Integer);
-    method GetClientWidth: Integer;
-    method SetClientWidth(aValue: Integer);
     method SetColor(aValue: TColor);
     method SetVisible(aValue: Boolean);
     method SetParentFont(aValue: Boolean);
@@ -89,6 +85,12 @@ type
     fExplicitTop: Integer;
     fExplicitHeight: Integer;
     fExplicitWidth: Integer;
+    fWidthDelta: Integer := 0;
+    fHeightDelta: Integer := 0;
+    method GetClientHeight: Integer; virtual;
+    method SetClientHeight(aValue: Integer); virtual;
+    method GetClientWidth: Integer; virtual;
+    method SetClientWidth(aValue: Integer); virtual;
     method CreateHandle; partial; virtual; empty;
     method HandleNeeded; virtual;
     method HandleAllocated: Boolean; virtual; partial; empty;
@@ -113,6 +115,7 @@ type
 
     method PlatformGetDefaultName: String; virtual; partial; empty;
     method PlatformApplyDefaults; virtual; partial; empty;
+    method PlatformInitControl; virtual; partial; empty;
     method PlatformFontChanged; virtual; partial; empty;
 
     method Click; virtual;
@@ -188,6 +191,7 @@ end;
 
 constructor TControl(aOwner: TComponent);
 begin
+  PlatformInitControl;
   Name := PlatformGetDefaultName;
   fFont := new TFont();
   fFont.PropertyChanged := @Changed;
@@ -275,22 +279,22 @@ end;
 
 method TControl.GetClientHeight: Integer;
 begin
-  result := fHeight;
+  result := fHeight - fHeightDelta;
 end;
 
 method TControl.SetClientHeight(aValue: Integer);
 begin
-  Height := aValue;
+  Height := aValue + fHeightDelta;
 end;
 
 method TControl.GetClientWidth: Integer;
 begin
-  result := fWidth;
+  result := fWidth - fWidthDelta;
 end;
 
 method TControl.SetClientWidth(aValue: Integer);
 begin
-  Width := aValue;
+  Width := aValue + fWidthDelta;
 end;
 
 method TControl.SetColor(aValue: TColor);
