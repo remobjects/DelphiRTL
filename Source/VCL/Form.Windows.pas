@@ -9,12 +9,19 @@ uses
 
 type
   TCustomForm = public partial class(TScrollingWinControl)
+  private
+    fActiveControl: TWinControl;
+    method SetActiveControl(aValue: TWinControl);
+    method AddControls(aControl: TControl; aList: TList<TWinControl>);
   protected
     class method FormWndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+    method PlatformInitControl; override;
   public
     constructor(aOwner: TComponent);
     method CreateWnd; override;
     method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
+    method SelectNextControl(aControl: TWinControl; reverseMode: Boolean);
+    property ActiveControl: TWinControl read fActiveControl write SetActiveControl;
   end;
 
   TForm = public partial class(TCustomForm)
@@ -83,6 +90,25 @@ begin
   //rtl.ShowWindow(fHandle, rtl.SW_SHOW);
 end;
 
+method TCustomForm.PlatformInitControl;
+begin
+  // For forms we can use ClientHeight and ClientWidth instead of regular width and height
+  // (in fact, dfm's use them allways), but we need to add the border, caption, ... size
+  // AdjustWindowRect will help us here...
+  var lRect: rtl.RECT;
+  // just sample coordinates and size
+  lRect.left := 100;
+  lRect.Top := 100;
+  lRect.bottom := 300;
+  lRect.right := 300;
+  var lNewRect := lRect;
+
+  if rtl.AdjustWindowRectEx(@lNewRect, rtl.WS_OVERLAPPEDWINDOW, false, 0) then begin
+    fWidthDelta := (lNewRect.right - lNewRect.left) - (lRect.right - lRect.left);
+    fHeightDelta := (lNewRect.bottom - lNewRect.top) - (lRect.bottom - lRect.top);
+  end;
+end;
+
 method TCustomForm.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 begin
   case message of
@@ -114,6 +140,16 @@ begin
       result := 0;
     end;
 
+    CN_KEYDOWN: begin
+      if wParam = rtl.VK_TAB then begin
+        var lShiftState := GetSpecialKeysStatus;
+        SelectNextControl(ActiveControl, TShiftStateValues.ssShift in lShiftState);
+        result := 0;
+      end
+      else
+        result := 1;
+    end;
+
     else
       result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
   end;
@@ -128,6 +164,52 @@ begin
   end
   else
     result := rtl.DefWindowProc(hWnd, message, wParam, lParam);
+end;
+
+method TCustomForm.SetActiveControl(aValue: TWinControl);
+begin
+  fActiveControl := aValue;
+end;
+
+method TCustomForm.AddControls(aControl: TControl; aList: TList<TWinControl>);
+begin
+  for each lControl in aControl.Controls do begin
+    aList.Add(TWinControl(lControl));
+    AddControls(lControl, aList);
+  end;
+end;
+
+method TCustomForm.SelectNextControl(aControl: TWinControl; reverseMode: Boolean);
+begin
+  var lControlList := new TList<TWinControl>();
+  AddControls(self, lControlList);
+  var lIndex := lControlList.IndexOf(aControl);
+  if lIndex >= 0 then begin
+    if not reverseMode then begin
+      inc(lIndex);
+      if lIndex ≥ lControlList.Count then
+        lIndex := 0;
+
+      while not lControlList[lIndex].TabStop do begin
+        inc(lIndex);
+        if lIndex ≥ lControlList.Count then
+          lIndex := 0;
+      end;
+    end
+    else begin
+      dec(lIndex);
+      if lIndex < 0 then
+        lIndex := lControlList.Count - 1;
+
+      while not lControlList[lIndex].TabStop do begin
+        dec(lIndex);
+        if lIndex < 0 then
+          lIndex := lControlList.Count;
+      end;
+    end;
+    rtl.SetFocus(lControlList[lIndex].Handle);
+    rtl.InvalidateRect(lControlList[lIndex].Handle, nil, true);
+  end;
 end;
 
 method TForm.Show;

@@ -70,16 +70,13 @@ type
     method setOnKeyUp(value: TKeyEvent);
     method SetOnKeyPress(value: TKeyPressEvent);
     method SetOnKeyDown(aValue: TKeyEvent);
-    method GetClientHeight: Integer;
-    method SetClientHeight(aValue: Integer);
-    method GetClientWidth: Integer;
-    method SetClientWidth(aValue: Integer);
     method SetColor(aValue: TColor);
     method SetVisible(aValue: Boolean);
     method SetParentFont(aValue: Boolean);
     method SetAlign(value: TAlign);
     method SetMargins(aValue: TMargins);
     method SetAlignWithMargins(value: Boolean);
+    method SetTabOrder(aValue: Integer);
 
   protected
     fHandle: TPlatformHandle := {$IF ISLAND AND WINDOWS}0{$ELSE}nil{$ENDIF};
@@ -88,6 +85,12 @@ type
     fExplicitTop: Integer;
     fExplicitHeight: Integer;
     fExplicitWidth: Integer;
+    fWidthDelta: Integer := 0;
+    fHeightDelta: Integer := 0;
+    method GetClientHeight: Integer; virtual;
+    method SetClientHeight(aValue: Integer); virtual;
+    method GetClientWidth: Integer; virtual;
+    method SetClientWidth(aValue: Integer); virtual;
     method CreateHandle; partial; virtual; empty;
     method HandleNeeded; virtual;
     method HandleAllocated: Boolean; virtual; partial; empty;
@@ -104,6 +107,7 @@ type
     method PlatformSetParent(aValue: TControl); virtual; partial; empty;
     method PlatformSetColor(aValue: TColor); virtual; partial; empty;
     method PlatformSetVisible(aValue: Boolean); virtual; partial; empty;
+    method PlatformSetTabOrder(aValue: Integer); virtual; partial; empty;
     method PlatformSetOnClick(aValue: TNotifyEvent); partial; empty;
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial; empty;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial; empty;
@@ -111,6 +115,7 @@ type
 
     method PlatformGetDefaultName: String; virtual; partial; empty;
     method PlatformApplyDefaults; virtual; partial; empty;
+    method PlatformInitControl; virtual; partial; empty;
     method PlatformFontChanged; virtual; partial; empty;
 
     method Click; virtual;
@@ -134,7 +139,7 @@ type
     property Top: Integer read fTop write SetTop;
     property Color: TColor read fColor write SetColor;
     property Visible: Boolean read fVisible write SetVisible;
-    property TabOrder: Integer read fTabOrder write fTabOrder;
+    property TabOrder: Integer read fTabOrder write SetTabOrder;
     property Align: TAlign read fAlign write SetAlign;
     property Margins: TMargins read fMargins write SetMargins;
     property AlignWithMargins: Boolean read fAlignWithMargins write SetAlignWithMargins;
@@ -152,13 +157,17 @@ type
   private
     fPadding: TPadding;
     method SetPadding(value: TPadding);
+    method SetTabStop(value: Boolean);
   protected
+    fTabStop: Boolean;
     method DoAlign(aAlign: TAlign; var aRect: TRect);
+    method PlatformSetTapStop(value: Boolean); virtual; partial; empty;
   public
     method AlignControl(aControl: TControl); virtual;
     method AlignControls(aControl: TControl; var Rect: TRect); virtual;
 
     property Padding: TPadding read fPadding write SetPadding;
+    property TabStop: Boolean read fTabStop write SetTabStop default false;
   end;
 
   TCustomControl = public class(TNativeControl)
@@ -182,6 +191,7 @@ end;
 
 constructor TControl(aOwner: TComponent);
 begin
+  PlatformInitControl;
   Name := PlatformGetDefaultName;
   fFont := new TFont();
   fFont.PropertyChanged := @Changed;
@@ -269,22 +279,22 @@ end;
 
 method TControl.GetClientHeight: Integer;
 begin
-  result := fHeight;
+  result := fHeight - fHeightDelta;
 end;
 
 method TControl.SetClientHeight(aValue: Integer);
 begin
-  Height := aValue;
+  Height := aValue + fHeightDelta;
 end;
 
 method TControl.GetClientWidth: Integer;
 begin
-  result := fWidth;
+  result := fWidth - fWidthDelta;
 end;
 
 method TControl.SetClientWidth(aValue: Integer);
 begin
-  Width := aValue;
+  Width := aValue + fWidthDelta;
 end;
 
 method TControl.SetColor(aValue: TColor);
@@ -303,6 +313,14 @@ method TControl.SetParentFont(aValue: Boolean);
 begin
   fParentFont := aValue;
   // PlatformSetParentFont TODO
+end;
+
+method TControl.SetTabOrder(aValue: Integer);
+begin
+  fTabOrder := aValue;
+  // Platforms that support tab order can do itself, just pass the value to the platform
+  // Win32 need to handle internally, so save the value here and PlatformSetTabOrder will be empty.
+  PlatformSetTabOrder(aValue);
 end;
 
 method TControl.InsertControl(aControl: TControl);
@@ -450,6 +468,12 @@ end;
 method TNativeControl.SetPadding(value: TPadding);
 begin
   fPadding := value;
+end;
+
+method TNativeControl.SetTabStop(value: Boolean);
+begin
+  fTabStop := value;
+  PlatformSetTapStop(value);
 end;
 
 method TMargins.SetLeft(value: TMarginSize);

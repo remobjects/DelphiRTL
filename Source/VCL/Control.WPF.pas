@@ -24,6 +24,7 @@ type
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
     method PlatformSetCaption(aValue: String); virtual; partial;
+    method PlatformSetTabOrder(aValue: Integer); virtual; partial;
 
     method PlatformFontChanged; virtual; partial;
 
@@ -104,6 +105,11 @@ end;
 method TControl.PlatformSetCaption(aValue: String);
 begin
   (fHandle as ContentControl).Content := aValue;
+end;
+
+method TControl.PlatformSetTabOrder(aValue: Integer);
+begin
+  (fHandle as Control).TabIndex := aValue;
 end;
 
 method TControl.PlatformFontChanged;

@@ -13,6 +13,8 @@ type
     method PlatformSetTop(aValue: Integer); override;
     method PlatformSetLeft(aValue: Integer); override;
     method PlatformSetCaption(aValue: String); override;
+    method PlatformInitControl; override;
+
   public
     constructor(aOwner: TComponent);
   end;
@@ -58,6 +60,13 @@ end;
 method TCustomForm.PlatformSetCaption(aValue: String);
 begin
   (fHandle as System.Windows.Window).Title := aValue;
+end;
+
+method TCustomForm.PlatformInitControl;
+begin
+  fHeightDelta := Integer(System.Windows.SystemParameters.WindowCaptionHeight +
+    System.Windows.SystemParameters.ResizeFrameHorizontalBorderHeight);
+  fWidthDelta := Integer(System.Windows.SystemParameters.ResizeFrameVerticalBorderWidth);
 end;
 
 method TForm.CreateHandle;

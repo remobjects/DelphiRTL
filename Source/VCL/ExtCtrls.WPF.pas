@@ -22,6 +22,8 @@ begin
   fHandle := new ContentControl();
   fPanel := new Canvas();
   (fHandle as System.Windows.Controls.ContentControl).Content := fPanel;
+  System.Windows.Input.KeyboardNavigation.SetTabNavigation(fHandle, System.Windows.Input.KeyboardNavigationMode.Local);
+  (fHandle as System.Windows.Controls.ContentControl).Focusable := false;
 end;
 
 method TPanel.PlatformSetCaption(aValue: String);

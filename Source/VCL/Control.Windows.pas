@@ -55,6 +55,7 @@ type
     method WantMessage(var aMessage: TMessage): Boolean; virtual;
     method GetDesignPPI: Integer;
   public
+    method GetParentForm: TCustomForm;
     method ScaleForPPI(newPPI: Integer); virtual;
     method WndProc(var aMessage: TMessage); virtual;
     method Perform(aMessage: Cardinal; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
@@ -72,15 +73,14 @@ type
 
   TNativeControl = public partial class(TControl)
   private
-    method GetSpecialKeysStatus: TShiftState;
     fClass: rtl.WNDCLASS;
   protected
     fOldWndProc: TWndProc;
+    method GetSpecialKeysStatus: TShiftState;
     method ControlFromHandle(aHandle: rtl.HWND): TNativeControl;
 
     method CreateHandle; override;
     method CreateClass(var aParams: TCreateParams);
-
     method CreateParams(var aParams: TCreateParams); virtual;
     method CreateWindowHandle(aParams: TCreateParams); virtual;
     method CreateWnd; virtual;
@@ -88,6 +88,7 @@ type
     method DefaultHandler(var aMessage: TMessage); override;
 
     method PlatformFontChanged; override;
+    method PlatformSetTabStop(value: Boolean); virtual; partial;
 
     [MessageAttribute(rtl.WM_COMMAND)]
     method WMCommand(var aMessage: TMessage);
@@ -141,7 +142,7 @@ begin
   var lObject := rtl.GetWindowLongPtr(hWnd, rtl.GWLP_USERDATA);
   if lObject <> 0 then begin
     var lControl := InternalCalls.Cast<TWinControl>(^Void(lObject));
-    var lMessage := new TMessage(message, wParam, lParam);
+    var lMessage := new TMessage(hWnd, message, wParam, lParam);
     lControl.WndProc(var lMessage);
     result := lMessage.Result;
   end
@@ -200,6 +201,15 @@ begin
         OnKeyPress(self, var lKey);
         aMessage.wParam := rtl.UINT(lKey);
       end;
+    end;
+
+    rtl.WM_SETFOCUS: begin
+      var lParentForm := GetParentForm;
+      if lParentForm ≠ nil then
+        lParentForm.ActiveControl := self;
+      // pass the message to default wndproc in order to draw focus rect...
+      //aMessage.Result := rtl.CallWindowProc(fOldWndProc, fHandle, aMessage.Msg, aMessage.wParam, aMessage.lParam);
+      //exit;
     end;
   end;
 
@@ -329,7 +339,7 @@ end;
 
 method TControl.Perform(aMessage: Cardinal; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT;
 begin
-  var lMessage := new TMessage(aMessage, wParam, lParam);
+  var lMessage := new TMessage(fHandle, aMessage, wParam, lParam);
   WndProc(var lMessage);
   result := lMessage.Result;
 end;
@@ -342,7 +352,8 @@ end;
 method TControl.WndProc(var aMessage: TMessage);
 begin
   // Dispatch messages here to message WM_XXXX functions
-  if not WantMessage(var aMessage) then
+  //if not WantMessage(var aMessage) then
+  WantMessage(var aMessage);
     DefaultHandler(var aMessage);
 end;
 
@@ -413,11 +424,26 @@ begin
     result := 96;
 end;
 
+method TControl.GetParentForm: TCustomForm;
+begin
+  var lParentForm := self;
+  while (not (lParentForm is TCustomForm)) and (lParentForm.Parent ≠ nil) do
+    lParentForm := lParentForm.Parent;
+
+  if not (lParentForm is TCustomForm) then
+    result := nil
+  else
+    result := lParentForm as TCustomForm;
+end;
+
 method TNativeControl.CreateParams(var aParams: TCreateParams);
 begin
   memset(@aParams, 0, sizeOf(aParams));
-  aParams.Style := aParams.Style or rtl.WS_CHILD;
-  if Visible then aParams.Style := aParams.Style or rtl.WS_VISIBLE;
+  aParams.Style := aParams.Style or rtl.WS_CHILD or WS_CLIPSIBLINGS;
+  if fTabStop then
+    aParams.Style := aParams.Style or rtl.WS_TABSTOP;
+  if Visible then
+    aParams.Style := aParams.Style or rtl.WS_VISIBLE;
   aParams.X := Left;
   aParams.Y := Top;
   aParams.Width := Width;
@@ -447,6 +473,7 @@ begin
   var lType := typeOf(self);
   var lClassName := lType.Name.Substring(lType.Name.LastIndexOf('.') + 1);
   lParams.WinClassName := lClassName.ToCharArray(true);
+  lParams.WindowClass.style := rtl.CS_VREDRAW or rtl.CS_HREDRAW;
   var lClass: rtl.WNDCLASS;
   if not rtl.GetClassInfo(lInstance, @lParams.WinClassName[0], @lClass) then begin
     //lParams.WindowClass.lpfnWndProc := @GlobalWndProc;
@@ -476,6 +503,11 @@ end;
 method TNativeControl.PlatformFontChanged;
 begin
   rtl.SendMessage(fHandle, rtl.WM_SETFONT, rtl.WPARAM(Font.FontHandle), rtl.LPARAM(true));
+end;
+
+method TNativeControl.PlatformSetTabStop(value: Boolean);
+begin
+  // TODO
 end;
 
 method TNativeControl.WMCommand(var aMessage: TMessage);
