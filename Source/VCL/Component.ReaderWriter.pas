@@ -1,11 +1,11 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR MACOS}
 
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL{$IF ECHOESWPF}, System.Reflection{$ENDIF};
+  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL{$IF ECHOESWPF}, System.Reflection{$ELSEIF TOFFEE}RemObjects.Elements.RTL.Reflection{$ENDIF};
 
 type
   TControlCtor = procedure(aInst: Object; aOwner: TComponent);
@@ -34,6 +34,14 @@ type
     property Ancestor: TPersistent read fAncestor write fAncestor;
     property IgnoreChildren: Boolean read fIgnoreChildren write fIgnoreChildren;
   end;
+
+  {$IF TOFFEE}
+  // TODO
+  PropertyInfo = public class
+  public
+    method GetValue(aObject: Object; aPars: array of Object): Object;
+  end;
+  {$ENDIF}
 
   TReader = public class(TFiler)
   private
@@ -279,6 +287,8 @@ begin
     end;
 
     TValueType.vaList: begin
+      {$IF NOT TOFFEE}
+      // TODO
       if typeOf(aInstance).IsSubclassOf(typeOf(TStrings)) then begin
         var lStrings := aInstance as TStrings;
         while not EndOfList do begin
@@ -287,6 +297,7 @@ begin
         end;
         ReadValue; // End of List
       end;
+      {$ENDIF}
       exit nil;
     end;
 
@@ -343,10 +354,13 @@ begin
     lName := lProps[lProps.Count - 1];
   end;
 
+  {$IF NOT TOFFEE}
+  // TODO
   if not lType.IsSubclassOf(typeOf(TStrings)) then begin
     lProperty := FindProperty(lType, lName);
     if lProperty = nil then raise new Exception('Can not get property ' + lName);
   end;
+  {$ENDIF}
   var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
 
   if lValue ≠ TValueType.vaList then begin
@@ -452,6 +466,9 @@ begin
   var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.' + aClassName).FirstOrDefault;
   {$ELSEIF ECHOESWPF}
   var lType := &Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.' + aClassName);
+  {$ELSEIF TOFFEE}
+  var lType := RemObjects.Elements.RTL.Reflection.Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.' + aClassName);
+  // TODO
   {$ENDIF}
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
   result := CreateComponent(lType, aOwner);
@@ -855,12 +872,14 @@ end;
 
 method TWriter.WriteInteger(aValue: Integer);
 begin
-  if (aValue >= Byte.MinValue) and (aValue <= Byte.MaxValue) then begin
+  //if (aValue >= Byte.MinValue) and (aValue <= Byte.MaxValue) then begin
+    if (aValue >= 0) and (aValue <= 255) then begin
     fStream.WriteData(Byte(TValueType.vaInt8));
     fStream.WriteData(Byte(aValue));
   end
   else
-    if (aValue >= SmallInt.MinValue) and (aValue <= SmallInt.MaxValue) then begin
+    //if (aValue >= SmallInt.MinValue) and (aValue <= SmallInt.MaxValue) then begin
+    if (aValue >= -32768) and (aValue <= 32767) then begin
       fStream.WriteData(Byte(TValueType.vaInt16));
       fStream.WriteData(SmallInt(aValue));
     end
@@ -887,6 +906,14 @@ begin
   fStream.WriteData(Byte(TValueType.vaSet));
   fStream.WriteData(aValue);
 end;
+
+{$IF TOFFEE}
+// TODO
+method PropertyInfo.GetValue(aObject: Object; aPars: array of Object): Object;
+begin
+  result := nil;
+end;
+{$ENDIF}
 
 {$ENDIF}
 

@@ -56,7 +56,7 @@ begin
 
   listBox1.Items.Add(edit1.Text);
   comboBox1.Items.Add(edit1.Text);
-  edit1.OnKeyPress := @Edit1OnKeyPress;
+  edit1.OnKeyPress := @Edit1KeyPress;
 end;
 
 procedure TForm6.Button2Click(Sender: TObject);
