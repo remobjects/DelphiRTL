@@ -5,7 +5,13 @@
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL{$IF ECHOESWPF}, System.Reflection{$ELSEIF TOFFEE}RemObjects.Elements.RTL.Reflection{$ENDIF};
+  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL
+  {$IF ECHOESWPF}
+  , System.Reflection
+  {$ELSEIF MACOS}
+   RemObjects.Elements.RTL.Reflection
+  {$ENDIF}
+  ;
 
 type
   TControlCtor = procedure(aInst: Object; aOwner: TComponent);
@@ -36,11 +42,7 @@ type
   end;
 
   {$IF TOFFEE}
-  // TODO
-  PropertyInfo = public class
-  public
-    method GetValue(aObject: Object; aPars: array of Object): Object;
-  end;
+  PropertyInfo = &Property;
   {$ENDIF}
 
   TReader = public class(TFiler)
@@ -491,7 +493,7 @@ begin
   else
     lCtor := lCtors.FirstOrDefault;
 
-  if lCtor = nil then raise new Exception('No default constructor could be found!');
+  if lCtor = nil then raise new Exception('No default constructor can be found!');
   var lNew := DefaultGC.New(aType.RTTI, aType.SizeOfType);
   result := InternalCalls.Cast<TComponent>(lNew);
   //lCtor.Invoke(result, [aOwner]);
@@ -499,6 +501,34 @@ begin
   lCaller(result, aOwner);
   {$ELSEIF ECHOESWPF}
   result := TComponent(Activator.CreateInstance(aType, [aOwner]));
+  {$ELSEIF MACOS}
+  var lInstanceType := aType;
+  var lCtor: RemObjects.Elements.RTL.Reflection.Method := nil;
+  var lParent: &Class := nil;
+  var lCurrentClass := aType.TypeClass;
+  while lCtor = nil do begin
+    var lMethods := lInstanceType.Methods;
+    for each lMethod in lMethods do begin
+      if lMethod.Name = 'init:' then begin
+        lCtor := lMethod;
+        break;
+      end;
+  end;
+  lParent := class_getSuperclass(lCurrentClass);
+  if lCurrentClass ≠ lParent then begin
+    lCurrentClass := lParent;
+    if lParent ≠ nil then
+      lInstanceType := new &RemObjects.Elements.RTL.Reflection.Type withClass(lParent)
+    else
+      break;
+    end
+    else
+      break;
+  end;
+  if lCtor = nil then raise new Exception('No constructor can be found!');
+
+  var lNew := rtl.objc_msgSend(aType.TypeClass, NSSelectorFromString('alloc'));
+  result := rtl.objc_msgSend(lNew, lCtor.Selector, [aOwner]);
   {$ENDIF}
 end;
 
@@ -906,14 +936,6 @@ begin
   fStream.WriteData(Byte(TValueType.vaSet));
   fStream.WriteData(aValue);
 end;
-
-{$IF TOFFEE}
-// TODO
-method PropertyInfo.GetValue(aObject: Object; aPars: array of Object): Object;
-begin
-  result := nil;
-end;
-{$ENDIF}
 
 {$ENDIF}
 
