@@ -74,6 +74,7 @@ begin
   fDelegate := new TAppDelegate();
   fDelegate.App := self;
   fApp.delegate := fDelegate;
+  Screen := new TScreen();
 end;
 
 method TApplication.Run;

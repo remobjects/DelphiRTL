@@ -101,7 +101,7 @@ type
     method PlatformGetCaption: String; partial; empty;
     method PlatformSetCaption(aValue: String); virtual; partial; empty;
     method PlatformSetWidth(aValue: Integer); virtual; partial; empty;
-    method PlatformSetHeight(aValue: Integer); partial; empty;
+    method PlatformSetHeight(aValue: Integer); virtual; partial; empty;
     method PlatformSetTop(aValue: Integer); virtual; partial; empty;
     method PlatformSetLeft(aValue: Integer); virtual; partial; empty;
     method PlatformSetParent(aValue: TControl); virtual; partial; empty;

@@ -20,7 +20,7 @@ type
     fColor: TColor;
     fName: String := 'Tahoma';
     fSize: Integer;
-    fStyles: TFontStyles := [];
+    fStyle: TFontStyles := [];
     fCharset: TFontCharset; // TODO
     fHeight: Integer := 12;
     fPixelsPerInch: Integer;
@@ -30,7 +30,7 @@ type
     method setColor(aValue: TColor);
     method setName(aValue: String);
     method setSize(aValue: Integer);
-    method setStyles(aValue: TFontStyles);
+    method setStyle(aValue: TFontStyles);
     method setHeight(aValue: Integer);
     method GetOrientation: Integer;
     method SetOrientation(aValue: Integer);
@@ -47,7 +47,7 @@ type
     property Color: TColor read fColor write setColor;
     property Name: String read fName write setName;
     property Size: Integer read fSize write setSize;
-    property Style: TFontStyles read fStyles write setStyles;
+    property Style: TFontStyles read fStyle write setStyle;
     property Charset: TFontCharset read fCharset write fCharset;
     property Height: Integer read fHeight write SetHeight;
     property PixelsPerInch: Integer read fPixelsPerInch write fPixelsPerInch;
@@ -97,9 +97,9 @@ begin
   {$ENDIF}
 end;
 
-method TFont.SetStyles(aValue: TFontStyles);
+method TFont.SetStyle(aValue: TFontStyles);
 begin
-  fStyles := aValue;
+  fStyle := aValue;
   NotifyChanged('styles');
 end;
 

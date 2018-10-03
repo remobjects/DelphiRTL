@@ -39,5 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Font.WPF.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.Mac.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Form.Mac.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.Mac.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.Mac.pas" />
   </ItemGroup>
 </Project>

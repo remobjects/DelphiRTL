@@ -25,6 +25,15 @@ type
     constructor(aOwner: TComponent);
   end;
 
+  TScreen = public partial class(TComponent)
+  protected
+    method PlatformGetScreenHeight: Integer; virtual; partial; empty;
+    method PlatformGetScreenWidth: Integer; virtual; partial; empty;
+  public
+    property Height: Integer read PlatformGetScreenHeight;
+    property Width: Integer read PlatformGetScreenWidth;
+  end;
+
 implementation
 
 constructor TForm(aOwner: TComponent);

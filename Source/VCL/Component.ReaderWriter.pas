@@ -331,6 +331,31 @@ begin
     end;
     lType := lType.BaseType;
   end;
+  {$ELSEIF TOFFEE}
+  var lInstanceType := aType;
+  var lProperty: PropertyInfo := nil;
+  var lParent: &Class := nil;
+  var lCurrentClass := aType.TypeClass;
+  while lProperty = nil do begin
+    var lProps := lInstanceType.Properties;
+    for each lProp in lProps do begin
+      if lProp.Name = aName then begin
+        lProperty := lProp;
+        break;
+      end;
+    end;
+    lParent := class_getSuperclass(lCurrentClass);
+    if lCurrentClass ≠ lParent then begin
+      lCurrentClass := lParent;
+      if lParent ≠ nil then
+        lInstanceType := new &RemObjects.Elements.RTL.Reflection.Type withClass(lParent)
+      else
+        break;
+    end
+    else
+      break;
+  end;
+  result := lProperty;
   {$ENDIF}
 end;
 
@@ -338,7 +363,11 @@ method TReader.ReadProperty(aInstance: TPersistent);
 begin
   var lName := ReadStr;
   var lValue := ReadValue;
+  {$IF TOFFEE}
+  var lType := new &Type withClass(typeOf(aInstance));
+  {$ELSE}
   var lType := typeOf(aInstance);
+  {$ENDIF}
   var lProperty: PropertyInfo;
   var lInstance: Object := aInstance;
 
@@ -351,7 +380,11 @@ begin
 
       var lPropValue := lProperty.GetValue(lInstance, []);
       lInstance := lPropValue;
+      {$IF TOFFEE}
+      lType := new &Type withClass(typeOf(lInstance));
+      {$else}
       lType := typeOf(lInstance);
+      {$ENDIF}
     end;
     lName := lProps[lProps.Count - 1];
   end;
@@ -373,6 +406,11 @@ begin
     if lCurrentProp = nil then
       raise new Exception('Can not get property ' + lName);
     lCurrentProp.SetValue(lInstance, lPropValue, nil);
+    {$ELSEIF TOFFEE}
+      lProperty := FindProperty(lType, lName);
+      if lProperty = nil then raise new Exception('Can not get property ' + lName);
+      if lPropValue ≠ nil then // TODO
+        lProperty.SetValue(lInstance, nil, lPropValue);
     {$ENDIF}
   end;
 end;
@@ -469,7 +507,7 @@ begin
   {$ELSEIF ECHOESWPF}
   var lType := &Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.' + aClassName);
   {$ELSEIF TOFFEE}
-  var lType := RemObjects.Elements.RTL.Reflection.Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.' + aClassName);
+  var lType := RemObjects.Elements.RTL.Reflection.Type.GetType('__RemObjects_Elements_RTL_Delphi_VCL_' + aClassName);
   // TODO
   {$ENDIF}
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
