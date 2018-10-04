@@ -50,6 +50,7 @@ implementation
 
 procedure TForm6.Button1Click(Sender: TObject);
 begin
+  ShowMessage('Clicked!');
   {
   //label1.Width := 200;
   //label1.Caption := 'All right!';

@@ -40,7 +40,8 @@ implementation
 constructor TCustomForm(aOwner: TComponent);
 begin
   HandleNeeded;
-  var lStream := new TFileStream('/Users/diego/OneButtonWithFontStyle.res', fmOpenRead);
+  //var lStream := new TFileStream('/Users/diego/OneButtonWithFontStyle.res', fmOpenRead);
+  var lStream := new TFileStream('/Users/diego/ButtonWithEvent.res', fmOpenRead);
   //lStream.Write(lBuffer, lResStream.Length);
   lStream.Position := 76; // Discard header
   var lReader := new TReader(lStream, 100);
@@ -92,7 +93,7 @@ end;
 
 method TCustomForm.PlatformSetCaption(aValue: String);
 begin
-
+  (fHandle as NSWindow).title := aValue;
 end;
 
 method TCustomForm.PlatformInitControl;
@@ -101,12 +102,16 @@ end;
 
 method TForm.CreateHandle;
 begin
-  fHandle := (NSWindow.alloc).initWithContentRect(NSMakeRect(1.0, 1.0, 300.0, 300.0)) styleMask(AppKit.NSWindowStyleMask.NSTitledWindowMask) backing(AppKit.NSBackingStoreType.NSBackingStoreBuffered) defer(NO);
+  fHandle := (NSWindow.alloc).initWithContentRect(NSMakeRect(1.0, 1.0, 300.0, 300.0))
+    styleMask(AppKit.NSWindowStyleMask.NSTitledWindowMask or AppKit.NSWindowStyleMask.NSClosableWindowMask
+    or AppKit.NSWindowStyleMask.Miniaturizable {or AppKit.NSWindowStyleMask.NSFullScreenWindowMask})
+    backing(AppKit.NSBackingStoreType.NSBackingStoreBuffered) defer(NO);
+  fView := (fHandle as NSWindow).contentView;
 end;
 
 method TForm.Show;
 begin
-  //(fHandle as NSWindow).visible := true;
+  (fHandle as NSWindow).isvisible := true;
 end;
 
 method TScreen.PlatformGetScreenHeight: Integer;

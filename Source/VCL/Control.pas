@@ -195,7 +195,7 @@ begin
   Name := PlatformGetDefaultName;
   fFont := new TFont();
   fFont.PropertyChanged := @Changed;
-  {$IF WEBASSEMBLY OR ECHOESWPF}
+  {$IF WEBASSEMBLY OR ECHOESWPF OR MACOS}
   CreateHandle;
   {$ENDIF}
   PlatformApplyDefaults;

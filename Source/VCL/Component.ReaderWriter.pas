@@ -277,6 +277,12 @@ begin
             exit 0;
         end;
       end;
+      {$ELSEIF TOFFEE}
+      // TODO
+      var lString := property_getAttributes(aProperty.PropertyClass);
+      writeLn('-----------');
+      writeLn(lString);
+      writeLn('-----------');
       {$ENDIF}
     end;
 
@@ -382,7 +388,7 @@ begin
       lInstance := lPropValue;
       {$IF TOFFEE}
       lType := new &Type withClass(typeOf(lInstance));
-      {$else}
+      {$ELSE}
       lType := typeOf(lInstance);
       {$ENDIF}
     end;
@@ -395,6 +401,9 @@ begin
     lProperty := FindProperty(lType, lName);
     if lProperty = nil then raise new Exception('Can not get property ' + lName);
   end;
+  {$ELSE}
+  lProperty := FindProperty(lType, lName);
+  if lProperty = nil then raise new Exception('Can not get property ' + lName);
   {$ENDIF}
   var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
 

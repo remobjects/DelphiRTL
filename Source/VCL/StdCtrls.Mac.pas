@@ -14,6 +14,8 @@ type
   protected
     method CreateHandle; partial; override;
     method PlatformSetCaption(aValue: String); partial; override;
+    method PlatformSetOnClick(aValue: TNotifyEvent); override;
+    method ButtonClick(aEvent: NSEvent);
   end;
 
   TLabel = public partial class(TNativeControl)
@@ -109,29 +111,49 @@ implementation
 
 procedure PlatformShowMessage(aMessage: String);
 begin
-  //System.Windows.MessageBox.Show(aMessage);
+  var lAlert: NSAlert := new NSAlert();
+  lAlert.messageText := aMessage;
+  lAlert.addButtonWithTitle('Ok');
+  lAlert.runModal;
 end;
 
 method TButton.CreateHandle;
 begin
-  //fHandle := new Button();
+  fHandle := new NSButton();
+  (fHandle as NSButton).bezelStyle := NSBezelStyle.NSRoundedBezelStyle;
 end;
 
 method TButton.PlatformSetCaption(aValue: String);
 begin
-  //(fHandle as Button).Content := aValue;
+  (fHandle as NSButton).title := aValue;
+end;
+
+method TButton.PlatformSetOnClick(aValue: TNotifyEvent);
+begin
+  if aValue ≠ nil then begin
+    (fHandle as NSButton).target := self;
+    (fHandle as NSButton).action := NSSelectorFromString('ButtonClick:');
+  end
+  else
+  (fHandle as NSButton).action := nil;
+end;
+
+method TButton.ButtonClick(aEvent: NSEvent);
+begin
+  if assigned(OnClick) then
+    OnClick(self);
 end;
 
 method TLabel.CreateHandle;
 begin
-  //fHandle := new Label();
+  var lHandle := new NSTextField();
+  lHandle.editable := false;
+  fHandle := lHandle;
 end;
 
 method TLabel.PlatformSetCaption(aValue: String);
 begin
-  {(fHandle as Label).Width := Double.NaN;
-  (fHandle as Label).Height := Double.NaN;
-  (fHandle as Label).Content := aValue;}
+  (fHandle as NSTextField).stringValue := aValue;
 end;
 
 method TGroupBox.CreateHandle;
