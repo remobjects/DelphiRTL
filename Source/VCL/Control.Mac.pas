@@ -75,6 +75,7 @@ end;
 
 method TControl.PlatformSetOnClick(aValue: TNotifyEvent);
 begin
+
 end;
 
 method TControl.PlatformSetOnKeyPress(aValue: TKeyPressEvent);

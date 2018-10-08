@@ -135,7 +135,7 @@ begin
     (fHandle as NSButton).action := NSSelectorFromString('ButtonClick:');
   end
   else
-  (fHandle as NSButton).action := nil;
+    (fHandle as NSButton).action := nil;
 end;
 
 method TButton.ButtonClick(aEvent: NSEvent);

@@ -22,6 +22,9 @@ type
   TWriterProc = public block(Writer: TWriter);
   TStreamProc = public block(Stream: TStream);
 
+  Del1 = delegate(a: IntPtr);
+  Del1Helper = public procedure (aInst: id; aSel: SEL; a: IntPtr);
+
   TFiler = public abstract class(TObject)
   private
     fRoot: TComponent;
@@ -279,10 +282,47 @@ begin
       end;
       {$ELSEIF TOFFEE}
       // TODO
-      var lString := property_getAttributes(aProperty.PropertyClass);
-      writeLn('-----------');
-      writeLn(lString);
-      writeLn('-----------');
+      if aProperty.Type.IsDelegate then begin
+        var lType := new &Type withClass(typeOf(Root));
+        var lEvent: &Method := nil;
+        for each lMethod in lType.Methods do begin
+          var lName := lMethod.Name;
+          var lPos := lName.IndexOf(':');
+          if lPos > 0 then
+            lName := lName.SubString(0, lPos);
+
+          if lName = lIdent then begin
+            lEvent := lMethod;
+            break;
+          end;
+        end;
+
+        if lEvent ≠ nil then begin
+          var lPtr := Root.methodForSelector(lEvent.Selector);
+          var r: Del1 := (arg1: IntPtr) -> begin Del1Helper(lPtr)(Root, lEvent.Selector, arg1); end;
+          var lSetMethod := NSSelectorFromString('set' + aProperty.Name + ':');
+          var lSignature := aInstance.methodSignatureForSelector(lSetMethod);
+          var lInvoke := NSInvocation.invocationWithMethodSignature(lSignature);
+          lInvoke.target := aInstance;
+          lInvoke.selector := lSetMethod;
+          var lArg := ^Void(@r);
+          lInvoke.setArgument(lArg) atIndex(2);
+          lInvoke.invoke;
+        end;
+
+        exit nil;
+      end
+      else begin
+        var lType := aProperty.Type;
+        writeLn(lType.Name);
+        // enum, constants
+        //var lGlobals := &Type.AllTypes;
+        //WriteLn('Getting all types');
+        //for each lType in &Type.AllTypes do
+          //writeLn(lType.Name);
+        //var lProps := lGlobals.Properties;
+        //writeLn(lProps.Count);
+      end;
       {$ENDIF}
     end;
 
