@@ -39,28 +39,21 @@ implementation
 
 constructor TCustomForm(aOwner: TComponent);
 begin
+  writeLn('TCustomForm 1');
   HandleNeeded;
-  //var lStream := new TFileStream('/Users/diego/OneButtonWithFontStyle.res', fmOpenRead);
-  var lStream := new TFileStream('/Users/diego/ButtonWithEvent.res', fmOpenRead);
-  //lStream.Write(lBuffer, lResStream.Length);
-  lStream.Position := 76; // Discard header
+  writeLn('TCustomForm 2');
+  var lSize: {$IF __LP64__}UInt64{$ELSE}UInt32{$ENDIF};
+  var lSecName := NSString('__island_res').UTF8String;
+  var lData := NSString('__DATA').UTF8String;
+  var lStart := ^Byte(rtl.getsectdata(lData, lSecName, @lSize));
+  writeLn('TCustomForm 3');
+  var lStream := new TMemoryStream();
+  lStream.Write(lStart, lSize);
+  lStream.Position := 76; // skip res header
   var lReader := new TReader(lStream, 100);
+  writeLn('TCustomForm 4');
   lReader.ReadRootComponent(self);
-
-  {var lName := typeOf(self).Name;
-  lName := lName.Substring(lName.LastIndexOf('.') + 1).ToUpper;
-  if lName.ToUpper <> 'TFORM' then begin
-    // the resource is on the .exe, not here!
-    var lAssembly := System.Reflection.Assembly.GetEntryAssembly();
-    var lResStream := lAssembly.GetManifestResourceStream(lName);
-    var lBuffer := new Byte[lResStream.Length];
-    lResStream.Read(lBuffer, 0, lResStream.Length);
-    var lStream := new TMemoryStream();
-    lStream.Write(lBuffer, lResStream.Length);
-    lStream.Position := 74; // Discard header
-    var lReader := new TReader(lStream, 100);
-    lReader.ReadRootComponent(self);
-  end;}
+  writeLn('TCustomForm 5');
 end;
 
 method TCustomForm.PlatformSetTop(aValue: Integer);

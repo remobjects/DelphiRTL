@@ -11,7 +11,7 @@
     <AllowLegacyCreate>False</AllowLegacyCreate>
     <AllowUnsafeCode>False</AllowUnsafeCode>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-    <SDK>macOS</SDK>
+    <SDK>macOS 10.14</SDK>
     <CreateHeaderFile>True</CreateHeaderFile>
     <DefaultUses>Foundation</DefaultUses>
     <MangleTypeNames>True</MangleTypeNames>

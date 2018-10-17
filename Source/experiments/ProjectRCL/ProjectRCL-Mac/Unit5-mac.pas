@@ -12,10 +12,11 @@ type
   { Private declarations }
   public
   { Public declarations }
-    {button1: TButton;
+    button1: TButton;
     button2: TButton;
     edit1: TEdit;
     label1: TLabel;
+    {
     radioButton1: TRadioButton;
     checkBox1: TCheckBox;
     listBox1: TListBox;

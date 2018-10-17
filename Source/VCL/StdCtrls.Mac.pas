@@ -119,6 +119,7 @@ end;
 
 method TButton.CreateHandle;
 begin
+  writeLn('Creating button!!');
   fHandle := new NSButton();
   (fHandle as NSButton).bezelStyle := NSBezelStyle.NSRoundedBezelStyle;
 end;
@@ -146,6 +147,7 @@ end;
 
 method TLabel.CreateHandle;
 begin
+  writeLn('Creating label!');
   var lHandle := new NSTextField();
   lHandle.editable := false;
   fHandle := lHandle;
@@ -158,32 +160,27 @@ end;
 
 method TGroupBox.CreateHandle;
 begin
-  {fHandle := new GroupBox();
-  fPanel := new Canvas();
-  (fHandle as System.Windows.Controls.GroupBox).Content := fPanel;
-  // need to set tab navigation locally for the groupbox & panel.
-  // if not, tabindex property is global and won't be compatible with win32 "standard".
-  System.Windows.Input.KeyboardNavigation.SetTabNavigation(fHandle, System.Windows.Input.KeyboardNavigationMode.Local);}
+  fHandle := new NSBox();
 end;
 
 method TGroupBox.PlatformSetCaption(aValue: String);
 begin
-  //(fHandle as GroupBox).Content := aValue;
+  (fHandle as NSBox).title := aValue;
 end;
 
 method TEdit.CreateHandle;
 begin
-  //fHandle := new TextBox();
+  fHandle := new NSTextView();
 end;
 
 method TEdit.PlatformSetText(aValue: String);
 begin
-  //(fHandle as TextBox).Text := aValue;
+  (fHandle as NSTextView).string := aValue;
 end;
 
 method TEdit.PlatformGetText: String;
 begin
-  //result := (fHandle as TextBox).Text;
+  result := (fHandle as NSTextView).string;
 end;
 
 method TEdit.PlatformGetMaxLength: Integer;
