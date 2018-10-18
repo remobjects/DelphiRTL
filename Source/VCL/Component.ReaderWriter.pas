@@ -314,7 +314,6 @@ begin
       end
       else begin
         var lType := aProperty.Type;
-        writeLn(lType.Name);
         // enum, constants
         //var lGlobals := &Type.AllTypes;
         //WriteLn('Getting all types');

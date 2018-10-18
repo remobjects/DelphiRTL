@@ -119,7 +119,6 @@ end;
 
 method TButton.CreateHandle;
 begin
-  writeLn('Creating button!!');
   fHandle := new NSButton();
   (fHandle as NSButton).bezelStyle := NSBezelStyle.NSRoundedBezelStyle;
 end;
@@ -147,7 +146,6 @@ end;
 
 method TLabel.CreateHandle;
 begin
-  writeLn('Creating label!');
   var lHandle := new NSTextField();
   lHandle.editable := false;
   fHandle := lHandle;

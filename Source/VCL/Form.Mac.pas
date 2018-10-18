@@ -39,21 +39,17 @@ implementation
 
 constructor TCustomForm(aOwner: TComponent);
 begin
-  writeLn('TCustomForm 1');
   HandleNeeded;
-  writeLn('TCustomForm 2');
   var lSize: {$IF __LP64__}UInt64{$ELSE}UInt32{$ENDIF};
   var lSecName := NSString('__island_res').UTF8String;
   var lData := NSString('__DATA').UTF8String;
-  var lStart := ^Byte(rtl.getsectdata(lData, lSecName, @lSize));
-  writeLn('TCustomForm 3');
+  var lStart := rtl.getsectiondata(@rtl._mh_execute_header, lData, lSecName, @lSize);
+
   var lStream := new TMemoryStream();
   lStream.Write(lStart, lSize);
-  lStream.Position := 76; // skip res header
+  lStream.Position := 100; // skip section&res header
   var lReader := new TReader(lStream, 100);
-  writeLn('TCustomForm 4');
   lReader.ReadRootComponent(self);
-  writeLn('TCustomForm 5');
 end;
 
 method TCustomForm.PlatformSetTop(aValue: Integer);
