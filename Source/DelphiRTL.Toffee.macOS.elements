@@ -11,7 +11,7 @@
     <AllowLegacyCreate>False</AllowLegacyCreate>
     <AllowUnsafeCode>False</AllowUnsafeCode>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-    <SDK>macOS 10.14</SDK>
+    <SDK>macOS</SDK>
     <CreateHeaderFile>True</CreateHeaderFile>
     <DefaultUses>Foundation</DefaultUses>
     <MangleTypeNames>True</MangleTypeNames>
@@ -50,8 +50,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
   <Import Project="DelphiRTL.Shared.projitems" Label="Shared" />
+  <Import Project="DelphiRTL.Shared.VCL.projitems" Label="Shared" />
   <PropertyGroup>
     <PreBuildEvent />
   </PropertyGroup>
-  <Import Project="DelphiRTL.Shared.VCL.projitems" Label="Shared" />
 </Project>
