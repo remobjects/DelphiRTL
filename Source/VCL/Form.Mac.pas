@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF MACOS}
+{$IF MACOS AND NOT DARWIN}
 
 interface
 
