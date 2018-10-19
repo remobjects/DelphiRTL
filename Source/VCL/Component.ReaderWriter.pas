@@ -22,8 +22,10 @@ type
   TWriterProc = public block(Writer: TWriter);
   TStreamProc = public block(Stream: TStream);
 
+  {$IF MACOS}
   Del1 = delegate(a: IntPtr);
   Del1Helper = public procedure (aInst: id; aSel: SEL; a: IntPtr);
+  {$ENDIF}
 
   TFiler = public abstract class(TObject)
   private
@@ -83,7 +85,7 @@ type
     method WriteSet(aValue: Byte);
   end;
 
-  TResourceId = public {$IF ISLAND AND WINDOWS} rtl.PCHAR {$ELSE} Object {$ENDIF};
+  TResourceId = public {$IF ISLAND AND WINDOWS} ^Void {$ELSE} Object {$ENDIF};
 
   TResourceStream = class(TCustomMemoryStream)
   public
