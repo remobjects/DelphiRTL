@@ -184,12 +184,13 @@ end;
 
 method TEdit.PlatformGetMaxLength: Integer;
 begin
-
+  // NSTextField does not have a maxLength or similar
+  result := high(Integer);
 end;
 
 method TEdit.PlatformSetMaxLength(aValue: Integer);
 begin
-
+  // NSTextField does not have a maxLength or similar
 end;
 
 method TEdit.PlatformGetReadOnly: Boolean;
@@ -341,7 +342,7 @@ end;
 
 method TComboBox.CreateHandle;
 begin
-
+  fHandle := new NSComboBox();
 end;
 
 method TComboBox.PlatformGetText: String;
