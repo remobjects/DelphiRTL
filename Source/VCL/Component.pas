@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR MACOS}
 
 interface
 
@@ -11,11 +11,12 @@ type
   TComponentStateEnum = public enum(csLoading, csReading, csWriting, csDestroying, csDesigning, csAncestor, csUpdating, csFixups, csFreeNotification) of integer;
   TComponentState = set of TComponentStateEnum;
 
-  //{$IF COOPER}
-  //TComponentClass = public &Class;
-  //{$ELSE}
+  {$IF TOFFEE}
+  // this is just the beginning, going to use for all platforms RTL2 reflection
+  TComponentClass = public id;//public RemObjects.Elements.RTL.Reflection.Type;
+  {$ELSE}
   TComponentClass = public &Type;
-  //{$ENDIF}
+  {$ENDIF}
 
   TComponent = public class(TPersistent)
   private
@@ -41,13 +42,14 @@ type
   TKeyPressEvent = public block(Sender: TObject; var Key: Char);
   TKeyEvent = public block(Sender: TObject; var Key: Word; Shift: TShiftState);
 
-  TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ELSEIF ISLAND AND WINDOWS} rtl.HWND {$ELSEIF ECHOESWPF} System.Windows.Controls.Control {$ELSE} Object {$ENDIF};
+  TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ELSEIF ISLAND AND WINDOWS} rtl.HWND {$ELSEIF ECHOESWPF} System.Windows.Controls.Control {$ELSEIF MACOS} AppKit.NSResponder {$ELSE} Object {$ENDIF};
   TPropertyChangedEvent = public block(Sender: TObject; PropName: String);
 
   INotifyPropertyChanged = public interface
-    //{$IF NOT COOPER}
+    {$IF NOT TOFFEE}
+    // TODO
     event PropertyChanged: Action<TObject, String>;
-    //{$ENDIF}
+    {$ENDIF}
   end;
 
   TColor = public Integer;

@@ -1,11 +1,17 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR MACOS}
 
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL{$IF ECHOESWPF}, System.Reflection{$ENDIF};
+  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL
+  {$IF ECHOESWPF}
+  , System.Reflection
+  {$ELSEIF MACOS}
+   RemObjects.Elements.RTL.Reflection
+  {$ENDIF}
+  ;
 
 type
   TControlCtor = procedure(aInst: Object; aOwner: TComponent);
@@ -15,6 +21,11 @@ type
   TReaderProc = public block(Reader: TReader);
   TWriterProc = public block(Writer: TWriter);
   TStreamProc = public block(Stream: TStream);
+
+  {$IF MACOS}
+  Del1 = delegate(a: IntPtr);
+  Del1Helper = public procedure (aInst: id; aSel: SEL; a: IntPtr);
+  {$ENDIF}
 
   TFiler = public abstract class(TObject)
   private
@@ -34,6 +45,10 @@ type
     property Ancestor: TPersistent read fAncestor write fAncestor;
     property IgnoreChildren: Boolean read fIgnoreChildren write fIgnoreChildren;
   end;
+
+  {$IF TOFFEE}
+  PropertyInfo = &Property;
+  {$ENDIF}
 
   TReader = public class(TFiler)
   private
@@ -70,7 +85,7 @@ type
     method WriteSet(aValue: Byte);
   end;
 
-  TResourceId = public {$IF ISLAND AND WINDOWS} rtl.PCHAR {$ELSE} Object {$ENDIF};
+  TResourceId = public {$IF ISLAND AND WINDOWS} ^Void {$ELSE} Object {$ENDIF};
 
   TResourceStream = class(TCustomMemoryStream)
   public
@@ -267,6 +282,48 @@ begin
             exit 0;
         end;
       end;
+      {$ELSEIF TOFFEE}
+      // TODO
+      if aProperty.Type.IsDelegate then begin
+        var lType := new &Type withClass(typeOf(Root));
+        var lEvent: &Method := nil;
+        for each lMethod in lType.Methods do begin
+          var lName := lMethod.Name;
+          var lPos := lName.IndexOf(':');
+          if lPos > 0 then
+            lName := lName.SubString(0, lPos);
+
+          if lName = lIdent then begin
+            lEvent := lMethod;
+            break;
+          end;
+        end;
+
+        if lEvent ≠ nil then begin
+          var lPtr := Root.methodForSelector(lEvent.Selector);
+          var r: Del1 := (arg1: IntPtr) -> begin Del1Helper(lPtr)(Root, lEvent.Selector, arg1); end;
+          var lSetMethod := NSSelectorFromString('set' + aProperty.Name + ':');
+          var lSignature := aInstance.methodSignatureForSelector(lSetMethod);
+          var lInvoke := NSInvocation.invocationWithMethodSignature(lSignature);
+          lInvoke.target := aInstance;
+          lInvoke.selector := lSetMethod;
+          var lArg := ^Void(@r);
+          lInvoke.setArgument(lArg) atIndex(2);
+          lInvoke.invoke;
+        end;
+
+        exit nil;
+      end
+      else begin
+        var lType := aProperty.Type;
+        // enum, constants
+        //var lGlobals := &Type.AllTypes;
+        //WriteLn('Getting all types');
+        //for each lType in &Type.AllTypes do
+          //writeLn(lType.Name);
+        //var lProps := lGlobals.Properties;
+        //writeLn(lProps.Count);
+      end;
       {$ENDIF}
     end;
 
@@ -279,6 +336,8 @@ begin
     end;
 
     TValueType.vaList: begin
+      {$IF NOT TOFFEE}
+      // TODO
       if typeOf(aInstance).IsSubclassOf(typeOf(TStrings)) then begin
         var lStrings := aInstance as TStrings;
         while not EndOfList do begin
@@ -287,6 +346,7 @@ begin
         end;
         ReadValue; // End of List
       end;
+      {$ENDIF}
       exit nil;
     end;
 
@@ -318,6 +378,31 @@ begin
     end;
     lType := lType.BaseType;
   end;
+  {$ELSEIF TOFFEE}
+  var lInstanceType := aType;
+  var lProperty: PropertyInfo := nil;
+  var lParent: &Class := nil;
+  var lCurrentClass := aType.TypeClass;
+  while lProperty = nil do begin
+    var lProps := lInstanceType.Properties;
+    for each lProp in lProps do begin
+      if lProp.Name = aName then begin
+        lProperty := lProp;
+        break;
+      end;
+    end;
+    lParent := class_getSuperclass(lCurrentClass);
+    if lCurrentClass ≠ lParent then begin
+      lCurrentClass := lParent;
+      if lParent ≠ nil then
+        lInstanceType := new &RemObjects.Elements.RTL.Reflection.Type withClass(lParent)
+      else
+        break;
+    end
+    else
+      break;
+  end;
+  result := lProperty;
   {$ENDIF}
 end;
 
@@ -325,7 +410,11 @@ method TReader.ReadProperty(aInstance: TPersistent);
 begin
   var lName := ReadStr;
   var lValue := ReadValue;
+  {$IF TOFFEE}
+  var lType := new &Type withClass(typeOf(aInstance));
+  {$ELSE}
   var lType := typeOf(aInstance);
+  {$ENDIF}
   var lProperty: PropertyInfo;
   var lInstance: Object := aInstance;
 
@@ -338,15 +427,25 @@ begin
 
       var lPropValue := lProperty.GetValue(lInstance, []);
       lInstance := lPropValue;
+      {$IF TOFFEE}
+      lType := new &Type withClass(typeOf(lInstance));
+      {$ELSE}
       lType := typeOf(lInstance);
+      {$ENDIF}
     end;
     lName := lProps[lProps.Count - 1];
   end;
 
+  {$IF NOT TOFFEE}
+  // TODO
   if not lType.IsSubclassOf(typeOf(TStrings)) then begin
     lProperty := FindProperty(lType, lName);
     if lProperty = nil then raise new Exception('Can not get property ' + lName);
   end;
+  {$ELSE}
+  lProperty := FindProperty(lType, lName);
+  if lProperty = nil then raise new Exception('Can not get property ' + lName);
+  {$ENDIF}
   var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
 
   if lValue ≠ TValueType.vaList then begin
@@ -357,6 +456,11 @@ begin
     if lCurrentProp = nil then
       raise new Exception('Can not get property ' + lName);
     lCurrentProp.SetValue(lInstance, lPropValue, nil);
+    {$ELSEIF TOFFEE}
+      lProperty := FindProperty(lType, lName);
+      if lProperty = nil then raise new Exception('Can not get property ' + lName);
+      if lPropValue ≠ nil then // TODO
+        lProperty.SetValue(lInstance, nil, lPropValue);
     {$ENDIF}
   end;
 end;
@@ -452,6 +556,9 @@ begin
   var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.' + aClassName).FirstOrDefault;
   {$ELSEIF ECHOESWPF}
   var lType := &Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.' + aClassName);
+  {$ELSEIF TOFFEE}
+  var lType := RemObjects.Elements.RTL.Reflection.Type.GetType('__RemObjects_Elements_RTL_Delphi_VCL_' + aClassName);
+  // TODO
   {$ENDIF}
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');
   result := CreateComponent(lType, aOwner);
@@ -474,7 +581,7 @@ begin
   else
     lCtor := lCtors.FirstOrDefault;
 
-  if lCtor = nil then raise new Exception('No default constructor could be found!');
+  if lCtor = nil then raise new Exception('No default constructor can be found!');
   var lNew := DefaultGC.New(aType.RTTI, aType.SizeOfType);
   result := InternalCalls.Cast<TComponent>(lNew);
   //lCtor.Invoke(result, [aOwner]);
@@ -482,6 +589,34 @@ begin
   lCaller(result, aOwner);
   {$ELSEIF ECHOESWPF}
   result := TComponent(Activator.CreateInstance(aType, [aOwner]));
+  {$ELSEIF MACOS}
+  var lInstanceType := aType;
+  var lCtor: RemObjects.Elements.RTL.Reflection.Method := nil;
+  var lParent: &Class := nil;
+  var lCurrentClass := aType.TypeClass;
+  while lCtor = nil do begin
+    var lMethods := lInstanceType.Methods;
+    for each lMethod in lMethods do begin
+      if lMethod.Name = 'init:' then begin
+        lCtor := lMethod;
+        break;
+      end;
+  end;
+  lParent := class_getSuperclass(lCurrentClass);
+  if lCurrentClass ≠ lParent then begin
+    lCurrentClass := lParent;
+    if lParent ≠ nil then
+      lInstanceType := new &RemObjects.Elements.RTL.Reflection.Type withClass(lParent)
+    else
+      break;
+    end
+    else
+      break;
+  end;
+  if lCtor = nil then raise new Exception('No constructor can be found!');
+
+  var lNew := rtl.objc_msgSend(aType.TypeClass, NSSelectorFromString('alloc'));
+  result := rtl.objc_msgSend(lNew, lCtor.Selector, [aOwner]);
   {$ENDIF}
 end;
 
@@ -855,12 +990,14 @@ end;
 
 method TWriter.WriteInteger(aValue: Integer);
 begin
-  if (aValue >= Byte.MinValue) and (aValue <= Byte.MaxValue) then begin
+  //if (aValue >= Byte.MinValue) and (aValue <= Byte.MaxValue) then begin
+    if (aValue >= 0) and (aValue <= 255) then begin
     fStream.WriteData(Byte(TValueType.vaInt8));
     fStream.WriteData(Byte(aValue));
   end
   else
-    if (aValue >= SmallInt.MinValue) and (aValue <= SmallInt.MaxValue) then begin
+    //if (aValue >= SmallInt.MinValue) and (aValue <= SmallInt.MaxValue) then begin
+    if (aValue >= -32768) and (aValue <= 32767) then begin
       fStream.WriteData(Byte(TValueType.vaInt16));
       fStream.WriteData(SmallInt(aValue));
     end
