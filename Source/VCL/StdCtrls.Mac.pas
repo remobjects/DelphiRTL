@@ -71,6 +71,8 @@ type
   end;
 
   TListBox = public partial class(TMultiSelectListControl)
+  private
+    fController: TTableViewController;
   protected
     method CreateHandle; override;
     method PlatformSelectAll;
@@ -83,6 +85,16 @@ type
     method PlatformDeleteSelected;
     method PlatformSetItemIndex(value: Integer);
     method PlatformGetItemIndex: Integer;
+  end;
+
+  TTableViewController = class(INSTableViewDataSource, INSTableViewDelegate)
+  private
+    fOwnerList: TListBox;
+  public
+    method numberOfRowsInTableView(tableView: not nullable NSTableView): NSInteger;
+    //[Optional] method tableView(tableView: not nullable NSTableView) setObjectValue(object: nullable id) forTableColumn(tableColumn: nullable NSTableColumn) row(row: NSInteger);
+    method tableView(tableView: not nullable NSTableView) objectValueForTableColumn(tableColumn: nullable NSTableColumn) row(row: NSInteger): nullable id;
+    constructor(aOwner: TListBox);
   end;
 
   TComboBoxItems = public partial class(TStringList)
@@ -252,7 +264,7 @@ end;
 
 method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
-
+  (ListControl.Handle as NSTableView).reloadData;
 end;
 
 method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
@@ -271,7 +283,10 @@ end;
 
 method TListBox.CreateHandle;
 begin
-
+  fHandle := new NSTableView();
+  fController := new TTableViewController(self);
+  (fHandle as NSTableView).delegate := fController;
+  (fHandle as  NSTableView).dataSource := fController;
 end;
 
 method TListBox.PlatformSelectAll;
@@ -319,6 +334,25 @@ end;
 method TListBox.PlatformGetItemIndex: Integer;
 begin
 
+end;
+
+constructor TTableViewController(aOwner: TListBox);
+begin
+  fOwnerList := aOwner;
+end;
+
+method TTableViewController.numberOfRowsInTableView(tableView: not nullable NSTableView): NSInteger;
+begin
+  if fOwnerList.Items = nil then
+    exit 0;
+
+  result := fOwnerList.Items.Count;
+end;
+
+method TTableViewController.tableView(tableView: not nullable NSTableView) objectValueForTableColumn(tableColumn: nullable NSTableColumn) row(row: NSInteger): nullable id;
+begin
+  // Just one column
+  result := fOwnerList.Items[row];
 end;
 
 method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);

@@ -526,6 +526,23 @@ begin
     else
       lCurrentProp.SetValue(Root, result, nil);
   end;
+  {$ELSEIF TOFFEE}
+  {var ivarInfos: ^rtl.Ivar;
+  var propCount: UInt32;
+  ivarInfos := class_copyIvarList(typeOf(Root), var propCount);
+
+  for i: Int32 := 0 to propCount-1 do begin
+    var lVar: rtl.Ivar;
+    lVar := ivarInfos[i];
+    writeLn(rtl.ivar_getName(lVar));
+  end;}
+
+  var lVar := rtl.class_getInstanceVariable(typeOf(Root), NSString(lName).UTF8String);
+  if lVar = nil then
+    writeLn('no ivar')
+  else
+    writeLn('yes ivar!');
+  rtl.object_setIvar(Root, lVar, result);
   {$ENDIF}
   result.Loaded;
 end;

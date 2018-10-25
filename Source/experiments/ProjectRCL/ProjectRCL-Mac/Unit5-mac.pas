@@ -12,15 +12,16 @@ type
   { Private declarations }
   public
   { Public declarations }
-    button1: TButton;
+    Button1: TButton;
     button2: TButton;
     edit1: TEdit;
     label1: TLabel;
-    {
+
     radioButton1: TRadioButton;
     checkBox1: TCheckBox;
-    listBox1: TListBox;
-    comboBox1: TComboBox;
+    ListBox1: TListBox;
+    ComboBox1: TComboBox;
+    {
     groupBox1: TGroupBox;
     panel1: TPanel;
 
@@ -52,6 +53,7 @@ implementation
 procedure TForm6.Button1Click(Sender: TObject);
 begin
   ShowMessage('Clicked!');
+  ListBox1.Items.Add('Item 1');
   {
   //label1.Width := 200;
   //label1.Caption := 'All right!';
