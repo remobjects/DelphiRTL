@@ -323,21 +323,22 @@ end;
 
 method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
-
+  (ListControl.Handle as NSComboBox).addItemWithObjectValue(S);
 end;
 
 method TComboBoxItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
+  (ListControl.Handle as NSComboBox).insertItemWithObjectValue(S) atIndex(aIndex);
 end;
 
 method TComboBoxItems.PlatformClear;
 begin
-
+  (ListControl.Handle as NSComboBox).removeAllItems;
 end;
 
 method TComboBoxItems.PlatformDelete(aIndex: Integer);
 begin
-
+  (ListControl.Handle as NSComboBox).removeItemAtIndex(aIndex);
 end;
 
 method TComboBox.CreateHandle;
@@ -347,12 +348,12 @@ end;
 
 method TComboBox.PlatformGetText: String;
 begin
-
+  result := (fHandle as NSComboBox).stringValue;
 end;
 
 method TComboBox.PlatformSetText(aValue: String);
 begin
-
+  (fHandle as NSComboBox).stringValue := aValue;
 end;
 
 method TComboBox.PlatformSetOnSelect(aValue: TNotifyEvent);
@@ -365,26 +366,29 @@ end;
 
 method TComboBox.PlatformSelectAll;
 begin
-
+  // Nothing to do...
 end;
 
 method TComboBox.PlatformClearSelection;
 begin
-
+  (fHandle as NSComboBox).selectItemAtIndex(-1);
 end;
 
 method TComboBox.PlatformDeleteSelected;
 begin
+  var lIndex := (fHandle as NSComboBox).indexOfSelectedItem;
+  if lIndex ≥ 0 then
+    (fHandle as NSComboBox).removeItemAtIndex(lIndex);
 end;
 
 method TComboBox.PlatformSetItemIndex(value: Integer);
 begin
-
+  (fHandle as NSComboBox).selectItemAtIndex(value);
 end;
 
 method TComboBox.PlatformGetItemIndex: Integer;
 begin
-
+  result := (fHandle as NSComboBox).indexOfSelectedItem;
 end;
 
 {$ENDIF}

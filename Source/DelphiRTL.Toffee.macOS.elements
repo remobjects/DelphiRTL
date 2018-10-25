@@ -41,9 +41,11 @@
   <ItemGroup>
     <Reference Include="CoreGraphics" />
     <Reference Include="Foundation" />
-    <Reference Include="libElements" />
     <Reference Include="rtl" />
     <Reference Include="libToffee" />
+    <Reference Include="libElements">
+      <HintPath>..\..\RTL2\Source\bin\Debug\macOS\libElements.fx</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

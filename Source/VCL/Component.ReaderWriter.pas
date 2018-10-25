@@ -336,9 +336,13 @@ begin
     end;
 
     TValueType.vaList: begin
-      {$IF NOT TOFFEE}
-      // TODO
-      if typeOf(aInstance).IsSubclassOf(typeOf(TStrings)) then begin
+      var lIsTStrings: Boolean;
+      {$IF TOFFEE}
+      lIsTStrings := new &Type withClass(typeOf(aInstance)).IsSubclassOf(new &Type withClass(typeOf(TStrings)));
+      {$ELSE}
+      lIsTStrings := typeOf(aInstance).IsSubclassOf(typeOf(TStrings));
+      {$ENDIF}
+      if lIsTStrings then begin
         var lStrings := aInstance as TStrings;
         while not EndOfList do begin
           ReadValue;
@@ -346,7 +350,6 @@ begin
         end;
         ReadValue; // End of List
       end;
-      {$ENDIF}
       exit nil;
     end;
 
@@ -436,16 +439,17 @@ begin
     lName := lProps[lProps.Count - 1];
   end;
 
-  {$IF NOT TOFFEE}
-  // TODO
-  if not lType.IsSubclassOf(typeOf(TStrings)) then begin
+  var lIsTStrings: Boolean;
+  {$IF TOFFEE}
+  lIsTStrings := lType.IsSubclassOf(new &Type withClass(typeOf(TStrings)));
+  {$ELSE}
+  lIsTStrings := lType.IsSubclassOf(typeOf(TStrings));
+  {$ENDIF}
+
+  if not lIsTStrings then begin
     lProperty := FindProperty(lType, lName);
     if lProperty = nil then raise new Exception('Can not get property ' + lName);
   end;
-  {$ELSE}
-  lProperty := FindProperty(lType, lName);
-  if lProperty = nil then raise new Exception('Can not get property ' + lName);
-  {$ENDIF}
   var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
 
   if lValue ≠ TValueType.vaList then begin
