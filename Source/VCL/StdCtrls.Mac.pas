@@ -73,6 +73,8 @@ type
   TListBox = public partial class(TMultiSelectListControl)
   private
     fController: TTableViewController;
+    fScrollView: NSScrollView;
+    fTable: NSTableView;
   protected
     method CreateHandle; override;
     method PlatformSelectAll;
@@ -264,76 +266,96 @@ end;
 
 method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
-  (ListControl.Handle as NSTableView).reloadData;
+  (ListControl.UnderlyingHandle as NSTableView).reloadData;
 end;
 
 method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
+  (ListControl.UnderlyingHandle as NSTableView).reloadData;
 end;
 
 method TListControlItems.PlatformClear;
 begin
-
+  (ListControl.UnderlyingHandle as NSTableView).reloadData;
 end;
 
 method TListControlItems.PlatformDelete(aIndex: Integer);
 begin
-
+  (ListControl.UnderlyingHandle as NSTableView).reloadData;
 end;
 
 method TListBox.CreateHandle;
 begin
-  fHandle := new NSTableView();
+  fTable := new NSTableView();
+  UnderlyingHandle := fTable;
+  fHandle := new NSScrollView;
+  var lColumn := new NSTableColumn withIdentifier(Name + 'C1');
+  fTable.addTableColumn(lColumn);
   fController := new TTableViewController(self);
-  (fHandle as NSTableView).delegate := fController;
-  (fHandle as  NSTableView).dataSource := fController;
+  fTable.delegate := fController;
+  fTable.dataSource := fController;
+  fTable.setHeaderView(nil);
+
+  (fHandle as NSScrollView).documentView := fTable;
 end;
 
 method TListBox.PlatformSelectAll;
 begin
-
+  fTable.selectAll(fTable);
 end;
 
 method TListBox.PlatformGetSelected(aIndex: Integer): Boolean;
 begin
+  result := fTable.isRowSelected(aIndex);
 end;
 
 method TListBox.PlatformSetSelected(aIndex: Integer; value: Boolean);
 begin
+  if value then begin
+    var lIndex := NSIndexSet.indexSetWithIndex(aIndex);
+    fTable.selectRowIndexes(lIndex) byExtendingSelection(rtl.YES);
+  end
+  else
+    fTable.deselectRow(aIndex);
 end;
 
 method TListBox.PlatformGetSelCount: Integer;
 begin
-
+  result := fTable.numberOfSelectedRows;
 end;
 
 method TListBox.PlatformGetMultiSelect: Boolean;
 begin
-
+  result := fTable.allowsMultipleSelection;
 end;
 
 method TListBox.PlatformSetMultiSelect(value: Boolean);
 begin
+  fTable.allowsMultipleSelection := value;
 end;
 
 method TListBox.PlatformClearSelection;
 begin
-
+  fTable.deselectAll(fTable);
 end;
 
 method TListBox.PlatformDeleteSelected;
 begin
-
+  if ItemIndex ≥ 0 then begin
+    Items.Delete(ItemIndex);
+    fTable.reloadData;
+  end;
 end;
 
 method TListBox.PlatformSetItemIndex(value: Integer);
 begin
-
+  var lIndex := NSIndexSet.indexSetWithIndex(value);
+  fTable.selectRowIndexes(lIndex) byExtendingSelection(rtl.NO);
 end;
 
 method TListBox.PlatformGetItemIndex: Integer;
 begin
-
+  result := fTable.selectedRow;
 end;
 
 constructor TTableViewController(aOwner: TListBox);
@@ -352,7 +374,7 @@ end;
 method TTableViewController.tableView(tableView: not nullable NSTableView) objectValueForTableColumn(tableColumn: nullable NSTableColumn) row(row: NSInteger): nullable id;
 begin
   // Just one column
-  result := fOwnerList.Items[row];
+  result := NSString(fOwnerList.Items[row]);
 end;
 
 method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
