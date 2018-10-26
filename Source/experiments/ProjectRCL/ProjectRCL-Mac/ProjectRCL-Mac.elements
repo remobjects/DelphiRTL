@@ -50,7 +50,7 @@
     <Compile Include="Program.pas" />
     <AppResource Include="Entitlements.entitlements" />
     <Compile Include="Unit5-mac.pas" />
-    <EmbeddedResource Include="..\withListbox.dfm" />
+    <EmbeddedResource Include="..\withListboxAndCombo.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
 </Project>

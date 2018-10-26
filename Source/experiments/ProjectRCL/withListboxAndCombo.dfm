@@ -30,4 +30,12 @@ object Form6: TForm6
     TabOrder = 1
     OnClick = Button1Click
   end
+  object ComboBox1: TComboBox
+    Left = 104
+    Top = 176
+    Width = 145
+    Height = 21
+    TabOrder = 2
+    Text = 'ComboBox1'
+  end
 end

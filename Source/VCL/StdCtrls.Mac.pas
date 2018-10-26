@@ -73,7 +73,6 @@ type
   TListBox = public partial class(TMultiSelectListControl)
   private
     fController: TTableViewController;
-    fScrollView: NSScrollView;
     fTable: NSTableView;
   protected
     method CreateHandle; override;
@@ -107,6 +106,8 @@ type
   end;
 
   TComboBox = public partial class(TListControl)
+  private
+    fDelegate: TComboBoxDelegate;
   protected
     method CreateHandle; override;
     method PlatformGetText: String;
@@ -118,6 +119,14 @@ type
     method PlatformDeleteSelected;
     method PlatformSetItemIndex(value: Integer);
     method PlatformGetItemIndex: Integer;
+  end;
+
+  TComboBoxDelegate = class(INSComboBoxDelegate)
+  private
+    fOwnerCombo: TComboBox;
+  public
+    method comboBoxSelectionDidChange(notification: not nullable NSNotification);
+    constructor(aOwner: TComboBox);
   end;
 
   procedure PlatformShowMessage(aMessage: String);
@@ -379,12 +388,12 @@ end;
 
 method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
-  (ListControl.Handle as NSComboBox).addItemWithObjectValue(S);
+  (ListControl.Handle as NSComboBox).addItemWithObjectValue(NSString(S));
 end;
 
 method TComboBoxItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
-  (ListControl.Handle as NSComboBox).insertItemWithObjectValue(S) atIndex(aIndex);
+  (ListControl.Handle as NSComboBox).insertItemWithObjectValue(NSString(S)) atIndex(aIndex);
 end;
 
 method TComboBoxItems.PlatformClear;
@@ -400,6 +409,7 @@ end;
 method TComboBox.CreateHandle;
 begin
   fHandle := new NSComboBox();
+  fDelegate := new TComboBoxDelegate(self);
 end;
 
 method TComboBox.PlatformGetText: String;
@@ -414,10 +424,12 @@ end;
 
 method TComboBox.PlatformSetOnSelect(aValue: TNotifyEvent);
 begin
+  // Done in delegate
 end;
 
 method TComboBox.PlatformSetOnChange(aValue: TNotifyEvent);
 begin
+  // Not supported on mac
 end;
 
 method TComboBox.PlatformSelectAll;
@@ -447,6 +459,16 @@ begin
   result := (fHandle as NSComboBox).indexOfSelectedItem;
 end;
 
+method TComboBoxDelegate.comboBoxSelectionDidChange(notification: not nullable NSNotification);
+begin
+  if fOwnerCombo.OnChange ≠ nil then
+    fOwnerCombo.OnChange(fOwnerCombo);
+end;
+
+constructor TComboBoxDelegate(aOwner: TComboBox);
+begin
+  fOwnerCombo := aOwner;
+end;
 {$ENDIF}
 
 end.
