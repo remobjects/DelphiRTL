@@ -51,7 +51,6 @@ begin
   end;}
 
   //writeLn(lList.Count);
-
   writeLn('yes? 1');
   Application := new TApplication(nil);
   writeLn('yes? 2');

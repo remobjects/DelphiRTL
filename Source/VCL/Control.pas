@@ -121,6 +121,11 @@ type
     method Click; virtual;
 
   public
+    // Used in composite control in some platforms,
+    // ie ListBox in mac is a NSTableView inside a NSScrollView.
+    // For size, adding into a parent, we need the NSSCrollView handle (fHandle).
+    // but for "table" operations like adding items or realoading, need the table handle.
+    UnderlyingHandle: TPlatformHandle;
     method InsertControl(aControl: TControl);
     method Show; virtual; partial; empty;
 

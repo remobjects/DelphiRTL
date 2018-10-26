@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <RootNamespace>ProjectRCLMac</RootNamespace>
@@ -39,16 +39,18 @@
     <Reference Include="Foundation" />
     <Reference Include="rtl" />
     <Reference Include="libToffee" />
-    <Reference Include="libElements" />
     <Reference Include="libDelphi">
       <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\macOS\libDelphi.fx</HintPath>
+    </Reference>
+    <Reference Include="libElements">
+      <HintPath>C:\dev\ro\RTL2\Source\bin\Debug\macOS\libElements.fx</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />
     <AppResource Include="Entitlements.entitlements" />
     <Compile Include="Unit5-mac.pas" />
-    <EmbeddedResource Include="OneButtonAndLabel.dfm" />
+    <EmbeddedResource Include="..\withListboxAndCombo.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
 </Project>
