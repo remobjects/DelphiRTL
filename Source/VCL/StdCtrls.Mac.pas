@@ -410,6 +410,7 @@ method TComboBox.CreateHandle;
 begin
   fHandle := new NSComboBox();
   fDelegate := new TComboBoxDelegate(self);
+  (fHandle as NSComboBox).delegate := fDelegate;
 end;
 
 method TComboBox.PlatformGetText: String;
