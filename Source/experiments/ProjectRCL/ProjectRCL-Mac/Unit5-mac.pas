@@ -19,8 +19,8 @@ type
 
     radioButton1: TRadioButton;
     checkBox1: TCheckBox;
-    ListBox1: TListBox;
-    ComboBox1: TComboBox;
+    listBox1: TListBox;
+    comboBox1: TComboBox;
     {
     groupBox1: TGroupBox;
     panel1: TPanel;
@@ -53,7 +53,7 @@ implementation
 procedure TForm6.Button1Click(Sender: TObject);
 begin
   ShowMessage('Clicked!');
-  ListBox1.Items.Add('Item 1');
+  listBox1.Items.Add('Item 1');
   {
   //label1.Width := 200;
   //label1.Caption := 'All right!';

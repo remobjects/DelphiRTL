@@ -527,22 +527,24 @@ begin
       lCurrentProp.SetValue(Root, result, nil);
   end;
   {$ELSEIF TOFFEE}
-  {var ivarInfos: ^rtl.Ivar;
-  var propCount: UInt32;
-  ivarInfos := class_copyIvarList(typeOf(Root), var propCount);
+  var lIvarInfos: ^rtl.Ivar;
+  var lIvarCount: UInt32;
+  lIvarInfos := class_copyIvarList(typeOf(Root), var lIvarCount);
 
-  for i: Int32 := 0 to propCount-1 do begin
+  var lNameIvar: rtl.Ivar := nil;
+  for i: Int32 := 0 to lIvarCount - 1 do begin
     var lVar: rtl.Ivar;
-    lVar := ivarInfos[i];
-    writeLn(rtl.ivar_getName(lVar));
-  end;}
+    lVar := lIvarInfos[i];
+    if NSString(lName).caseInsensitiveCompare(rtl.ivar_getName(lVar)) = NSComparisonResult.NSOrderedSame then begin
+      lNameIvar := lVar;
+      break;
+    end;
+  end;
 
-  var lVar := rtl.class_getInstanceVariable(typeOf(Root), NSString(lName).UTF8String);
-  if lVar = nil then
-    writeLn('no ivar')
+  if lNameIvar ≠ nil then
+    rtl.object_setIvar(Root, lNameIvar, result)
   else
-    writeLn('yes ivar!');
-  rtl.object_setIvar(Root, lVar, result);
+    raise new Exception('Can not get ' + lName + ' field on ' + Root.Name);
   {$ENDIF}
   result.Loaded;
 end;
