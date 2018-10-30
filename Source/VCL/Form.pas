@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
 
 interface
 
@@ -23,6 +23,15 @@ type
   TForm = public partial class(TCustomForm)
   public
     constructor(aOwner: TComponent);
+  end;
+
+  TScreen = public partial class(TComponent)
+  protected
+    method PlatformGetScreenHeight: Integer; virtual; partial; empty;
+    method PlatformGetScreenWidth: Integer; virtual; partial; empty;
+  public
+    property Height: Integer read PlatformGetScreenHeight;
+    property Width: Integer read PlatformGetScreenWidth;
   end;
 
 implementation

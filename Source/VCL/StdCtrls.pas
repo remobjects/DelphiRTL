@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
 
 interface
 
@@ -47,11 +47,13 @@ type
     fAllowGrayed: Boolean;
   protected
     method PlatformSetState(aValue: TCheckBoxState); partial; empty;
+    method PlatformSetAllowGrayed(aValue: Boolean); partial; empty;
     method SetState(aValue: TCheckBoxState); virtual;
+    method SetAllowGrayed(aValue: Boolean); virtual;
   public
     method Toggle; virtual;
     method Click; override;
-    property AllowGrayed: Boolean read fAllowGrayed write fAllowGrayed default false;
+    property AllowGrayed: Boolean read fAllowGrayed write SetAllowGrayed default false;
     property State: TCheckBoxState read fState write SetState default TCheckBoxState.cbUnchecked;
   end;
 
@@ -233,6 +235,12 @@ method TCheckBox.SetState(aValue: TCheckBoxState);
 begin
   fState := aValue;
   PlatformSetState(aValue);
+end;
+
+method TCheckBox.SetAllowGrayed(aValue: Boolean);
+begin
+  fAllowGrayed := aValue;
+  PlatformSetAllowGrayed(aValue);
 end;
 
 method TCheckBox.Toggle;

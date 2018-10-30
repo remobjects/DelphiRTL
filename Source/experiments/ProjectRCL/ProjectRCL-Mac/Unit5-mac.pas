@@ -1,4 +1,4 @@
-﻿namespace ProjectRCLWPF;
+﻿namespace ProjectRCLMac;
 
 interface
 
@@ -16,12 +16,14 @@ type
     button2: TButton;
     edit1: TEdit;
     label1: TLabel;
+
     radioButton1: TRadioButton;
-    CheckBox1: TCheckBox;
+    checkBox1: TCheckBox;
     listBox1: TListBox;
     comboBox1: TComboBox;
+    {
     groupBox1: TGroupBox;
-    Panel1: TPanel;
+    panel1: TPanel;
 
     panel2: TPanel;
     label2: TLabel;
@@ -33,12 +35,14 @@ type
     checkBox3: TCheckBox;
     checkBox4: TCheckBox;
     edit2: TEdit;
-    edit3: TEdit;
+    edit3: TEdit;}
+
+
 
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ComboBox1Select(Sender: TObject);
-    procedure Edit1KeyPress(Sender: TObject; var key: Char);
+    procedure Edit1OnKeyPress(Sender: TObject; var key: Char);
   end;
 
   var
@@ -48,30 +52,35 @@ implementation
 
 procedure TForm6.Button1Click(Sender: TObject);
 begin
-  //ShowMessage('WPF!!');
+  ShowMessage('Clicked!');
+  listBox1.Items.Add('Item 1');
+  comboBox1.Items.Add('Item 1');
+  {
   //label1.Width := 200;
   //label1.Caption := 'All right!';
   //ShowMessage('Clicked!');
   //ShowMessage(edit1.Text);
-
   listBox1.Items.Add(edit1.Text);
   comboBox1.Items.Add(edit1.Text);
-  edit1.OnKeyPress := @Edit1KeyPress;
+  edit1.OnKeyPress := @Edit1OnKeyPress;
+  }
 end;
 
 procedure TForm6.Button2Click(Sender: TObject);
 begin
+  {
   edit1.Text := 'Blah!';
+  }
 end;
 
 procedure TForm6.ComboBox1Select(Sender: TObject);
 begin
-  ShowMessage('Yes!');
+  //ShowMessage('Yes!');
 end;
 
-procedure TForm6.Edit1KeyPress(Sender: TObject; var key: Char);
+procedure TForm6.Edit1OnKeyPress(Sender: TObject; var key: Char);
 begin
-  ShowMessage(key);
+  //ShowMessage(key);
 end;
 
 end.

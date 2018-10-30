@@ -88,7 +88,7 @@ type
     method LoadFromStream(aStream: TStream; aEncoding: TEncoding); virtual;
     method Move(aCurIndex, aNewIndex: Integer); virtual;
     method SaveToStream(aStream: TStream);  virtual;
-    method SaveToStream(aStream: TStream; aEncoding: TEncoding); virtual; 
+    method SaveToStream(aStream: TStream; aEncoding: TEncoding); virtual;
     method ToStringArray: array of DelphiString;
     method ToObjectArray: array of TObject;
     property Updating: Boolean read GetUpdating;
@@ -1014,7 +1014,7 @@ begin
           inc(i);
       end;
     end;
-  end;  
+  end;
 end;
 
 end.

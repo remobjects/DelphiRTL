@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
 
 interface
 
@@ -101,7 +101,7 @@ type
     method PlatformGetCaption: String; partial; empty;
     method PlatformSetCaption(aValue: String); virtual; partial; empty;
     method PlatformSetWidth(aValue: Integer); virtual; partial; empty;
-    method PlatformSetHeight(aValue: Integer); partial; empty;
+    method PlatformSetHeight(aValue: Integer); virtual; partial; empty;
     method PlatformSetTop(aValue: Integer); virtual; partial; empty;
     method PlatformSetLeft(aValue: Integer); virtual; partial; empty;
     method PlatformSetParent(aValue: TControl); virtual; partial; empty;
@@ -121,6 +121,11 @@ type
     method Click; virtual;
 
   public
+    // Used in composite control in some platforms,
+    // ie ListBox in mac is a NSTableView inside a NSScrollView.
+    // For size, adding into a parent, we need the NSSCrollView handle (fHandle).
+    // but for "table" operations like adding items or realoading, need the table handle.
+    UnderlyingHandle: TPlatformHandle;
     method InsertControl(aControl: TControl);
     method Show; virtual; partial; empty;
 
@@ -195,7 +200,7 @@ begin
   Name := PlatformGetDefaultName;
   fFont := new TFont();
   fFont.PropertyChanged := @Changed;
-  {$IF WEBASSEMBLY OR ECHOESWPF}
+  {$IF WEBASSEMBLY OR ECHOESWPF OR MACOS}
   CreateHandle;
   {$ENDIF}
   PlatformApplyDefaults;
