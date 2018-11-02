@@ -203,6 +203,7 @@ end;
 constructor TCollection(aItemClass: TCollectionItemClass);
 begin
   fItems := new TList<TCollectionItem>();
+  fItemClass := aItemClass;
 end;
 
 method TCollection.Owner: TPersistent;
@@ -278,7 +279,7 @@ end;
 
 constructor TCollectionItem(aCollection: TCollection);
 begin
-
+  fCollection := aCollection;
 end;
 
 end.

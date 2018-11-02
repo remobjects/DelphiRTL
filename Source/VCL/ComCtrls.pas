@@ -55,8 +55,8 @@ type
   TListColumns = public class(TCollection)
   private
     fOwner: TListView;
-    method GetItem(aIndex: Integer): TListColumn;
-    method SetItem(aIndex: Integer; Value: TListColumn);
+    method GetColumnItem(aIndex: Integer): TListColumn;
+    method SetColumnItem(aIndex: Integer; Value: TListColumn);
     method UpdateCols;
   protected
     method GetListColumnClass: TListColumnClass; virtual;
@@ -66,7 +66,7 @@ type
     constructor(aOwner: TListView);
     method &Add: TListColumn;
     method Owner: TListView;
-    property Items[aIndex: Integer]: TListColumn read GetItem write SetItem; default;
+    property Items[aIndex: Integer]: TListColumn read GetColumnItem write SetColumnItem; default;
   end;
 
   TListItem = public class(TPersistent)
@@ -204,7 +204,7 @@ type
     method ColumnsShowing: Boolean;
     method CreateListItem: TListItem; virtual;
     method CreateListItems: TListItems; virtual;
-    method CreateParams(var Params: TCreateParams); override;
+    method CreateParams(var aParams: TCreateParams); override;
     method CreateWnd; override;
     method Delete(Item: TListItem); virtual;
     method DoSelectItem(Item: TListItem; Selected: Boolean); virtual;
@@ -345,12 +345,12 @@ begin
 
 end;
 
-method TListColumns.GetItem(aIndex: Integer): TListColumn;
+method TListColumns.GetColumnItem(aIndex: Integer): TListColumn;
 begin
-
+  result := inherited GetItem(aIndex) as TListColumn;
 end;
 
-method TListColumns.SetItem(aIndex: Integer; Value: TListColumn);
+method TListColumns.SetColumnItem(aIndex: Integer; Value: TListColumn);
 begin
 
 end;
@@ -367,7 +367,7 @@ end;
 
 method TListColumns.GetOwner: TPersistent;
 begin
-
+  result := fOwner;
 end;
 
 method TListColumns.Update(aItem: TCollectionItem);
@@ -377,17 +377,18 @@ end;
 
 constructor TListColumns(aOwner: TListView);
 begin
-  inherited(typeOf(fOwner)); // TODO
+  inherited(typeOf(TListColumn));
+  fOwner := aOwner;
 end;
 
 method TListColumns.Add: TListColumn;
 begin
-
+  result := inherited &Add as TListColumn;
 end;
 
 method TListColumns.Owner: TListView;
 begin
-
+  result := GetOwner as TListView;
 end;
 
 method TListItems.CreateItem(aIndex: Integer; aListItem: TListItem): TPlatformListViewitem;
@@ -407,7 +408,7 @@ end;
 
 method TListItems.GetItem(aIndex: Integer): TListItem;
 begin
-
+  //result := f
 end;
 
 method TListItems.SetCount(aValue: Integer);
@@ -427,7 +428,8 @@ end;
 
 constructor TListItems(aOwner: TListView);
 begin
-
+  //inherited(typeOf(TListItem));
+  fOwner := aOwner;
 end;
 
 method TListItems.Add: TListItem;
@@ -495,7 +497,7 @@ begin
 
 end;
 
-method TListView.CreateParams(var &Params: TCreateParams);
+method TListView.CreateParams(var aParams: TCreateParams);
 begin
 
 end;
@@ -743,7 +745,7 @@ end;
 
 constructor TListItem(aOwner: TListItems);
 begin
-
+  fOwner := aOwner;
 end;
 
 method TListItem.CancelEdit;
