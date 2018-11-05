@@ -42,5 +42,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.Mac.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.Mac.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.Windows.pas" />
   </ItemGroup>
 </Project>

@@ -62,6 +62,8 @@ type
     method GetListColumnClass: TListColumnClass; virtual;
     method GetOwner: TPersistent; override;
     method Update(aItem: TCollectionItem); override;
+
+    method PlatformAdd: TListColumn; partial; virtual; empty;
   public
     constructor(aOwner: TListView);
     method &Add: TListColumn;
@@ -69,7 +71,7 @@ type
     property Items[aIndex: Integer]: TListColumn read GetColumnItem write SetColumnItem; default;
   end;
 
-  TListItem = public class(TPersistent)
+  TListItem = public partial class(TPersistent)
   private
     fCaption: String;
     fOwner: TListItems;
@@ -143,18 +145,22 @@ type
   TPlatformListViewItem = public class
   end;
 
-  TListItems = public class(TPersistent)
+  TListItems = public partial class(TPersistent)
   private
     fOwner: TListView;
+    fItems: TList<TListItem>;
   protected
     //method DefineProperties(Filer: TFiler); override;
     method CreateItem(aIndex: Integer; aListItem: TListItem): TPlatformListViewItem;
-    method GetCount: Integer;
     method GetHandle: TPlatformHandle;
     method GetItem(aIndex: Integer): TListItem;
     method SetCount(aValue: Integer);
     method SetItem(aIndex: Integer; Value: TListItem);
     method SetUpdateState(updating: Boolean);
+
+    method PlatformAdd; partial; virtual; empty;
+    method PlatformClear; partial; virtual; empty;
+    method PlatformDelete(aIndex: Integer); partial; virtual; empty;
   public
     constructor(aOwner: TListView);
     method &Add: TListItem;
@@ -167,13 +173,13 @@ type
     //method GetEnumerator: TListItemsEnumerator;
     method IndexOf(aValue: TListItem): Integer;
     method Insert(aIndex: Integer): TListItem;
-    property Count: Integer read GetCount write SetCount;
+    property Count: Integer read fItems.Count write SetCount;
     property Handle: TPlatformHandle read GetHandle;
     property Item[aIndex: Integer]: TListItem read GetItem write SetItem; default;
     property Owner: TListView read FOwner;
   end;
 
-  TListView = public class(TMultiSelectListControl)
+  TListView = public partial class(TMultiSelectListControl)
   private
     //fBorderStyle: TBorderStyle;
     fListColumns: TListColumns;
@@ -204,10 +210,8 @@ type
     method ColumnsShowing: Boolean;
     method CreateListItem: TListItem; virtual;
     method CreateListItems: TListItems; virtual;
-    method CreateParams(var aParams: TCreateParams); override;
-    method CreateWnd; override;
     method Delete(Item: TListItem); virtual;
-    method DoSelectItem(Item: TListItem; Selected: Boolean); virtual;
+    method DoSelectItem(aItem: TListItem; aSelected: Boolean); virtual;
     //method Edit(aItem: TLVItem); virtual;
     //method MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     method GetItemIndex(Value: TListItem): Integer; reintroduce; overload;
@@ -258,7 +262,7 @@ type
     property ViewStyle: TViewStyle read fViewStyle write SetViewStyle default vsIcon;
   public
     constructor(aOwner: TComponent);
-    //method AddItem(Item: String; AObject: TObject); override;
+    method AddItem(aItem: DelphiString; aObject: TObject); override;
     //method Arrange(Code: TListArrangement);
     method Clear; override;
     method ClearSelection; override;
@@ -384,6 +388,7 @@ end;
 method TListColumns.Add: TListColumn;
 begin
   result := inherited &Add as TListColumn;
+  PlatformAdd;
 end;
 
 method TListColumns.Owner: TListView;
@@ -396,11 +401,6 @@ begin
 
 end;
 
-method TListItems.GetCount: Integer;
-begin
-
-end;
-
 method TListItems.GetHandle: TPlatformHandle;
 begin
 
@@ -408,7 +408,7 @@ end;
 
 method TListItems.GetItem(aIndex: Integer): TListItem;
 begin
-  //result := f
+  result := fItems[aIndex];
 end;
 
 method TListItems.SetCount(aValue: Integer);
@@ -428,13 +428,15 @@ end;
 
 constructor TListItems(aOwner: TListView);
 begin
-  //inherited(typeOf(TListItem));
+  fItems := new TList<TListItem>();
   fOwner := aOwner;
 end;
 
 method TListItems.Add: TListItem;
 begin
-
+  result := new TListItem(self);
+  fItems.Add(result);
+  PlatformAdd;
 end;
 
 /*method TListItems.AddItem(aItem: TListItem; aIndex: Integer := -1): TListItem;
@@ -449,12 +451,14 @@ end;
 
 method TListItems.Clear;
 begin
-
+  fItems.Clear;
+  PlatformClear;
 end;
 
 method TListItems.Delete(aIndex: Integer);
 begin
-
+  fItems.Delete(aIndex);
+  PlatformDelete(aIndex);
 end;
 
 method TListItems.EndUpdate;
@@ -497,22 +501,12 @@ begin
 
 end;
 
-method TListView.CreateParams(var aParams: TCreateParams);
-begin
-
-end;
-
-method TListView.CreateWnd;
-begin
-
-end;
-
 method TListView.Delete(Item: TListItem);
 begin
 
 end;
 
-method TListView.DoSelectItem(Item: TListItem; Selected: Boolean);
+method TListView.DoSelectItem(aItem: TListItem; aSelected: Boolean);
 begin
 
 end;
@@ -574,13 +568,14 @@ end;
 
 constructor TListView(aOwner: TComponent);
 begin
-
+  fListColumns := new TListColumns(self);
+  fListItems := new TListItems(self);
 end;
 
-/*method TListView.AddItem(Item: String; AObject: TObject);
+method TListView.AddItem(aItem: DelphiString; aObject: TObject);
 begin
 
-end;*/
+end;
 
 method TListView.Clear;
 begin

@@ -353,6 +353,11 @@ begin
       exit nil;
     end;
 
+    TValueType.vaCollection: begin
+      // TODO, now just empty collections
+      ReadValue;
+    end;
+
     TValueType.vaFalse:
       exit false;
 
@@ -711,7 +716,13 @@ begin
               fParser.NextToken;
           end;
           fWriter.WriteListEnd;
-        end;
+        end
+        else
+          if fParser.TokenValue = '[' then begin
+            fWriter.WriteValue(TValueType.vaCollection);
+            fParser.NextToken;
+            fWriter.WriteListEnd;
+          end;
     end;
   end;
 end;
@@ -895,7 +906,7 @@ begin
       fToken := TParserToken.toString;
     end;
 
-    ':', '#', '=', '[', ']', '(', ')': begin
+    ':', '#', '=', '[', ']', '(', ')', '<', '>': begin
       fTokenValue := lChar;
       NextChar;
       fToken := TParserToken.toOtCharacter;
