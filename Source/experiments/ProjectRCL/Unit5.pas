@@ -35,6 +35,8 @@ type
     edit2: TEdit;
     edit3: TEdit;
 
+    listView1: TListView;
+
 
 
     procedure Button1Click(Sender: TObject);

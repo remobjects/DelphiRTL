@@ -356,6 +356,7 @@ begin
     TValueType.vaCollection: begin
       // TODO, now just empty collections
       ReadValue;
+      exit nil;
     end;
 
     TValueType.vaFalse:
@@ -457,7 +458,7 @@ begin
   end;
   var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
 
-  if lValue ≠ TValueType.vaList then begin
+  if (lValue ≠ TValueType.vaList) and (lValue ≠ TValueType.vaCollection) then begin
     {$IF ISLAND}
     DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
     {$ELSEIF ECHOESWPF}
@@ -718,7 +719,7 @@ begin
           fWriter.WriteListEnd;
         end
         else
-          if fParser.TokenValue = '[' then begin
+          if fParser.TokenValue = '<' then begin
             fWriter.WriteValue(TValueType.vaCollection);
             fParser.NextToken;
             fWriter.WriteListEnd;

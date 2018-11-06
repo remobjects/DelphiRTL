@@ -37,10 +37,17 @@ begin
   HandleNeeded;
   var lName := typeOf(self).Name;
   lName := lName.Substring(lName.LastIndexOf('.') + 1).ToUpper;
-  var lStream := new TResourceStream(0, lName, nil);
-  lStream.Position := 0;
-  var lReader := new TReader(lStream, 100);
-  lReader.ReadRootComponent(self);
+  if lName.ToUpper <> 'TFORM' then begin
+    var lStream := new TResourceStream(0, lName, nil);
+    lStream.Position := 0;
+    var lReader := new TReader(lStream, 100);
+    lReader.ReadRootComponent(self);
+  end
+  else begin
+    var lDC := rtl.GetDC(rtl.HWND(0));
+    PixelsPerInch := rtl.GetDeviceCaps(lDC, rtl.LOGPIXELSY);
+    rtl.ReleaseDC(rtl.HWND(0), lDC);
+  end;
 end;
 
 method TCustomForm.CreateWnd;

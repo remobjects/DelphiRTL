@@ -271,6 +271,7 @@ method TControl.PlatformSetParent(aValue: TControl);
 begin
   if aValue ≠ nil then begin
     HandleNeeded; // TODO
+    rtl.SetParent(fHandle, aValue.Handle);
     if ParentFont then begin
       Font.FontHandle := aValue.Font.FontHandle;
       PlatformFontChanged;
