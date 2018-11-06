@@ -100,7 +100,7 @@
     </None>
     <Compile Include="Program.pas" />
     <Compile Include="Unit5.pas" />
-    <EmbeddedResource Include="..\TestFormWithTabStop.dfm" />
+    <EmbeddedResource Include="..\withListView.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Echoes.targets" />
 </Project>

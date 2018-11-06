@@ -21,6 +21,8 @@ type
     checkBox1: TCheckBox;
     listBox1: TListBox;
     comboBox1: TComboBox;
+
+    listView1: TListView;
     {
     groupBox1: TGroupBox;
     panel1: TPanel;
@@ -53,8 +55,8 @@ implementation
 procedure TForm6.Button1Click(Sender: TObject);
 begin
   ShowMessage('Clicked!');
-  listBox1.Items.Add('Item 1');
-  comboBox1.Items.Add('Item 1');
+  //listBox1.Items.Add('Item 1');
+  //comboBox1.Items.Add('Item 1');
   {
   //label1.Width := 200;
   //label1.Caption := 'All right!';

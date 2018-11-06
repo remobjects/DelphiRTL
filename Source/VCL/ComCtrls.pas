@@ -1,6 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND WINDOWS)}
+//{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
+{$IF (ISLAND AND (WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
 
 interface
 
@@ -222,12 +223,11 @@ type
     //method Notification(AComponent: TComponent; Operation: TOperation); override;
     method SetItemIndex(aValue: Integer); override;
     method SetMultiSelect(Value: Boolean); override;
-    method SetViewStyle(Value: TViewStyle); virtual;
+    method SetViewStyle(aValue: TViewStyle); virtual;
     method UpdateColumn(AnIndex: Integer);
     method UpdateColumns;
     //method WndProc(var Message: TMessage); override; --> Windows...
     //property BorderStyle: TBorderStyle read fBorderStyle write SetBorderStyle default bsSingle;
-    property Columns: TListColumns read fListColumns write SetListColumns;
     //property ColumnClick: Boolean read fColumnClick write SetColumnClick default True;
     property &ReadOnly: Boolean read fReadOnly write SetReadOnly;
     property HideSelection: Boolean read fHideSelection write SetHideSelection default True;
@@ -259,7 +259,8 @@ type
     //property SmallImages: TCustomImageList read FSmallImages write SetSmallImages;
     //property SortType: TSortType read FSortType write SetSortType default stNone;
     //property StateImages: TCustomImageList read FStateImages write SetStateImages;
-    property ViewStyle: TViewStyle read fViewStyle write SetViewStyle default vsIcon;
+
+    method PlatformSetViewStyle(aValue: TViewStyle); partial; virtual; empty;
   public
     constructor(aOwner: TComponent);
     method AddItem(aItem: DelphiString; aObject: TObject); override;
@@ -278,12 +279,14 @@ type
     method Scroll(DX, DY: Integer);
     //property Checkboxes: Boolean read FCheckboxes write SetCheckboxes default False;
     property Column[aIndex: Integer]: TListColumn read GetColumnFromIndex;
+    property Columns: TListColumns read fListColumns write SetListColumns;
     //property GridLines: Boolean read fGridLines write SetGridLines default False;
     property ItemFocused: TListItem read GetFocused write SetFocused;
     property Items: TListItems read fListItems write SetItems;
     //property RowSelect: Boolean read FRowSelect write SetRowSelect default False;
     property SelCount: Integer read GetSelCount;
     property Selected: TListItem read GetSelected write SetSelected;
+    property ViewStyle: TViewStyle read fViewStyle write SetViewStyle default vsIcon;
   end;
 
 
@@ -551,9 +554,12 @@ begin
 
 end;
 
-method TListView.SetViewStyle(Value: TViewStyle);
+method TListView.SetViewStyle(aValue: TViewStyle);
 begin
-
+  if (aValue ≠ fViewStyle) then begin
+    fViewStyle := aValue;
+    PlatformSetViewStyle(aValue);
+  end;
 end;
 
 method TListView.UpdateColumn(AnIndex: Integer);

@@ -380,7 +380,7 @@ begin
   end;
   {$ELSEIF ECHOESWPF}
   var lType := aType;
-  while aType <> nil do begin
+  while lType <> nil do begin
     result := lType.GetProperty(aName);
     if result <> nil then begin
       exit;

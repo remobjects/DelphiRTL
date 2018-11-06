@@ -59,7 +59,7 @@
     <Compile Include="Program.pas" />
     <Compile Include="Unit5.pas" />
     <Resource Include="manifest.res" />
-    <Resource Include="TestFormWithTabStop.dfm" />
+    <Resource Include="withListView.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
 </Project>
