@@ -12,7 +12,7 @@ type
   protected
     method CreateHandle; override;
 
-    method PlatformSetViewStyle(aValue: TViewStyle); override;
+    method PlatformSetViewStyle(aValue: TViewStyle); partial;
   end;
 
 implementation

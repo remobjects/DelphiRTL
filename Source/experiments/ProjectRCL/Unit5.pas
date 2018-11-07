@@ -56,9 +56,15 @@ begin
   //label1.Caption := 'All right!';
   //ShowMessage('Clicked!');
   //ShowMessage(edit1.Text);
-  listBox1.Items.Add(edit1.Text);
-  comboBox1.Items.Add(edit1.Text);
-  edit1.OnKeyPress := @Edit1OnKeyPress;
+  //listBox1.Items.Add(edit1.Text);
+  //comboBox1.Items.Add(edit1.Text);
+  //edit1.OnKeyPress := @Edit1OnKeyPress;
+  //listView1.ViewStyle := TViewStyle.vsIcon;
+  var lItem := listView1.Items.Add;
+  lItem.Caption := 'Item 1!!';
+  listView1.ViewStyle := TViewStyle.vsReport;
+  var lColumn := listView1.Columns.Add;
+  lColumn.Caption := 'Loncho!';
 end;
 
 procedure TForm6.Button2Click(Sender: TObject);

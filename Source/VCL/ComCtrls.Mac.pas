@@ -1,22 +1,22 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF MACOS AND NOT DARWIN}
+{$IF MACOS AND NOT (ISLAND AND DARWIN)}
 
 interface
 
 uses
-  System.Windows.Controls, RemObjects.Elements.RTL.Delphi;
+  AppKit, RemObjects.Elements.RTL.Delphi;
 
 type
   TListView = public partial class(TMultiSelectListControl)
   private
-    fController: TTableViewController;
+    fController: TListViewController;
     fTable: NSTableView;
   protected
     method CreateHandle; override;
   end;
 
-  TTableViewController = class(INSTableViewDataSource, INSTableViewDelegate)
+  TListViewController = class(INSTableViewDataSource, INSTableViewDelegate)
   private
     fOwnerList: TListView;
   public
@@ -35,7 +35,7 @@ begin
   fHandle := new NSScrollView;
   //var lColumn := new NSTableColumn withIdentifier(Name + 'C1');
   //fTable.addTableColumn(lColumn);
-  fController := new TTableViewController(self);
+  fController := new TListViewController(self);
   fTable.delegate := fController;
   fTable.dataSource := fController;
   fTable.setHeaderView(nil);
@@ -43,15 +43,15 @@ begin
   (fHandle as NSScrollView).documentView := fTable;
 end;
 
-method TTableViewController.numberOfRowsInTableView(tableView: not nullable NSTableView): NSInteger;
+method TListViewController.numberOfRowsInTableView(tableView: not nullable NSTableView): NSInteger;
 begin
 end;
 
-method TTableViewController.tableView(tableView: not nullable NSTableView) objectValueForTableColumn(tableColumn: nullable NSTableColumn) row(row: NSInteger): nullable id;
+method TListViewController.tableView(tableView: not nullable NSTableView) objectValueForTableColumn(tableColumn: nullable NSTableColumn) row(row: NSInteger): nullable id;
 begin
 end;
 
-constructor TTableViewController(aOwner: TListView);
+constructor TListViewController(aOwner: TListView);
 begin
 end;
 {$ENDIF}

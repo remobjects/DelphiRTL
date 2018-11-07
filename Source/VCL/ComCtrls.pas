@@ -1,12 +1,19 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
 //{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
-{$IF (ISLAND AND (WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
+{$IF (ISLAND AND (WINDOWS) AND NOT DARWIN) OR ECHOESWPF OR (MACOS AND NOT (ISLAND AND DARWIN))}
 
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi;
+  RemObjects.Elements.RTL.Delphi,
+  {$IF ECHOESWPF}
+  System.Reflection
+  {$ELSEIF MACOS}
+  RemObjects.Elements.RTL.Reflection
+  {$ENDIF}
+  ;
+
 
 type
   TWidth = public Integer;
@@ -15,7 +22,7 @@ type
   TLVChangeEvent = public block(Sender: TObject; Item: TListItem; Change: TItemChange);
   TLVSelectItemEvent = public block(Sender: TObject; Item: TListItem; Selected: Boolean);
 
-  TListColumn = public class(TCollectionItem)
+  TListColumn = public partial class(TCollectionItem)
   private
     fAlignment: TAlignment;
     fAutoSize: Boolean;
@@ -25,6 +32,7 @@ type
     fPrivateWidth: TWidth;
     fTag: Integer;
     fWidth: TWidth;
+    fColIndex: Integer;
     method DoChange;
     method GetWidth: TWidth;
     method ReadData(aReader: TReader);
@@ -37,6 +45,8 @@ type
   protected
     method GetDisplayName: String; override;
     method SetIndex(Value: Integer); override;
+
+    method PlatformSetCaption(aValue: String); partial; virtual; empty;
   public
     constructor(aCollection: TCollection); override;
     //method Assign(Source: TPersistent); override;
@@ -49,11 +59,12 @@ type
     property Tag: Integer read fTag write FTag default 0;
     property Width: TWidth read GetWidth write SetWidth default 50;
     property WidthType: TWidth read fWidth;
+    property ColIndex: Integer read fColIndex;
   end;
 
   TListColumnClass = public &Type;
 
-  TListColumns = public class(TCollection)
+  TListColumns = public partial class(TCollection)
   private
     fOwner: TListView;
     method GetColumnItem(aIndex: Integer): TListColumn;
@@ -68,7 +79,6 @@ type
   public
     constructor(aOwner: TListView);
     method &Add: TListColumn;
-    method Owner: TListView;
     property Items[aIndex: Integer]: TListColumn read GetColumnItem write SetColumnItem; default;
   end;
 
@@ -90,14 +100,13 @@ type
     //fGroupID: Integer;
     function GetChecked: Boolean;
     //function GetHandle: HWND;
-    function GetIndex: Integer;
     function GetListView: TListView;
     function GetLeft: Integer;
     function GetState(aIndex: Integer): Boolean;
     function GetTop: Integer;
     function IsEqual(Item: TListItem): Boolean;
     procedure SetChecked(Value: Boolean);
-    procedure SetCaption(Value: string);
+    procedure SetCaption(aValue: string);
     //procedure SetData(Value: TCustomData);
     //procedure SetImage(Index: Integer; Value: TImageIndex);
     procedure SetIndent(Value: Integer);
@@ -108,6 +117,8 @@ type
     //function GetSubItemImage(Index: Integer): Integer;
     //procedure SetSubItemImage(Index: Integer; const Value: Integer);
     //procedure SetGroupID(Value: Integer);
+  protected
+    method PlatformSetCaption(aValue: String); partial; virtual; empty;
   public
     constructor(aOwner: TListItems); virtual;
     //procedure Assign(Source: TPersistent); override;
@@ -119,7 +130,7 @@ type
     procedure Update;
     //procedure SetPosition(const Value: TPoint);
     //function WorkArea: Integer;
-    property Caption: string read FCaption write SetCaption;
+    property Caption: String read fCaption write SetCaption;
     property Checked: Boolean read GetChecked write SetChecked;
     //property Cut: Boolean index 0 read GetState write SetState;
     //property Data: TCustomData read FData write SetData;
@@ -130,10 +141,10 @@ type
     //property Handle: HWND read GetHandle;
     //property ImageIndex: TImageIndex index 0 read FImageIndex write SetImage;
     //property Indent: Integer read FIndent write SetIndent default 0;
-    property &Index: Integer read GetIndex;
+    property &Index: Integer read fIndex write fIndex;
     property Left: Integer read GetLeft write SetLeft;
     property ListView: TListView read GetListView;
-    property Owner: TListItems read FOwner;
+    property Owner: TListItems read fOwner;
     //property OverlayIndex: TImageIndex index 1 read FOverlayIndex write SetImage;
     //property Position: TPoint read GetPosition write SetPosition;
     //property Selected: Boolean read GetState write SetState; // TODO index
@@ -177,7 +188,7 @@ type
     property Count: Integer read fItems.Count write SetCount;
     property Handle: TPlatformHandle read GetHandle;
     property Item[aIndex: Integer]: TListItem read GetItem write SetItem; default;
-    property Owner: TListView read FOwner;
+    property Owner: TListView read fOwner;
   end;
 
   TListView = public partial class(TMultiSelectListControl)
@@ -319,7 +330,8 @@ end;
 
 method TListColumn.SetCaption(aValue: String);
 begin
-
+  fCaption := aValue;
+  PlatformSetCaption(aValue);
 end;
 
 method TListColumn.SetMaxWidth(Value: TWidth);
@@ -349,7 +361,8 @@ end;
 
 constructor TListColumn(aCollection: TCollection);
 begin
-
+  Collection := aCollection;
+  fColIndex := Collection.Count;
 end;
 
 method TListColumns.GetColumnItem(aIndex: Integer): TListColumn;
@@ -394,11 +407,6 @@ begin
   PlatformAdd;
 end;
 
-method TListColumns.Owner: TListView;
-begin
-  result := GetOwner as TListView;
-end;
-
 method TListItems.CreateItem(aIndex: Integer; aListItem: TListItem): TPlatformListViewitem;
 begin
 
@@ -438,7 +446,7 @@ end;
 method TListItems.Add: TListItem;
 begin
   result := new TListItem(self);
-  fItems.Add(result);
+  result.Index := fItems.Add(result);
   PlatformAdd;
 end;
 
@@ -576,6 +584,7 @@ constructor TListView(aOwner: TComponent);
 begin
   fListColumns := new TListColumns(self);
   fListItems := new TListItems(self);
+  fViewStyle := TViewStyle.vsIcon;
 end;
 
 method TListView.AddItem(aItem: DelphiString; aObject: TObject);
@@ -684,11 +693,6 @@ begin
 
 end;
 
-method TListItem.GetIndex: Integer;
-begin
-
-end;
-
 method TListItem.GetListView: TListView;
 begin
 
@@ -774,9 +778,10 @@ begin
 
 end;
 
-method TListItem.SetCaption(value: String);
+method TListItem.SetCaption(aValue: String);
 begin
-
+  fCaption := aValue;
+  PlatformSetCaption(aValue);
 end;
 {$ENDIF}
 

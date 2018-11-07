@@ -1,15 +1,15 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS) AND NOT DARWIN) OR ECHOESWPF OR (MACOS AND NOT (ISLAND AND DARWIN))}
 
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL
+  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL,
   {$IF ECHOESWPF}
-  , System.Reflection
+  System.Reflection
   {$ELSEIF MACOS}
-   RemObjects.Elements.RTL.Reflection
+  RemObjects.Elements.RTL.Reflection
   {$ENDIF}
   ;
 

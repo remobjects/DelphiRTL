@@ -208,7 +208,7 @@ end;
 
 method TCollection.Owner: TPersistent;
 begin
-
+  result := GetOwner;
 end;
 
 method TCollection.Add: TCollectionItem;

@@ -93,6 +93,9 @@ type
     [MessageAttribute(rtl.WM_COMMAND)]
     method WMCommand(var aMessage: TMessage);
 
+    [MessageAttribute(rtl.WM_NOTIFY)]
+    method WMNotify(var aMessage: TMessage);
+
   public
     method WndProc(var aMessage: TMessage); override;
     constructor(aOwner: TComponent);
@@ -522,6 +525,13 @@ begin
     lControl.Perform(CN_COMMAND, lNotification, aMessage.lParam)
   else
     DefaultHandler(var aMessage); // the message is not for us!
+end;
+
+method TNativeControl.WMNotify(var aMessage: TMessage);
+begin
+  var lInfo: ^rtl.NMHDR;
+  lInfo := ^rtl.NMHDR(^Void(aMessage.lParam));
+  //writeLn(Integer(lInfo^.code));
 end;
 
 /*method TGraphicControl.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): LRESULT;
