@@ -35,6 +35,8 @@ type
     edit2: TEdit;
     edit3: TEdit;
 
+    listview1: TListView;
+
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ComboBox1Select(Sender: TObject);

@@ -1,15 +1,15 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS) AND NOT DARWIN) OR ECHOESWPF OR (MACOS AND NOT (ISLAND AND DARWIN))}
 
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL
+  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL,
   {$IF ECHOESWPF}
-  , System.Reflection
+  System.Reflection
   {$ELSEIF MACOS}
-   RemObjects.Elements.RTL.Reflection
+  RemObjects.Elements.RTL.Reflection
   {$ENDIF}
   ;
 
@@ -353,6 +353,12 @@ begin
       exit nil;
     end;
 
+    TValueType.vaCollection: begin
+      // TODO, now just empty collections
+      ReadValue;
+      exit nil;
+    end;
+
     TValueType.vaFalse:
       exit false;
 
@@ -374,7 +380,7 @@ begin
   end;
   {$ELSEIF ECHOESWPF}
   var lType := aType;
-  while aType <> nil do begin
+  while lType <> nil do begin
     result := lType.GetProperty(aName);
     if result <> nil then begin
       exit;
@@ -452,7 +458,7 @@ begin
   end;
   var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
 
-  if lValue ≠ TValueType.vaList then begin
+  if (lValue ≠ TValueType.vaList) and (lValue ≠ TValueType.vaCollection) then begin
     {$IF ISLAND}
     DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
     {$ELSEIF ECHOESWPF}
@@ -711,7 +717,13 @@ begin
               fParser.NextToken;
           end;
           fWriter.WriteListEnd;
-        end;
+        end
+        else
+          if fParser.TokenValue = '<' then begin
+            fWriter.WriteValue(TValueType.vaCollection);
+            fParser.NextToken;
+            fWriter.WriteListEnd;
+          end;
     end;
   end;
 end;
@@ -895,7 +907,7 @@ begin
       fToken := TParserToken.toString;
     end;
 
-    ':', '#', '=', '[', ']', '(', ')': begin
+    ':', '#', '=', '[', ']', '(', ')', '<', '>': begin
       fTokenValue := lChar;
       NextChar;
       fToken := TParserToken.toOtCharacter;
