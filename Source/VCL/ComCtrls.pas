@@ -82,6 +82,35 @@ type
     property Items[aIndex: Integer]: TListColumn read GetColumnItem write SetColumnItem; default;
   end;
 
+  TSubItems = public class(TStringList)
+  private
+    fOwner: TListItem;
+    //fImageIndices: TList;
+    //method GetImageIndex(aIndex: Integer): TImageIndex;
+    //method SetImageIndex(aIndex: Integer; const Value: TImageIndex);
+  protected
+    //method GetHandle: HWND;
+    method Put(aIndex: Integer; S: DelphiString); override;
+    method SetUpdateState(Updating: Boolean); override;
+
+    method PlatformPut(aIndex: Integer; S: DelphiString); partial; virtual; empty;
+    method PlatformAdd(S: DelphiString); partial; virtual; empty;
+    method PlatformAddObject(S: DelphiString; aObject: TObject); partial; virtual; empty;
+    method PlatformClear; virtual; partial; empty;
+    method PlatformDelete(aIndex: Integer); partial; virtual; empty;
+    method PlatformInsert(aIndex: Integer; S: DelphiString); partial; virtual; empty;
+  public
+    constructor Create(aOwner: TListItem);
+    function &Add(S: DelphiString): Integer; override;
+    function AddObject(S: DelphiString; aObject: TObject): Integer; override;
+    method Clear; override;
+    method Delete(aIndex: Integer); override;
+    method Insert(aIndex: Integer; S: DelphiString); override;
+    //property Handle: HWND read GetHandle;
+    property Owner: TListItem read fOwner;
+    //property ImageIndex[Index: Integer]: TImageIndex read GetImageIndex write SetImageIndex;
+  end;
+
   TListItem = public partial class(TPersistent)
   private
     fCaption: String;
@@ -105,30 +134,30 @@ type
     function GetState(aIndex: Integer): Boolean;
     function GetTop: Integer;
     function IsEqual(Item: TListItem): Boolean;
-    procedure SetChecked(Value: Boolean);
-    procedure SetCaption(aValue: string);
-    //procedure SetData(Value: TCustomData);
-    //procedure SetImage(Index: Integer; Value: TImageIndex);
-    procedure SetIndent(Value: Integer);
-    procedure SetLeft(Value: Integer);
-    procedure SetState(aIndex: Integer; State: Boolean);
-    procedure SetSubItems(Value: TStrings);
-    procedure SetTop(Value: Integer);
+    method SetChecked(Value: Boolean);
+    method SetCaption(aValue: string);
+    //method SetData(Value: TCustomData);
+    //method SetImage(Index: Integer; Value: TImageIndex);
+    method SetIndent(Value: Integer);
+    method SetLeft(Value: Integer);
+    method SetState(aIndex: Integer; State: Boolean);
+    method SetSubItems(Value: TStrings);
+    method SetTop(Value: Integer);
     //function GetSubItemImage(Index: Integer): Integer;
-    //procedure SetSubItemImage(Index: Integer; const Value: Integer);
-    //procedure SetGroupID(Value: Integer);
+    //method SetSubItemImage(Index: Integer; const Value: Integer);
+    //method SetGroupID(Value: Integer);
   protected
     method PlatformSetCaption(aValue: String); partial; virtual; empty;
   public
     constructor(aOwner: TListItems); virtual;
-    //procedure Assign(Source: TPersistent); override;
-    procedure CancelEdit;
-    procedure Delete;
+    //method Assign(Source: TPersistent); override;
+    method CancelEdit;
+    method Delete;
     function EditCaption: Boolean;
     //function GetPosition: TPoint;
-    procedure MakeVisible(PartialOK: Boolean);
-    procedure Update;
-    //procedure SetPosition(const Value: TPoint);
+    method MakeVisible(PartialOK: Boolean);
+    method Update;
+    //method SetPosition(const Value: TPoint);
     //function WorkArea: Integer;
     property Caption: String read fCaption write SetCaption;
     property Checked: Boolean read GetChecked write SetChecked;
@@ -688,6 +717,51 @@ method TListView.SetHideSelection(aValue: Boolean);
 begin
 end;
 
+constructor TSubItems(aOwner: TListItem);
+begin
+  fOwner := aOwner;
+end;
+
+method TSubItems.Put(aIndex: Integer; S: DelphiString);
+begin
+  inherited(aIndex, S);
+  PlatformPut(aIndex, S);
+end;
+
+method TSubItems.SetUpdateState(Updating: Boolean);
+begin
+end;
+
+function TSubItems.&Add(S: DelphiString): Integer;
+begin
+  result := inherited(S);
+  PlatformAdd(S);
+end;
+
+function TSubItems.AddObject(S: DelphiString; aObject: TObject): Integer;
+begin
+  result := inherited(S, aObject);
+  PlatformAddObject(S, aObject);
+end;
+
+method TSubItems.Clear;
+begin
+  inherited;
+  PlatformClear;
+end;
+
+method TSubItems.Delete(aIndex: Integer);
+begin
+  inherited(aIndex);
+  PlatformDelete(aIndex);
+end;
+
+method TSubItems.Insert(aIndex: Integer; S: DelphiString);
+begin
+  inherited(aIndex, S);
+  PlatformInsert(aIndex, S);
+end;
+
 method TListItem.GetChecked: Boolean;
 begin
 
@@ -751,6 +825,7 @@ end;
 constructor TListItem(aOwner: TListItems);
 begin
   fOwner := aOwner;
+  fSubItems := new TSubItems(self);
 end;
 
 method TListItem.CancelEdit;
