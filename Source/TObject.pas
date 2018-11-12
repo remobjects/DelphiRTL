@@ -16,7 +16,24 @@ type
     method CleanupInstance; empty;
 
     method ClassType: TClass; empty;
-    class method ClassName: ShortString; empty;
+    class method ClassName: ShortString;
+    begin
+      {$IF ISLAND}
+      result := typeOf(self).Name;
+      {$ELSE}
+      result := '';
+      {$ENDIF}
+    end;
+
+    method InstanceClassName: String;
+    begin
+      {$IF ISLAND}
+        result := typeOf(self).Name;
+      {$ELSE}
+        result := '';
+      {$ENDIF}
+    end;
+
     class method ClassNameIs(const Name: String): Boolean; empty;
     class method ClassParent: TClass; empty;
     class method ClassInfo: Pointer; empty;
@@ -86,5 +103,14 @@ type
       {$ENDIF}
     end;
   end;
+
+{$IF ISLAND AND WINDOWS}
+extension method RemObjects.Elements.System.String.ToLPCWSTR: rtl.LPCWSTR; assembly;
+begin
+  if String.IsNullOrEmpty(self) then exit nil;
+  var arr := ToCharArray(true);
+  exit rtl.LPCWSTR(@arr[0]);
+end;
+{$ENDIF}
 
 end.

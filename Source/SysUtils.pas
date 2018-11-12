@@ -93,12 +93,12 @@ type
   TArchitecture = public (arIntelX86, arIntelX64, arARM32, arARM64);
   TPlatform = public (pfWindows, pfMacOS, pfiOS, pfAndroid, pfWinRT, pfLinux, pfNET, pfJava, pfTVOS, pfWatchOS);
 
-  TOSVersion = public record
+  TOSVersion = public static class
   private
     class var fLineBreak: String;
     class var fArchitecture: TArchitecture := TArchitecture.arIntelX86;
     class var fBuild: Integer := 0;
-    class var fMajor: Integer;
+    class var fMajor: Integer := 0;
     class var fMinor: Integer;
     class var fName: String;
     class var fPlatform: TPlatform;
@@ -107,8 +107,11 @@ type
     class var fPathDelim: String;
     class var fDriveDelim: String;
     class var fPathSep: String;
-    {$IF ISLAND AND WINDOWS}class method GetOSInfo; static;{$ENDIF}
+    {$IF ISLAND AND WINDOWS}
+    class method GetOSInfo; static;
+    {$ENDIF}
     class constructor;
+
   public
     class method Check(aMajor: Integer): Boolean; static;
     class method Check(aMajor, aMinor: Integer): Boolean; static;
@@ -191,6 +194,12 @@ function FileDateToDateTime(FileDate: LongInt): TDateTime;
 function DateTimeToFileDate(DateTime: TDateTime): LongInt;
 {$ENDIF}
 */
+
+{$IF ISLAND AND WINDOWS}
+type
+[CallingConvention(CallingConvention.Stdcall)]
+TRTLGetVersionFunc = public function(lpVersionInformation: ^rtl.OSVERSIONINFO): rtl.DWORD;
+{$ENDIF}
 
 implementation
 
@@ -760,6 +769,34 @@ begin
   {$ELSEIF WATCHOS}
   fPlatform := TPlatform.pfWatchOS;
   {$ENDIF}
+  {$ENDIF}
+  {$IF ISLAND AND WINDOWS}
+  var lBytes := RemObjects.Elements.System.String('ntdll.dll').ToCharArray(true);
+  var lLibrary := rtl.LoadLibrary(rtl.LPCWSTR(@lBytes[0]));
+  var lGetVersion: TRTLGetVersionFunc;
+  var lFunc := RemObjects.Elements.System.String('RtlGetVersion').ToAnsiChars(true);
+  var lVer: rtl.OSVERSIONINFO;
+  lVer.dwOSVersionInfoSize := sizeOf(lVer);
+  if lLibrary ≠ nil then begin
+    lGetVersion := TRTLGetVersionFunc(rtl.GetProcAddress(lLibrary, rtl.LPCSTR(@lFunc[0])));
+    if lGetVersion ≠ nil then begin
+      if lGetVersion(@lVer) = 0 then begin
+        fMajor := lVer.dwMajorVersion;
+        fMinor := lVer.dwMinorVersion;
+        fBuild := lVer.dwBuildNumber;
+      end;
+    end;
+    rtl.FreeLibrary(lLibrary);
+  end;
+
+  if fMajor = 0 then begin
+    // if RtlGetVersion is not available (for some reason..), use standard way
+    // GetVersionEx returns Windows 8.1 even for Win 10, so primary option is better.
+    rtl.GetVersionEx(@lVer);
+    fMajor := lVer.dwMajorVersion;
+    fMinor := lVer.dwMinorVersion;
+    fBuild := lVer.dwBuildNumber;
+  end;
   {$ENDIF}
   if fPlatform = TPlatform.pfWindows then begin
     fPathDelim := '\';

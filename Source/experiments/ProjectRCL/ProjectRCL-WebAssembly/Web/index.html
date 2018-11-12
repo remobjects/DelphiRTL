@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<title>ProjectRCLWebAssembly Test Page</title>
+		<script lang="javascript" src="wasm/RemObjectsElements.js"></script>
+		<script lang="javascript" src="wasm/ProjectRCLWebAssembly.js"></script>
+	</head>
+	<body>
+	<h1>ProjectRCLWebAssembly Test Page</h1>
+	<div id="helloWorld"/>
+	<script lang="javascript">
+		ProjectRCLWebAssembly.instantiate("wasm/ProjectRCLWebAssembly.wasm").then(function (result) {
+			console.log("WebAssembly file ProjectRCLWebAssembly.wasm has been loaded.");
+			var program = result.Program();
+			program.HelloWorld();
+		});
+	</script>
+	</body>
+</html>

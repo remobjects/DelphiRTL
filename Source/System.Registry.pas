@@ -38,9 +38,9 @@ type
     method ConvertToDataType(Value: TRegDataType): rtl.DWORD;
     method GetProperKey(Key: DelphiString; var Normalized: DelphiString): rtl.HKEY;
   protected
-    method ChangeKey(Value: rtl.HKey; Path: DelphiString);
-    method CheckResult(RetVal: Longint): Boolean;
-    method GetBaseKey(Relative: Boolean): rtl.HKey;
+    method ChangeKey(Value: rtl.HKEY; Path: DelphiString);
+    method CheckResult(RetVal: LongInt): Boolean;
+    method GetBaseKey(Relative: Boolean): rtl.HKEY;
     method GetData(Name: DelphiString; Buffer: Pointer; BufSize: rtl.DWORD; var RegData: TRegDataType): Integer;
     method GetKey(Key: DelphiString): rtl.HKEY;
     method GetRootKeyName: DelphiString;
@@ -92,7 +92,7 @@ type
     method WriteTime(Name: DelphiString; Value: TDateTime);
     property CurrentKey: rtl.HKEY read fCurrentKey;
     property CurrentPath: DelphiString read fCurrentPath;
-    property LastError: Longint read fLastError;
+    property LastError: LongInt read fLastError;
     property RootKey: rtl.HKEY read FRootKey write SetRootKey;
     property RootKeyName: DelphiString read GetRootKeyName;
     property Access: LongWord read fAccess write fAccess;
@@ -346,7 +346,7 @@ end;
 method TRegistry.HasSubKeys: Boolean;
 begin
   var lSubkeys: rtl.DWORD;
-  if not CheckResult(rtl.RegQueryInfoKey(CurrentKey, nil, nil, nil, @lSubKeys, nil, nil, nil, nil, nil, nil, nil)) then
+  if not CheckResult(rtl.RegQueryInfoKey(CurrentKey, nil, nil, nil, @lSubkeys, nil, nil, nil, nil, nil, nil, nil)) then
     raise new Exception('Error getting info of registry key: ' + CurrentPath);
   result := lSubkeys > 0;
 end;

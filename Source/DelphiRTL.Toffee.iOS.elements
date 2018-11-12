@@ -45,7 +45,6 @@
     <Reference Include="UIKit" />
     <Reference Include="rtl" />
     <Reference Include="libToffee" />
-    <Reference Include="libxml2" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

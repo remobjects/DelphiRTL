@@ -8,6 +8,7 @@ uses
 type
   TPair<T, U> = public KeyValuePair<T, U>;
   TDictionary<TKey,TValue> = public class(TEnumerable<TPair<TKey,TValue>>)
+    where TKey is class, TValue is class;
   private
     fDict: Dictionary<TKey, TValue>;
     method GetItem(const aKey: TKey): TValue;
