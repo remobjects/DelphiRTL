@@ -60,11 +60,25 @@ begin
   //comboBox1.Items.Add(edit1.Text);
   //edit1.OnKeyPress := @Edit1OnKeyPress;
   //listView1.ViewStyle := TViewStyle.vsIcon;
-  var lItem := listView1.Items.Add;
-  lItem.Caption := 'Item 1!!';
-  listView1.ViewStyle := TViewStyle.vsReport;
-  var lColumn := listView1.Columns.Add;
-  lColumn.Caption := 'Loncho!';
+  if listView1.Columns.Count = 0 then begin
+    var lColumn := listView1.Columns.Add;
+    lColumn.Caption := 'Loncho!';
+
+    lColumn := listView1.Columns.Add;
+    lColumn.Caption := 'Loncho 2';
+
+    lColumn := listView1.Columns.Add;
+    lColumn.Caption := 'Loncho 3';
+
+    listView1.ViewStyle := TViewStyle.vsReport;
+
+    var lItem := listView1.Items.Add;
+    lItem.Caption := 'Item 1!!';
+    lItem.SubItems.Add('Roncho 2');
+    lItem.SubItems.Add('Roncho 3');
+  end
+  else
+    listView1.RowSelect := true;
 end;
 
 procedure TForm6.Button2Click(Sender: TObject);

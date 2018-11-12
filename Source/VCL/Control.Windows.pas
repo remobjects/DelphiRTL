@@ -529,9 +529,12 @@ end;
 
 method TNativeControl.WMNotify(var aMessage: TMessage);
 begin
-  var lInfo: ^rtl.NMHDR;
-  lInfo := ^rtl.NMHDR(^Void(aMessage.lParam));
-  //writeLn(Integer(lInfo^.code));
+  var lInfo: ^rtl.NMHDR := ^rtl.NMHDR(^Void(aMessage.lParam));
+  var lControl := ControlFromHandle(lInfo^.hwndFrom);
+  if lControl <> nil then
+    lControl.Perform(CN_NOTIFY, aMessage.wParam, aMessage.lParam)
+  else
+    DefaultHandler(var aMessage); // the message is not for us!
 end;
 
 /*method TGraphicControl.WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): LRESULT;
