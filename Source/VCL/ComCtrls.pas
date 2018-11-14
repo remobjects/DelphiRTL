@@ -48,7 +48,7 @@ type
 
     method PlatformSetCaption(aValue: String); partial; virtual; empty;
   public
-    constructor(aCollection: TCollection); override;
+    constructor(aCollection: TCollection);
     //method Assign(Source: TPersistent); override;
     property Alignment: TAlignment read fAlignment write SetAlignment default taLeftJustify;
     property AutoSize: Boolean read fAutoSize write SetAutoSize default False;
