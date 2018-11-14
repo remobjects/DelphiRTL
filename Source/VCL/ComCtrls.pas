@@ -48,7 +48,7 @@ type
 
     method PlatformSetCaption(aValue: String); partial; virtual; empty;
   public
-    constructor(aCollection: TCollection); override;
+    constructor(aCollection: TCollection);
     //method Assign(Source: TPersistent); override;
     property Alignment: TAlignment read fAlignment write SetAlignment default taLeftJustify;
     property AutoSize: Boolean read fAutoSize write SetAutoSize default False;
@@ -82,7 +82,7 @@ type
     property Items[aIndex: Integer]: TListColumn read GetColumnItem write SetColumnItem; default;
   end;
 
-  TSubItems = public class(TStringList)
+  TSubItems = public partial class(TStringList)
   private
     fOwner: TListItem;
     //fImageIndices: TList;
@@ -230,7 +230,7 @@ type
     fGridLines: Boolean;
     fListItems: TListItems;
     fShowColumnHeaders: Boolean;
-    fReading: Boolean;
+    fRowSelect: Boolean;
     fOnChange: TLVChangeEvent;
 
     fOnSelectItem: TLVSelectItemEvent;
@@ -245,6 +245,7 @@ type
     method SetListColumns(aValue: TListColumns);
     method SetReadOnly(aValue: Boolean);
     method SetHideSelection(aValue: Boolean);
+    method SetRowSelect(aValue: Boolean);
   protected
     method Change(Item: TListItem; aChange: Integer); virtual;
     method ColClick(aColumn: TListColumn); virtual;
@@ -270,12 +271,12 @@ type
     //property BorderStyle: TBorderStyle read fBorderStyle write SetBorderStyle default bsSingle;
     //property ColumnClick: Boolean read fColumnClick write SetColumnClick default True;
     property &ReadOnly: Boolean read fReadOnly write SetReadOnly;
-    property HideSelection: Boolean read fHideSelection write SetHideSelection default True;
+    property HideSelection: Boolean read fHideSelection write SetHideSelection default true;
     //property IconOptions: TIconOptions read FIconOptions write SetIconOptions;
     //property GroupView: Boolean read FGroupView write SetGroupView default False;
     //property LargeImages: TCustomImageList read FLargeImages write SetLargeImages;
     //property GroupHeaderImages: TCustomImageList read FGroupHeaderImages write SetGroupHeaderImages;
-    property MultiSelect: Boolean read fMultiSelect write SetMultiSelect default False;
+    property MultiSelect: Boolean read fMultiSelect write SetMultiSelect default false;
     //property OwnerData: Boolean read FOwnerData write SetOwnerData default False;
     property OnChange: TLVChangeEvent read fOnChange write fOnChange;
     //property OnChanging: TLVChangingEvent read FOnChanging write FOnChanging;
@@ -292,15 +293,15 @@ type
     //property OnInsert: TLVDeletedEvent read FOnInsert write FOnInsert;
     //property OnGetImageIndex: TLVNotifyEvent read FOnGetImageIndex write FOnGetImageIndex;
     //property OnGetSubItemImage: TLVSubItemImageEvent read FOnGetSubItemImage write FOnGetSubItemImage;
-    property OnSelectItem: TLVSelectItemEvent read fOnSelectItem write FOnSelectItem;
+    property OnSelectItem: TLVSelectItemEvent read fOnSelectItem write fOnSelectItem;
     //property OnItemChecked: TLVCheckedItemEvent read FOnItemChecked write FOnItemChecked;
-    property Reading: Boolean read FReading;
-    property ShowColumnHeaders: Boolean read fShowColumnHeaders write SetColumnHeaders default True;
+    property ShowColumnHeaders: Boolean read fShowColumnHeaders write SetColumnHeaders default true;
     //property SmallImages: TCustomImageList read FSmallImages write SetSmallImages;
     //property SortType: TSortType read FSortType write SetSortType default stNone;
     //property StateImages: TCustomImageList read FStateImages write SetStateImages;
 
     method PlatformSetViewStyle(aValue: TViewStyle); partial; virtual; empty;
+    method PlatformSetRowSelect(aValue: Boolean); partial; virtual; empty;
   public
     constructor(aOwner: TComponent);
     method AddItem(aItem: DelphiString; aObject: TObject); override;
@@ -323,7 +324,7 @@ type
     //property GridLines: Boolean read fGridLines write SetGridLines default False;
     property ItemFocused: TListItem read GetFocused write SetFocused;
     property Items: TListItems read fListItems write SetItems;
-    //property RowSelect: Boolean read FRowSelect write SetRowSelect default False;
+    property RowSelect: Boolean read fRowSelect write SetRowSelect default false;
     property SelCount: Integer read GetSelCount;
     property Selected: TListItem read GetSelected write SetSelected;
     property ViewStyle: TViewStyle read fViewStyle write SetViewStyle default vsIcon;
@@ -715,6 +716,12 @@ end;
 
 method TListView.SetHideSelection(aValue: Boolean);
 begin
+end;
+
+method TListView.SetRowSelect(aValue: Boolean);
+begin
+  fRowSelect := aValue;
+  PlatformSetRowSelect(aValue);
 end;
 
 constructor TSubItems(aOwner: TListItem);

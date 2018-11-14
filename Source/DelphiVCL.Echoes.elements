@@ -2,10 +2,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
   <PropertyGroup>
     <ProductVersion>3.5</ProductVersion>
-    <RootNamespace>RemObjects.Elements.RTL.Delphi</RootNamespace>
-    <ProjectGuid>FBDC9376-92B1-41CC-16BE-162604458DB6</ProjectGuid>
+    <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
+    <ProjectGuid>949A9E52-4EAB-4DF7-9CD1-50067B0EFE27</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>Delphi-WPF</AssemblyName>
+    <AssemblyName>DelphiVCL</AssemblyName>
     <AllowGlobals>False</AllowGlobals>
     <AllowLegacyWith>False</AllowLegacyWith>
     <AllowLegacyOutParams>False</AllowLegacyOutParams>
@@ -103,6 +103,9 @@
     <Reference Include="Echoes">
       <Private>True</Private>
     </Reference>
+    <Reference Include="Delphi">
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -111,8 +114,8 @@
     <Compile Include="Properties\AssemblyInfo.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Echoes.targets" />
-  <Import Project="DelphiRTL.Shared.projitems" Label="Shared" />
   <PropertyGroup>
     <PreBuildEvent />
   </PropertyGroup>
+  <Import Project="DelphiRTL.Shared.VCL.projitems" Label="Shared" />
 </Project>

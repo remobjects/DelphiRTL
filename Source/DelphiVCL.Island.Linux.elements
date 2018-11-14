@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
   <PropertyGroup>
     <ProductVersion>3.5</ProductVersion>
-    <RootNamespace>ProjectRCL</RootNamespace>
-    <ProjectGuid>{F8CCC42D-68E3-4708-9C96-A85F0AD63095}</ProjectGuid>
-    <OutputType>Executable</OutputType>
-    <AssemblyName>ProjectRCL</AssemblyName>
+    <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
+    <ProjectGuid>01BA4A13-E6B8-423E-8F3B-1A4E36157AE7</ProjectGuid>
+    <OutputType>StaticLibrary</OutputType>
+    <AssemblyName>DelphiVCL</AssemblyName>
     <AllowGlobals>False</AllowGlobals>
     <AllowLegacyWith>False</AllowLegacyWith>
     <AllowLegacyOutParams>False</AllowLegacyOutParams>
@@ -13,56 +13,56 @@
     <AllowUnsafeCode>False</AllowUnsafeCode>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <DefaultUses>RemObjects.Elements.RTL</DefaultUses>
+    <CrossPlatform>True</CrossPlatform>
+    <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <Optimize>False</Optimize>
-    <OutputPath>.\bin\Debug</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE;</DefineConstants>
     <GenerateDebugInfo>True</GenerateDebugInfo>
+    <EnableAsserts>True</EnableAsserts>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <CaptureConsoleOutput>False</CaptureConsoleOutput>
     <StartMode>Project</StartMode>
-    <CpuType>x86</CpuType>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <CpuType>anycpu</CpuType>
     <RuntimeVersion>v25</RuntimeVersion>
-    <Architecture>i386</Architecture>
     <XmlDoc>False</XmlDoc>
     <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
     <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
+    <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <Optimize>true</Optimize>
-    <OutputPath>.\bin\Release</OutputPath>
+    <OutputPath>..\Bin\Release</OutputPath>
     <GenerateDebugInfo>False</GenerateDebugInfo>
     <EnableAsserts>False</EnableAsserts>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <CaptureConsoleOutput>False</CaptureConsoleOutput>
     <StartMode>Project</StartMode>
     <RegisterForComInterop>False</RegisterForComInterop>
-    <CpuType>x86</CpuType>
+    <CpuType>anycpu</CpuType>
     <RuntimeVersion>v25</RuntimeVersion>
     <XmlDoc>False</XmlDoc>
     <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
     <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
+    <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    <Architecture>x86_64;armv6</Architecture>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="gc" />
     <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
     <Reference Include="Elements" />
-    <Reference Include="Delphi">
-      <HintPath>..\..\bin\Debug\Windows\i386\Delphi.fx</HintPath>
-    </Reference>
-    <Reference Include="Island">
-      <HintPath>C:\dev\ro\IslandRTL\Source\Bin\Debug\Windows\i386\Island.fx</HintPath>
-    </Reference>
-    <Reference Include="DelphiVCL">
-      <HintPath>..\..\bin\Debug\Windows\i386\DelphiVCL.fx</HintPath>
-    </Reference>
+    <Reference Include="Delphi" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.pas" />
-    <Compile Include="Unit5.pas" />
-    <Resource Include="manifest.res" />
-    <Resource Include="withListView.dfm" />
+    <Folder Include="Properties\" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Linux.targets" />
+  <PropertyGroup>
+    <PreBuildEvent />
+  </PropertyGroup>
+  <Import Project="Delphi.VCL.Shared.projitems" Label="Shared" />
 </Project>

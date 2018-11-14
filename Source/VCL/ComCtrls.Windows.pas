@@ -18,6 +18,18 @@ type
     method PlatformAdd: TListColumn; partial;
   end;
 
+  TSubItems = public partial class(TStringList)
+  private
+    method UpdateSubItem(aIndex: Integer);
+  protected
+    method PlatformPut(aIndex: Integer; S: DelphiString); partial;
+    method PlatformAdd(S: DelphiString); partial;
+    method PlatformAddObject(S: DelphiString; aObject: TObject); partial;
+    method PlatformClear; partial;
+    method PlatformDelete(aIndex: Integer); partial;
+    method PlatformInsert(aIndex: Integer; S: DelphiString); partial;
+  end;
+
   TListItem = public partial class(TPersistent)
   protected
     method PlatformSetCaption(aValue: String); partial;
@@ -34,6 +46,10 @@ type
   protected
     method CreateParams(var aParams: TCreateParams); override;
     method PlatformSetViewStyle(aValue: TViewStyle); partial;
+    method PlatformSetRowSelect(aValue: Boolean); partial;
+
+    [MessageAttribute(CN_NOTIFY)]
+    method CNNotify(var aMessage: TMessage);
   end;
 
 implementation
@@ -57,13 +73,58 @@ begin
   rtl.SendMessage(fOwner.Handle, rtl.LVM_INSERTCOLUMN, Count - 1, rtl.LPARAM(@lColumn));
 end;
 
+method TSubItems.UpdateSubItem(aIndex: Integer);
+begin
+  var lItem: rtl.LV_ITEMW;
+  lItem.iSubItem := aIndex;
+  lItem.mask := rtl.LVIF_TEXT or rtl.LVIF_IMAGE;
+  lItem.pszText := rtl.LPSTR_TEXTCALLBACK;
+  //lItem.pszText := String(S).ToLPCWSTR;
+  rtl.SendMessage(fOwner.Owner.Owner.Handle, rtl.LVM_SETITEM, fOwner.Index, rtl.LPARAM(@lItem));
+end;
+
+method TSubItems.PlatformPut(aIndex: Integer; S: DelphiString);
+begin
+  for i: Integer := aIndex to Count  - 1 do
+    UpdateSubItem(i);
+end;
+
+method TSubItems.PlatformAdd(S: DelphiString);
+begin
+  UpdateSubItem(Count);
+end;
+
+method TSubItems.PlatformAddObject(S: DelphiString; aObject: TObject);
+begin
+  UpdateSubItem(Count);
+end;
+
+method TSubItems.PlatformClear;
+begin
+  for i: Integer := 0 to Count  - 1 do
+    UpdateSubItem(i);
+end;
+
+method TSubItems.PlatformDelete(aIndex: Integer);
+begin
+  for i: Integer := aIndex to Count  - 1 do
+    UpdateSubItem(i);
+end;
+
+method TSubItems.PlatformInsert(aIndex: Integer; S: DelphiString);
+begin
+  for i: Integer := aIndex to Count  - 1 do
+    UpdateSubItem(i);
+end;
+
 method TListItem.PlatformSetCaption(aValue: String);
 begin
   var lItem: rtl.LV_ITEMW;
   lItem.iSubItem := 0;
   lItem.mask := rtl.LVIF_TEXT or rtl.LVIF_IMAGE;
-  //lItem.pszText := rtl.LPSTR_TEXTCALLBACK;
-  lItem.pszText := aValue.ToLPCWSTR;
+  // using LPSTR_TEXTCALLBACK as text value means we store the text, so ListView will send LVN_GETDISPINFO messages.
+  lItem.pszText := rtl.LPSTR_TEXTCALLBACK;
+  //lItem.pszText := aValue.ToLPCWSTR;
   rtl.SendMessage(fOwner.Owner.Handle, rtl.LVM_SETITEMTEXT, &Index, rtl.LPARAM(@lItem));
 end;
 
@@ -131,6 +192,35 @@ begin
   end;
 
   rtl.SetWindowLong(fHandle, rtl.GWL_STYLE, lCurrentStyle or lNewStyle);
+end;
+
+method TListView.PlatformSetRowSelect(aValue: Boolean);
+begin
+  //rtl.SendMessage(fHandle, rtl.LVM_SETEXTENDEDLISTVIEWSTYLE, rtl.LVS_EX_FULLROWSELECT, Convert.ToInt32(aValue));
+  rtl.SendMessage(fHandle, rtl.LVM_SETEXTENDEDLISTVIEWSTYLE, 0, rtl.LVS_EX_FULLROWSELECT);
+end;
+
+method TListView.CNNotify(var aMessage: TMessage);
+begin
+  var lInfo: ^rtl.NMHDR := ^rtl.NMHDR(^Void(aMessage.lParam));
+  case Integer(lInfo^.code) of
+    rtl.LVN_GETDISPINFO: begin
+      var lplvdi := ^rtl.NMLVDISPINFO(^Void(aMessage.lParam));
+      case lplvdi^.item.iSubItem of
+        0: begin
+          // 0 as SubItem index is the caption
+          lplvdi^.item.pszText := Items[lplvdi^.item.iItem].Caption.ToLPCWSTR;
+        end;
+
+        else begin
+          if (lplvdi^.item.iSubItem - 1) < Items[lplvdi^.item.iItem].SubItems.Count then
+            lplvdi^.item.pszText := String(Items[lplvdi^.item.iItem].SubItems[lplvdi^.item.iSubItem - 1]).ToLPCWSTR
+          else
+            lplvdi^.item.pszText := ''.ToLPCWSTR;
+        end;
+      end;
+    end;
+  end;
 end;
 
 {$ENDIF}
