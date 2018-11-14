@@ -59,6 +59,4 @@
   <PropertyGroup>
     <PreBuildEvent />
   </PropertyGroup>
-  <Import Project="DelphiRTL.Shared.VCL.projitems" Label="Shared" />
-  <Import Project="Delphi.VCL.Shared.projitems" Label="Shared" />
 </Project>

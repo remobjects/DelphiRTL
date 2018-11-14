@@ -43,10 +43,8 @@
     <Reference Include="Foundation" />
     <Reference Include="rtl" />
     <Reference Include="libToffee" />
-    <Reference Include="libElements">
-    <Reference Include="libDelphi">
-      <HintPath>..\..\RTL2\Source\bin\Debug\macOS\libElements.fx</HintPath>
-    </Reference>
+    <Reference Include="libElements" />
+    <Reference Include="libDelphi" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
