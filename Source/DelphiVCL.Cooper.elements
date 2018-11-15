@@ -7,7 +7,7 @@
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <AllowLegacyCreate>False</AllowLegacyCreate>
     <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AssemblyName>delphivcl</AssemblyName>
+    <AssemblyName>delphi.vcl</AssemblyName>
     <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
     <CrossPlatform>True</CrossPlatform>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>

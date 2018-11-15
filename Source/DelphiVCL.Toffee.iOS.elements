@@ -4,7 +4,7 @@
     <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
     <ProjectGuid>034B979F-731D-4B07-8AFB-39DC1C4C1B57</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
-    <AssemblyName>DelphiVCL</AssemblyName>
+    <AssemblyName>Delphi.VCL</AssemblyName>
     <AllowGlobals>False</AllowGlobals>
     <AllowLegacyWith>False</AllowLegacyWith>
     <AllowLegacyOutParams>False</AllowLegacyOutParams>

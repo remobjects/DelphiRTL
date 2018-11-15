@@ -5,7 +5,7 @@
     <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
     <ProjectGuid>949A9E52-4EAB-4DF7-9CD1-50067B0EFE27</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>DelphiVCL</AssemblyName>
+    <AssemblyName>Delphi.VCL</AssemblyName>
     <AllowGlobals>False</AllowGlobals>
     <AllowLegacyWith>False</AllowLegacyWith>
     <AllowLegacyOutParams>False</AllowLegacyOutParams>
@@ -117,5 +117,5 @@
   <PropertyGroup>
     <PreBuildEvent />
   </PropertyGroup>
-  <Import Project="DelphiRTL.Shared.VCL.projitems" Label="Shared" />
+  <Import Project="Delphi.VCL.Shared.projitems" Label="Shared" />
 </Project>

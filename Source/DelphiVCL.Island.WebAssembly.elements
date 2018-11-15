@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
   <PropertyGroup>
     <ProductVersion>3.5</ProductVersion>
     <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
     <ProjectGuid>B00A5AD0-356D-4FC1-B704-E716AF11F93A</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
-    <AssemblyName>DelphiVCL</AssemblyName>
+    <AssemblyName>Delphi.VCL</AssemblyName>
     <AllowGlobals>False</AllowGlobals>
     <AllowLegacyWith>False</AllowLegacyWith>
     <AllowLegacyOutParams>False</AllowLegacyOutParams>
