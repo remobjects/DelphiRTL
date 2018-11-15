@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
   <PropertyGroup>
     <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
@@ -44,7 +44,12 @@
     <Reference Include="libElements" />
     <Reference Include="rtl" />
     <Reference Include="libToffee" />
-    <Reference Include="libDelphi" />
+    <ProjectReference Include="DelphiRTL.Toffee.tvOS">
+      <Name>DelphiRTL.Toffee.tvOS</Name>
+      <HintPath>..\Bin\Debug\tvOS\Delphi.h</HintPath>
+      <Project>{F7CD09C9-64D0-4BAE-BF53-D6189F056AD8}</Project>
+      <ProjectFile>DelphiRTL.Toffee.tvOS.elements</ProjectFile>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

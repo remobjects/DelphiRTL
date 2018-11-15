@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
   <PropertyGroup>
     <ProductVersion>3.5</ProductVersion>
@@ -55,7 +55,12 @@
     <Reference Include="gc" />
     <Reference Include="Island" />
     <Reference Include="Elements" />
-    <Reference Include="Delphi" />
+    <ProjectReference Include="DelphiRTL.Island.Linux">
+      <Name>DelphiRTL.Island.Linux</Name>
+      <HintPath>..\Bin\Debug\Ubuntu\x86_64\Delphi.a</HintPath>
+      <Project>{A3390279-D9EC-4511-899A-AEDEBBF4CF71}</Project>
+      <ProjectFile>DelphiRTL.Island.Linux.elements</ProjectFile>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

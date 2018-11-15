@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
   <PropertyGroup>
     <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
@@ -44,7 +44,12 @@
     <Reference Include="rtl" />
     <Reference Include="libToffee" />
     <Reference Include="libElements" />
-    <Reference Include="libDelphi" />
+    <ProjectReference Include="DelphiRTL.Toffee.macOS">
+      <Name>DelphiRTL.Toffee.macOS</Name>
+      <HintPath>..\Bin\Debug\macOS\Delphi.h</HintPath>
+      <Project>{014A45CE-7C50-4A22-9D4D-A617F535907F}</Project>
+      <ProjectFile>DelphiRTL.Toffee.macOS.elements</ProjectFile>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

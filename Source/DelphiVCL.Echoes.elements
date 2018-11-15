@@ -103,9 +103,13 @@
     <Reference Include="Echoes">
       <Private>True</Private>
     </Reference>
-    <Reference Include="Delphi">
+    <ProjectReference Include="DelphiRTL.Echoes">
+      <Name>DelphiRTL.Echoes</Name>
+      <HintPath>..\Bin\Debug\Delphi.dll</HintPath>
+      <Project>{FBDC9976-99B1-48CC-86BE-462604458DB6}</Project>
+      <ProjectFile>DelphiRTL.Echoes.elements</ProjectFile>
       <Private>True</Private>
-    </Reference>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
