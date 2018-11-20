@@ -45,6 +45,7 @@
     <Reference Include="libElements">
       <HintPath>C:\dev\ro\RTL2\Source\bin\Debug\macOS\libElements.fx</HintPath>
     </Reference>
+    <Reference Include="libDelphiVCL" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />

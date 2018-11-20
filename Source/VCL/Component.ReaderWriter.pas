@@ -272,8 +272,10 @@ begin
           lConstant := lFields.Where(a -> a.Name = lIdent).FirstOrDefault;
           if lConstant = nil then begin
             lGlobals := System.Type.GetType('RemObjects.Elements.RTL.Delphi.__Global', false);
-            lFields := lGlobals.GetFields(BindingFlags.Public or BindingFlags.Static or BindingFlags.FlattenHierarchy);
-            lConstant := lFields.Where(a -> a.Name = lIdent).FirstOrDefault;
+            if lGlobals ≠ nil then begin
+              lFields := lGlobals.GetFields(BindingFlags.Public or BindingFlags.Static or BindingFlags.FlattenHierarchy);
+              lConstant := lFields.Where(a -> a.Name = lIdent).FirstOrDefault;
+            end;
           end;
 
           if lConstant ≠ nil then

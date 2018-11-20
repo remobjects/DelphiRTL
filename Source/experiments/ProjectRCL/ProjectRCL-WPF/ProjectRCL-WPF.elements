@@ -78,8 +78,10 @@
     <Reference Include="Elements">
       <Private>True</Private>
     </Reference>
-    <Reference Include="Delphi-WPF">
-      <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Delphi-WPF.dll</HintPath>
+    <Reference Include="Delphi">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Delphi.VCL">
       <Private>True</Private>
     </Reference>
   </ItemGroup>

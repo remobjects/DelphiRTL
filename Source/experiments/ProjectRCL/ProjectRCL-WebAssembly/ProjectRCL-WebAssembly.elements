@@ -47,6 +47,7 @@
     <Reference Include="Elements" />
     <Reference Include="Delphi" />
     <Reference Include="Island" />
+    <Reference Include="DelphiVCL" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />

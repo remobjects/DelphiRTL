@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
   <PropertyGroup>
     <ProductVersion>3.5</ProductVersion>
@@ -60,7 +60,12 @@
     <Reference Include="Island">
       <HintPath>..\..\IslandRTL\Source\Bin\Debug\WebAssembly\wasm32\Island.fx</HintPath>
     </Reference>
-    <Reference Include="Delphi" />
+    <ProjectReference Include="DelphiRTL.Island.WebAssembly">
+      <Name>DelphiRTL.Island.WebAssembly</Name>
+      <HintPath>bin\Debug\WebAssembly\wasm32\Delphi.a</HintPath>
+      <Project>{E663418D-2453-4C69-8362-02CC6ABEAFA7}</Project>
+      <ProjectFile>DelphiRTL.Island.WebAssembly.elements</ProjectFile>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

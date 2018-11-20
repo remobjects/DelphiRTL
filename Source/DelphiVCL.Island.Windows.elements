@@ -50,7 +50,12 @@
     <Reference Include="Island" />
     <Reference Include="rtl" />
     <Reference Include="Elements" />
-    <Reference Include="Delphi" />
+    <ProjectReference Include="DelphiRTL.Island.Windows">
+      <Name>DelphiRTL.Island.Windows</Name>
+      <HintPath>bin\Debug\Windows\i386\Delphi.fx</HintPath>
+      <Project>{8AB5CDC7-D735-4564-9FE5-1BD911E8100A}</Project>
+      <ProjectFile>DelphiRTL.Island.Windows.elements</ProjectFile>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
