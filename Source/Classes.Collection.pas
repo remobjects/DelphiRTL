@@ -111,7 +111,7 @@ begin
   end
   else
     lCtor.Invoke(result, aParameters);
-  {$ELSEIF ECHOESWPF}
+  {$ELSEIF ECHOES}
   result := TObject(Activator.CreateInstance(aType, aParameters));
   {$ELSEIF MACOS}
   var lInstanceType := aType;

@@ -39,7 +39,7 @@ type
 
   TListItems = public partial class(TPersistent)
   protected
-    method PlatformAdd; partial;
+    method PlatformAdd(aListItem: TListItem); partial;
     method PlatformClear; partial;
     method PlatformDelete(aIndex: Integer); partial;
   end;
@@ -71,13 +71,11 @@ implementation
 
 method TListColumn.PlatformSetCaption(aValue: String);
 begin
-  writeLn('Setting column caption to ' + aValue);
   PlatformColumn.title := aValue;
 end;
 
 method TListColumns.PlatformAdd(aListColumn: TListColumn);
 begin
-  writeLn('Here!!');
   var lColumn := new NSTableColumn withIdentifier(fOwner.Name + 'C' + Convert.ToString(aListColumn.Index));
   if aListColumn.Caption ≠ nil then
     lColumn.title := aListColumn.Caption;
@@ -123,11 +121,10 @@ end;
 
 method TListItem.PlatformSetCaption(aValue: String);
 begin
-  writeLn('changing item caption!!!');
   Owner.Owner.RefreshContent;
 end;
 
-method TListItems.PlatformAdd;
+method TListItems.PlatformAdd(aListItem: TListItem);
 begin
   Owner.RefreshContent;
 end;
@@ -188,7 +185,6 @@ end;
 
 method TListView.RefreshContent;
 begin
-  writeLn('reloading data...');
   fTable.reloadData;
 end;
 
@@ -204,10 +200,8 @@ method TListViewController.tableView(tableView: not nullable NSTableView) object
 begin
   var lColumn: TListColumn := nil;
   for i: Integer := 0 to fOwnerList.Columns.Count - 1 do begin
-    writeLn('searching column...');
     if fOwnerList.Columns[i].PlatformColumn = tableColumn then begin
       lColumn := fOwnerList.Columns[i];
-      writeLn('found column...');
       break;
     end;
   end;

@@ -199,7 +199,7 @@ type
     method SetItem(aIndex: Integer; Value: TListItem);
     method SetUpdateState(updating: Boolean);
 
-    method PlatformAdd; partial; virtual; empty;
+    method PlatformAdd(aListItem: TListItem); partial; virtual; empty;
     method PlatformClear; partial; virtual; empty;
     method PlatformDelete(aIndex: Integer); partial; virtual; empty;
   public
@@ -481,7 +481,7 @@ method TListItems.Add: TListItem;
 begin
   result := new TListItem(self);
   result.Index := fItems.Add(result);
-  PlatformAdd;
+  PlatformAdd(result);
 end;
 
 /*method TListItems.AddItem(aItem: TListItem; aIndex: Integer := -1): TListItem;

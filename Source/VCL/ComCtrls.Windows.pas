@@ -37,7 +37,7 @@ type
 
   TListItems = public partial class(TPersistent)
   protected
-    method PlatformAdd; partial;
+    method PlatformAdd(aListItem: TListItem); partial;
     method PlatformClear; partial;
     method PlatformDelete(aIndex: Integer); partial;
   end;
@@ -128,7 +128,7 @@ begin
   rtl.SendMessage(fOwner.Owner.Handle, rtl.LVM_SETITEMTEXT, &Index, rtl.LPARAM(@lItem));
 end;
 
-method TListItems.PlatformAdd;
+method TListItems.PlatformAdd(aListItem: TListItem);
 begin
   var lHandle: rtl.LV_ITEMW;
   lHandle.iItem := fItems.Count - 1;
