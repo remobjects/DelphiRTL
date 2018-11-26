@@ -75,7 +75,7 @@ type
     method GetOwner: TPersistent; override;
     method Update(aItem: TCollectionItem); override;
 
-    method PlatformAdd: TListColumn; partial; virtual; empty;
+    method PlatformAdd(aListColumn: TListColumn); partial; virtual; empty;
   public
     constructor(aOwner: TListView);
     method &Add: TListColumn;
@@ -433,8 +433,10 @@ end;
 
 method TListColumns.Add: TListColumn;
 begin
-  result := inherited &Add as TListColumn;
-  PlatformAdd;
+  writeLn('here 2');
+  result := (inherited &Add) as TListColumn;
+  writeLn('here 3');
+  PlatformAdd(result);
 end;
 
 method TListItems.CreateItem(aIndex: Integer; aListItem: TListItem): TPlatformListViewitem;

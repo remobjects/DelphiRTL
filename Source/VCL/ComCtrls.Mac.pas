@@ -5,19 +5,19 @@
 interface
 
 uses
-  AppKit, RemObjects.Elements.RTL.Delphi;
+  AppKit, RemObjects.Elements.RTL, RemObjects.Elements.RTL.Delphi;
 
 type
   TListColumn = public partial class(TCollectionItem)
   protected
     method PlatformSetCaption(aValue: String); partial;
+  public
+    PlatformColumn: NSTableColumn;
   end;
 
   TListColumns = public partial class(TCollection)
-  private
-    fPlatformColumn: NSTableColumn;
   protected
-    method PlatformAdd: TListColumn; partial;
+    method PlatformAdd(aListColumn: TListColumn); partial;
   end;
 
   TSubItems = public partial class(TStringList)
@@ -46,12 +46,15 @@ type
 
   TListView = public partial class(TMultiSelectListControl)
   private
+  assembly
     fController: TListViewController;
     fTable: NSTableView;
-    method SetupControlView;
+    method SetupControlView(aValue: TViewStyle);
   protected
     method CreateHandle; override;
     method PlatformSetViewStyle(aValue: TViewStyle); partial;
+  public
+    method RefreshContent;
   end;
 
   TListViewController = class(INSTableViewDataSource, INSTableViewDelegate)
@@ -68,67 +71,72 @@ implementation
 
 method TListColumn.PlatformSetCaption(aValue: String);
 begin
-
+  PlatformColumn.title := aValue;
 end;
 
-method TListColumns.PlatformAdd: TListColumn;
+method TListColumns.PlatformAdd(aListColumn: TListColumn);
 begin
-
+  writeLn('Here!!');
+  var lColumn := new NSTableColumn withIdentifier(fOwner.Name + 'C' + Convert.ToString(aListColumn.Index));
+  lColumn.title := fOwner.Columns[aListColumn.Index].Caption;
+  lColumn.width := 100;
+  fOwner.Columns[aListColumn.Index].PlatformColumn := lColumn;
+  fOwner.fTable.addTableColumn(lColumn);
 end;
 
 method TSubItems.UpdateSubItem(aIndex: Integer);
 begin
-
+  fOwner.Owner.Owner.RefreshContent;
 end;
 
 method TSubItems.PlatformPut(aIndex: Integer; S: DelphiString);
 begin
-
+  fOwner.Owner.Owner.RefreshContent;
 end;
 
 method TSubItems.PlatformAdd(S: DelphiString);
 begin
-
+  fOwner.Owner.Owner.RefreshContent;
 end;
 
 method TSubItems.PlatformAddObject(S: DelphiString; aObject: TObject);
 begin
-
+  fOwner.Owner.Owner.RefreshContent;
 end;
 
 method TSubItems.PlatformClear;
 begin
-
+  fOwner.Owner.Owner.RefreshContent;
 end;
 
 method TSubItems.PlatformDelete(aIndex: Integer);
 begin
-
+  fOwner.Owner.Owner.RefreshContent;
 end;
 
 method TSubItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
-
+  fOwner.Owner.Owner.RefreshContent;
 end;
 
 method TListItem.PlatformSetCaption(aValue: String);
 begin
-
+  Owner.Owner.RefreshContent;
 end;
 
 method TListItems.PlatformAdd;
 begin
-
+  Owner.RefreshContent;
 end;
 
 method TListItems.PlatformClear;
 begin
-
+  Owner.RefreshContent;
 end;
 
 method TListItems.PlatformDelete(aIndex: Integer);
 begin
-
+  Owner.RefreshContent;
 end;
 
 method TListView.CreateHandle;
@@ -141,7 +149,7 @@ begin
   fController := new TListViewController(self);
   fTable.delegate := fController;
   fTable.dataSource := fController;
-  fTable.setHeaderView(nil);
+  //fTable.setHeaderView(nil);
 
   (fHandle as NSScrollView).documentView := fTable;
 end;
@@ -157,9 +165,9 @@ begin
       fTable.delegate := fController;
       fTable.dataSource := fController;
       for i: Integer := 0 to Columns.Count do begin
-        var lColumn := new NSTableColumn withIdentifier(Name + 'C' + i.ToString);
+        var lColumn := new NSTableColumn withIdentifier(Name + 'C' + Convert.ToString(i));
         lColumn.title := Columns[i].Caption;
-        Columns[i].fTableColumn := lColumn;
+        Columns[i].PlatformColumn := lColumn;
         fTable.addTableColumn(lColumn);
       end;
       //fTable.setHeaderView(nil);
@@ -174,6 +182,11 @@ begin
   SetupControlView(aValue);
 end;
 
+method TListView.RefreshContent;
+begin
+  fTable.reloadData;
+end;
+
 method TListViewController.numberOfRowsInTableView(tableView: not nullable NSTableView): NSInteger;
 begin
   if fOwnerList.Items = nil then
@@ -184,7 +197,22 @@ end;
 
 method TListViewController.tableView(tableView: not nullable NSTableView) objectValueForTableColumn(tableColumn: nullable NSTableColumn) row(row: NSInteger): nullable id;
 begin
+  var lColumn: TListColumn := nil;
+  for i: Integer := 0 to fOwnerList.Columns.Count - 1 do begin
+    if fOwnerList.Columns[i].PlatformColumn = tableColumn then begin
+      lColumn := fOwnerList.Columns[i];
+      break;
+    end;
+  end;
 
+  if lColumn ≠ nil then begin
+    if lColumn.Index = 0 then
+      result := NSString(fOwnerList.Items[row].Caption)
+    else
+      result := NSString(fOwnerList.Items[row].SubItems[lColumn.index]);
+  end
+  else
+    result := nil;
 end;
 
 constructor TListViewController(aOwner: TListView);

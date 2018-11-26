@@ -15,7 +15,7 @@ type
 
   TListColumns = public partial class(TCollection)
   protected
-    method PlatformAdd: TListColumn; partial;
+    method PlatformAdd(aListColumn: TListColumn); partial;
   end;
 
   TSubItems = public partial class(TStringList)
@@ -63,7 +63,7 @@ begin
   rtl.SendMessage(((Collection as TListColumns).Owner as TListView).Handle, rtl.LVM_SETCOLUMN, ColIndex, rtl.LPARAM(@lColumn));
 end;
 
-method TListColumns.PlatformAdd: TListColumn;
+method TListColumns.PlatformAdd(aListColumn: TListColumn);
 begin
   var lColumn: rtl.LVCOLUMN;
   lColumn.mask := rtl.LVCF_FMT or rtl.LVCF_WIDTH or rtl.LVCF_TEXT or rtl.LVCF_SUBITEM;
