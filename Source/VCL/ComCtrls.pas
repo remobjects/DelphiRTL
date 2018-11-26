@@ -226,7 +226,7 @@ type
     fListColumns: TListColumns;
     fReadOnly: Boolean;
     fHideSelection: Boolean;
-    fViewStyle: TViewStyle;
+    fViewStyle: TViewStyle := TViewStyle.vsIcon;
     fGridLines: Boolean;
     fListItems: TListItems;
     fShowColumnHeaders: Boolean;
@@ -427,15 +427,17 @@ end;
 
 constructor TListColumns(aOwner: TListView);
 begin
+  {$IF TOFFEE}
+  inherited(new &Type withClass(typeOf(TListColumn)));
+  {$ELSE}
   inherited(typeOf(TListColumn));
+  {$ENDIF}
   fOwner := aOwner;
 end;
 
 method TListColumns.Add: TListColumn;
 begin
-  writeLn('here 2');
   result := (inherited &Add) as TListColumn;
-  writeLn('here 3');
   PlatformAdd(result);
 end;
 
@@ -616,7 +618,7 @@ constructor TListView(aOwner: TComponent);
 begin
   fListColumns := new TListColumns(self);
   fListItems := new TListItems(self);
-  fViewStyle := TViewStyle.vsIcon;
+  //fViewStyle := TViewStyle.vsIcon;
 end;
 
 method TListView.AddItem(aItem: DelphiString; aObject: TObject);

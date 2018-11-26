@@ -71,6 +71,7 @@ implementation
 
 method TListColumn.PlatformSetCaption(aValue: String);
 begin
+  writeLn('Setting column caption to ' + aValue);
   PlatformColumn.title := aValue;
 end;
 
@@ -78,9 +79,10 @@ method TListColumns.PlatformAdd(aListColumn: TListColumn);
 begin
   writeLn('Here!!');
   var lColumn := new NSTableColumn withIdentifier(fOwner.Name + 'C' + Convert.ToString(aListColumn.Index));
-  lColumn.title := fOwner.Columns[aListColumn.Index].Caption;
+  if aListColumn.Caption ≠ nil then
+    lColumn.title := aListColumn.Caption;
   lColumn.width := 100;
-  fOwner.Columns[aListColumn.Index].PlatformColumn := lColumn;
+  aListColumn.PlatformColumn := lColumn;
   fOwner.fTable.addTableColumn(lColumn);
 end;
 
@@ -121,6 +123,7 @@ end;
 
 method TListItem.PlatformSetCaption(aValue: String);
 begin
+  writeLn('changing item caption!!!');
   Owner.Owner.RefreshContent;
 end;
 
@@ -141,6 +144,7 @@ end;
 
 method TListView.CreateHandle;
 begin
+  fViewStyle := TViewStyle.vsReport;
   fTable := new NSTableView();
   UnderlyingHandle := fTable;
   fHandle := new NSScrollView;
@@ -164,7 +168,7 @@ begin
       fController := new TListViewController(self);
       fTable.delegate := fController;
       fTable.dataSource := fController;
-      for i: Integer := 0 to Columns.Count do begin
+      for i: Integer := 0 to Columns.Count - 1 do begin
         var lColumn := new NSTableColumn withIdentifier(Name + 'C' + Convert.ToString(i));
         lColumn.title := Columns[i].Caption;
         Columns[i].PlatformColumn := lColumn;
@@ -184,6 +188,7 @@ end;
 
 method TListView.RefreshContent;
 begin
+  writeLn('reloading data...');
   fTable.reloadData;
 end;
 
@@ -199,8 +204,10 @@ method TListViewController.tableView(tableView: not nullable NSTableView) object
 begin
   var lColumn: TListColumn := nil;
   for i: Integer := 0 to fOwnerList.Columns.Count - 1 do begin
+    writeLn('searching column...');
     if fOwnerList.Columns[i].PlatformColumn = tableColumn then begin
       lColumn := fOwnerList.Columns[i];
+      writeLn('found column...');
       break;
     end;
   end;
