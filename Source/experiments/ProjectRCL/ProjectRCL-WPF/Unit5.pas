@@ -68,12 +68,14 @@ begin
 
   lColumn := listview1.Columns.Add;
   lColumn.Caption := 'Loncho 3';
+  //listview1.Items.b
 
 
   var lItem := listview1.Items.Add;
   lItem.Caption := 'Item 1!!';
   lItem.SubItems.Add('Roncho 2');
   lItem.SubItems.Add('Roncho 3');
+  lItem.Caption := 'Item 11!!';
 end;
 
 procedure TForm6.Button2Click(Sender: TObject);
