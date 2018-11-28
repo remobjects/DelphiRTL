@@ -209,7 +209,7 @@ begin
       case lplvdi^.item.iSubItem of
         0: begin
           // 0 as SubItem index is the caption
-          lplvdi^.item.pszText := Items[lplvdi^.item.iItem].Caption.ToLPCWSTR;
+          lplvdi^.item.pszText := String(Items[lplvdi^.item.iItem].Caption).ToLPCWSTR;
         end;
 
         else begin

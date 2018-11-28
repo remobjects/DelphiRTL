@@ -722,8 +722,24 @@ begin
         end
         else
           if fParser.TokenValue = '<' then begin
+            {fWriter.WriteValue(TValueType.vaCollection);
+            fParser.NextToken;
+            fWriter.WriteListEnd;}
             fWriter.WriteValue(TValueType.vaCollection);
             fParser.NextToken;
+            while fParser.TokenValue ≠ '>' do begin
+              if fParser.TokenValue ≠ 'item' then
+                raise new Exception('Wrong collection value!');
+              fWriter.WriteListBegin;
+              fParser.NextToken; // item
+              while fParser.TokenValue ≠ 'end' do begin
+                PropertyToBinary;
+                fParser.NextToken;
+              end;
+              fWriter.WriteListEnd;
+              fParser.NextToken; // end
+            end;
+            //fParser.NextToken;
             fWriter.WriteListEnd;
           end;
     end;
