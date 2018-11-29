@@ -356,8 +356,27 @@ begin
     end;
 
     TValueType.vaCollection: begin
-      // TODO, now just empty collections
-      ReadValue;
+      var lCollection := aProperty.GetValue(aInstance, []);
+      {$IF TOFFEE}
+      var lType := new &Type withClass(typeOf(lCollection));
+      {$ELSE}
+      var lType := typeOf(lCollection);
+      {$ENDIF}
+      {$IF ECHOES}
+      var lAddMethod := lType.GetMethods().Where(a->a.Name = 'Add').FirstOrDefault;
+      {$ELSEIF ISLAND}
+      var lAddMethod := lType.Methods.Where(a->a.Name = 'Add').FirstOrDefault;
+      {$ELSEIF TOFFEE}
+      var lAddMethod := lType.Methods.Where(a->a.Name = 'Add:').FirstOrDefault;
+      {$ENDIF}
+      while not EndOfList do begin
+        ReadValue; // Skip BeginList
+        var lNewItem := TCollectionItem(lAddMethod.Invoke(lCollection, []));
+        while not EndOfList do
+          ReadProperty(lNewItem);
+        ReadValue; // Skip EndList
+      end;
+      ReadValue; // Skip EndList
       exit nil;
     end;
 
