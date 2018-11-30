@@ -60,6 +60,12 @@ begin
   //comboBox1.Items.Add(edit1.Text);
   //edit1.OnKeyPress := @Edit1OnKeyPress;
   //listView1.ViewStyle := TViewStyle.vsIcon;
+
+
+
+
+
+
   if listView1.Columns.Count = 0 then begin
     var lColumn := listView1.Columns.Add;
     lColumn.Caption := 'Loncho!';

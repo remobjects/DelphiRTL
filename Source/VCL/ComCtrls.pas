@@ -6,6 +6,7 @@
 interface
 
 uses
+  RemObjects.Elements.RTL,
   RemObjects.Elements.RTL.Delphi,
   {$IF ECHOESWPF}
   System.Reflection
@@ -44,7 +45,7 @@ type
     method SetWidth(Value: TWidth);
   protected
     method GetDisplayName: String; override;
-    method SetIndex(Value: Integer); override;
+    //method SetIndex(Value: Integer); override;
 
     method PlatformSetCaption(aValue: String); partial; virtual; empty;
   public
@@ -75,7 +76,7 @@ type
     method GetOwner: TPersistent; override;
     method Update(aItem: TCollectionItem); override;
 
-    method PlatformAdd: TListColumn; partial; virtual; empty;
+    method PlatformAdd(aListColumn: TListColumn); partial; virtual; empty;
   public
     constructor(aOwner: TListView);
     method &Add: TListColumn;
@@ -187,9 +188,11 @@ type
   end;
 
   TListItems = public partial class(TPersistent)
-  private
-    fOwner: TListView;
+  public
     fItems: TList<TListItem>;
+  private assembly
+    fOwner: TListView;
+    fUpdating: Integer := 0;
   protected
     //method DefineProperties(Filer: TFiler); override;
     method CreateItem(aIndex: Integer; aListItem: TListItem): TPlatformListViewItem;
@@ -199,7 +202,7 @@ type
     method SetItem(aIndex: Integer; Value: TListItem);
     method SetUpdateState(updating: Boolean);
 
-    method PlatformAdd; partial; virtual; empty;
+    method PlatformAdd(aListItem: TListItem); partial; virtual; empty;
     method PlatformClear; partial; virtual; empty;
     method PlatformDelete(aIndex: Integer); partial; virtual; empty;
   public
@@ -226,7 +229,7 @@ type
     fListColumns: TListColumns;
     fReadOnly: Boolean;
     fHideSelection: Boolean;
-    fViewStyle: TViewStyle;
+    fViewStyle: TViewStyle := TViewStyle.vsIcon;
     fGridLines: Boolean;
     fListItems: TListItems;
     fShowColumnHeaders: Boolean;
@@ -304,6 +307,7 @@ type
     method PlatformSetRowSelect(aValue: Boolean); partial; virtual; empty;
   public
     constructor(aOwner: TComponent);
+    method PlatformRefreshContent; partial; virtual; empty;
     method AddItem(aItem: DelphiString; aObject: TObject); override;
     //method Arrange(Code: TListArrangement);
     method Clear; override;
@@ -322,6 +326,7 @@ type
     property Column[aIndex: Integer]: TListColumn read GetColumnFromIndex;
     property Columns: TListColumns read fListColumns write SetListColumns;
     //property GridLines: Boolean read fGridLines write SetGridLines default False;
+    property IsUpdating: Boolean read Items.fUpdating > 0;
     property ItemFocused: TListItem read GetFocused write SetFocused;
     property Items: TListItems read fListItems write SetItems;
     property RowSelect: Boolean read fRowSelect write SetRowSelect default false;
@@ -384,10 +389,10 @@ begin
 
 end;
 
-method TListColumn.SetIndex(Value: Integer);
-begin
+//method TListColumn.SetIndex(Value: Integer);
+//begin
 
-end;
+//end;
 
 constructor TListColumn(aCollection: TCollection);
 begin
@@ -427,14 +432,18 @@ end;
 
 constructor TListColumns(aOwner: TListView);
 begin
+  {$IF TOFFEE}
+  inherited(new &Type withClass(typeOf(TListColumn)));
+  {$ELSE}
   inherited(typeOf(TListColumn));
+  {$ENDIF}
   fOwner := aOwner;
 end;
 
 method TListColumns.Add: TListColumn;
 begin
-  result := inherited &Add as TListColumn;
-  PlatformAdd;
+  result := (inherited &Add) as TListColumn;
+  PlatformAdd(result);
 end;
 
 method TListItems.CreateItem(aIndex: Integer; aListItem: TListItem): TPlatformListViewitem;
@@ -477,7 +486,7 @@ method TListItems.Add: TListItem;
 begin
   result := new TListItem(self);
   result.Index := fItems.Add(result);
-  PlatformAdd;
+  PlatformAdd(result);
 end;
 
 /*method TListItems.AddItem(aItem: TListItem; aIndex: Integer := -1): TListItem;
@@ -487,7 +496,7 @@ end;*/
 
 method TListItems.BeginUpdate;
 begin
-
+  inc(fUpdating);
 end;
 
 method TListItems.Clear;
@@ -504,7 +513,9 @@ end;
 
 method TListItems.EndUpdate;
 begin
-
+  dec(fUpdating);
+  if fUpdating = 0 then
+    Owner.PlatformRefreshContent;
 end;
 
 method TListItems.IndexOf(aValue: TListItem): Integer;
@@ -614,7 +625,8 @@ constructor TListView(aOwner: TComponent);
 begin
   fListColumns := new TListColumns(self);
   fListItems := new TListItems(self);
-  fViewStyle := TViewStyle.vsIcon;
+  PlatformNativeCreated;
+  //fViewStyle := TViewStyle.vsIcon;
 end;
 
 method TListView.AddItem(aItem: DelphiString; aObject: TObject);

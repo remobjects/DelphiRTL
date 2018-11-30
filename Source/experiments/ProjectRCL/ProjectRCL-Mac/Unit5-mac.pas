@@ -54,7 +54,26 @@ implementation
 
 procedure TForm6.Button1Click(Sender: TObject);
 begin
-  ShowMessage('Clicked!');
+  //ShowMessage('no?');
+  if listView1.ViewStyle ≠ TViewStyle.vsReport then
+    listView1.ViewStyle := TViewStyle.vsReport;
+  writeLn('antes');
+  var lColumn := listView1.Columns.Add;
+  lColumn.Caption := 'Loncho!';
+
+  lColumn := listView1.Columns.Add;
+  lColumn.Caption := 'Loncho 2';
+
+  lColumn := listView1.Columns.Add;
+  lColumn.Caption := 'Loncho 3';
+
+
+  var lItem := listView1.Items.Add;
+  lItem.Caption := 'Item 1!!';
+  lItem.SubItems.Add('Roncho 2');
+  lItem.SubItems.Add('Roncho 3');
+
+  //ShowMessage('Clicked!');
   //listBox1.Items.Add('Item 1');
   //comboBox1.Items.Add('Item 1');
   {

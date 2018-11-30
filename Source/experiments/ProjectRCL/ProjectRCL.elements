@@ -51,11 +51,8 @@
     <Reference Include="Delphi">
       <HintPath>..\..\bin\Debug\Windows\i386\Delphi.fx</HintPath>
     </Reference>
-    <Reference Include="Island">
-      <HintPath>C:\dev\ro\IslandRTL\Source\Bin\Debug\Windows\i386\Island.fx</HintPath>
-    </Reference>
     <Reference Include="DelphiVCL">
-      <HintPath>..\..\bin\Debug\Windows\i386\DelphiVCL.fx</HintPath>
+      <HintPath>..\..\Bin\Debug\Windows\i386\DelphiVCL.fx</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

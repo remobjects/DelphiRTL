@@ -22,6 +22,7 @@ type
   private
     fCollection: TCollection;
     fID: Integer;
+    fIndex: Integer;
     method GetIndex: Integer;
   protected
     method Changed(AllItems: Boolean);
@@ -111,7 +112,7 @@ begin
   end
   else
     lCtor.Invoke(result, aParameters);
-  {$ELSEIF ECHOESWPF}
+  {$ELSEIF ECHOES}
   result := TObject(Activator.CreateInstance(aType, aParameters));
   {$ELSEIF MACOS}
   var lInstanceType := aType;
@@ -215,6 +216,7 @@ method TCollection.Add: TCollectionItem;
 begin
   result := TCollectionItem(TClassActivator.CreateInstance(fItemClass, [self]));
   fItems.Add(result);
+  result.Index := fItems.Count - 1;
 end;
 
 method TCollection.BeginUpdate;
@@ -249,7 +251,7 @@ end;
 
 method TCollectionItem.GetIndex: Integer;
 begin
-
+  result := fIndex;
 end;
 
 method TCollectionItem.Changed(AllItems: Boolean);
@@ -269,7 +271,7 @@ end;
 
 method TCollectionItem.SetIndex(aValue: Integer);
 begin
-
+  fIndex := aValue;
 end;
 
 method TCollectionItem.SetDisplayName(aValue: String);

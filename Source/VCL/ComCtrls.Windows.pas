@@ -15,7 +15,7 @@ type
 
   TListColumns = public partial class(TCollection)
   protected
-    method PlatformAdd: TListColumn; partial;
+    method PlatformAdd(aListColumn: TListColumn); partial;
   end;
 
   TSubItems = public partial class(TStringList)
@@ -37,7 +37,7 @@ type
 
   TListItems = public partial class(TPersistent)
   protected
-    method PlatformAdd; partial;
+    method PlatformAdd(aListItem: TListItem); partial;
     method PlatformClear; partial;
     method PlatformDelete(aIndex: Integer); partial;
   end;
@@ -63,7 +63,7 @@ begin
   rtl.SendMessage(((Collection as TListColumns).Owner as TListView).Handle, rtl.LVM_SETCOLUMN, ColIndex, rtl.LPARAM(@lColumn));
 end;
 
-method TListColumns.PlatformAdd: TListColumn;
+method TListColumns.PlatformAdd(aListColumn: TListColumn);
 begin
   var lColumn: rtl.LVCOLUMN;
   lColumn.mask := rtl.LVCF_FMT or rtl.LVCF_WIDTH or rtl.LVCF_TEXT or rtl.LVCF_SUBITEM;
@@ -128,7 +128,7 @@ begin
   rtl.SendMessage(fOwner.Owner.Handle, rtl.LVM_SETITEMTEXT, &Index, rtl.LPARAM(@lItem));
 end;
 
-method TListItems.PlatformAdd;
+method TListItems.PlatformAdd(aListItem: TListItem);
 begin
   var lHandle: rtl.LV_ITEMW;
   lHandle.iItem := fItems.Count - 1;
@@ -209,7 +209,7 @@ begin
       case lplvdi^.item.iSubItem of
         0: begin
           // 0 as SubItem index is the caption
-          lplvdi^.item.pszText := Items[lplvdi^.item.iItem].Caption.ToLPCWSTR;
+          lplvdi^.item.pszText := String(Items[lplvdi^.item.iItem].Caption).ToLPCWSTR;
         end;
 
         else begin

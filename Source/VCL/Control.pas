@@ -167,6 +167,7 @@ type
     fTabStop: Boolean;
     method DoAlign(aAlign: TAlign; var aRect: TRect);
     method PlatformSetTapStop(value: Boolean); virtual; partial; empty;
+    method PlatformNativeCreated; virtual; partial; empty;
   public
     method AlignControl(aControl: TControl); virtual;
     method AlignControls(aControl: TControl; var Rect: TRect); virtual;
