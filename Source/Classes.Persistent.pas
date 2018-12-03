@@ -8,7 +8,7 @@ type
     method AssignError(Source: TPersistent);
   protected
     method AssignTo(Dest: TPersistent); virtual;
-    //method DefineProperties(Filer: TFiler); virtual;
+    method DefineProperties(Filer: TObject {TFiler}); virtual;
     method GetOwner: TPersistent; virtual;
   public
     method Assign(Source: TPersistent); virtual;
@@ -25,6 +25,11 @@ end;
 method TPersistent.AssignTo(Dest: TPersistent);
 begin
   Dest.AssignError(Self);
+end;
+
+method TPersistent.DefineProperties(Filer: TObject {TFiler});
+begin
+  // do nothing here
 end;
 
 method TPersistent.GetOwner: TPersistent;

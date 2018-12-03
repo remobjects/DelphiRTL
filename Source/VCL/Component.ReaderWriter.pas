@@ -18,14 +18,14 @@ type
   TValueType = public enum(vaNull, vaList, vaInt8, vaInt16, vaInt32, vaExtended, vaString, vaIdent, vaFalse, vaTrue, vaBinary, vaSet, vaLString,
     vaNil, vaCollection, vaSingle, vaCurrency, vaDate, vaWString, vaInt64, vaUTF8String, vaDouble);
 
-  TReaderProc = public block(Reader: TReader);
-  TWriterProc = public block(Writer: TWriter);
-  TStreamProc = public block(Stream: TStream);
-
   {$IF MACOS}
   Del1 = delegate(a: IntPtr);
   Del1Helper = public procedure (aInst: id; aSel: SEL; a: IntPtr);
   {$ENDIF}
+
+  TReaderProc = public block(Reader: TReader);
+  TWriterProc = public block(Writer: TWriter);
+  TStreamProc = public block(Stream: TStream);
 
   TFiler = public abstract class(TObject)
   private
@@ -38,8 +38,8 @@ type
   public
     const FilerSignature: UInt32 = $30465054; // 'TPF0'
     constructor(aStream: TStream; BufSize: Integer);
-    //method DefineProperty(Name: String; ReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean); virtual; abstract;
-    //method DefineBinaryProperty(Name: String; ReadData, WriteData: TStreamProc; HasData: Boolean); virtual; abstract;
+    method DefineProperty(aName: String; ReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean); virtual; abstract;
+    method DefineBinaryProperty(aName: String; ReadData: TStreamProc; WriteData: TStreamProc; HasData: Boolean); virtual; abstract;
     //method FlushBuffer; virtual; abstract;
     property Root: TComponent read fRoot write SetRoot;
     property Ancestor: TPersistent read fAncestor write fAncestor;
@@ -50,7 +50,7 @@ type
   PropertyInfo = &Property;
   {$ENDIF}
 
-  TReader = public class(TFiler)
+  TReader = public partial class(TFiler)
   private
     fParent: TComponent;
     fOwner: TComponent;
@@ -59,6 +59,8 @@ type
   protected
     method ReadProperty(aInstance: TPersistent);
   public
+    method DefineProperty(aName: String; aReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean); override;
+    method DefineBinaryProperty(aName: String; aReadData: TStreamProc; WriteData: TStreamProc; HasData: Boolean); override;
     method EndOfList: Boolean;
     method ReadComponent(aComponent: TComponent): TComponent;
     method ReadData(Instance: TComponent);
@@ -72,6 +74,8 @@ type
 
   TWriter = public class(TFiler)
   public
+    method DefineProperty(aName: String; ReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean); override;
+    method DefineBinaryProperty(aName: String; ReadData: TStreamProc; WriteData: TStreamProc; HasData: Boolean); override;
     method WriteListBegin;
     method WriteListEnd;
     method WriteSignature;
@@ -83,6 +87,9 @@ type
     method WriteInt64(aValue: Int64);
     method WriteDouble(aValue: Double);
     method WriteSet(aValue: Byte);
+    method &Write(aBuffer: array of Byte; aOffset: Integer; aCount: Integer);
+    method WriteVar(aValue: Integer);
+
   end;
 
   TResourceId = public {$IF ISLAND AND WINDOWS} ^Void {$ELSE} Object {$ENDIF};
@@ -126,6 +133,7 @@ type
     method TokenInt: Int64;
     method TokenString: String;
     method TokenSymbolIs(S: String): Boolean;
+    method TokenStringUntil(C: Char);
     property Token: TParserToken read fToken;
     property TokenValue: String read fTokenValue;
   end;
@@ -163,6 +171,16 @@ end;
 constructor TFiler(aStream: TStream; BufSize: Integer);
 begin
   fStream := aStream;
+end;
+
+method TReader.DefineProperty(aName: String; aReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean);
+begin
+
+end;
+
+method TReader.DefineBinaryProperty(aName: String; aReadData: TStreamProc; WriteData: TStreamProc; HasData: Boolean);
+begin
+
 end;
 
 method TReader.ReadComponentData(aInstance: TComponent);
@@ -741,9 +759,6 @@ begin
         end
         else
           if fParser.TokenValue = '<' then begin
-            {fWriter.WriteValue(TValueType.vaCollection);
-            fParser.NextToken;
-            fWriter.WriteListEnd;}
             fWriter.WriteValue(TValueType.vaCollection);
             fParser.NextToken;
             while fParser.TokenValue ≠ '>' do begin
@@ -760,7 +775,18 @@ begin
             end;
             //fParser.NextToken;
             fWriter.WriteListEnd;
-          end;
+          end
+          else
+            if fParser.TokenValue = '{' then begin
+              fWriter.WriteValue(TValueType.vaBinary);
+              //fParser.NextToken;
+              //writeLn(fParser.TokenValue);
+              fParser.TokenStringUntil('}');
+              fWriter.WriteVar(Integer(fParser.TokenValue.Length / 2));
+              var lData := Convert.HexStringToByteArray(fParser.TokenValue);
+              fWriter.Write(lData, 0, length(lData));
+              fParser.NextToken; // Skip }
+            end;
     end;
   end;
 end;
@@ -944,7 +970,7 @@ begin
       fToken := TParserToken.toString;
     end;
 
-    ':', '#', '=', '[', ']', '(', ')', '<', '>': begin
+    ':', '#', '=', '[', ']', '(', ')', '<', '>', '{', '}': begin
       fTokenValue := lChar;
       NextChar;
       fToken := TParserToken.toOtCharacter;
@@ -984,6 +1010,20 @@ begin
   result := (fToken = TParserToken.toSymbol) and (String.Compare(S, fTokenValue) = 0);
 end;
 
+method TParser.TokenStringUntil(C: Char);
+begin
+  SkipToNext;
+  fTokenValue := '';
+  var lChar := PeekChar;
+  while lChar ≠ C do begin
+    fTokenValue := fTokenValue + lChar;
+    SkipToNext;
+    NextChar;
+    SkipToNext;
+    lChar := PeekChar;
+  end;
+end;
+
 constructor TParser(aStream: TStream; FormatSettings: TFormatSettings);
 begin
 
@@ -1008,6 +1048,16 @@ method TParser.SkipToNext;
 begin
   while (fStream.Position < fStream.Size) and (PeekChar in [' ', #13, #10]) do
     fStream.Position := fStream.Position + 1;
+end;
+
+method TWriter.DefineProperty(aName: String; ReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean);
+begin
+
+end;
+
+method TWriter.DefineBinaryProperty(aName: String; ReadData: TStreamProc; WriteData: TStreamProc; HasData: Boolean);
+begin
+
 end;
 
 method TWriter.WriteListBegin;
@@ -1094,6 +1144,16 @@ end;
 method TWriter.WriteSet(aValue: Byte);
 begin
   fStream.WriteData(Byte(TValueType.vaSet));
+  fStream.WriteData(aValue);
+end;
+
+method TWriter.Write(aBuffer: array of Byte; aOffset: Integer; aCount: Integer);
+begin
+  fStream.Write(aBuffer, aOffset, aCount);
+end;
+
+method TWriter.WriteVar(aValue: Integer);
+begin
   fStream.WriteData(aValue);
 end;
 
