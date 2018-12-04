@@ -1282,7 +1282,8 @@ begin
   if (lStartIndex < Length) and (lTotal < lCount) then
     lList.Add(SubString(lStartIndex));
 
-  result := {$IF TOFFEE}PlatformArrayToStringArray(lList.ToArray){$ELSE}lList.ToArray{$ENDIF};
+  //result := {$IF TOFFEE}PlatformArrayToStringArray(lList.ToArray){$ELSE}lList.ToArray{$ENDIF};
+  result := [];
   {$ENDIF}
 end;
 
