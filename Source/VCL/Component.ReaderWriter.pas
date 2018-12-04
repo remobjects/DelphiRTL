@@ -54,6 +54,7 @@ type
   private
     fParent: TComponent;
     fOwner: TComponent;
+    fCurrentProperty: String;
     method ReadComponentData(aInstance: TComponent);
     method FindProperty(aType: &Type; aName: String): PropertyInfo;
   protected
@@ -180,7 +181,17 @@ end;
 
 method TReader.DefineBinaryProperty(aName: String; aReadData: TStreamProc; WriteData: TStreamProc; HasData: Boolean);
 begin
-
+  if String.Compare(fCurrentProperty, aName) = 0 then begin
+    var lNewStream := new TMemoryStream();
+    var lSize: Int32;
+    fStream.ReadData(var lSize);
+    var lBuffer := new Byte[lSize];
+    fStream.Read(var lBuffer, lSize);
+    lNewStream.Write(lBuffer, lSize);
+    lNewStream.Position := 0;
+    aReadData(lNewStream);
+    fCurrentProperty := '';
+  end;
 end;
 
 method TReader.ReadComponentData(aInstance: TComponent);
