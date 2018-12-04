@@ -23,9 +23,9 @@ type
   Del1Helper = public procedure (aInst: id; aSel: SEL; a: IntPtr);
   {$ENDIF}
 
-  TReaderProc = public block(Reader: TReader);
-  TWriterProc = public block(Writer: TWriter);
-  TStreamProc = public block(Stream: TStream);
+  TReaderProc = public procedure(Reader: TReader) of object;
+  TWriterProc = public procedure(Writer: TWriter) of object;
+  TStreamProc = public procedure(Stream: TStream) of object;
 
   TFiler = public abstract class(TObject)
   private

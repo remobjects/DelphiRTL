@@ -193,7 +193,7 @@ type
   private assembly
     fOwner: TListView;
     fUpdating: Integer := 0;
-    method ReadListItemsData(aReader: TReader);
+    method ReadListItemsData(aStream: TStream);
   protected
     //method DefineProperties(Filer: TFiler); override;
     method CreateItem(aIndex: Integer; aListItem: TListItem): TPlatformListViewItem;
@@ -208,7 +208,7 @@ type
     method PlatformDelete(aIndex: Integer); partial; virtual; empty;
   public
     constructor(aOwner: TListView);
-    method DefineProperties(Filer: TObject {TFiler});
+    method DefineProperties(Filer: TObject {TFiler}); override;
     method &Add: TListItem;
     //method AddItem(aItem: TListItem; aIndex: Integer = -1): TListItem;
     //method Assign(Source: TPersistent); override;
@@ -448,7 +448,7 @@ begin
   PlatformAdd(result);
 end;
 
-method TListItems.ReadListItemsData(aReader: TReader);
+method TListItems.ReadListItemsData(aStream: TStream);
 begin
 
 end;
@@ -493,7 +493,7 @@ method TListItems.DefineProperties(Filer: TObject);
 begin
   inherited DefineProperties(Filer);
   var lFiler := Filer as TFiler;
-  //TODO lFiler.DefineBinaryProperty('ItemData', ReadListItemsData, nil, true);
+  lFiler.DefineBinaryProperty('ItemData', @ReadListItemsData, nil, true);
 end;
 
 method TListItems.Add: TListItem;
