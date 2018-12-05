@@ -419,14 +419,17 @@ end;
 
 method TReader.FindProperty(aType: &Type; aName: String): PropertyInfo;
 begin
+  result := nil;
   {$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS))}
   var lType := aType;
-  while aType <> nil do begin
+  while lType <> nil do begin
     result := lType.Properties.Where(a -> (a.Name = aName)).FirstOrDefault;
-    if result <> nil then begin
+    if result <> nil then
       exit;
-    end;
-    lType := new &Type(lType.RTTI^.ParentType);
+    if lType.RTTI^.ParentType <> nil then
+      lType := new &Type(lType.RTTI^.ParentType)
+    else
+      lType := nil;
   end;
   {$ELSEIF ECHOESWPF}
   var lType := aType;
@@ -502,26 +505,33 @@ begin
   lIsTStrings := lType.IsSubclassOf(typeOf(TStrings));
   {$ENDIF}
 
-  if not lIsTStrings then begin
+  if not lIsTStrings then
     lProperty := FindProperty(lType, lName);
-    if lProperty = nil then raise new Exception('Can not get property ' + lName);
-  end;
-  var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
 
-  if (lValue ≠ TValueType.vaList) and (lValue ≠ TValueType.vaCollection) then begin
-    {$IF ISLAND}
-    DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
-    {$ELSEIF ECHOESWPF}
-    var lCurrentProp := lType.GetProperty(lName, BindingFlags.Public or BindingFlags.Instance);
-    if lCurrentProp = nil then
+  if lProperty = nil then begin
+    fCurrentProperty := lName;
+    (lInstance as TPersistent).DefineProperties(self);
+    if fCurrentProperty <> '' then
       raise new Exception('Can not get property ' + lName);
-    lCurrentProp.SetValue(lInstance, lPropValue, nil);
-    {$ELSEIF TOFFEE}
+  end
+  else begin
+    var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
+
+    if (lValue ≠ TValueType.vaList) and (lValue ≠ TValueType.vaCollection) then begin
+      {$IF ISLAND}
+      DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
+      {$ELSEIF ECHOESWPF}
+      var lCurrentProp := lType.GetProperty(lName, BindingFlags.Public or BindingFlags.Instance);
+      if lCurrentProp = nil then
+        raise new Exception('Can not get property ' + lName);
+      lCurrentProp.SetValue(lInstance, lPropValue, nil);
+      {$ELSEIF TOFFEE}
       lProperty := FindProperty(lType, lName);
       if lProperty = nil then raise new Exception('Can not get property ' + lName);
       if lPropValue ≠ nil then // TODO
         lProperty.SetValue(lInstance, nil, lPropValue);
-    {$ENDIF}
+      {$ENDIF}
+    end;
   end;
 end;
 

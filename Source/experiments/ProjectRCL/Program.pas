@@ -18,12 +18,12 @@ type
     end;
     class method Main(args: array of String): Int32;
     begin
-      var lDfm := new TFileStream('C:\dev\ro\DelphiRTL\Source\experiments\ProjectRCL\withListItems.dfm', fmOpenRead);
+      {var lDfm := new TFileStream('C:\dev\ro\DelphiRTL\Source\experiments\ProjectRCL\withListItems.dfm', fmOpenRead);
       var lRes := new TFileStream('C:\dev\ro\DelphiRTL\Source\experiments\ProjectRCL\ComeOnListItems.res', fmCreate or fmOpenWrite);
       var lConverter := new ObjectConverter(lDfm, lRes);
       writeLn('To convert...');
       lConverter.ToBinary;
-      writeLn('Converted!');
+      writeLn('Converted!');}
 
       // this is the default VCL prject code
 
@@ -42,11 +42,11 @@ type
 
 
 
-      {Application := new TApplication(nil);
+      Application := new TApplication(nil);
       Application.Initialize;
       //Application.MainFormOnTaskbar := True;
       Application.CreateForm(typeOf(TForm6), var Form6);
-      Application.Run;}
+      Application.Run;
     end;
   end;
 end.

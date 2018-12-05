@@ -8,9 +8,9 @@ type
     method AssignError(Source: TPersistent);
   protected
     method AssignTo(Dest: TPersistent); virtual;
-    method DefineProperties(Filer: TObject {TFiler}); virtual;
     method GetOwner: TPersistent; virtual;
   public
+    method DefineProperties(Filer: TObject {TFiler}); virtual;
     method Assign(Source: TPersistent); virtual;
     method GetNamePath: DelphiString; virtual;
   end;

@@ -1,6 +1,5 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-//{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
 {$IF (ISLAND AND (WINDOWS) AND NOT DARWIN) OR ECHOESWPF OR (MACOS AND NOT (ISLAND AND DARWIN))}
 
 interface
@@ -57,7 +56,7 @@ type
     //property ImageIndex: TImageIndex read fImageIndex write SetImageIndex default -1;
     property MaxWidth: TWidth read fMaxWidth write SetMaxWidth default 0;
     property MinWidth: TWidth read fMinWidth write SetMinWidth default 0;
-    property Tag: Integer read fTag write FTag default 0;
+    property Tag: Integer read fTag write fTag default 0;
     property Width: TWidth read GetWidth write SetWidth default 50;
     property WidthType: TWidth read fWidth;
     property ColIndex: Integer read fColIndex;
