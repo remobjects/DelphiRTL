@@ -33,6 +33,8 @@ type
   TListItem = public partial class(TPersistent)
   protected
     method PlatformSetCaption(aValue: String); partial;
+    method PlatformGetSelected: Boolean; partial;
+    method PlatformSetSelected(aValue: Boolean); partial;
   end;
 
   TListItems = public partial class(TPersistent)
@@ -128,6 +130,21 @@ begin
   rtl.SendMessage(fOwner.Owner.Handle, rtl.LVM_SETITEMTEXT, &Index, rtl.LPARAM(@lItem));
 end;
 
+method TListItem.PlatformGetSelected: Boolean;
+begin
+  result := (rtl.SendMessage(fOwner.Owner.Handle, rtl.LVM_GETITEMSTATE, &Index, rtl.LPARAM(rtl.LVIS_SELECTED)) and rtl.LVIS_SELECTED) <> 0;
+end;
+
+method TListItem.PlatformSetSelected(aValue: Boolean);
+begin
+  var lItem: rtl.LV_ITEMW;
+  lItem.iSubItem := 0;
+  lItem.mask := rtl.LVIF_STATE;
+  lItem.stateMask := rtl.LVIS_SELECTED;
+  lItem.state := Integer(aValue);
+  rtl.SendMessage(fOwner.Owner.Handle, rtl.LVM_SETITEMSTATE, &Index, rtl.LPARAM(@lItem));
+end;
+
 method TListItems.PlatformAdd(aListItem: TListItem);
 begin
   var lHandle: rtl.LV_ITEMW;
@@ -219,6 +236,15 @@ begin
             lplvdi^.item.pszText := ''.ToLPCWSTR;
         end;
       end;
+    end;
+
+    rtl.LVN_ITEMCHANGED: begin
+      var lpNmListView := ^rtl.NMLISTVIEW(^Void(aMessage.lParam));
+      var lItem := Items[lpNmListView^.iItem];
+      if (lpNmListView^.uOldState and rtl.LVIS_SELECTED <> 0) and (lpNmListView^.uNewState and rtl.LVIS_SELECTED = 0) then
+        DoSelectItem(lItem, false)
+      else if (lpNmListView^.uOldState and rtl.LVIS_SELECTED = 0) and (lpNmListView^.uNewState and rtl.LVIS_SELECTED <> 0) then
+        DoSelectItem(lItem, true);
     end;
   end;
 end;

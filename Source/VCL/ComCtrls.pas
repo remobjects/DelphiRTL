@@ -145,11 +145,15 @@ type
     method SetState(aIndex: Integer; State: Boolean);
     method SetSubItems(Value: TStrings);
     method SetTop(Value: Integer);
+    method GetSelected: Boolean;
+    method SetSelected(aValue: Boolean);
     //function GetSubItemImage(Index: Integer): Integer;
     //method SetSubItemImage(Index: Integer; const Value: Integer);
     //method SetGroupID(Value: Integer);
   protected
     method PlatformSetCaption(aValue: String); partial; virtual; empty;
+    method PlatformGetSelected: Boolean; partial; virtual; empty;
+    method PlatformSetSelected(aValue: Boolean); partial; virtual; empty;
   public
     constructor(aOwner: TListItems); virtual;
     //method Assign(Source: TPersistent); override;
@@ -178,7 +182,7 @@ type
     property Owner: TListItems read fOwner;
     property OverlayIndex: TImageIndex read fOverlayIndex write fOverlayIndex;
     //property Position: TPoint read GetPosition write SetPosition;
-    //property Selected: Boolean read GetState write SetState; // TODO index
+    property Selected: Boolean read GetSelected write SetSelected;
     property StateIndex: TImageIndex read fStateIndex write fStateIndex;
     property SubItems: TStrings read fSubItems write SetSubItems;
     //property SubItemImages[Index: Integer]: Integer read GetSubItemImage write SetSubItemImage;
@@ -631,7 +635,8 @@ end;
 
 method TListView.DoSelectItem(aItem: TListItem; aSelected: Boolean);
 begin
-
+  if assigned(fOnSelectItem) then
+    fOnSelectItem(self, aItem, aSelected);
 end;
 
 method TListView.GetItemIndex(Value: TListItem): Integer;
@@ -910,6 +915,16 @@ end;
 method TListItem.SetTop(Value: Integer);
 begin
 
+end;
+
+method TListItem.GetSelected: Boolean;
+begin
+  result := PlatformGetSelected;
+end;
+
+method TListItem.SetSelected(aValue: Boolean);
+begin
+  PlatformSetSelected(aValue);
 end;
 
 constructor TListItem(aOwner: TListItems);
