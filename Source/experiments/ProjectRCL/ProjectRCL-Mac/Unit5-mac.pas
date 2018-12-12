@@ -23,6 +23,7 @@ type
     comboBox1: TComboBox;
 
     listView1: TListView;
+    treeView1: TTreeView;
     {
     groupBox1: TGroupBox;
     panel1: TPanel;

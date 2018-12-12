@@ -45,6 +45,8 @@ type
   end;
 
   TListView = public partial class(TMultiSelectListControl)
+  private
+    class constructor;
   protected
     method CreateParams(var aParams: TCreateParams); override;
     method PlatformSetViewStyle(aValue: TViewStyle); partial;
@@ -169,10 +171,8 @@ type
   [CallingConvention(CallingConvention.Stdcall)]
   TInitEx = function(picce: ^rtl.INITCOMMONCONTROLSEX): rtl.BOOL;
 
-method TListView.CreateParams(var aParams: TCreateParams);
+class constructor TListView;
 begin
-  inherited(var aParams);
-
   {var lInit: rtl.INITCOMMONCONTROLSEX;
   lInit.dwICC := rtl.ICC_LISTVIEW_CLASSES;
   rtl.InitCommonControlsEx(@lInit);}
@@ -183,6 +183,11 @@ begin
   var lModule := rtl.LoadLibrary('Comctl32.dll');
   var lProc := TInitEx(rtl.GetProcAddress(lModule, 'InitCommonControlsEx'));
   lProc(@lIce);
+end;
+
+method TListView.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
 
   aParams.WidgetClassName := rtl.WC_LISTVIEW.ToCharArray(true);
   aParams.Style := aParams.Style or rtl.LVS_ICON or rtl.WS_BORDER or rtl.WS_CLIPCHILDREN;

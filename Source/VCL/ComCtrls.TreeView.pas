@@ -16,7 +16,7 @@ type
   TMultiSelectStyle = set of TMultiSelectStyles;
   TSortType = public enum(stNone, stData, stText, stBoth) of Integer;
 
-  TTreeNode = public class(TPersistent)
+  TTreeNode = public partial class(TPersistent)
   private
     fOwner: TTreeNodes;
     fText: String;
@@ -68,12 +68,14 @@ type
     //method ReadData(Stream: TStream; Info: PNodeInfo);
     //method ReadNodeData(Stream: TStream; NodeDataType: TNodeDataType);
     //method WriteNodeData(Stream: TStream);
+  assembly
+    constructor(aOwner: TTreeNodes; aText: String);
   protected
     method GetState(NodeState: TNodeState): Boolean;
     method SetState(NodeState: TNodeState; Value: Boolean);
     method SetSelectedBit(Value: Boolean);
   public
-    constructor(aOwner: TTreeNodes); virtual;
+    constructor(aOwner: TTreeNodes);
     //method AlphaSort(aRecurse: Boolean := False): Boolean;
     //method Assign(Source: TPersistent); override;
     method Collapse(Recurse: Boolean);
@@ -128,7 +130,7 @@ type
     property TreeView: TTreeView read GetTreeView;
   end;
 
-  TTreeNodes = public class(TPersistent)
+  TTreeNodes = public partial class(TPersistent)
   private
     fOwner: TTreeView;
     fUpdateCount: Integer;
@@ -151,9 +153,15 @@ type
     method SetItem(aIndex: Integer; aValue: TTreeNode);
     method SetUpdateState(Updating: Boolean);
     property Reading: Boolean read GetReading;
+
+    method PlatformAddChild(aParent: TTreeNode; aNode: TTreeNode); virtual; partial; empty;
+    method PlatformAddChildFirst(aParent: TTreeNode; aNode: TTreeNode); virtual; partial; empty;
+    method PlatformAdd(aSibling: TTreeNode; aNode: TTreeNode); virtual; partial; empty;
+    method PlatformAddFirst(aSibling: TTreeNode; aNode: TTreeNode); virtual; partial; empty;
+
   public
     constructor(aOwner: TTreeView);
-    method DefineProperties(aFiler: TObject {TFIler}); override;
+    method DefineProperties(aFiler: TObject {TFiler}); override;
     method AddChildFirst(aParent: TTreeNode; S: String): TTreeNode;
     method AddChild(aParent: TTreeNode; S: String): TTreeNode;
     //method AddChildObjectFirst(Parent: TTreeNode; S: string; Ptr: TCustomData): TTreeNode;
@@ -182,7 +190,7 @@ type
     property Owner: TTreeView read fOwner;
   end;
 
-  TTreeView = public class(TWinControl)
+  TTreeView = public partial class(TNativeControl)
   private
     fAutoExpand: Boolean;
     //fBorderStyle: TBorderStyle;
@@ -315,8 +323,6 @@ type
     method Collapse(aNode: TTreeNode); virtual;
     method CreateNode: TTreeNode; virtual;
     method CreateNodes: TTreeNodes; virtual;
-    method CreateParams(var aParams: TCreateParams); override;
-    method CreateWnd; override;
     //method CustomDraw(aRect: TRect; Stage: TCustomDrawStage): Boolean; virtual;
     //method CustomDrawItem(aNode: TTreeNode; State: TCustomDrawState; Stage: TCustomDrawStage; var PaintImages: Boolean): Boolean; virtual;
     method Delete(aNode: TTreeNode); virtual;
@@ -332,10 +338,9 @@ type
     method Loaded; override;
     method Notification(aComponent: TComponent; aOperation: TOperation); override;
     //method SetDragMode(Value: TDragMode); override;
-    method WndProc(var Message: TMessage); override;
     //method ValidateSelection;
     //method InvalidateSelectionsRects;
-    method MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    method MouseDown(aButton: TMouseButton; aShift: TShiftState; X, Y: Integer); override;
     method DoEnter; override;
     method DoExit; override;
     //method IsTouchPropertyStored(AProperty: TTouchProperty): Boolean; override;
@@ -587,9 +592,15 @@ begin
 
 end;
 
+constructor TTreeNode(aOwner: TTreeNodes; aText: String);
+begin
+  fOwner := aOwner;
+  fText := aText;
+end;
+
 constructor TTreeNode(aOwner: TTreeNodes);
 begin
-
+  fOwner := aOwner;
 end;
 
 method TTreeNode.Collapse(Recurse: Boolean);
@@ -739,27 +750,31 @@ end;
 
 constructor TTreeNodes(aOwner: TTreeView);
 begin
-
+  fOwner := aOwner;
 end;
 
 method TTreeNodes.AddChildFirst(aParent: TTreeNode; S: String): TTreeNode;
 begin
-
+  result := new TTreeNode(self, S);
+  PlatformAddChildFirst(aParent, result);
 end;
 
 method TTreeNodes.AddChild(aParent: TTreeNode; S: String): TTreeNode;
 begin
-
+  result := new TTreeNode(self, S);
+  PlatformAddChild(aParent, result);
 end;
 
 method TTreeNodes.AddFirst(aSibling: TTreeNode; S: String): TTreeNode;
 begin
-
+  result := new TTreeNode(self, S);
+  PlatformAddFirst(aSibling, result);
 end;
 
 method TTreeNodes.Add(aSibling: TTreeNode; S: String): TTreeNode;
 begin
-
+  result := new TTreeNode(self, S);
+  PlatformAdd(aSibling, result);
 end;
 
 method TTreeNodes.BeginUpdate;
@@ -972,16 +987,6 @@ begin
 
 end;
 
-method TTreeView.CreateParams(var aParams: TCreateParams);
-begin
-
-end;
-
-method TTreeView.CreateWnd;
-begin
-
-end;
-
 method TTreeView.Delete(aNode: TTreeNode);
 begin
 
@@ -1017,12 +1022,7 @@ begin
 
 end;
 
-method TTreeView.WndProc(var Message: TMessage);
-begin
-
-end;
-
-method TTreeView.MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer);
+method TTreeView.MouseDown(aButton: TMouseButton; aShift: TShiftState; X: Integer; Y: Integer);
 begin
 
 end;
