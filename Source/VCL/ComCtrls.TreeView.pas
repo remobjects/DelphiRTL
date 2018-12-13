@@ -16,12 +16,15 @@ type
   TMultiSelectStyle = set of TMultiSelectStyles;
   TSortType = public enum(stNone, stData, stText, stBoth) of Integer;
 
+  TPlatformNodeHandle = public {$IF ISLAND AND WINDOWS}rtl.HTREEITEM{$ELSEIF ECHOESWPF}System.Windows.Controls.TreeViewItem{$ELSE}Object{$ENDIF};
+
   TTreeNode = public partial class(TPersistent)
   private
     fOwner: TTreeNodes;
     fText: String;
+    fParent: TTreeNode;
     //fData: TCustomData;
-    //fItemId: HTreeItem;
+    fItemId: TPlatformNodeHandle; assembly;
     fImageIndex: TImageIndex;
     fSelectedIndex: Integer;
     fOverlayIndex: Integer;
@@ -31,13 +34,12 @@ type
     fEnabled: Boolean;
     fExpandedImageIndex: TImageIndex;
     method CompareCount(CompareMe: Integer): Boolean;
-    method DoCanExpand(Expand: Boolean): Boolean;
-    method DoExpand(Expand: Boolean);
-    method ExpandItem(Expand: Boolean; Recurse: Boolean);
+    method DoCanExpand(aExpand: Boolean): Boolean;
+    method DoExpand(aExpand: Boolean);
+    method ExpandItem(aExpand: Boolean; Recurse: Boolean);
     method GetAbsoluteIndex: Integer;
     method GetExpanded: Boolean;
     method GetLevel: Integer;
-    method GetParent: TTreeNode;
     method GetChildren: Boolean;
     method GetCut: Boolean;
     //method GetDropTarget: Boolean;
@@ -69,7 +71,7 @@ type
     //method ReadNodeData(Stream: TStream; NodeDataType: TNodeDataType);
     //method WriteNodeData(Stream: TStream);
   assembly
-    constructor(aOwner: TTreeNodes; aText: String);
+    constructor(aOwner: TTreeNodes; aText: String; aParent: TTreeNode);
   protected
     method GetState(NodeState: TNodeState): Boolean;
     method SetState(NodeState: TNodeState; Value: Boolean);
@@ -118,11 +120,11 @@ type
     property &Index: Integer read GetIndex;
     property IsVisible: Boolean read IsNodeVisible;
     property Item[aIndex: Integer]: TTreeNode read GetItem write SetItem; default;
-    //property ItemId: HTreeItem read fItemId;
+    property ItemId: TPlatformNodeHandle read fItemId;
     property Level: Integer read GetLevel;
     property OverlayIndex: Integer read fOverlayIndex write SetOverlayIndex;
     property Owner: TTreeNodes read fOwner;
-    property Parent: TTreeNode read GetParent;
+    property Parent: TTreeNode read fParent;
     property SelectedIndex: Integer read fSelectedIndex write SetSelectedIndex;
     property Enabled: Boolean read fEnabled write SetEnabled;
     property StateIndex: Integer read fStateIndex write SetStateIndex;
@@ -133,7 +135,7 @@ type
   TTreeNodes = public partial class(TPersistent)
   private
     fOwner: TTreeView;
-    fUpdateCount: Integer;
+    fUpdateCount: Integer := 0;
     //fNodeCache: TNodeCache;
     method AddedNode(Value: TTreeNode);
     //method GetHandle: HWND;
@@ -154,10 +156,10 @@ type
     method SetUpdateState(Updating: Boolean);
     property Reading: Boolean read GetReading;
 
-    method PlatformAddChild(aParent: TTreeNode; aNode: TTreeNode); virtual; partial; empty;
-    method PlatformAddChildFirst(aParent: TTreeNode; aNode: TTreeNode); virtual; partial; empty;
-    method PlatformAdd(aSibling: TTreeNode; aNode: TTreeNode); virtual; partial; empty;
-    method PlatformAddFirst(aSibling: TTreeNode; aNode: TTreeNode); virtual; partial; empty;
+    method PlatformAddChild(aParent: TTreeNode; var aNode: TTreeNode); virtual; partial; empty;
+    method PlatformAddChildFirst(aParent: TTreeNode; var aNode: TTreeNode); virtual; partial; empty;
+    method PlatformAdd(aSibling: TTreeNode; var aNode: TTreeNode); virtual; partial; empty;
+    method PlatformAddFirst(aSibling: TTreeNode; var aNode: TTreeNode); virtual; partial; empty;
 
   public
     constructor(aOwner: TTreeView);
@@ -192,7 +194,7 @@ type
 
   TTreeView = public partial class(TNativeControl)
   private
-    fAutoExpand: Boolean;
+    fAutoExpand: Boolean := false;
     //fBorderStyle: TBorderStyle;
     //fCanvas: TCanvas;
     //fCanvasChanged: Boolean;
@@ -202,8 +204,8 @@ type
     //fDragImage: TDragImageList;
     //fDragNode: TTreeNode;
     //fEditHandle: HWND;
-    fHideSelection: Boolean;
-    fHotTrack: Boolean;
+    fHideSelection: Boolean := true;
+    fHotTrack: Boolean := false;
     //fImageChangeLink: TChangeLink;
     //fImages: TCustomImageList;
     //fInBufferedPrintClient: Boolean;
@@ -212,24 +214,24 @@ type
     //fRClickNode: TTreeNode;
     //fRightClickSelect: Boolean;
     //fManualNotify: Boolean;
-    fReadOnly: Boolean;
-    fRowSelect: Boolean;
+    fReadOnly: Boolean := false;
+    fRowSelect: Boolean := false;
     fSaveIndex: Integer;
     fSaveIndent: Integer;
     fSaveItems: TStringList;
     fSaveTopIndex: Integer;
-    fShowButtons: Boolean;
-    fShowLines: Boolean;
-    fShowRoot: Boolean;
+    fShowButtons: Boolean := true;
+    fShowLines: Boolean := true;
+    fShowRoot: Boolean := true;
     fSortType: TSortType;
     fStateChanging: Boolean;
     //fStateImages: TCustomImageList;
     //fStateChangeLink: TChangeLink;
-    fToolTips: Boolean;
+    fToolTips: Boolean := true;
     fTreeNodes: TTreeNodes;
     //fWideText: WideString;
-    fMultiSelect: Boolean;
-    fMultiSelectStyle: TMultiSelectStyle;
+    fMultiSelect: Boolean := false;
+    fMultiSelectStyle: TMultiSelectStyle := [TMultiSelectStyle.msControlSelect];
     fSelections: TList<Integer>;
     fSaveIndexes: TList<Integer>;
     fShiftAnchor: TTreeNode;
@@ -345,28 +347,28 @@ type
     method DoExit; override;
     //method IsTouchPropertyStored(AProperty: TTouchProperty): Boolean; override;
     method SetEncoding(Value: TEncoding);
-    property AutoExpand: Boolean read fAutoExpand write SetAutoExpand default False;
+    property AutoExpand: Boolean read fAutoExpand write SetAutoExpand;
     //property BorderStyle: TBorderStyle read FBorderStyle write SetBorderStyle default bsSingle;
-    property ChangeDelay: Integer read GetChangeDelay write SetChangeDelay default 0;
+    property ChangeDelay: Integer read GetChangeDelay write SetChangeDelay;
     //property CreateWndRestores: Boolean read FCreateWndRestores write FCreateWndRestores default True;
     property Encoding: TEncoding read fEncoding;
-    property HideSelection: Boolean read fHideSelection write SetHideSelection default True;
-    property HotTrack: Boolean read fHotTrack write SetHotTrack default False;
+    property HideSelection: Boolean read fHideSelection write SetHideSelection;
+    property HotTrack: Boolean read fHotTrack write SetHotTrack;
     //property Images: TCustomImageList read fImages write SetImages;
     property Indent: Integer read GetIndent write SetIndent;
     property Items: TTreeNodes read fTreeNodes write SetTreeNodes;
-    property MultiSelect: Boolean read FMultiSelect write SetMultiSelect default False;
-    property MultiSelectStyle: TMultiSelectStyle read fMultiSelectStyle write SetMultiSelectStyle default [msControlSelect];
+    property MultiSelect: Boolean read fMultiSelect write SetMultiSelect;
+    property MultiSelectStyle: TMultiSelectStyle read fMultiSelectStyle write SetMultiSelectStyle;
     property Reading: Boolean read fReading;
-    property &ReadOnly: Boolean read fReadOnly write SetReadOnly default False;
+    property &ReadOnly: Boolean read fReadOnly write SetReadOnly;
     //property RightClickSelect: Boolean read fRightClickSelect write fRightClickSelect default False;
-    property RowSelect: Boolean read fRowSelect write SetRowSelect default False;
-    property ShowButtons: Boolean read fShowButtons write SetButtonStyle default True;
-    property ShowLines: Boolean read fShowLines write SetLineStyle default True;
-    property ShowRoot: Boolean read fShowRoot write SetRootStyle default True;
+    property RowSelect: Boolean read fRowSelect write SetRowSelect;
+    property ShowButtons: Boolean read fShowButtons write SetButtonStyle;
+    property ShowLines: Boolean read fShowLines write SetLineStyle;
+    property ShowRoot: Boolean read fShowRoot write SetRootStyle;
     //property SortType: TSortType read fSortType write SetSortType default stNone;
     //property StateImages: TCustomImageList read fStateImages write SetStateImages;
-    property ToolTips: Boolean read fToolTips write SetToolTips default True;
+    property ToolTips: Boolean read fToolTips write SetToolTips;
     {property OnAddition: TTVExpandedEvent read FOnAddition write FOnAddition;
     property OnAdvancedCustomDraw: TTVAdvancedCustomDrawEvent read FOnAdvancedCustomDraw write FOnAdvancedCustomDraw;
     property OnAdvancedCustomDrawItem: TTVAdvancedCustomDrawItemEvent read FOnAdvancedCustomDrawItem write FOnAdvancedCustomDrawItem;
@@ -387,7 +389,7 @@ type
     property OnGetSelectedIndex: TTVExpandedEvent read FOnGetSelectedIndex write FOnGetSelectedIndex;
     property OnHint: TTVHintEvent read FOnHint write FOnHint;
     property OnCreateNodeClass: TTVCreateNodeClassEvent read FOnCreateNodeClass write FOnCreateNodeClass;}
-    constructor Create(aOwner: TComponent);
+    constructor(aOwner: TComponent);
     //method AlphaSort(ARecurse: Boolean = True): Boolean;
     method FullCollapse;
     method FullExpand;
@@ -427,17 +429,17 @@ begin
 
 end;
 
-method TTreeNode.DoCanExpand(Expand: Boolean): Boolean;
+method TTreeNode.DoCanExpand(aExpand: Boolean): Boolean;
 begin
 
 end;
 
-method TTreeNode.DoExpand(Expand: Boolean);
+method TTreeNode.DoExpand(aExpand: Boolean);
 begin
 
 end;
 
-method TTreeNode.ExpandItem(Expand: Boolean; Recurse: Boolean);
+method TTreeNode.ExpandItem(aExpand: Boolean; Recurse: Boolean);
 begin
 
 end;
@@ -453,11 +455,6 @@ begin
 end;
 
 method TTreeNode.GetLevel: Integer;
-begin
-
-end;
-
-method TTreeNode.GetParent: TTreeNode;
 begin
 
 end;
@@ -592,10 +589,11 @@ begin
 
 end;
 
-constructor TTreeNode(aOwner: TTreeNodes; aText: String);
+constructor TTreeNode(aOwner: TTreeNodes; aText: String; aParent: TTreeNode);
 begin
   fOwner := aOwner;
   fText := aText;
+  fParent := aParent;
 end;
 
 constructor TTreeNode(aOwner: TTreeNodes);
@@ -755,31 +753,31 @@ end;
 
 method TTreeNodes.AddChildFirst(aParent: TTreeNode; S: String): TTreeNode;
 begin
-  result := new TTreeNode(self, S);
-  PlatformAddChildFirst(aParent, result);
+  result := new TTreeNode(self, S, aParent);
+  PlatformAddChildFirst(aParent, var result);
 end;
 
 method TTreeNodes.AddChild(aParent: TTreeNode; S: String): TTreeNode;
 begin
-  result := new TTreeNode(self, S);
-  PlatformAddChild(aParent, result);
+  result := new TTreeNode(self, S, aParent);
+  PlatformAddChild(aParent, var result);
 end;
 
 method TTreeNodes.AddFirst(aSibling: TTreeNode; S: String): TTreeNode;
 begin
-  result := new TTreeNode(self, S);
-  PlatformAddFirst(aSibling, result);
+  result := new TTreeNode(self, S, if aSibling <> nil then aSibling.Parent else nil);
+  PlatformAddFirst(aSibling, var result);
 end;
 
 method TTreeNodes.Add(aSibling: TTreeNode; S: String): TTreeNode;
 begin
-  result := new TTreeNode(self, S);
-  PlatformAdd(aSibling, result);
+  result := new TTreeNode(self, S, if aSibling <> nil then aSibling.Parent else nil);
+  PlatformAdd(aSibling, var result);
 end;
 
 method TTreeNodes.BeginUpdate;
 begin
-
+  inc(fUpdateCount);
 end;
 
 method TTreeNodes.Clear;
@@ -1044,7 +1042,7 @@ end;
 
 constructor TTreeView(aOwner: TComponent);
 begin
-
+  fTreeNodes := new TTreeNodes(self);
 end;
 
 method TTreeView.FullCollapse;

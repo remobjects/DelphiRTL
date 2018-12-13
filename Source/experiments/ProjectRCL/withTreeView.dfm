@@ -1,4 +1,4 @@
-﻿object Form6: TForm6
+object Form6: TForm6
   Left = 0
   Top = 0
   Caption = 'Form6'
@@ -14,11 +14,20 @@
   PixelsPerInch = 96
   TextHeight = 13
   object TreeView1: TTreeView
-    Left = 80
-    Top = 48
-    Width = 177
-    Height = 241
+    Left = 32
+    Top = 24
+    Width = 201
+    Height = 273
     Indent = 19
     TabOrder = 0
+  end
+  object Button1: TButton
+    Left = 256
+    Top = 24
+    Width = 75
+    Height = 25
+    Caption = 'Add'
+    TabOrder = 1
+    OnClick = Button1Click
   end
 end

@@ -61,7 +61,7 @@ begin
   comboBox1.Items.Add(edit1.Text);
   edit1.OnKeyPress := @Edit1KeyPress;}
 
-  var lColumn := listview1.Columns.Add;
+  {var lColumn := listview1.Columns.Add;
   lColumn.Caption := 'Loncho!';
 
   lColumn := listview1.Columns.Add;
@@ -76,7 +76,15 @@ begin
   lItem.Caption := 'Item 1!!';
   lItem.SubItems.Add('Roncho 2');
   lItem.SubItems.Add('Roncho 3');
-  lItem.Caption := 'Item 11!!';
+  lItem.Caption := 'Item 11!!';}
+
+  var lNode := treeView1.Items.Add(nil, 'New Node!');
+  treeView1.Items.AddChild(lNode, 'New Child!');
+  treeView1.Items.AddChildFirst(lNode, 'New First Child!');
+
+
+
+
 end;
 
 procedure TForm6.Button2Click(Sender: TObject);
