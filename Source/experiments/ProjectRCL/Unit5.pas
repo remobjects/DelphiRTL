@@ -36,8 +36,7 @@ type
     edit3: TEdit;
 
     listView1: TListView;
-
-
+    treeView1: TTreeView;
 
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -66,7 +65,7 @@ begin
 
 
 
-  if listView1.Columns.Count = 0 then begin
+  {if listView1.Columns.Count = 0 then begin
     var lColumn := listView1.Columns.Add;
     lColumn.Caption := 'Loncho!';
 
@@ -84,7 +83,10 @@ begin
     lItem.SubItems.Add('Roncho 3');
   end
   else
-    listView1.RowSelect := true;
+    listView1.RowSelect := true;}
+  var lNode := treeView1.Items.Add(nil, 'New Node!');
+  treeView1.Items.AddChild(lNode, 'New Child!');
+  treeView1.Items.AddChildFirst(lNode, 'New First Child!');
 end;
 
 procedure TForm6.Button2Click(Sender: TObject);

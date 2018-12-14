@@ -18,14 +18,14 @@ type
   TValueType = public enum(vaNull, vaList, vaInt8, vaInt16, vaInt32, vaExtended, vaString, vaIdent, vaFalse, vaTrue, vaBinary, vaSet, vaLString,
     vaNil, vaCollection, vaSingle, vaCurrency, vaDate, vaWString, vaInt64, vaUTF8String, vaDouble);
 
-  TReaderProc = public block(Reader: TReader);
-  TWriterProc = public block(Writer: TWriter);
-  TStreamProc = public block(Stream: TStream);
-
   {$IF MACOS}
   Del1 = delegate(a: IntPtr);
   Del1Helper = public procedure (aInst: id; aSel: SEL; a: IntPtr);
   {$ENDIF}
+
+  TReaderProc = public procedure(Reader: TReader) of object;
+  TWriterProc = public procedure(Writer: TWriter) of object;
+  TStreamProc = public procedure(Stream: TStream) of object;
 
   TFiler = public abstract class(TObject)
   private
@@ -38,8 +38,8 @@ type
   public
     const FilerSignature: UInt32 = $30465054; // 'TPF0'
     constructor(aStream: TStream; BufSize: Integer);
-    //method DefineProperty(Name: String; ReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean); virtual; abstract;
-    //method DefineBinaryProperty(Name: String; ReadData, WriteData: TStreamProc; HasData: Boolean); virtual; abstract;
+    method DefineProperty(aName: String; ReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean); virtual; abstract;
+    method DefineBinaryProperty(aName: String; ReadData: TStreamProc; WriteData: TStreamProc; HasData: Boolean); virtual; abstract;
     //method FlushBuffer; virtual; abstract;
     property Root: TComponent read fRoot write SetRoot;
     property Ancestor: TPersistent read fAncestor write fAncestor;
@@ -50,15 +50,18 @@ type
   PropertyInfo = &Property;
   {$ENDIF}
 
-  TReader = public class(TFiler)
+  TReader = public partial class(TFiler)
   private
     fParent: TComponent;
     fOwner: TComponent;
+    fCurrentProperty: String;
     method ReadComponentData(aInstance: TComponent);
     method FindProperty(aType: &Type; aName: String): PropertyInfo;
   protected
     method ReadProperty(aInstance: TPersistent);
   public
+    method DefineProperty(aName: String; aReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean); override;
+    method DefineBinaryProperty(aName: String; aReadData: TStreamProc; WriteData: TStreamProc; HasData: Boolean); override;
     method EndOfList: Boolean;
     method ReadComponent(aComponent: TComponent): TComponent;
     method ReadData(Instance: TComponent);
@@ -72,6 +75,8 @@ type
 
   TWriter = public class(TFiler)
   public
+    method DefineProperty(aName: String; ReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean); override;
+    method DefineBinaryProperty(aName: String; ReadData: TStreamProc; WriteData: TStreamProc; HasData: Boolean); override;
     method WriteListBegin;
     method WriteListEnd;
     method WriteSignature;
@@ -83,6 +88,9 @@ type
     method WriteInt64(aValue: Int64);
     method WriteDouble(aValue: Double);
     method WriteSet(aValue: Byte);
+    method &Write(aBuffer: array of Byte; aOffset: Integer; aCount: Integer);
+    method WriteVar(aValue: Integer);
+
   end;
 
   TResourceId = public {$IF ISLAND AND WINDOWS} ^Void {$ELSE} Object {$ENDIF};
@@ -126,6 +134,7 @@ type
     method TokenInt: Int64;
     method TokenString: String;
     method TokenSymbolIs(S: String): Boolean;
+    method TokenStringUntil(C: Char);
     property Token: TParserToken read fToken;
     property TokenValue: String read fTokenValue;
   end;
@@ -163,6 +172,26 @@ end;
 constructor TFiler(aStream: TStream; BufSize: Integer);
 begin
   fStream := aStream;
+end;
+
+method TReader.DefineProperty(aName: String; aReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean);
+begin
+
+end;
+
+method TReader.DefineBinaryProperty(aName: String; aReadData: TStreamProc; WriteData: TStreamProc; HasData: Boolean);
+begin
+  if String.Compare(fCurrentProperty, aName) = 0 then begin
+    var lNewStream := new TMemoryStream();
+    var lSize: Int32;
+    fStream.ReadData(var lSize);
+    var lBuffer := new Byte[lSize];
+    fStream.Read(var lBuffer, lSize);
+    lNewStream.Write(lBuffer, lSize);
+    lNewStream.Position := 0;
+    aReadData(lNewStream);
+    fCurrentProperty := '';
+  end;
 end;
 
 method TReader.ReadComponentData(aInstance: TComponent);
@@ -390,14 +419,17 @@ end;
 
 method TReader.FindProperty(aType: &Type; aName: String): PropertyInfo;
 begin
+  result := nil;
   {$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS))}
   var lType := aType;
-  while aType <> nil do begin
+  while lType <> nil do begin
     result := lType.Properties.Where(a -> (a.Name = aName)).FirstOrDefault;
-    if result <> nil then begin
+    if result <> nil then
       exit;
-    end;
-    lType := new &Type(lType.RTTI^.ParentType);
+    if lType.RTTI^.ParentType <> nil then
+      lType := new &Type(lType.RTTI^.ParentType)
+    else
+      lType := nil;
   end;
   {$ELSEIF ECHOESWPF}
   var lType := aType;
@@ -473,26 +505,33 @@ begin
   lIsTStrings := lType.IsSubclassOf(typeOf(TStrings));
   {$ENDIF}
 
-  if not lIsTStrings then begin
+  if not lIsTStrings then
     lProperty := FindProperty(lType, lName);
-    if lProperty = nil then raise new Exception('Can not get property ' + lName);
-  end;
-  var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
 
-  if (lValue ≠ TValueType.vaList) and (lValue ≠ TValueType.vaCollection) then begin
-    {$IF ISLAND}
-    DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
-    {$ELSEIF ECHOESWPF}
-    var lCurrentProp := lType.GetProperty(lName, BindingFlags.Public or BindingFlags.Instance);
-    if lCurrentProp = nil then
+  if lProperty = nil then begin
+    fCurrentProperty := lName;
+    (lInstance as TPersistent).DefineProperties(self);
+    if fCurrentProperty <> '' then
       raise new Exception('Can not get property ' + lName);
-    lCurrentProp.SetValue(lInstance, lPropValue, nil);
-    {$ELSEIF TOFFEE}
+  end
+  else begin
+    var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
+
+    if (lValue ≠ TValueType.vaList) and (lValue ≠ TValueType.vaCollection) then begin
+      {$IF ISLAND}
+      DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
+      {$ELSEIF ECHOESWPF}
+      var lCurrentProp := lType.GetProperty(lName, BindingFlags.Public or BindingFlags.Instance);
+      if lCurrentProp = nil then
+        raise new Exception('Can not get property ' + lName);
+      lCurrentProp.SetValue(lInstance, lPropValue, nil);
+      {$ELSEIF TOFFEE}
       lProperty := FindProperty(lType, lName);
       if lProperty = nil then raise new Exception('Can not get property ' + lName);
       if lPropValue ≠ nil then // TODO
         lProperty.SetValue(lInstance, nil, lPropValue);
-    {$ENDIF}
+      {$ENDIF}
+    end;
   end;
 end;
 
@@ -741,9 +780,6 @@ begin
         end
         else
           if fParser.TokenValue = '<' then begin
-            {fWriter.WriteValue(TValueType.vaCollection);
-            fParser.NextToken;
-            fWriter.WriteListEnd;}
             fWriter.WriteValue(TValueType.vaCollection);
             fParser.NextToken;
             while fParser.TokenValue ≠ '>' do begin
@@ -760,7 +796,18 @@ begin
             end;
             //fParser.NextToken;
             fWriter.WriteListEnd;
-          end;
+          end
+          else
+            if fParser.TokenValue = '{' then begin
+              fWriter.WriteValue(TValueType.vaBinary);
+              //fParser.NextToken;
+              //writeLn(fParser.TokenValue);
+              fParser.TokenStringUntil('}');
+              fWriter.WriteVar(Integer(fParser.TokenValue.Length / 2));
+              var lData := Convert.HexStringToByteArray(fParser.TokenValue);
+              fWriter.Write(lData, 0, length(lData));
+              fParser.NextToken; // Skip }
+            end;
     end;
   end;
 end;
@@ -944,7 +991,7 @@ begin
       fToken := TParserToken.toString;
     end;
 
-    ':', '#', '=', '[', ']', '(', ')', '<', '>': begin
+    ':', '#', '=', '[', ']', '(', ')', '<', '>', '{', '}': begin
       fTokenValue := lChar;
       NextChar;
       fToken := TParserToken.toOtCharacter;
@@ -984,6 +1031,20 @@ begin
   result := (fToken = TParserToken.toSymbol) and (String.Compare(S, fTokenValue) = 0);
 end;
 
+method TParser.TokenStringUntil(C: Char);
+begin
+  SkipToNext;
+  fTokenValue := '';
+  var lChar := PeekChar;
+  while lChar ≠ C do begin
+    fTokenValue := fTokenValue + lChar;
+    SkipToNext;
+    NextChar;
+    SkipToNext;
+    lChar := PeekChar;
+  end;
+end;
+
 constructor TParser(aStream: TStream; FormatSettings: TFormatSettings);
 begin
 
@@ -1008,6 +1069,16 @@ method TParser.SkipToNext;
 begin
   while (fStream.Position < fStream.Size) and (PeekChar in [' ', #13, #10]) do
     fStream.Position := fStream.Position + 1;
+end;
+
+method TWriter.DefineProperty(aName: String; ReadData: TReaderProc; WriteData: TWriterProc; HasData: Boolean);
+begin
+
+end;
+
+method TWriter.DefineBinaryProperty(aName: String; ReadData: TStreamProc; WriteData: TStreamProc; HasData: Boolean);
+begin
+
 end;
 
 method TWriter.WriteListBegin;
@@ -1094,6 +1165,16 @@ end;
 method TWriter.WriteSet(aValue: Byte);
 begin
   fStream.WriteData(Byte(TValueType.vaSet));
+  fStream.WriteData(aValue);
+end;
+
+method TWriter.Write(aBuffer: array of Byte; aOffset: Integer; aCount: Integer);
+begin
+  fStream.Write(aBuffer, aOffset, aCount);
+end;
+
+method TWriter.WriteVar(aValue: Integer);
+begin
   fStream.WriteData(aValue);
 end;
 

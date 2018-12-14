@@ -1,6 +1,5 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-//{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
 {$IF (ISLAND AND (WINDOWS) AND NOT DARWIN) OR ECHOESWPF OR (MACOS AND NOT (ISLAND AND DARWIN))}
 
 interface
@@ -57,7 +56,7 @@ type
     //property ImageIndex: TImageIndex read fImageIndex write SetImageIndex default -1;
     property MaxWidth: TWidth read fMaxWidth write SetMaxWidth default 0;
     property MinWidth: TWidth read fMinWidth write SetMinWidth default 0;
-    property Tag: Integer read fTag write FTag default 0;
+    property Tag: Integer read fTag write fTag default 0;
     property Width: TWidth read GetWidth write SetWidth default 50;
     property WidthType: TWidth read fWidth;
     property ColIndex: Integer read fColIndex;
@@ -112,22 +111,24 @@ type
     //property ImageIndex[Index: Integer]: TImageIndex read GetImageIndex write SetImageIndex;
   end;
 
+  TCustomData = public NativeInt;
+  TImageIndex = public Integer;
+
   TListItem = public partial class(TPersistent)
   private
     fCaption: String;
     fOwner: TListItems;
     fSubItems: TStrings;
-    //fImageIndex: TImageIndex;
+    fImageIndex: TImageIndex;
     fIndent: Integer;
     fIndex: Integer;
-    //fOverlayIndex: TImageIndex;
-    //fStateIndex: TImageIndex;
-    //fCaption: string;
+    fOverlayIndex: TImageIndex;
+    fStateIndex: TImageIndex;
     //fDeleting: Boolean;
     //fProcessedDeleting: Boolean;
     //fChecked: Boolean;
-    //fData: TCustomData;
-    //fGroupID: Integer;
+    fData: TCustomData;
+    fGroupID: Integer;
     function GetChecked: Boolean;
     //function GetHandle: HWND;
     function GetListView: TListView;
@@ -144,11 +145,15 @@ type
     method SetState(aIndex: Integer; State: Boolean);
     method SetSubItems(Value: TStrings);
     method SetTop(Value: Integer);
+    method GetSelected: Boolean;
+    method SetSelected(aValue: Boolean);
     //function GetSubItemImage(Index: Integer): Integer;
     //method SetSubItemImage(Index: Integer; const Value: Integer);
     //method SetGroupID(Value: Integer);
   protected
     method PlatformSetCaption(aValue: String); partial; virtual; empty;
+    method PlatformGetSelected: Boolean; partial; virtual; empty;
+    method PlatformSetSelected(aValue: Boolean); partial; virtual; empty;
   public
     constructor(aOwner: TListItems); virtual;
     //method Assign(Source: TPersistent); override;
@@ -163,22 +168,22 @@ type
     property Caption: String read fCaption write SetCaption;
     property Checked: Boolean read GetChecked write SetChecked;
     //property Cut: Boolean index 0 read GetState write SetState;
-    //property Data: TCustomData read FData write SetData;
+    property Data: TCustomData read fData write fData;
     //property Deleting: Boolean read FDeleting;
     //property DropTarget: Boolean index 1 read GetState write SetState;
     //property Focused: Boolean read GetState write SetState; // TODO
-    //property GroupID: Integer read FGroupID write SetGroupID default -1;
+    property GroupID: Integer read fGroupID write fGroupID default -1;
     //property Handle: HWND read GetHandle;
-    //property ImageIndex: TImageIndex index 0 read FImageIndex write SetImage;
+    property ImageIndex: TImageIndex read fImageIndex write fImageIndex;
     //property Indent: Integer read FIndent write SetIndent default 0;
     property &Index: Integer read fIndex write fIndex;
     property Left: Integer read GetLeft write SetLeft;
     property ListView: TListView read GetListView;
     property Owner: TListItems read fOwner;
-    //property OverlayIndex: TImageIndex index 1 read FOverlayIndex write SetImage;
+    property OverlayIndex: TImageIndex read fOverlayIndex write fOverlayIndex;
     //property Position: TPoint read GetPosition write SetPosition;
-    //property Selected: Boolean read GetState write SetState; // TODO index
-    //property StateIndex: TImageIndex index 2 read fStateIndex write SetImage;
+    property Selected: Boolean read GetSelected write SetSelected;
+    property StateIndex: TImageIndex read fStateIndex write fStateIndex;
     property SubItems: TStrings read fSubItems write SetSubItems;
     //property SubItemImages[Index: Integer]: Integer read GetSubItemImage write SetSubItemImage;
     property Top: Integer read GetTop write SetTop;
@@ -193,6 +198,7 @@ type
   private assembly
     fOwner: TListView;
     fUpdating: Integer := 0;
+    method ReadListItemsData(aStream: TStream);
   protected
     //method DefineProperties(Filer: TFiler); override;
     method CreateItem(aIndex: Integer; aListItem: TListItem): TPlatformListViewItem;
@@ -207,6 +213,7 @@ type
     method PlatformDelete(aIndex: Integer); partial; virtual; empty;
   public
     constructor(aOwner: TListView);
+    method DefineProperties(Filer: TObject {TFiler}); override;
     method &Add: TListItem;
     //method AddItem(aItem: TListItem; aIndex: Integer = -1): TListItem;
     //method Assign(Source: TPersistent); override;
@@ -446,6 +453,67 @@ begin
   PlatformAdd(result);
 end;
 
+method TListItems.ReadListItemsData(aStream: TStream);
+begin
+  var lVersion: Byte;
+  aStream.ReadData(var lVersion);
+  var lItems: Int32;
+  aStream.ReadData(var lItems); // Skip size, not really needed
+  aStream.ReadData(var lItems);
+  if (lVersion = 5) or (lVersion = 6) then begin
+    for i: Integer := 0 to lItems - 1 do begin
+      var lItem := &Add;
+      var lData: Int32;
+      var lSubItems: Int32;
+      var lSize: Byte;
+      var l64Data: Int64;
+
+      aStream.ReadData(var lData);
+      lItem.ImageIndex := lData;
+
+      aStream.ReadData(var lData);
+      lItem.StateIndex := lData;
+
+      aStream.ReadData(var lData);
+      lItem.OverlayIndex := lData;
+
+      aStream.ReadData(var lSubItems);
+      lItem.StateIndex := lData;
+
+      aStream.ReadData(var lData);
+      lItem.GroupID := lData;
+
+      if lVersion = 6 then begin
+        aStream.ReadData(var l64Data);
+        lItem.Data := l64Data;
+      end
+      else begin
+        aStream.ReadData(var lData);
+        lItem.Data := lData;
+      end;
+
+      aStream.ReadData(var lSize);
+      lItem.Caption := aStream.ReadString(lSize * sizeOf(Char), TEncoding.UTF16LE);
+      for j: Integer := 0 to lSubItems - 1 do begin
+        aStream.ReadData(var lSize);
+        var lCaption := aStream.ReadString(lSize * sizeOf(Char), TEncoding.UTF16LE);
+        if lVersion = 6 then begin
+          aStream.ReadData(var l64Data);
+          lItem.Data := l64Data;
+          lItem.SubItems.AddObject(lCaption, l64Data);
+        end
+        else begin
+          aStream.ReadData(var lData);
+          lItem.Data := lData;
+          lItem.SubItems.AddObject(lCaption, lData);
+        end;
+      end;
+    end;
+  end
+  else
+    raise new Exception('ItemData format not supported');
+end;
+
 method TListItems.CreateItem(aIndex: Integer; aListItem: TListItem): TPlatformListViewitem;
 begin
 
@@ -480,6 +548,13 @@ constructor TListItems(aOwner: TListView);
 begin
   fItems := new TList<TListItem>();
   fOwner := aOwner;
+end;
+
+method TListItems.DefineProperties(Filer: TObject);
+begin
+  inherited DefineProperties(Filer);
+  var lFiler := Filer as TFiler;
+  lFiler.DefineBinaryProperty('ItemData', @ReadListItemsData, nil, true);
 end;
 
 method TListItems.Add: TListItem;
@@ -560,7 +635,8 @@ end;
 
 method TListView.DoSelectItem(aItem: TListItem; aSelected: Boolean);
 begin
-
+  if assigned(fOnSelectItem) then
+    fOnSelectItem(self, aItem, aSelected);
 end;
 
 method TListView.GetItemIndex(Value: TListItem): Integer;
@@ -839,6 +915,16 @@ end;
 method TListItem.SetTop(Value: Integer);
 begin
 
+end;
+
+method TListItem.GetSelected: Boolean;
+begin
+  result := PlatformGetSelected;
+end;
+
+method TListItem.SetSelected(aValue: Boolean);
+begin
+  PlatformSetSelected(aValue);
 end;
 
 constructor TListItem(aOwner: TListItems);

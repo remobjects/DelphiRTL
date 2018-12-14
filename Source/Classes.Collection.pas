@@ -11,6 +11,7 @@ uses
 {$ENDIF}
 
 type
+  TOperation = public enum(opInsert, opRemove) of Integer;
   TObjectCtor = procedure(aInst: Object; aPar: TObject);
 
   TClassActivator = public static class(TObject)

@@ -33,6 +33,8 @@ type
   TListItem = public partial class(TPersistent)
   protected
     method PlatformSetCaption(aValue: String); partial;
+    method PlatformGetSelected: Boolean; partial;
+    method PlatformSetSelected(aValue: Boolean); partial;
   end;
 
   TListItems = public partial class(TPersistent)
@@ -43,6 +45,8 @@ type
   end;
 
   TListView = public partial class(TMultiSelectListControl)
+  private
+    class constructor;
   protected
     method CreateParams(var aParams: TCreateParams); override;
     method PlatformSetViewStyle(aValue: TViewStyle); partial;
@@ -128,6 +132,21 @@ begin
   rtl.SendMessage(fOwner.Owner.Handle, rtl.LVM_SETITEMTEXT, &Index, rtl.LPARAM(@lItem));
 end;
 
+method TListItem.PlatformGetSelected: Boolean;
+begin
+  result := (rtl.SendMessage(fOwner.Owner.Handle, rtl.LVM_GETITEMSTATE, &Index, rtl.LPARAM(rtl.LVIS_SELECTED)) and rtl.LVIS_SELECTED) <> 0;
+end;
+
+method TListItem.PlatformSetSelected(aValue: Boolean);
+begin
+  var lItem: rtl.LV_ITEMW;
+  lItem.iSubItem := 0;
+  lItem.mask := rtl.LVIF_STATE;
+  lItem.stateMask := rtl.LVIS_SELECTED;
+  lItem.state := Integer(aValue);
+  rtl.SendMessage(fOwner.Owner.Handle, rtl.LVM_SETITEMSTATE, &Index, rtl.LPARAM(@lItem));
+end;
+
 method TListItems.PlatformAdd(aListItem: TListItem);
 begin
   var lHandle: rtl.LV_ITEMW;
@@ -152,10 +171,8 @@ type
   [CallingConvention(CallingConvention.Stdcall)]
   TInitEx = function(picce: ^rtl.INITCOMMONCONTROLSEX): rtl.BOOL;
 
-method TListView.CreateParams(var aParams: TCreateParams);
+class constructor TListView;
 begin
-  inherited(var aParams);
-
   {var lInit: rtl.INITCOMMONCONTROLSEX;
   lInit.dwICC := rtl.ICC_LISTVIEW_CLASSES;
   rtl.InitCommonControlsEx(@lInit);}
@@ -166,6 +183,11 @@ begin
   var lModule := rtl.LoadLibrary('Comctl32.dll');
   var lProc := TInitEx(rtl.GetProcAddress(lModule, 'InitCommonControlsEx'));
   lProc(@lIce);
+end;
+
+method TListView.CreateParams(var aParams: TCreateParams);
+begin
+  inherited(var aParams);
 
   aParams.WidgetClassName := rtl.WC_LISTVIEW.ToCharArray(true);
   aParams.Style := aParams.Style or rtl.LVS_ICON or rtl.WS_BORDER or rtl.WS_CLIPCHILDREN;
@@ -219,6 +241,15 @@ begin
             lplvdi^.item.pszText := ''.ToLPCWSTR;
         end;
       end;
+    end;
+
+    rtl.LVN_ITEMCHANGED: begin
+      var lpNmListView := ^rtl.NMLISTVIEW(^Void(aMessage.lParam));
+      var lItem := Items[lpNmListView^.iItem];
+      if (lpNmListView^.uOldState and rtl.LVIS_SELECTED <> 0) and (lpNmListView^.uNewState and rtl.LVIS_SELECTED = 0) then
+        DoSelectItem(lItem, false)
+      else if (lpNmListView^.uOldState and rtl.LVIS_SELECTED = 0) and (lpNmListView^.uNewState and rtl.LVIS_SELECTED <> 0) then
+        DoSelectItem(lItem, true);
     end;
   end;
 end;

@@ -18,9 +18,10 @@ type
     end;
     class method Main(args: array of String): Int32;
     begin
-      {var lDfm := new TFileStream('C:\dev\ro\DelphiRTL\Source\experiments\ProjectRCL\withListviewColumns2.dfm', fmOpenRead);
-      var lRes := new TFileStream('C:\dev\ro\DelphiRTL\Source\experiments\ProjectRCL\ComeOnListviewColumns2.res', fmCreate or fmOpenWrite);
+      {var lDfm := new TFileStream('C:\dev\ro\DelphiRTL\Source\experiments\ProjectRCL\withListItems.dfm', fmOpenRead);
+      var lRes := new TFileStream('C:\dev\ro\DelphiRTL\Source\experiments\ProjectRCL\ComeOnListItems.res', fmCreate or fmOpenWrite);
       var lConverter := new ObjectConverter(lDfm, lRes);
+      writeLn('To convert...');
       lConverter.ToBinary;
       writeLn('Converted!');}
 
