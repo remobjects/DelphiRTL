@@ -140,13 +140,7 @@ type
     method AddedNode(Value: TTreeNode);
     //method GetHandle: HWND;
     method GetNodeFromIndex(aIndex: Integer): TTreeNode;
-    //method ReadData(Stream: TStream);
-    //method ReadNodeData(Stream: TStream);
-    //method Repaint(Node: TTreeNode);
-    //method WriteNodeData(Stream: TStream);
     method ClearCache;
-    //method WriteExpandedState(Stream: TStream);
-    //method ReadExpandedState(Stream: TStream);
     method GetReading: Boolean;
   protected
     //method AddItem(Parent, Target: HTreeItem; const Item: TTVItem; AddMode: TAddMode): HTreeItem;
@@ -263,12 +257,6 @@ type
     //fOnHint: TTVHintEvent;
     //fOnCreateNodeClass: TTVCreateNodeClassEvent;
     //method CanvasChanged(Sender: TObject);
-    //method CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
-    //method CMCtl3DChanged(var Message: TMessage); message CM_CTL3DCHANGED;
-    //method CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
-    //method CMDrag(var Message: TCMDrag); message CM_DRAG;
-    //method CNNotify(var Message: TWMNotifyTV); message CN_NOTIFY;
-    //method EditWndProc(var Message: TMessage);
     //method DoDragOver(Source: TDragObject; X, Y: Integer; CanDrop: Boolean);
     method NodeDeselect(aIndex: Integer);
     method NodeSelect(aNode: TTreeNode; At: Integer := 0);
@@ -309,11 +297,6 @@ type
     method SetTreeNodes(aValue: TTreeNodes);
     method SetTopItem(aValue: TTreeNode);
     //method OnChangeTimer(Sender: TObject);
-    //method WMLButtonDown(var Message: TWMLButtonDown); message WM_LBUTTONDOWN;
-    //method WMNotify(var Message: TWMNotify); message WM_NOTIFY;
-    //method WMContextMenu(var Message: TWMContextMenu); message WM_CONTEXTMENU;
-    //method WMCtlColorEdit(var Message: TMessage); message WM_CTLCOLOREDIT;
-    //method CMSysColorChange(var Message: TMessage); message CM_SYSCOLORCHANGE;
   protected
     //fChangeTimer: TTimer;
   public
@@ -350,7 +333,7 @@ type
     property AutoExpand: Boolean read fAutoExpand write SetAutoExpand;
     //property BorderStyle: TBorderStyle read FBorderStyle write SetBorderStyle default bsSingle;
     property ChangeDelay: Integer read GetChangeDelay write SetChangeDelay;
-    //property CreateWndRestores: Boolean read FCreateWndRestores write FCreateWndRestores default True;
+    //property CreateWndRestores: Boolean read fCreateWndRestores write fCreateWndRestores default True;
     property Encoding: TEncoding read fEncoding;
     property HideSelection: Boolean read fHideSelection write SetHideSelection;
     property HotTrack: Boolean read fHotTrack write SetHotTrack;
@@ -369,26 +352,26 @@ type
     //property SortType: TSortType read fSortType write SetSortType default stNone;
     //property StateImages: TCustomImageList read fStateImages write SetStateImages;
     property ToolTips: Boolean read fToolTips write SetToolTips;
-    {property OnAddition: TTVExpandedEvent read FOnAddition write FOnAddition;
-    property OnAdvancedCustomDraw: TTVAdvancedCustomDrawEvent read FOnAdvancedCustomDraw write FOnAdvancedCustomDraw;
-    property OnAdvancedCustomDrawItem: TTVAdvancedCustomDrawItemEvent read FOnAdvancedCustomDrawItem write FOnAdvancedCustomDrawItem;
-    property OnCancelEdit: TTVChangedEvent read FOnCancelEdit write FOnCancelEdit;
-    property OnChange: TTVChangedEvent read FOnChange write FOnChange;
-    property OnChanging: TTVChangingEvent read FOnChanging write FOnChanging;
-    property OnCollapsed: TTVExpandedEvent read FOnCollapsed write FOnCollapsed;
-    property OnCollapsing: TTVCollapsingEvent read FOnCollapsing write FOnCollapsing;
-    property OnCompare: TTVCompareEvent read FOnCompare write FOnCompare;
-    property OnCustomDraw: TTVCustomDrawEvent read FOnCustomDraw write FOnCustomDraw;
-    property OnCustomDrawItem: TTVCustomDrawItemEvent read FOnCustomDrawItem write FOnCustomDrawItem;
-    property OnDeletion: TTVExpandedEvent read FOnDeletion write FOnDeletion;
-    property OnEditing: TTVEditingEvent read FOnEditing write FOnEditing;
-    property OnEdited: TTVEditedEvent read FOnEdited write FOnEdited;
-    property OnExpanding: TTVExpandingEvent read FOnExpanding write FOnExpanding;
-    property OnExpanded: TTVExpandedEvent read FOnExpanded write FOnExpanded;
-    property OnGetImageIndex: TTVExpandedEvent read FOnGetImageIndex write FOnGetImageIndex;
-    property OnGetSelectedIndex: TTVExpandedEvent read FOnGetSelectedIndex write FOnGetSelectedIndex;
-    property OnHint: TTVHintEvent read FOnHint write FOnHint;
-    property OnCreateNodeClass: TTVCreateNodeClassEvent read FOnCreateNodeClass write FOnCreateNodeClass;}
+    {property OnAddition: TTVExpandedEvent read FOnAddition write fOnAddition;
+    property OnAdvancedCustomDraw: TTVAdvancedCustomDrawEvent read fOnAdvancedCustomDraw write fOnAdvancedCustomDraw;
+    property OnAdvancedCustomDrawItem: TTVAdvancedCustomDrawItemEvent read fOnAdvancedCustomDrawItem write fOnAdvancedCustomDrawItem;
+    property OnCancelEdit: TTVChangedEvent read fOnCancelEdit write fOnCancelEdit;
+    property OnChange: TTVChangedEvent read fOnChange write fOnChange;
+    property OnChanging: TTVChangingEvent read fOnChanging write fOnChanging;
+    property OnCollapsed: TTVExpandedEvent read fOnCollapsed write fOnCollapsed;
+    property OnCollapsing: TTVCollapsingEvent read fOnCollapsing write fOnCollapsing;
+    property OnCompare: TTVCompareEvent read fOnCompare write fOnCompare;
+    property OnCustomDraw: TTVCustomDrawEvent read fOnCustomDraw write fOnCustomDraw;
+    property OnCustomDrawItem: TTVCustomDrawItemEvent read fOnCustomDrawItem write fOnCustomDrawItem;
+    property OnDeletion: TTVExpandedEvent read fOnDeletion write fOnDeletion;
+    property OnEditing: TTVEditingEvent read fOnEditing write fOnEditing;
+    property OnEdited: TTVEditedEvent read fOnEdited write fOnEdited;
+    property OnExpanding: TTVExpandingEvent read fOnExpanding write fOnExpanding;
+    property OnExpanded: TTVExpandedEvent read fOnExpanded write fOnExpanded;
+    property OnGetImageIndex: TTVExpandedEvent read fOnGetImageIndex write fOnGetImageIndex;
+    property OnGetSelectedIndex: TTVExpandedEvent read fOnGetSelectedIndex write fOnGetSelectedIndex;
+    property OnHint: TTVHintEvent read fOnHint write fOnHint;
+    property OnCreateNodeClass: TTVCreateNodeClassEvent read fOnCreateNodeClass write fOnCreateNodeClass;}
     constructor(aOwner: TComponent);
     //method AlphaSort(ARecurse: Boolean = True): Boolean;
     method FullCollapse;
