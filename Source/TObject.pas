@@ -104,4 +104,13 @@ type
     end;
   end;
 
+{$IF ISLAND AND WINDOWS}
+extension method RemObjects.Elements.System.String.ToLPCWSTR: rtl.LPCWSTR;
+begin
+  if String.IsNullOrEmpty(self) then exit nil;
+  var arr := ToCharArray(true);
+  exit rtl.LPCWSTR(@arr[0]);
+end;
+{$ENDIF}
+
 end.

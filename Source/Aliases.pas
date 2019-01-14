@@ -4,14 +4,14 @@ uses
   RemObjects.Elements.RTL;
 
 type
-  TClass = Pointer;
+  TClass = public Pointer;
   ShortString = String;
-  Pointer = {$IF COOPER}Integer{$ELSE}^Void{$ENDIF};
+  Pointer = public {$IF COOPER}Integer{$ELSE}^Void{$ENDIF};
 
-  TGUID = RemObjects.Elements.RTL.Guid;
+  TGUID = public RemObjects.Elements.RTL.Guid;
 
-  PInterfaceEntry = Pointer;
-  PInterfaceTable = Pointer;
-  HResult = Int64;
+  PInterfaceEntry = public Pointer;
+  PInterfaceTable = public Pointer;
+  HResult = public Int64;
 
 end.

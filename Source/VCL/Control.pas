@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS)) OR ECHOESWPF OR (MACOS AND NOT DARWIN)}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS) AND NOT DARWIN) OR ECHOESWPF OR (MACOS AND NOT (ISLAND AND DARWIN))}
 
 interface
 
@@ -96,6 +96,8 @@ type
     method HandleAllocated: Boolean; virtual; partial; empty;
     method Changed(aObject: TObject; propName: String);
     method RequestAlign; virtual;
+    method MouseDown(aButton: TMouseButton; aShift: TShiftState; X, Y: Integer); virtual;
+    method Notification(aComponent: TComponent; aOperation: TOperation); virtual;
     constructor(aOwner: TComponent);
 
     method PlatformGetCaption: String; partial; empty;
@@ -161,18 +163,28 @@ type
   TNativeControl = public partial class(TControl)
   private
     fPadding: TPadding;
+    fOnEnter: TNotifyEvent;
+    fOnExit: TNotifyEvent;
     method SetPadding(value: TPadding);
     method SetTabStop(value: Boolean);
   protected
     fTabStop: Boolean;
     method DoAlign(aAlign: TAlign; var aRect: TRect);
+    procedure DoEnter; virtual;
+    procedure DoExit; virtual;
     method PlatformSetTapStop(value: Boolean); virtual; partial; empty;
+    method PlatformNativeCreated; virtual; partial; empty;
+    method PlatformSetOnEnter(aValue: TNotifyEvent); virtual; partial; empty;
+    method PlatformSetOnExit(aValue: TNotifyEvent); virtual; partial; empty;
   public
     method AlignControl(aControl: TControl); virtual;
     method AlignControls(aControl: TControl; var Rect: TRect); virtual;
 
     property Padding: TPadding read fPadding write SetPadding;
     property TabStop: Boolean read fTabStop write SetTabStop default false;
+
+    property OnEnter: TNotifyEvent read fOnEnter write PlatformSetOnEnter;
+    property OnExit: TNotifyEvent read fOnExit write PlatformSetOnExit;
   end;
 
   TCustomControl = public class(TNativeControl)
@@ -361,6 +373,16 @@ begin
     Parent.AlignControl(self);
 end;
 
+method TControl.MouseDown(aButton: TMouseButton; aShift: TShiftState; X, Y: Integer);
+begin
+
+end;
+
+method TControl.Notification(aComponent: TComponent; aOperation: TOperation);
+begin
+
+end;
+
 method TNativeControl.AlignControl(aControl: TControl);
 begin
   var lRect: TRect;
@@ -468,6 +490,18 @@ begin
     lControl.Top := lNewTop;
     lControl.Left := lNewLeft;
   end;
+end;
+
+procedure TNativeControl.DoEnter;
+begin
+  if assigned(fOnEnter) then
+    fOnEnter(self);
+end;
+
+procedure TNativeControl.DoExit;
+begin
+  if assigned(fOnExit) then
+    fOnExit(self);
 end;
 
 method TNativeControl.SetPadding(value: TPadding);

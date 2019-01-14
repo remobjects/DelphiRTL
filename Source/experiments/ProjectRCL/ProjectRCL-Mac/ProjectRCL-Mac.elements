@@ -42,15 +42,16 @@
     <Reference Include="libDelphi">
       <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\macOS\libDelphi.fx</HintPath>
     </Reference>
-    <Reference Include="libElements">
-      <HintPath>C:\dev\ro\RTL2\Source\bin\Debug\macOS\libElements.fx</HintPath>
+    <Reference Include="libDelphiVCL">
+      <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\macOS\libDelphiVCL.fx</HintPath>
     </Reference>
+    <Reference Include="libElements" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />
     <AppResource Include="Entitlements.entitlements" />
     <Compile Include="Unit5-mac.pas" />
-    <EmbeddedResource Include="..\withListboxAndCombo.dfm" />
+    <EmbeddedResource Include="..\withTreeView.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Toffee.targets" />
 </Project>

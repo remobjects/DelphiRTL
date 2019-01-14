@@ -1282,7 +1282,9 @@ begin
   if (lStartIndex < Length) and (lTotal < lCount) then
     lList.Add(SubString(lStartIndex));
 
-  result := {$IF TOFFEE}PlatformArrayToStringArray(lList.ToArray){$ELSE}lList.ToArray{$ENDIF};
+  result := new DelphiString[lList.Count];
+  for i: Integer := 0 to lList.Count - 1 do
+    result[i] := lList[i];
   {$ENDIF}
 end;
 

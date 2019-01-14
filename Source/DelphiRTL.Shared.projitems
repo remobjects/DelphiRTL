@@ -32,5 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)String.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)System.HighDPI.Windows.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)System.Types.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes.Collection.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)System.UITypes.pas" />
   </ItemGroup>
 </Project>

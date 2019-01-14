@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ProjectGuid>{3ADE82F2-FA7D-43CA-B8D2-380614815573}</ProjectGuid>
+    <SharedGUID>{2C8BFC71-4766-4D9A-801F-A7F0E7034D78}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Delphi.VCL.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.Mac.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.WebAssembly.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.WPF.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.Mac.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.WPF.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Component.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Component.ReaderWriter.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.Mac.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.WebAssembly.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.WPF.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ExtCtrls.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ExtCtrls.WebAssembly.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ExtCtrls.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ExtCtrls.WPF.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Font.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Font.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Font.WPF.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Form.Mac.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Form.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Form.WebAssembly.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Form.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Form.WPF.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Graphics.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Messages.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.Mac.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.WebAssembly.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.WPF.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.TreeView.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.TreeView.Windows.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.TreeView.WPF.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.TreeView.Mac.pas" />
+  </ItemGroup>
+</Project>

@@ -78,8 +78,12 @@
     <Reference Include="Elements">
       <Private>True</Private>
     </Reference>
-    <Reference Include="Delphi-WPF">
-      <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Delphi-WPF.dll</HintPath>
+    <Reference Include="Delphi">
+      <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Delphi.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Delphi.VCL">
+      <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Delphi.VCL.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -100,7 +104,7 @@
     </None>
     <Compile Include="Program.pas" />
     <Compile Include="Unit5.pas" />
-    <EmbeddedResource Include="..\TestFormWithTabStop.dfm" />
+    <EmbeddedResource Include="..\withTreeView.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Echoes.targets" />
 </Project>

@@ -60,6 +60,7 @@ begin
   writeLn('yes? 4');
   Application.Run;
   writeLn('The magic happens here.');
+  var x: RemObjects.Elements.RTL.Delphi.VCL.TButton;
 end;
 
 end.

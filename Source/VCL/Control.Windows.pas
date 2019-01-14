@@ -93,6 +93,9 @@ type
     [MessageAttribute(rtl.WM_COMMAND)]
     method WMCommand(var aMessage: TMessage);
 
+    [MessageAttribute(rtl.WM_NOTIFY)]
+    method WMNotify(var aMessage: TMessage);
+
   public
     method WndProc(var aMessage: TMessage); override;
     constructor(aOwner: TComponent);
@@ -271,6 +274,7 @@ method TControl.PlatformSetParent(aValue: TControl);
 begin
   if aValue ≠ nil then begin
     HandleNeeded; // TODO
+    rtl.SetParent(fHandle, aValue.Handle);
     if ParentFont then begin
       Font.FontHandle := aValue.Font.FontHandle;
       PlatformFontChanged;
@@ -519,6 +523,16 @@ begin
   var lControl := ControlFromHandle(rtl.HWND(aMessage.lParam));
   if lControl <> nil then
     lControl.Perform(CN_COMMAND, lNotification, aMessage.lParam)
+  else
+    DefaultHandler(var aMessage); // the message is not for us!
+end;
+
+method TNativeControl.WMNotify(var aMessage: TMessage);
+begin
+  var lInfo: ^rtl.NMHDR := ^rtl.NMHDR(^Void(aMessage.lParam));
+  var lControl := ControlFromHandle(lInfo^.hwndFrom);
+  if lControl <> nil then
+    lControl.Perform(CN_NOTIFY, aMessage.wParam, aMessage.lParam)
   else
     DefaultHandler(var aMessage); // the message is not for us!
 end;

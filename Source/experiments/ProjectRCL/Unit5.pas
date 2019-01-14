@@ -35,7 +35,8 @@ type
     edit2: TEdit;
     edit3: TEdit;
 
-
+    listView1: TListView;
+    treeView1: TTreeView;
 
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -54,9 +55,38 @@ begin
   //label1.Caption := 'All right!';
   //ShowMessage('Clicked!');
   //ShowMessage(edit1.Text);
-  listBox1.Items.Add(edit1.Text);
-  comboBox1.Items.Add(edit1.Text);
-  edit1.OnKeyPress := @Edit1OnKeyPress;
+  //listBox1.Items.Add(edit1.Text);
+  //comboBox1.Items.Add(edit1.Text);
+  //edit1.OnKeyPress := @Edit1OnKeyPress;
+  //listView1.ViewStyle := TViewStyle.vsIcon;
+
+
+
+
+
+
+  {if listView1.Columns.Count = 0 then begin
+    var lColumn := listView1.Columns.Add;
+    lColumn.Caption := 'Loncho!';
+
+    lColumn := listView1.Columns.Add;
+    lColumn.Caption := 'Loncho 2';
+
+    lColumn := listView1.Columns.Add;
+    lColumn.Caption := 'Loncho 3';
+
+    listView1.ViewStyle := TViewStyle.vsReport;
+
+    var lItem := listView1.Items.Add;
+    lItem.Caption := 'Item 1!!';
+    lItem.SubItems.Add('Roncho 2');
+    lItem.SubItems.Add('Roncho 3');
+  end
+  else
+    listView1.RowSelect := true;}
+  var lNode := treeView1.Items.Add(nil, 'New Node!');
+  treeView1.Items.AddChild(lNode, 'New Child!');
+  treeView1.Items.AddChildFirst(lNode, 'New First Child!');
 end;
 
 procedure TForm6.Button2Click(Sender: TObject);

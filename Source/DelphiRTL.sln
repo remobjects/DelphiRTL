@@ -1,11 +1,11 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
-# RemObjects Fire
+# RemObjects Water
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "Delphi.VCL.Shared", "Delphi.VCL.Shared.elements", "{2C8BFC71-4766-4D9A-801F-A7F0E7034D78}"
+EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Cooper", "DelphiRTL.Cooper.elements", "{5EB6180E-7F22-4174-887B-EA1C3469A61C}"
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Echoes", "DelphiRTL.Echoes.elements", "{FBDC9976-99B1-48CC-86BE-462604458DB6}"
-EndProject
-Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Echoes.WPF", "DelphiRTL.Echoes.WPF.elements", "{FBDC9376-92B1-41CC-16BE-162604458DB6}"
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Island.Android", "DelphiRTL.Island.Android.elements", "{2C5035AE-20BF-44E5-B186-21ACCAA7BBB1}"
 EndProject
@@ -17,8 +17,6 @@ Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Island.Windows", 
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Shared", "DelphiRTL.Shared.elements", "{422C7732-516B-4349-88E8-7F01BA91FF08}"
 EndProject
-Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Shared.VCL", "DelphiRTL.Shared.VCL.elements", "{0E930F04-C7D3-43B2-81B9-6BBC40FE20A5}"
-EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Toffee.iOS", "DelphiRTL.Toffee.iOS.elements", "{632E0AD5-142E-4DB0-A8AC-2AB8E2D29BC4}"
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Toffee.macOS", "DelphiRTL.Toffee.macOS.elements", "{014A45CE-7C50-4A22-9D4D-A617F535907F}"
@@ -26,6 +24,26 @@ EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Toffee.tvOS", "DelphiRTL.Toffee.tvOS.elements", "{F7CD09C9-64D0-4BAE-BF53-D6189F056AD8}"
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Toffee.watchOS", "DelphiRTL.Toffee.watchOS.elements", "{AB2B6666-8D9E-4B25-83F9-375DA1AEBC16}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Cooper", "DelphiVCL.Cooper.elements", "{A5098AF2-58CF-484E-ADB3-DC7C165F151A}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Echoes", "DelphiVCL.Echoes.elements", "{949A9E52-4EAB-4DF7-9CD1-50067B0EFE27}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Island.Android", "DelphiVCL.Island.Android.elements", "{C17C9ABA-7654-4B05-9800-413B6D210307}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Island.Linux", "DelphiVCL.Island.Linux.elements", "{01BA4A13-E6B8-423E-8F3B-1A4E36157AE7}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Island.WebAssembly", "DelphiVCL.Island.WebAssembly.elements", "{B00A5AD0-356D-4FC1-B704-E716AF11F93A}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Island.Windows", "DelphiVCL.Island.Windows.elements", "{E22BEBBB-FCAD-4838-8F4C-1019518DED71}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Toffee.iOS", "DelphiVCL.Toffee.iOS.elements", "{034B979F-731D-4B07-8AFB-39DC1C4C1B57}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Toffee.macOS", "DelphiVCL.Toffee.macOS.elements", "{B77B4E51-16B6-446F-BDFB-D90BCC373470}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Toffee.tvOS", "DelphiVCL.Toffee.tvOS.elements", "{5CB7EFBE-4592-41B3-B89D-CFEEC1A5E675}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Toffee.watchOS", "DelphiVCL.Toffee.watchOS.elements", "{BF557171-89DB-45CB-98DB-778AE1BCD1EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +91,46 @@ Global
 		{AB2B6666-8D9E-4B25-83F9-375DA1AEBC16}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
 		{AB2B6666-8D9E-4B25-83F9-375DA1AEBC16}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
 		{AB2B6666-8D9E-4B25-83F9-375DA1AEBC16}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{A5098AF2-58CF-484E-ADB3-DC7C165F151A}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{A5098AF2-58CF-484E-ADB3-DC7C165F151A}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{A5098AF2-58CF-484E-ADB3-DC7C165F151A}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{A5098AF2-58CF-484E-ADB3-DC7C165F151A}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{949A9E52-4EAB-4DF7-9CD1-50067B0EFE27}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{949A9E52-4EAB-4DF7-9CD1-50067B0EFE27}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{949A9E52-4EAB-4DF7-9CD1-50067B0EFE27}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{949A9E52-4EAB-4DF7-9CD1-50067B0EFE27}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{C17C9ABA-7654-4B05-9800-413B6D210307}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{C17C9ABA-7654-4B05-9800-413B6D210307}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{C17C9ABA-7654-4B05-9800-413B6D210307}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{C17C9ABA-7654-4B05-9800-413B6D210307}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{01BA4A13-E6B8-423E-8F3B-1A4E36157AE7}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{01BA4A13-E6B8-423E-8F3B-1A4E36157AE7}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{01BA4A13-E6B8-423E-8F3B-1A4E36157AE7}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{01BA4A13-E6B8-423E-8F3B-1A4E36157AE7}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{B00A5AD0-356D-4FC1-B704-E716AF11F93A}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{B00A5AD0-356D-4FC1-B704-E716AF11F93A}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{B00A5AD0-356D-4FC1-B704-E716AF11F93A}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{B00A5AD0-356D-4FC1-B704-E716AF11F93A}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{E22BEBBB-FCAD-4838-8F4C-1019518DED71}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{E22BEBBB-FCAD-4838-8F4C-1019518DED71}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{E22BEBBB-FCAD-4838-8F4C-1019518DED71}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{E22BEBBB-FCAD-4838-8F4C-1019518DED71}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{034B979F-731D-4B07-8AFB-39DC1C4C1B57}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{034B979F-731D-4B07-8AFB-39DC1C4C1B57}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{034B979F-731D-4B07-8AFB-39DC1C4C1B57}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{034B979F-731D-4B07-8AFB-39DC1C4C1B57}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{B77B4E51-16B6-446F-BDFB-D90BCC373470}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{B77B4E51-16B6-446F-BDFB-D90BCC373470}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{B77B4E51-16B6-446F-BDFB-D90BCC373470}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{B77B4E51-16B6-446F-BDFB-D90BCC373470}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{5CB7EFBE-4592-41B3-B89D-CFEEC1A5E675}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{5CB7EFBE-4592-41B3-B89D-CFEEC1A5E675}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{5CB7EFBE-4592-41B3-B89D-CFEEC1A5E675}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{5CB7EFBE-4592-41B3-B89D-CFEEC1A5E675}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{BF557171-89DB-45CB-98DB-778AE1BCD1EC}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{BF557171-89DB-45CB-98DB-778AE1BCD1EC}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{BF557171-89DB-45CB-98DB-778AE1BCD1EC}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{BF557171-89DB-45CB-98DB-778AE1BCD1EC}.Release|AnyCPU.Build.0 = Release|AnyCPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
