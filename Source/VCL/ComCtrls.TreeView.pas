@@ -76,6 +76,7 @@ type
     method GetState(NodeState: TNodeState): Boolean;
     method SetState(NodeState: TNodeState; Value: Boolean);
     method SetSelectedBit(Value: Boolean);
+    method PlatformSetText(aValue: String); virtual; partial; empty;
   public
     constructor(aOwner: TTreeNodes);
     //method AlphaSort(aRecurse: Boolean := False): Boolean;
@@ -549,7 +550,8 @@ end;
 
 method TTreeNode.SetText(aValue: String);
 begin
-
+  fText := aValue;
+  PlatformSetText(aValue);
 end;
 
 method TTreeNode.SetEnabled(aValue: Boolean);

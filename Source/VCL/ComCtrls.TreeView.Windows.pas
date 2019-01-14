@@ -10,6 +10,8 @@ uses
 type
   TTreeNode = public partial class(TPersistent)
   private assembly
+  protected
+    method PlatformSetText(aValue: String); partial;
   end;
 
   TTreeNodes = public partial class(TPersistent)
@@ -32,6 +34,15 @@ type
   end;
 
 implementation
+
+method TTreeNode.PlatformSetText(aValue: String);
+begin
+  var lNode: rtl.TVITEM;
+  lNode.mask := rtl.TVIF_TEXT;
+  lNode.hItem := fItemId;
+  lNode.pszText := aValue.ToLPCWSTR;
+  rtl.SendMessage(fOwner.Owner.Handle, rtl.TVM_SETITEM, 0, rtl.LPARAM(@lNode));
+end;
 
 method TTreeView.CreateParams(var aParams: TCreateParams);
 begin
