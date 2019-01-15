@@ -49,6 +49,7 @@ type
     class constructor;
   protected
     method CreateParams(var aParams: TCreateParams); override;
+    method CreateWnd; override;
     method PlatformSetViewStyle(aValue: TViewStyle); partial;
     method PlatformSetRowSelect(aValue: Boolean); partial;
 
@@ -173,10 +174,6 @@ type
 
 class constructor TListView;
 begin
-  {var lInit: rtl.INITCOMMONCONTROLSEX;
-  lInit.dwICC := rtl.ICC_LISTVIEW_CLASSES;
-  rtl.InitCommonControlsEx(@lInit);}
-
   var lIce: rtl.INITCOMMONCONTROLSEX;
   lIce.dwICC := rtl.ICC_LISTVIEW_CLASSES;
   lIce.dwSize := sizeOf(lIce);
@@ -192,6 +189,12 @@ begin
   aParams.WidgetClassName := rtl.WC_LISTVIEW.ToCharArray(true);
   aParams.Style := aParams.Style or rtl.LVS_ICON or rtl.WS_BORDER or rtl.WS_CLIPCHILDREN;
   CreateClass(var aParams);
+end;
+
+method TListView.CreateWnd;
+begin
+  inherited;
+  TStyleThemes.ThemeControl(Handle);
 end;
 
 method TListView.PlatformSetViewStyle(aValue: TViewStyle);

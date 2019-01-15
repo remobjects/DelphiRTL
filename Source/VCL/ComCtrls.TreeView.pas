@@ -77,6 +77,12 @@ type
     method SetState(NodeState: TNodeState; Value: Boolean);
     method SetSelectedBit(Value: Boolean);
     method PlatformSetText(aValue: String); virtual; partial; empty;
+    method PlatformGetSelected: Boolean; virtual; partial; empty;
+    method PlatformGetFocused: Boolean; virtual; partial; empty;
+    method PlatformGetExpanded: Boolean; virtual; partial; empty;
+    method PlatformSetSelected(aValue: Boolean); virtual; partial; empty;
+    method PlatformSetFocused(aValue: Boolean); virtual; partial; empty;
+    method PlatformSetExpanded(aValue: Boolean); virtual; partial; empty;
   public
     constructor(aOwner: TTreeNodes);
     //method AlphaSort(aRecurse: Boolean := False): Boolean;
@@ -435,7 +441,7 @@ end;
 
 method TTreeNode.GetExpanded: Boolean;
 begin
-
+  result := PlatformGetExpanded;
 end;
 
 method TTreeNode.GetLevel: Integer;
@@ -455,7 +461,7 @@ end;
 
 method TTreeNode.GetFocused: Boolean;
 begin
-
+  result := PlatformGetFocused;
 end;
 
 method TTreeNode.GetIndex: Integer;
@@ -470,7 +476,7 @@ end;
 
 method TTreeNode.GetSelected: Boolean;
 begin
-
+  result := PlatformGetSelected;
 end;
 
 method TTreeNode.GetCount: Integer;
@@ -510,12 +516,12 @@ end;
 
 method TTreeNode.SetExpanded(aValue: Boolean);
 begin
-
+  PlatformSetExpanded(aValue);
 end;
 
 method TTreeNode.SetFocused(aValue: Boolean);
 begin
-
+  PlatformSetFocused(aValue);
 end;
 
 method TTreeNode.SetImageIndex(aValue: TImageIndex);
@@ -540,7 +546,7 @@ end;
 
 method TTreeNode.SetSelected(aValue: Boolean);
 begin
-
+  PlatformSetSelected(aValue);
 end;
 
 method TTreeNode.SetStateIndex(aValue: Integer);
