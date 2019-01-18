@@ -49,5 +49,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.TreeView.Windows.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.TreeView.WPF.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\ComCtrls.TreeView.Mac.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\Themes.Windows.pas" />
   </ItemGroup>
 </Project>

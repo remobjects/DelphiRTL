@@ -10,6 +10,16 @@ uses
 type
   TTreeNode = public partial class(TPersistent)
   private assembly
+    method InternalGetNodeState(toCheck: Integer): Boolean;
+    method InternalSetState(aState: Integer; aValue: Boolean);
+  protected
+    method PlatformSetText(aValue: String); partial;
+    method PlatformGetSelected: Boolean; partial;
+    method PlatformGetFocused: Boolean; partial;
+    method PlatformGetExpanded: Boolean; partial;
+    method PlatformSetSelected(aValue: Boolean); partial;
+    method PlatformSetFocused(aValue: Boolean); partial;
+    method PlatformSetExpanded(aValue: Boolean); partial;
   end;
 
   TTreeNodes = public partial class(TPersistent)
@@ -27,11 +37,75 @@ type
     class constructor;
   protected
     method CreateParams(var aParams: TCreateParams); override;
+    method CreateWnd; override;
+
+    [MessageAttribute(CN_NOTIFY)]
+    method CNNotify(var aMessage: TMessage);
   public
     method WndProc(var Message: TMessage); override;
   end;
 
 implementation
+
+method TTreeNode.PlatformSetText(aValue: String);
+begin
+  var lNode: rtl.TVITEM;
+  lNode.mask := rtl.TVIF_TEXT;
+  lNode.hItem := fItemId;
+  lNode.pszText := aValue.ToLPCWSTR;
+  rtl.SendMessage(fOwner.Owner.Handle, rtl.TVM_SETITEM, 0, rtl.LPARAM(@lNode));
+end;
+
+method TTreeNode.InternalGetNodeState(toCheck: Integer): Boolean;
+begin
+  var lNode: rtl.TVITEM;
+  lNode.mask := rtl.TVIF_STATE;
+  lNode.hItem := fItemId;
+  rtl.SendMessage(fOwner.Owner.Handle, rtl.TVM_GETITEM, 0, rtl.LPARAM(@lNode));
+  result := (lNode.state and toCheck) <> 0;
+end;
+
+method TTreeNode.PlatformGetSelected: Boolean;
+begin
+  result := InternalGetNodeState(rtl.TVIS_SELECTED);
+end;
+
+method TTreeNode.PlatformGetFocused: Boolean;
+begin
+  const TVIS_FOCUSED = 1;
+  result := InternalGetNodeState(TVIS_FOCUSED);
+end;
+
+method TTreeNode.PlatformGetExpanded: Boolean;
+begin
+  result := InternalGetNodeState(rtl.TVIS_EXPANDED);
+end;
+
+method TTreeNode.InternalSetState(aState: Integer; aValue: Boolean);
+begin
+  var lNode: rtl.TVITEM;
+  lNode.mask := rtl.TVIF_STATE;
+  lNode.hItem := fItemId;
+  lNode.stateMask := aState;
+  lNode.state := Integer(aValue);
+  rtl.SendMessage(fOwner.Owner.Handle, rtl.TVM_SETITEM, 0, rtl.LPARAM(@lNode));
+end;
+
+method TTreeNode.PlatformSetSelected(aValue: Boolean);
+begin
+  InternalSetState(rtl.TVIS_SELECTED, aValue);
+end;
+
+method TTreeNode.PlatformSetFocused(aValue: Boolean);
+begin
+  const TVIS_FOCUSED = 1;
+  InternalSetState(TVIS_FOCUSED, aValue);
+end;
+
+method TTreeNode.PlatformSetExpanded(aValue: Boolean);
+begin
+  InternalSetState(rtl.TVIS_EXPANDED, aValue);
+end;
 
 method TTreeView.CreateParams(var aParams: TCreateParams);
 begin
@@ -49,6 +123,13 @@ begin
   CreateClass(var aParams);
 end;
 
+method TTreeView.CreateWnd;
+begin
+  inherited;
+
+  TStyleThemes.ThemeControl(Handle);
+end;
+
 class constructor TTreeView;
 begin
   var lIce: rtl.INITCOMMONCONTROLSEX;
@@ -57,6 +138,11 @@ begin
   var lModule := rtl.LoadLibrary('Comctl32.dll');
   var lProc := TInitEx(rtl.GetProcAddress(lModule, 'InitCommonControlsEx'));
   lProc(@lIce);
+end;
+
+method TTreeView.CNNotify(var aMessage: TMessage);
+begin
+
 end;
 
 method TTreeView.WndProc(var Message: TMessage);
