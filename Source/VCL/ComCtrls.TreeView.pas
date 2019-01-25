@@ -83,6 +83,7 @@ type
     method PlatformSetSelected(aValue: Boolean); virtual; partial; empty;
     method PlatformSetFocused(aValue: Boolean); virtual; partial; empty;
     method PlatformSetExpanded(aValue: Boolean); virtual; partial; empty;
+    method PlatformCreate; virtual; partial; empty;
   public
     constructor(aOwner: TTreeNodes);
     //method AlphaSort(aRecurse: Boolean := False): Boolean;
@@ -161,6 +162,7 @@ type
     method PlatformAddChildFirst(aParent: TTreeNode; var aNode: TTreeNode); virtual; partial; empty;
     method PlatformAdd(aSibling: TTreeNode; var aNode: TTreeNode); virtual; partial; empty;
     method PlatformAddFirst(aSibling: TTreeNode; var aNode: TTreeNode); virtual; partial; empty;
+    method PlatformCreate; virtual; partial; empty;
 
   public
     constructor(aOwner: TTreeView);
@@ -585,11 +587,13 @@ begin
   fOwner := aOwner;
   fText := aText;
   fParent := aParent;
+  PlatformCreate;
 end;
 
 constructor TTreeNode(aOwner: TTreeNodes);
 begin
   fOwner := aOwner;
+  PlatformCreate;
 end;
 
 method TTreeNode.Collapse(Recurse: Boolean);
@@ -740,6 +744,7 @@ end;
 constructor TTreeNodes(aOwner: TTreeView);
 begin
   fOwner := aOwner;
+  PlatformCreate;
 end;
 
 method TTreeNodes.AddChildFirst(aParent: TTreeNode; S: String): TTreeNode;

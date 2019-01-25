@@ -8,6 +8,17 @@ uses
   RemObjects.Elements.RTL.Delphi, System.Windows.Controls;
 
 type
+  TTreeNode = public partial class(TPersistent)
+  protected
+    method PlatformSetText(aValue: String); partial;
+    method PlatformGetSelected: Boolean; partial;
+    method PlatformGetFocused: Boolean; partial;
+    method PlatformGetExpanded: Boolean; partial;
+    method PlatformSetSelected(aValue: Boolean); partial;
+    method PlatformSetFocused(aValue: Boolean); partial;
+    method PlatformSetExpanded(aValue: Boolean); partial;
+  end;
+
   TTreeNodes = public partial class(TPersistent)
   protected
     method InternalInsertNode(asChild: Boolean; asFirst: Boolean; aParentOrSibling: TTreeNode; var aNode: TTreeNode);
@@ -27,6 +38,41 @@ type
 
 
 implementation
+
+method TTreeNode.PlatformSetText(aValue: String);
+begin
+  fItemId.Header := aValue;
+end;
+
+method TTreeNode.PlatformGetSelected: Boolean;
+begin
+  result := fItemId.IsSelected;
+end;
+
+method TTreeNode.PlatformSetSelected(aValue: Boolean);
+begin
+  fItemId.IsSelected := aValue;
+end;
+
+method TTreeNode.PlatformGetFocused: Boolean;
+begin
+  result := fItemId.IsFocused;
+end;
+
+method TTreeNode.PlatformSetFocused(aValue: Boolean);
+begin
+  //fItemId.IsFocused := aValue;
+end;
+
+method TTreeNode.PlatformSetExpanded(aValue: Boolean);
+begin
+  fItemId.IsExpanded := aValue;
+end;
+
+method TTreeNode.PlatformGetExpanded: Boolean;
+begin
+  result := fItemId.IsExpanded;
+end;
 
 method TTreeView.CreateHandle;
 begin
