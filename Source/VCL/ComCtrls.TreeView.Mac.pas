@@ -14,6 +14,13 @@ type
     fChilds: TList<TTreeNode>;
   protected
     method PlatformCreate; partial;
+    method PlatformSetText(aValue: String); partial;
+    method PlatformGetSelected: Boolean; partial;
+    //method PlatformGetFocused: Boolean; partial;
+    method PlatformGetExpanded: Boolean; partial;
+    method PlatformSetSelected(aValue: Boolean); partial;
+    //method PlatformSetFocused(aValue: Boolean); partial;
+    method PlatformSetExpanded(aValue: Boolean); partial;
   public
   end;
 
@@ -57,6 +64,38 @@ implementation
 method TTreeNode.PlatformCreate;
 begin
   fChilds := new TList<TTreeNode>();
+end;
+
+method TTreeNode.PlatformSetText(aValue: String);
+begin
+  fOwner.Owner.UpdateDataModel;
+end;
+
+method TTreeNode.PlatformGetExpanded: Boolean;
+begin
+  result := fOwner.Owner.fTree.isItemExpanded(self);
+end;
+
+method TTreeNode.PlatformSetExpanded(aValue: Boolean);
+begin
+  if aValue then
+    fOwner.Owner.fTree.expandItem(self)
+  else
+    fOwner.Owner.fTree.collapseItem(self);
+end;
+
+method TTreeNode.PlatformGetSelected: Boolean;
+begin
+  result := fOwner.Owner.fTree.isRowSelected(fOwner.Owner.fTree.rowForItem(self));
+end;
+
+method TTreeNode.PlatformSetSelected(aValue: Boolean);
+begin
+  var lRow := fOwner.Owner.fTree.rowForItem(self);
+  if aValue then
+    fOwner.Owner.fTree.selectRowIndexes(new NSIndexSet withIndex(lRow)) byExtendingSelection(YES)
+  else
+    fOwner.Owner.fTree.deselectRow(lRow);
 end;
 
 method TTreeNodes.PlatformCreate;
