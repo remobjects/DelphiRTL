@@ -1,9 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-// TODO FIX THAT BEFORE MERGING!!!!!!!!!!!!!!!!
-
-//{$IF MACOS AND NOT (ISLAND AND DARWIN)}
-{$IF MACOS}
+{$IF MACOS AND NOT (ISLAND AND DARWIN)}
 
 interface
 
@@ -36,8 +33,7 @@ type
   TTreeView = public partial class(TNativeControl)
   private
   assembly
-    fController: TTreeViewController;
-    fDataSource: TTreeViewDataSource;
+    fDataSource: TTreeViewDataSourceController;
     fTree: NSOutlineView;
   protected
     method CreateHandle; override;
@@ -45,16 +41,7 @@ type
     method UpdateDataModel;
   end;
 
-  TTreeViewController = class(NSOutlineViewDelegate)
-  private
-    fOwner: TTreeView;
-  public
-    constructor(aOwner: TTreeView);
-    //method outlineView(outlineView: not nullable NSOutlineView) viewForTableColumn(tableColumn: nullable NSTableColumn) item(item: not nullable id): nullable NSView;
-    method outlineView(outlineView: not nullable NSOutlineView) isGroupItem(item: not nullable id): BOOL;
-  end;
-
-  TTreeViewDataSource = class(NSOutlineViewDataSource)
+  TTreeViewDataSourceController = class(INSOutlineViewDataSource, INSOutlineViewDelegate)
   private
     fOwner: TTreeView;
   public
@@ -63,7 +50,6 @@ type
     method outlineView(outlineView: not nullable NSOutlineView) numberOfChildrenOfItem(item: nullable id): NSInteger;
     method outlineView(outlineView: not nullable NSOutlineView) isItemExpandable(item: not nullable id): BOOL;
     method outlineView(outlineView: not nullable NSOutlineView) objectValueForTableColumn(tableColumn: nullable NSTableColumn) byItem(item: nullable id): nullable id;
-    method outlineView(outlineView: not nullable NSOutlineView) setObjectValue(object: nullable id) forTableColumn(tableColumn: nullable NSTableColumn) byItem(item: nullable id);
   end;
 
 implementation
@@ -124,14 +110,15 @@ method TTreeView.CreateHandle;
 begin
   fTree := new NSOutlineView();
   fHandle := new NSScrollView();
-  fDataSource := new TTreeViewDataSource(self);
-  fController := new TTreeViewController(self);
-  fTree.delegate := fController;
+  fDataSource := new TTreeViewDataSourceController(self);
+  fTree.delegate := fDataSource;
   fTree.dataSource := fDataSource;
   (fHandle as NSScrollView).documentView := fTree;
 
   var lColumn := new NSTableColumn withIdentifier(Name + 'C1');
   fTree.addTableColumn(lColumn);
+  fTree.outlineTableColumn := lColumn;
+  fTree.headerView := nil;
 end;
 
 method TTreeView.UpdateDataModel;
@@ -139,80 +126,44 @@ begin
   fTree.reloadData;
 end;
 
-constructor TTreeViewController(aOwner: TTreeView);
+constructor TTreeViewDataSourceController(aOwner: TTreeView);
 begin
   fOwner := aOwner;
 end;
 
-{method TTreeViewController.outlineView(outlineView: not nullable NSOutlineView) viewForTableColumn(tableColumn: nullable NSTableColumn) item(item: not nullable id): nullable NSView;
+method TTreeViewDataSourceController.outlineView(outlineView: not nullable NSOutlineView) child(&index: NSInteger) ofItem(item: nullable id): not nullable id;
 begin
-  writeLn('Cell 1');
-  var lCell := fOwner.fTree.makeViewWithIdentifier(fOwner.Name + "_Cell") owner(fOwner.fTree) as NSTableCellView;
-  var lTextField := lCell.textField;
-  lTextField.stringValue := (item as TTreeNode).Text;
-  result := lCell;
-  writeLn('Cell 2');
-end;}
-
-method TTreeViewController.outlineView(outlineView: not nullable NSOutlineView) isGroupItem(item: not nullable id): BOOL;
-begin
-  result := false;
-end;
-
-constructor TTreeViewDataSource(aOwner: TTreeView);
-begin
-  fOwner := aOwner;
-end;
-
-method TTreeViewDataSource.outlineView(outlineView: not nullable NSOutlineView) child(&index: NSInteger) ofItem(item: nullable id): not nullable id;
-begin
-  writeLn('Here?');
   if item = nil then // root node(s)
     result := fOwner.Items.fNodes[&index] as not nullable
   else begin
     var lNode := item as TTreeNode;
     result := lNode.fChilds[&index] as not nullable;
   end;
-  writeLn('Child Of Item');
-  writeLn(result);
 end;
 
-method TTreeViewDataSource.outlineView(outlineView: not nullable NSOutlineView) numberOfChildrenOfItem(item: nullable id): NSInteger;
+method TTreeViewDataSourceController.outlineView(outlineView: not nullable NSOutlineView) numberOfChildrenOfItem(item: nullable id): NSInteger;
 begin
-  if fOwner.Items = nil then begin
-    writeLn('Not assigned!!');
+  if fOwner.Items = nil then
     exit 0;
-  end;
 
   if item = nil then
     result := fOwner.Items.fNodes.Count
-  else begin
-    writeLn('Childs 1');
-    var lNode := item as TTreeNode;
-    result := lNode.fChilds.Count;
-    writeLn('Childs 2');
-  end;
-  writeLn('NumberOfChildrenOfItem');
-  writeLn(result);
+  else
+    result := (item as TTreeNode).fChilds.Count;
 end;
 
-method TTreeViewDataSource.outlineView(outlineView: not nullable NSOutlineView) isItemExpandable(item: not nullable id): BOOL;
+method TTreeViewDataSourceController.outlineView(outlineView: not nullable NSOutlineView) isItemExpandable(item: not nullable id): BOOL;
 begin
-  writeLn('IsExpandable');
   result := (item as TTreeNode).fChilds.Count > 0;
 end;
 
-method TTreeViewDataSource.outlineView(outlineView: not nullable NSOutlineView) objectValueForTableColumn(tableColumn: nullable NSTableColumn) byItem(item: nullable id): nullable id;
+method TTreeViewDataSourceController.outlineView(outlineView: not nullable NSOutlineView) objectValueForTableColumn(tableColumn: nullable NSTableColumn) byItem(item: nullable id): nullable id;
 begin
-  //result := item;
-  writeLn('objectvalueforTableColumn');
+  if tableColumn = nil then
+    exit item;
+
   if item <> nil then
     result := (item as TTreeNode).Text;
-end;
-
-method TTreeViewDataSource.outlineView(outlineView: not nullable NSOutlineView) setObjectValue(object: nullable id) forTableColumn(tableColumn: nullable NSTableColumn) byItem(item: nullable id);
-begin
-  object := item;
 end;
 {$ENDIF}
 
