@@ -5,7 +5,7 @@ uses
   RemObjects.Elements.RTL,
   RemObjects.Elements.RTL.Delphi;
 
-{$IF NOT TOFFEE}
+{$IF NOT (TOFFEE OR ECHOES)}
 type
   DictionaryUsage = public class(Test)
   private
