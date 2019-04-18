@@ -103,7 +103,7 @@ begin
   if SupportLevel > THighDPISupportLevel.Basic then begin
     var lMonitor := rtl.MonitorFromWindow(aValue, rtl.MONITOR_DEFAULTTONEAREST);
     var lX, lY: rtl.UINT;
-    rtl.GetDpiForMonitor(lMonitor, rtl.MONITOR_DPI_TYPE.MDT_DEFAULT, @lX, @lY);
+    THighDPI.GetDpiForMonitor(lMonitor, rtl.MONITOR_DPI_TYPE.MDT_DEFAULT, @lX, @lY);
     result := lY;
   end
   else
