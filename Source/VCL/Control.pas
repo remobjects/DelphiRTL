@@ -187,9 +187,16 @@ type
     property OnExit: TNotifyEvent read fOnExit write PlatformSetOnExit;
   end;
 
-  TCustomControl = public class(TNativeControl)
+  TCustomControl = public partial class(TNativeControl)
   private
     //fCanvas: TCanvas;
+  end;
+
+  TGraphicControl = public partial class(TControl)
+  protected
+    method Paint; virtual; empty;
+  public
+    //method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT; virtual;
   end;
 
 implementation

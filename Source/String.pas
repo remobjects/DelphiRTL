@@ -163,7 +163,7 @@ type
     class method IsNullOrEmpty(const Value: DelphiString): Boolean; static;
     class method IsNullOrWhiteSpace(const Value: DelphiString): Boolean; static;
     class method &Join(Separator: DelphiString; Values: array of DelphiString): DelphiString; static;
-    class method Join(Separator: DelphiString; Values: sequence of DelphiString): DelphiString; static;
+    class method &Join(Separator: DelphiString; Values: sequence of DelphiString): DelphiString; static;
     class method &Join(Separator: DelphiString; Values: array of DelphiString; StartIndex: Integer; Count: Integer): DelphiString; static;
     method LastDelimiter(const Delims: DelphiString): Integer;
     method LastIndexOf(Value: Char): Integer;

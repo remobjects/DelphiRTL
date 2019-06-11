@@ -64,13 +64,6 @@ type
     property CurrentPPI: Integer read fCurrentPPI;
   end;
 
-  TGraphicControl = public class(TControl)
-  protected
-    method Paint; virtual; empty;
-  public
-    //method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT; virtual;
-  end;
-
   TNativeControl = public partial class(TControl)
   private
     fClass: rtl.WNDCLASS;

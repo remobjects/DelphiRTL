@@ -34,6 +34,16 @@ type
     method PlatformApplyDefaults; virtual; partial;
   end;
 
+  TCustomControl = public partial class(TNativeControl)
+  protected
+    method CreateHandle; override;
+  end;
+
+  TGraphicControl = public partial class(TControl)
+  protected
+    method CreateHandle; override;
+  end;
+
 implementation
 
 method TControl.HandleAllocated: Boolean;
@@ -152,6 +162,18 @@ begin
   if Boolean(aStatus['shiftKey']) then result := result + [TShiftState.ssShift];
   if Boolean(aStatus['metaKey']) then result := result + [TShiftState.ssCommand];
   aKey := Integer((Max(Double(aStatus['keyCode']), Double(aStatus['which']))));
+end;
+
+method TCustomControl.CreateHandle;
+begin
+  fHandle := WebAssembly.CreateElement('div');
+  fHandle.style.position := "absolute";
+end;
+
+method TGraphicControl.CreateHandle;
+begin
+  fHandle := WebAssembly.CreateElement('div');
+  fHandle.style.position := "absolute";
 end;
 
 {$ENDIF}
