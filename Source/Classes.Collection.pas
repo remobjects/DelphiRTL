@@ -141,9 +141,15 @@ begin
   end;
   if lCtor = nil then raise new Exception('No constructor can be found!');
 
-  var lNew := rtl.objc_msgSend(aType.TypeClass, NSSelectorFromString('alloc'));
-  // TODO using aParameters: error, array of dynamic expected.
-  result := rtl.objc_msgSend(lNew, lCtor.Selector, [aParameters[0]]);
+
+  var lNew := aType.TypeClass.alloc();
+  var lInvokation := NSInvocation.invocationWithMethodSignature(lNew.methodSignatureForSelector(lCtor.Selector));
+  lInvokation.setSelector(lCtor.Selector);
+  lInvokation.setTarget(lNew);
+  for each a in aParameters index i do
+    lInvokation.setArgument(@a) atIndex(i+2);
+  lInvokation.invoke();
+  lInvokation.getReturnValue(@result);
   {$ENDIF}
 end;
 
