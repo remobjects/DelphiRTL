@@ -27,6 +27,8 @@ type
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
     method PlatformSetCaption(aValue: String); virtual; partial;
     method PlatformSetTabOrder(aValue: Integer); virtual; partial;
+    method PlatformSetColor(aValue: TColor); virtual; partial;
+
 
     method PlatformFontChanged; virtual; partial;
 
@@ -152,6 +154,11 @@ end;
 method TControl.PlatformSetTabOrder(aValue: Integer);
 begin
   fHandle.tabindex := aValue;
+end;
+
+method TControl.PlatformSetColor(aValue: TColor);
+begin
+  fhandle.style['background-color'] := '#' + RemObjects.Elements.RTL.Convert.ToHexString(aValue);
 end;
 
 method TControl.ProcessKeyboardStatus(aStatus: EcmaScriptObject; var aKey: Word): TShiftState;
