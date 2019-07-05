@@ -17,7 +17,7 @@ type
     method CreateHandle; override;
   public
     method Show; override;
-    method Show(aRootView: dynamic);
+    method Show(aRootView: Object);
   end;
 
 implementation
@@ -47,9 +47,9 @@ begin
   fHandle.style.margin := "0 auto";
 end;
 
-method TForm.Show(aRootView: dynamic);
+method TForm.Show(aRootView: Object);
 begin
-  var lRootView := aRootView;
+  var lRootView: dynamic := aRootView;
   if lRootView = nil then begin
     // No parent html element provided to 'host' the main div
     var lWindow := WebAssembly.GetWindowObject;
