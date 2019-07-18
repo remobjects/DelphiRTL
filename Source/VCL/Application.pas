@@ -24,7 +24,7 @@ end;
 TScreen = public partial class(TComponent)
 private
   fPixelsPerInch: Integer;
-public
+published
   property PixelsPerInch: Integer read fPixelsPerInch write fPixelsPerInch;
 end;
 

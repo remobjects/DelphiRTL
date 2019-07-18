@@ -27,7 +27,7 @@ type
     method setOwner(aValue: TComponent);
   protected
     constructor(aOwner: TComponent);
-  public
+  published
     method Loaded; virtual;
     method SetComponentState(aState: TComponentStateEnum);
     method RemoveComponentState(aState: TComponentStateEnum);

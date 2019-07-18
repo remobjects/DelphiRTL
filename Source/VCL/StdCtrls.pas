@@ -11,13 +11,13 @@ uses
 
 type
   TButton = public partial class(TNativeControl)
-  public
+  published
     constructor(aOwner: TComponent);
     class method Create(AOwner: TComponent): TButton;
   end;
 
   TEdit = public partial class(TNativeControl)
-  public
+  published
     constructor(aOwner: TComponent);
     property MaxLength: Integer read PlatformGetMaxLength write PlatformSetMaxLength;
     property &ReadOnly: Boolean read PlatformGetReadOnly write PlatformSetReadOnly;
@@ -26,7 +26,7 @@ type
 
   //TLabel = public partial class({$IF ISLAND AND WINDOWS}TGraphicControl{$ELSE}TNativeControl{$ENDIF})
   TLabel = public partial class(TNativeControl)
-  public
+  published
     class method Create(aOwner: TComponent): TLabel;
   end;
 
@@ -34,7 +34,7 @@ type
   protected
     method PlatformGetChecked: Boolean; virtual; partial; empty;
     method PlatformSetChecked(aValue: Boolean); virtual; partial; empty;
-  public
+  published
     constructor(aOwner: TComponent);
     property Checked: Boolean read PlatformGetChecked write PlatformSetChecked;
   end;
@@ -50,7 +50,7 @@ type
     method PlatformSetAllowGrayed(aValue: Boolean); partial; empty;
     method SetState(aValue: TCheckBoxState); virtual;
     method SetAllowGrayed(aValue: Boolean); virtual;
-  public
+  published
     method Toggle; virtual;
     method Click; override;
     property AllowGrayed: Boolean read fAllowGrayed write SetAllowGrayed default false;
@@ -58,7 +58,7 @@ type
   end;
 
   TListControlItems = public partial class(TStringList)
-  public
+  published
     method AddObject(S: DelphiString; aObject: TObject): Integer; override;
     method Clear; override;
     method Delete(aIndex: Integer); override;
@@ -70,7 +70,7 @@ type
   protected
     method GetItemIndex: Integer; virtual; abstract;
     method SetItemIndex(aValue: Integer); virtual; abstract;
-  public
+  published
     constructor(aOwner: TComponent);
     method AddItem(Item: DelphiString; aObject: TObject); virtual; abstract;
     method Clear; virtual; abstract;
@@ -86,7 +86,7 @@ type
     fMultiSelect: Boolean;
     method GetSelCount: Integer; virtual; abstract;
     method SetMultiSelect(aValue: Boolean); virtual; abstract;
-  public
+  published
     property MultiSelect: Boolean read fMultiSelect write SetMultiSelect default false;
     property SelCount: Integer read GetSelCount;
   end;
@@ -101,7 +101,7 @@ type
     method SetItemIndex(aValue: Integer); override;
     method GetSelCount: Integer; override;
     method SetMultiSelect(aValue: Boolean); override;
-  public
+  published
     constructor(aOwner: TComponent);
     method Loaded; override;
     method AddItem(Item: DelphiString; aObject: TObject); override;
@@ -116,7 +116,7 @@ type
   end;
 
   TComboBoxItems = public partial class(TStringList)
-  public
+  published
     method AddObject(S: DelphiString; aObject: TObject): Integer; override;
     method Clear; override;
     method Delete(aIndex: Integer); override;
@@ -136,7 +136,7 @@ type
   protected
     method GetItemIndex: Integer; override;
     method SetItemIndex(aValue: Integer); override;
-  public
+  published
     constructor(aOwner: TComponent);
     method Loaded; override;
     method AddItem(Item: DelphiString; aObject: TObject); override;
@@ -164,7 +164,7 @@ type
     method Get(aIndex: Integer): DelphiString; override;
     method GetTextStr: DelphiString; override;
     method SetTextStr(value: DelphiString); override;
-  public
+  published
     method AddObject(S: DelphiString; aObject: TObject): Integer; override;
     method Clear; override;
     method Delete(aIndex: Integer); override;
@@ -175,7 +175,7 @@ type
   TMemo = public partial class(TControl)
   private
     fLines: TStrings;
-  public
+  published
     constructor(aOwner: TComponent);
     property Lines: TStrings read fLines write fLines;
   end;
@@ -190,7 +190,7 @@ type
     method SetMax(value: Integer);
     method SetPosition(value: Integer);
     method SetStyle(value: TProgressBarStyle);
-  public
+  published
     property Max: Integer read fMax write SetMax;
     property Position: Integer read fPosition write SetPosition;
     property Style: TProgressBarStyle read fStyle write SetStyle;

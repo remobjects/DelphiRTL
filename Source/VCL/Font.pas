@@ -42,7 +42,7 @@ type
   protected
     method PlatformUpdate; virtual; partial; empty;
     method PlatformSetHeight(aValue: Integer); virtual; partial; empty;
-  public
+  published
     property PropertyChanged: TPropertyChangedEvent;
     property Color: TColor read fColor write setColor;
     property Name: String read fName write setName;

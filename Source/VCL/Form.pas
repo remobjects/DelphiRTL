@@ -13,7 +13,9 @@ type
     fPixelsPerInch: Integer;
     fOldCreateOrder: Boolean;
     fTextHeight: Integer;
-  public
+    method Dummy; empty;
+  published
+  //public
     //constructor(aOwner: TComponent); empty;
     property OldCreateOrder: Boolean read fOldCreateOrder write fOldCreateOrder;
     property PixelsPerInch: Integer read fPixelsPerInch write fPixelsPerInch;
@@ -21,7 +23,7 @@ type
   end;
 
   TForm = public partial class(TCustomForm)
-  public
+  published
     constructor(aOwner: TComponent);
   end;
 
@@ -29,7 +31,7 @@ type
   protected
     method PlatformGetScreenHeight: Integer; virtual; partial; empty;
     method PlatformGetScreenWidth: Integer; virtual; partial; empty;
-  public
+  published
     property Height: Integer read PlatformGetScreenHeight;
     property Width: Integer read PlatformGetScreenWidth;
   end;

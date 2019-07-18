@@ -47,7 +47,7 @@ type
     //method SetIndex(Value: Integer); override;
 
     method PlatformSetCaption(aValue: String); partial; virtual; empty;
-  public
+  published
     constructor(aCollection: TCollection);
     //method Assign(Source: TPersistent); override;
     property Alignment: TAlignment read fAlignment write SetAlignment default taLeftJustify;
@@ -76,7 +76,7 @@ type
     method Update(aItem: TCollectionItem); override;
 
     method PlatformAdd(aListColumn: TListColumn); partial; virtual; empty;
-  public
+  published
     constructor(aOwner: TListView);
     method &Add: TListColumn;
     property Items[aIndex: Integer]: TListColumn read GetColumnItem write SetColumnItem; default;
@@ -99,7 +99,7 @@ type
     method PlatformClear; virtual; partial; empty;
     method PlatformDelete(aIndex: Integer); partial; virtual; empty;
     method PlatformInsert(aIndex: Integer; S: DelphiString); partial; virtual; empty;
-  public
+  published
     constructor Create(aOwner: TListItem);
     function &Add(S: DelphiString): Integer; override;
     function AddObject(S: DelphiString; aObject: TObject): Integer; override;
@@ -154,7 +154,7 @@ type
     method PlatformSetCaption(aValue: String); partial; virtual; empty;
     method PlatformGetSelected: Boolean; partial; virtual; empty;
     method PlatformSetSelected(aValue: Boolean); partial; virtual; empty;
-  public
+  published
     constructor(aOwner: TListItems); virtual;
     //method Assign(Source: TPersistent); override;
     method CancelEdit;
@@ -211,7 +211,7 @@ type
     method PlatformAdd(aListItem: TListItem); partial; virtual; empty;
     method PlatformClear; partial; virtual; empty;
     method PlatformDelete(aIndex: Integer); partial; virtual; empty;
-  public
+  published
     constructor(aOwner: TListView);
     method DefineProperties(Filer: TObject {TFiler}); override;
     method &Add: TListItem;
@@ -312,7 +312,7 @@ type
 
     method PlatformSetViewStyle(aValue: TViewStyle); partial; virtual; empty;
     method PlatformSetRowSelect(aValue: Boolean); partial; virtual; empty;
-  public
+  published
     constructor(aOwner: TComponent);
     method PlatformRefreshContent; partial; virtual; empty;
     method AddItem(aItem: DelphiString; aObject: TObject); override;

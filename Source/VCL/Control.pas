@@ -24,7 +24,7 @@ type
     fRight: TMarginSize;
     fBottom: TMarginSize;
     class method InitDefaults(Margins: TMargins); virtual;
-  public
+  published
     property Left: TMarginSize read fLeft write SetLeft;
     property Top: TMarginSize read fTop write SetTop;
     property Right: TMarginSize read fRight write SetRight;
@@ -38,6 +38,7 @@ type
     constructor;
   end;
 
+  [Used(Inherit := True)]
   TControl = public partial class(TComponent)
   private
     fParent: TNativeControl;
@@ -122,7 +123,7 @@ type
 
     method Click; virtual;
 
-  public
+  published
     // Used in composite control in some platforms,
     // ie ListBox in mac is a NSTableView inside a NSScrollView.
     // For size, adding into a parent, we need the NSSCrollView handle (fHandle).
@@ -176,7 +177,7 @@ type
     method PlatformNativeCreated; virtual; partial; empty;
     method PlatformSetOnEnter(aValue: TNotifyEvent); virtual; partial; empty;
     method PlatformSetOnExit(aValue: TNotifyEvent); virtual; partial; empty;
-  public
+  published
     method AlignControl(aControl: TControl); virtual;
     method AlignControls(aControl: TControl; var Rect: TRect); virtual;
 
@@ -195,7 +196,7 @@ type
   TGraphicControl = public partial class(TControl)
   protected
     method Paint; virtual; empty;
-  public
+  published
     //method WndProc(hWnd: rtl.HWND; message: rtl.UINT; wParam: rtl.WPARAM; lParam: rtl.LPARAM): rtl.LRESULT; virtual;
   end;
 
