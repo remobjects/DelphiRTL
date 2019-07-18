@@ -38,7 +38,6 @@ type
     constructor;
   end;
 
-  [Used(Inherit := True)]
   TControl = public partial class(TComponent)
   private
     fParent: TNativeControl;
