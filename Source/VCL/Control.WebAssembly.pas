@@ -92,7 +92,7 @@ begin
     result := InstanceClassName;
     result := result.Substring(result.LastIndexOf('.') + 2) + i.ToString; // + 2 to remove initial 'T'...
     inc(i);
-    lObject := WebAssembly.GetElementById(result);
+    lObject := Browser.GetElementById(result);
   until lObject = nil;
 end;
 
@@ -173,13 +173,13 @@ end;
 
 method TCustomControl.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement('div');
+  fHandle := Browser.CreateElement('div');
   fHandle.style.position := "absolute";
 end;
 
 method TGraphicControl.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement('div');
+  fHandle := Browser.CreateElement('div');
   fHandle.style.position := "absolute";
 end;
 

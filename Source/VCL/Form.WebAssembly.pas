@@ -42,7 +42,7 @@ end;
 
 method TForm.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement('div');
+  fHandle := Browser.CreateElement('div');
   fHandle.style.position := "relative";
   fHandle.style.margin := "0 auto";
 end;
@@ -52,8 +52,8 @@ begin
   var lRootView: dynamic := aRootView;
   if lRootView = nil then begin
     // No parent html element provided to 'host' the main div
-    var lWindow := WebAssembly.GetWindowObject;
-    lRootView := WebAssembly.CreateElement('div');
+    var lWindow := Browser.GetWindowObject;
+    lRootView := Browser.CreateElement('div');
     lRootView.style.margin := "0 auto";
     lWindow.document.body.appendChild(lRootView);
   end;

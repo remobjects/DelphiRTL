@@ -141,8 +141,8 @@ end;
 
 method TButton.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement('BUTTON');
-  var lCaption := WebAssembly.CreateTextNode(Name);
+  fHandle := Browser.CreateElement('BUTTON');
+  var lCaption := Browser.CreateTextNode(Name);
   fHandle.style.position := "absolute";
   fHandle.appendChild(lCaption);
 end;
@@ -155,8 +155,8 @@ end;
 
 method TLabel.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement('LABEL');
-  var lCaption := WebAssembly.CreateTextNode(Name);
+  fHandle := Browser.CreateElement('LABEL');
+  var lCaption := Browser.CreateTextNode(Name);
   fHandle.appendChild(lCaption);
   Caption := Name;
   fHandle.style.position := "absolute";
@@ -169,9 +169,9 @@ end;
 
 method TGroupBox.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement("FIELDSET");
-  fLabelHandle := WebAssembly.CreateElement("LEGEND");
-  var lText := WebAssembly.CreateTextNode(Name);
+  fHandle := Browser.CreateElement("FIELDSET");
+  fLabelHandle := Browser.CreateElement("LEGEND");
+  var lText := Browser.CreateTextNode(Name);
   fLabelHandle.appendChild(lText);
   fHandle.appendChild(fLabelHandle);
   fHandle.style.position := "absolute";
@@ -184,7 +184,7 @@ end;
 
 method TEdit.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement("INPUT");
+  fHandle := Browser.CreateElement("INPUT");
   fHandle.setAttribute("type", "text");
   fHandle.style.position := "absolute";
 end;
@@ -255,10 +255,10 @@ end;
 
 method TButtonControl.internalCreateHandle(aType: String);
 begin
-  fHandle := WebAssembly.CreateElement("INPUT");
+  fHandle := Browser.CreateElement("INPUT");
   fHandle.setAttribute("type", aType);
   fHandle.style.position := "absolute";
-  fLabelHandle := WebAssembly.CreateElement("LABEL");
+  fLabelHandle := Browser.CreateElement("LABEL");
   fLabelHandle.style.position := "absolute";
   fLabelHandle.innerText := Name;
 end;
@@ -280,7 +280,7 @@ end;
 
 method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
-  var lOption := WebAssembly.CreateElement("OPTION");
+  var lOption := Browser.CreateElement("OPTION");
   lOption.text := String(S);
   ListControl.Handle.add(lOption, aIndex);
 end;
@@ -298,14 +298,14 @@ end;
 
 method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
-  var lOption := WebAssembly.CreateElement("OPTION");
+  var lOption := Browser.CreateElement("OPTION");
   lOption.text := String(S);
   ListControl.Handle.add(Object(lOption));
 end;
 
 method TListBox.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement("SELECT");
+  fHandle := Browser.CreateElement("SELECT");
   fHandle.setAttribute("size", 6);
   fHandle.style.position := "absolute";
 end;
@@ -367,14 +367,14 @@ end;
 
 method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
-  var lOption := WebAssembly.CreateElement("OPTION");
+  var lOption := Browser.CreateElement("OPTION");
   lOption.text := String(S);
   ListControl.Handle.add(lOption);
 end;
 
 method TComboBoxItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
-  var lOption := WebAssembly.CreateElement("OPTION");
+  var lOption := Browser.CreateElement("OPTION");
   lOption.text := String(S);
   ListControl.Handle.add(lOption, aIndex);
 end;
@@ -392,7 +392,7 @@ end;
 
 method TComboBox.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement("SELECT");
+  fHandle := Browser.CreateElement("SELECT");
   fHandle.style.position := "absolute";
 end;
 
@@ -451,13 +451,13 @@ end;
 
 method TMemo.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement("TEXTAREA");
+  fHandle := Browser.CreateElement("TEXTAREA");
   fHandle.style.position := "absolute";
 end;
 
 method TProgressBar.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement('PROGRESS');
+  fHandle := Browser.CreateElement('PROGRESS');
   fHandle.style.position := "absolute";
 end;
 

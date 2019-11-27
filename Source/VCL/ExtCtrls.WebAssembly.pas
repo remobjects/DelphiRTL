@@ -17,7 +17,7 @@ implementation
 
 method TPanel.CreateHandle;
 begin
-  fHandle := WebAssembly.CreateElement('div');
+  fHandle := Browser.CreateElement('div');
   fHandle.style.position := "absolute";
 end;
 

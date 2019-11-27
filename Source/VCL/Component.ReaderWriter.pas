@@ -930,7 +930,7 @@ end;
 {$ELSEIF WEBASSEMBLY}
 constructor TResourceStream(Instance: THandle; aResName: String);
 begin
-  var lContent := WebAssembly.AjaxRequestBinary('wasm/resources/' + aResName);
+  var lContent := Browser.AjaxRequestBinary('wasm/resources/' + aResName);
   var lInput := new TMemoryStream();
   lInput.Write(lContent, 0, lContent.Length);
   var lResHeaderSize := 62 + ((aResName.Length - 4) * 2); // -4 because .dfm is not included in resource name
