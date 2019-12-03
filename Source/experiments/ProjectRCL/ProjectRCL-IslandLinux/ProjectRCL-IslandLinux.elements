@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProductVersion>3.5</ProductVersion>
+    <RootNamespace>ProjectRCLIslandLinux</RootNamespace>
+    <ProjectGuid>{BE5FBEB5-FB54-49C8-AD92-61C997EA04A2}</ProjectGuid>
+    <OutputType>Executable</OutputType>
+    <AssemblyName>ProjectRCLIslandLinux</AssemblyName>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+    <OutputPath>.\Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;</DefineConstants>
+    <GenerateDebugInfo>True</GenerateDebugInfo>
+    <CpuType>x86</CpuType>
+    <Architecture>x86_64</Architecture>
+    <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
+    <EnableAsserts>True</EnableAsserts>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>.\Bin\Release</OutputPath>
+    <CpuType>x86</CpuType>
+    <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="rtl" />
+    <Reference Include="gtk" />
+    <Reference Include="glib" />
+    <Reference Include="Delphi">
+      <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Ubuntu\x86_64\Delphi.fx</HintPath>
+    </Reference>
+    <Reference Include="DelphiVCL">
+      <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Ubuntu\x86_64\DelphiVCL.fx</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.pas" />
+    <Compile Include="Unit5.pas" />
+    <Resource Include="..\OneButton.dfm" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Linux.targets" />
+</Project>

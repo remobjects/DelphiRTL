@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS) AND NOT DARWIN) OR ECHOESWPF OR (MACOS AND NOT (ISLAND AND DARWIN))}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS OR LINUX) AND NOT DARWIN) OR ECHOESWPF OR (MACOS AND NOT (ISLAND AND DARWIN))}
 
 interface
 
@@ -42,7 +42,7 @@ type
   TKeyPressEvent = public block(Sender: TObject; var Key: Char);
   TKeyEvent = public block(Sender: TObject; var Key: Word; Shift: TShiftState);
 
-  TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ELSEIF ISLAND AND WINDOWS} rtl.HWND {$ELSEIF ECHOESWPF} System.Windows.Controls.Control {$ELSEIF MACOS} AppKit.NSResponder {$ELSE} Object {$ENDIF};
+  TPlatformHandle = {$IF WEBASSEMBLY} dynamic {$ELSEIF ISLAND AND WINDOWS} rtl.HWND {$ELSEIF ISLAND AND LINUX} ^gtk.GtkWidget {$ELSEIF ECHOESWPF} System.Windows.Controls.Control {$ELSEIF MACOS} AppKit.NSResponder {$ELSE} Object {$ENDIF};
   TPropertyChangedEvent = public block(Sender: TObject; PropName: String);
 
   INotifyPropertyChanged = public interface

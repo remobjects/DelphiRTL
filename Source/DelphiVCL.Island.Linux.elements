@@ -56,11 +56,12 @@
     <Reference Include="Island" />
     <Reference Include="Elements" />
     <ProjectReference Include="DelphiRTL.Island.Linux">
-      <Name>DelphiRTL.Island.Linux</Name>
       <HintPath>..\Bin\Debug\Ubuntu\x86_64\Delphi.a</HintPath>
       <Project>{A3390279-D9EC-4511-899A-AEDEBBF4CF71}</Project>
       <ProjectFile>DelphiRTL.Island.Linux.elements</ProjectFile>
     </ProjectReference>
+    <Reference Include="gtk" />
+    <Reference Include="glib" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
