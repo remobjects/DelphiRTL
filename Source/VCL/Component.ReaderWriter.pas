@@ -272,14 +272,32 @@ begin
         end
         else begin
           //var lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.__Global')).FirstOrDefault;
+          writeLn('Constants 1');
           var lGlobals := typeOf(RemObjects.Elements.RTL.Delphi.VCL.__Global);
+          writeLn('Constants 2');
+          // TODO constants values!!
+          {$IF ISLAND AND LINUX}
+          writeLn('Constants 2.1');
+          if lGlobals = nil then
+            exit 0;
+          writeLn('Constants 2.2');
+          if lGlobals.Constants = nil then
+            exit 0;
+          writeLn('Constants 2.3');
+          exit 0;
+          {$ENDIF}
           var lConstant := lGlobals.Constants.Where(a -> a.Name = lIdent).FirstOrDefault;
+          writeLn('Constants 3');
           if lConstant = nil then begin
             //lGlobals := &Type.AllTypes.Where(a -> (a.Name = 'RemObjects.Elements.RTL.Delphi.__Global')).FirstOrDefault;
+            writeLn('Constants 4');
             lGlobals := typeOf(RemObjects.Elements.RTL.Delphi.__Global);
+            writeLn('Constants 5');
             lConstant := lGlobals.Constants.Where(a -> a.Name = lIdent).FirstOrDefault;
+            writeLn('Constants 6');
           end;
 
+          writeLn('Constants 7');
           if lConstant ≠ nil then
             exit lConstant.Value
           else
@@ -420,7 +438,7 @@ end;
 method TReader.FindProperty(aType: &Type; aName: String): PropertyInfo;
 begin
   result := nil;
-  {$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS))}
+  {$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS OR LINUX))}
   var lType := aType;
   while lType <> nil do begin
     result := lType.Properties.Where(a -> (a.Name = aName)).FirstOrDefault;
@@ -472,6 +490,7 @@ method TReader.ReadProperty(aInstance: TPersistent);
 begin
   var lName := ReadStr;
   var lValue := ReadValue;
+  writeLn('Reading: ' + lName);
   {$IF TOFFEE}
   var lType := new &Type withClass(typeOf(aInstance));
   {$ELSE}
@@ -519,6 +538,7 @@ begin
 
     if (lValue ≠ TValueType.vaList) and (lValue ≠ TValueType.vaCollection) then begin
       {$IF ISLAND}
+      writeLn("Setting value!!");
       DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
       {$ELSEIF ECHOESWPF}
       var lCurrentProp := lType.GetProperty(lName, BindingFlags.Public or BindingFlags.Instance);
@@ -641,6 +661,7 @@ end;
 
 method ComponentsHelper.CreateComponent(aClassName: String; aOwner: TComponent): TComponent;
 begin
+  writeLn("creating: " + aClassName);
   {$IF ISLAND}
   var lType := &Type.AllTypes.Where(a -> a.Name = 'RemObjects.Elements.RTL.Delphi.VCL.' + aClassName).FirstOrDefault;
   {$ELSEIF ECHOESWPF}
@@ -675,6 +696,7 @@ begin
   result := InternalCalls.Cast<TComponent>(lNew);
   //lCtor.Invoke(result, [aOwner]);
   var lCaller := TControlCtor(lCtor.Pointer);
+  writeLn("Calling constructor:");
   lCaller(result, aOwner);
   {$ELSEIF ECHOESWPF}
   result := TComponent(Activator.CreateInstance(aType, [aOwner]));

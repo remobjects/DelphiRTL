@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS) AND NOT DARWIN) OR ECHOESWPF OR (MACOS AND NOT (ISLAND AND DARWIN))}
+{$IF (ISLAND AND (WEBASSEMBLY OR WINDOWS OR LINUX) AND NOT DARWIN) OR ECHOESWPF OR (MACOS AND NOT (ISLAND AND DARWIN))}
 
 interface
 
@@ -16,7 +16,15 @@ type
     class method Create(AOwner: TComponent): TButton;
   end;
 
+  {$IF NOT LINUX}
   TEdit = public partial class(TNativeControl)
+  protected
+    method PlatformGetMaxLength: Integer; virtual; partial; empty;
+    method PlatformSetMaxLength(aValue: Integer); virtual; partial; empty;
+    method PlatformGetReadOnly: Boolean; virtual; partial; empty;
+    method PlatformSetReadOnly(aValue: Boolean); virtual; partial; empty;
+    method PlatformGetText: String; virtual; partial; empty;
+    method PlatformSetText(aValue: String); virtual; partial; empty;
   published
     constructor(aOwner: TComponent);
     property MaxLength: Integer read PlatformGetMaxLength write PlatformSetMaxLength;
@@ -196,6 +204,7 @@ type
     property Style: TProgressBarStyle read fStyle write SetStyle;
   end;
   {$ENDIF}
+  {$ENDIF}
 
   procedure ShowMessage(aMessage: String);
 
@@ -216,6 +225,7 @@ begin
   result := new TButton(AOwner);
 end;
 
+{$IF NOT LINUX}
 constructor TEdit(aOwner: TComponent);
 begin
   fTabStop := true;
@@ -540,6 +550,8 @@ begin
   fPosition := value;
   PlatformSetPosition(value);
 end;
+{$ENDIF}
+
 {$ENDIF}
 
 {$ENDIF}

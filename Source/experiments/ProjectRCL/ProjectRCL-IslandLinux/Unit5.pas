@@ -12,12 +12,19 @@ type
   { Private declarations }
   public
   { Public declarations }
-    //Button1: TButton;
+    Button1: TButton;
+    procedure Button1Click(Sender: TObject);
   end;
 
   var
     Form6: TForm6;
 
 implementation
+
+procedure TForm6.Button1Click(Sender: TObject);
+begin
+  writeLn('Yes????');
+  ShowMessage("La concha de tu madre");
+end;
 
 end.

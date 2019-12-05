@@ -219,7 +219,8 @@ begin
   Name := PlatformGetDefaultName;
   fFont := new TFont();
   fFont.PropertyChanged := @Changed;
-  {$IF WEBASSEMBLY OR ECHOESWPF OR MACOS}
+  fCaption := '';
+  {$IF WEBASSEMBLY OR ECHOESWPF OR MACOS OR LINUX}
   CreateHandle;
   {$ENDIF}
   PlatformApplyDefaults;
@@ -275,6 +276,7 @@ end;
 
 method TControl.SetOnClick(aValue: TNotifyEvent);
 begin
+  WriteLn("Setting OnClick!!!!!!!!");
   fOnClick := aValue;
   PlatformSetOnClick(aValue);
 end;
