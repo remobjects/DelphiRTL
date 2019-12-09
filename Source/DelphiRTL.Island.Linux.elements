@@ -15,6 +15,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <CrossPlatform>True</CrossPlatform>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
+    <Architecture>armv6;x86_64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Optimize>false</Optimize>
@@ -32,6 +33,7 @@
     <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
     <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
     <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    <Architecture>armv6;x86_64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <Optimize>true</Optimize>
@@ -53,8 +55,10 @@
   <ItemGroup>
     <Reference Include="rtl" />
     <Reference Include="gc" />
-    <Reference Include="Island" />
     <Reference Include="Elements" />
+    <Reference Include="Island">
+      <HintPath>..\..\IslandRTL\Source\Bin\Debug\Ubuntu\x86_64\Island.fx</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

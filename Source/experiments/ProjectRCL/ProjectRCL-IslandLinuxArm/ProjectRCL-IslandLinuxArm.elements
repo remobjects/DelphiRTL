@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProductVersion>3.5</ProductVersion>
+    <RootNamespace>ProjectRCLIslandLinux</RootNamespace>
+    <ProjectGuid>{BE5FBEB5-FC54-69F8-BC34-89C997EA04A2}</ProjectGuid>
+    <OutputType>Executable</OutputType>
+    <AssemblyName>ProjectRCLIslandLinux</AssemblyName>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <Architecture>armv6</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+    <OutputPath>.\Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;</DefineConstants>
+    <GenerateDebugInfo>True</GenerateDebugInfo>
+    <CpuType>x86</CpuType>
+    <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
+    <EnableAsserts>True</EnableAsserts>
+    <Architecture>armv6</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>.\Bin\Release</OutputPath>
+    <CpuType>x86</CpuType>
+    <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
+    <Architecture>armv6</Architecture>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="gc" />
+    <Reference Include="rtl" />
+    <Reference Include="glib" />
+    <Reference Include="gtk" />
+    <Reference Include="Island">
+      <HintPath>C:\dev\ro\IslandRTL\Source\Bin\Debug\Ubuntu\armv6\Island.fx</HintPath>
+    </Reference>
+    <Reference Include="Elements">
+      <HintPath>C:\dev\ro\RTL2\Source\bin\Debug\Ubuntu\armv6\Elements.fx</HintPath>
+    </Reference>
+    <Reference Include="Delphi">
+      <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Ubuntu\armv6\Delphi.fx</HintPath>
+    </Reference>
+    <Reference Include="DelphiVCL">
+      <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Ubuntu\armv6\DelphiVCL.fx</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.pas" />
+    <Compile Include="Unit5.pas" />
+    <Resource Include="..\OneButton.dfm" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Linux.targets" />
+</Project>

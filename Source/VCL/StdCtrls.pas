@@ -16,7 +16,6 @@ type
     class method Create(AOwner: TComponent): TButton;
   end;
 
-  {$IF NOT LINUX}
   TEdit = public partial class(TNativeControl)
   protected
     method PlatformGetMaxLength: Integer; virtual; partial; empty;
@@ -38,6 +37,7 @@ type
     class method Create(aOwner: TComponent): TLabel;
   end;
 
+  {$IF NOT LINUX}
   TButtonControl = public partial class(TNativeControl)
   protected
     method PlatformGetChecked: Boolean; virtual; partial; empty;
@@ -225,7 +225,6 @@ begin
   result := new TButton(AOwner);
 end;
 
-{$IF NOT LINUX}
 constructor TEdit(aOwner: TComponent);
 begin
   fTabStop := true;
@@ -235,6 +234,8 @@ class method TLabel.Create(aOwner: TComponent): TLabel;
 begin
   result := new TLabel(aOwner);
 end;
+
+{$IF NOT LINUX}
 
 constructor TButtonControl(aOwner: TComponent);
 begin

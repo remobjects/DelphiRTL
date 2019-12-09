@@ -32,6 +32,7 @@
     <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
     <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
     <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+    <Architecture>armv6;x86_64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <Optimize>true</Optimize>
@@ -48,12 +49,11 @@
     <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
     <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
     <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
-    <Architecture>x86_64;armv6</Architecture>
+    <Architecture>x86_64</Architecture>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="rtl" />
     <Reference Include="gc" />
-    <Reference Include="Island" />
     <Reference Include="Elements" />
     <ProjectReference Include="DelphiRTL.Island.Linux">
       <HintPath>..\Bin\Debug\Ubuntu\x86_64\Delphi.a</HintPath>
@@ -62,6 +62,9 @@
     </ProjectReference>
     <Reference Include="gtk" />
     <Reference Include="glib" />
+    <Reference Include="Island">
+      <HintPath>..\..\IslandRTL\Source\Bin\Debug\Ubuntu\x86_64\Island.fx</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

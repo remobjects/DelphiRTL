@@ -5,6 +5,8 @@ Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "ProjectRCL", "ProjectRCL.el
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "ProjectRCL-IslandLinux", "ProjectRCL-IslandLinux\ProjectRCL-IslandLinux.elements", "{BE5FBEB5-FB54-49C8-AD92-61C997EA04A2}"
 EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "ProjectRCL-IslandLinuxArm", "ProjectRCL-IslandLinuxArm\ProjectRCL-IslandLinuxArm.elements", "{BE5FBEB5-FB54-49C8-AD92-61C997EA04A2}"
+EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "ProjectRCL-Mac", "ProjectRCL-Mac\ProjectRCL-Mac.elements", "{30EBF31A-6F0F-4E33-BA92-51174DA67575}"
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "ProjectRCL-WebAssembly", "ProjectRCL-WebAssembly\ProjectRCL-WebAssembly.elements", "{D7B1C184-E5F3-4D08-99E4-A7ECE64331CB}"
@@ -21,6 +23,10 @@ Global
 		{F8CCC42D-68E3-4708-9C96-A85F0AD63095}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
 		{F8CCC42D-68E3-4708-9C96-A85F0AD63095}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
 		{F8CCC42D-68E3-4708-9C96-A85F0AD63095}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{BE5FBEB5-FB54-49C8-AD92-61C997EA04A2}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{BE5FBEB5-FB54-49C8-AD92-61C997EA04A2}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{BE5FBEB5-FB54-49C8-AD92-61C997EA04A2}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{BE5FBEB5-FB54-49C8-AD92-61C997EA04A2}.Release|AnyCPU.Build.0 = Release|AnyCPU
 		{BE5FBEB5-FB54-49C8-AD92-61C997EA04A2}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
 		{BE5FBEB5-FB54-49C8-AD92-61C997EA04A2}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
 		{BE5FBEB5-FB54-49C8-AD92-61C997EA04A2}.Release|AnyCPU.ActiveCfg = Release|AnyCPU

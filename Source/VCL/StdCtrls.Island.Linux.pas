@@ -17,6 +17,23 @@ type
     method PlatformSetOnClick(aValue: TNotifyEvent); override;
   end;
 
+  TLabel = public partial class(TNativeControl)
+  protected
+    method CreateHandle; override;
+    method PlatformSetCaption(aValue: String); override;
+  end;
+
+  TEdit = public partial class(TNativeControl)
+  protected
+    method CreateHandle; override;
+    method PlatformSetText(aValue: String); partial;
+    method PlatformGetText: String; partial;
+    method PlatformGetMaxLength: Integer; partial;
+    method PlatformSetMaxLength(aValue: Integer); partial;
+    method PlatformGetReadOnly: Boolean; partial;
+    method PlatformSetReadOnly(aValue: Boolean); partial;
+  end;
+
 procedure PlatformShowMessage(aMessage: String);
 
 implementation
@@ -62,6 +79,59 @@ begin
   new GCHandle(NativeInt(data)).Dispose();
 end;
 
+method TLabel.CreateHandle;
+begin
+  var lCaption := Caption.ToAnsiChars(true);
+  fHandle := gtk.gtk_label_new(@lCaption[0]);
+  gtk.gtk_widget_show(fHandle);
+end;
+
+method TLabel.PlatformSetCaption(aValue: String);
+begin
+  var lCaption := aValue.ToAnsiChars(true);
+  gtk.gtk_label_set_text(^gtk.GtkLabel(fHandle), @lCaption[0]);
+end;
+
+method TEdit.CreateHandle;
+begin
+  var lCaption := Text.ToAnsiChars(true);
+  fHandle := gtk.gtk_entry_new();
+  gtk.gtk_entry_set_text(^gtk.GtkEntry(fHandle), @lCaption[0]);
+end;
+
+method TEdit.PlatformSetText(aValue: String);
+begin
+  var lCaption := aValue.ToAnsiChars(true);
+  gtk.gtk_entry_set_text(^gtk.GtkEntry(fHandle), @lCaption[0]);
+end;
+
+method TEdit.PlatformGetText: String;
+begin
+  var lText := gtk.gtk_entry_get_text(^gtk.GtkEntry(fHandle));
+  result := String.FromPAnsiChars(lText);
+end;
+
+method TEdit.PlatformGetMaxLength: Integer;
+begin
+
+end;
+
+method TEdit.PlatformSetMaxLength(aValue: Integer);
+begin
+
+end;
+
+method TEdit.PlatformGetReadOnly: Boolean;
+begin
+
+end;
+
+method TEdit.PlatformSetReadOnly(aValue: Boolean);
+begin
+
+end;
+
 {$ENDIF}
+
 
 end.
