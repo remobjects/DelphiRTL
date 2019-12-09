@@ -276,7 +276,6 @@ end;
 
 method TControl.SetOnClick(aValue: TNotifyEvent);
 begin
-  WriteLn("Setting OnClick!!!!!!!!");
   fOnClick := aValue;
   PlatformSetOnClick(aValue);
 end;

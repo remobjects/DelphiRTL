@@ -24,7 +24,7 @@ implementation
 procedure TForm6.Button1Click(Sender: TObject);
 begin
   writeLn('Yes????');
-  ShowMessage("La concha de tu madre");
+  ShowMessage("ok from ShowMessage");
 end;
 
 end.

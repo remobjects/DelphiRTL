@@ -23,10 +23,13 @@ implementation
 
 procedure PlatformShowMessage(aMessage: String);
 begin
-  var lFlags := gtk.GtkDialogFlags.GTK_DIALOG_DESTROY_WITH_PARENT;
-  var lMessage := gtk.gtk_message_dialog_new(nil, lFlags, gtk.GtkMessageType.GTK_MESSAGE_INFO, gtk.GtkButtonsType.GTK_BUTTONS_OK, aMessage);
+  var lFlags := gtk.GtkDialogFlags.GTK_DIALOG_MODAL;
+  var lParent: ^gtk.GtkWindow := if Application.MainForm ≠ nil then ^gtk.GtkWindow(Application.MainForm.Handle) else nil;
+  var lMessage := gtk.gtk_message_dialog_new(lParent, lFlags, gtk.GtkMessageType.GTK_MESSAGE_INFO, gtk.GtkButtonsType.GTK_BUTTONS_OK, aMessage);
 
-  gtk.gtk_widget_show_all(lMessage);
+  //gtk.gtk_widget_show_all(lMessage);
+  gtk.gtk_dialog_run(^gtk.GtkDialog(lMessage));
+  gtk.gtk_widget_destroy(lMessage);
 end;
 
 method TButton.CreateHandle;
@@ -44,24 +47,19 @@ end;
 
 method TButton.PlatformSetOnClick(aValue: TNotifyEvent);
 begin
-  //gobject.g_signal_connect_data(
-  writeLn("Pointer 1");
-  writeLn(NativeInt(fHandle));
-  gobject.g_signal_connect_data(fHandle, "clicked", glib.GVoidFunc(()->ClickCallback(fHandle)), nil, nil, 0)
+  gobject.g_signal_connect_data(fHandle, 'clicked', glib.GVoidFunc(^Void(@clicked)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
 end;
 
-method ClickCallback(data: ^Void);
+method clicked(app: ^gtk.GtkWidget; userdata: ^Void);
 begin
-  writeLn("Callback 1");
-  writeLn("Pointer 2");
-  writeLn(NativeInt(data));
+  var lSelf := new GCHandle(NativeInt(userdata)).Target as TButton;
+  if lSelf.OnClick ≠ nil then
+  lSelf.OnClick(lSelf);
+end;
 
-  var lButton := InternalCalls.Cast<TButton>(data);
-  writeLn(typeOf(lButton).Name);
-  writeLn("Callback 2");
-  writeLn((lButton as TButton).Name);
-  writeLn("Callback 3");
-  (lButton as TButton).OnClick(lButton);
+method gchandlefree(data: glib.gpointer; closure: ^gobject.GClosure);
+begin
+  new GCHandle(NativeInt(data)).Dispose();
 end;
 
 {$ENDIF}
