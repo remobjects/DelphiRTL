@@ -37,7 +37,10 @@ type
     class method Create(aOwner: TComponent): TLabel;
   end;
 
-  {$IF NOT LINUX}
+  TGroupBox = public partial class(TNativeControl)
+  protected
+  end;
+
   TButtonControl = public partial class(TNativeControl)
   protected
     method PlatformGetChecked: Boolean; virtual; partial; empty;
@@ -65,6 +68,7 @@ type
     property State: TCheckBoxState read fState write SetState default TCheckBoxState.cbUnchecked;
   end;
 
+  {$IF NOT LINUX}
   TListControlItems = public partial class(TStringList)
   published
     method AddObject(S: DelphiString; aObject: TObject): Integer; override;
@@ -160,10 +164,6 @@ type
     property OnChange: TNotifyEvent read fOnChange write SetOnChange;
   end;
 
-  TGroupBox = public partial class(TNativeControl)
-  protected
-  end;
-
   {$IF WEBASSEMBLY}
   TMemoStrings = partial class(TStringList)
   private
@@ -235,8 +235,6 @@ begin
   result := new TLabel(aOwner);
 end;
 
-{$IF NOT LINUX}
-
 constructor TButtonControl(aOwner: TComponent);
 begin
   fTabStop := true;
@@ -276,6 +274,8 @@ begin
   Toggle;
   inherited;
 end;
+
+{$IF NOT LINUX}
 
 constructor TListControl(aOwner: TComponent);
 begin
