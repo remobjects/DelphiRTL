@@ -495,7 +495,12 @@ begin
       if lProperty = nil then
         raise new Exception('Can not get property ' + lProps[i]);
 
+      {$IF LINUX AND ARM}
+      // workaround for linux/arm here, ObjectGetter(lProperty.Reader)
+      var lPropValue := ObjectGetter(lProperty.ReadMethod)(lInstance);
+      {$ELSE}
       var lPropValue := lProperty.GetValue(lInstance, []);
+      {$ENDIF}
       lInstance := lPropValue;
       {$IF TOFFEE}
       lType := new &Type withClass(typeOf(lInstance));
@@ -526,8 +531,21 @@ begin
     var lPropValue := ReadPropValue(lInstance, lValue, lProperty);
 
     if (lValue ≠ TValueType.vaList) and (lValue ≠ TValueType.vaCollection) then begin
-      {$IF ISLAND}
+      {$IF WEBASSEMBLY}
       DynamicHelpers.SetMember(lInstance, lName, 0, [lPropValue]);
+      {$ELSEIF ISLAND}
+      lProperty := FindProperty(lType, lName);
+      if lProperty = nil then
+        raise new Exception('Can not get property ' + lName);
+      {$IF LINUX AND ARM}
+      // workaround about the object setter if lPropValue is a delegate...
+      if typeOf(lPropValue).IsDelegate then begin
+        ObjectSetter(lProperty.WriteMethod)(lInstance, lPropValue);
+        exit;
+      end;
+      {$ENDIF}
+      if lPropValue ≠ nil then // TODO
+        lProperty.SetValue(lInstance, nil, lPropValue);
       {$ELSEIF ECHOESWPF}
       var lCurrentProp := lType.GetProperty(lName, BindingFlags.Public or BindingFlags.Instance);
       if lCurrentProp = nil then
@@ -535,7 +553,8 @@ begin
       lCurrentProp.SetValue(lInstance, lPropValue, nil);
       {$ELSEIF TOFFEE}
       lProperty := FindProperty(lType, lName);
-      if lProperty = nil then raise new Exception('Can not get property ' + lName);
+      if lProperty = nil then
+        raise new Exception('Can not get property ' + lName);
       if lPropValue ≠ nil then // TODO
         lProperty.SetValue(lInstance, nil, lPropValue);
       {$ENDIF}
@@ -1189,6 +1208,10 @@ method TWriter.WriteVar(aValue: Integer);
 begin
   fStream.WriteData(aValue);
 end;
+
+type
+  ObjectGetter = function(aInst: Object): Object;
+  ObjectSetter = procedure(aInst: Object; v: Object);
 
 {$ENDIF}
 
