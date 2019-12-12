@@ -68,7 +68,6 @@ type
     property State: TCheckBoxState read fState write SetState default TCheckBoxState.cbUnchecked;
   end;
 
-  {$IF NOT LINUX}
   TListControlItems = public partial class(TStringList)
   published
     method AddObject(S: DelphiString; aObject: TObject): Integer; override;
@@ -136,18 +135,23 @@ type
     property ListControl: TListControl read write;
   end;
 
+  TComboBoxStyle = public enum(csDropDown, csSimple, csDropDownList, csOwnerDrawFixed, csOwnerDrawVariable);
+
   TComboBox = public partial class(TListControl)
   private
     fItems: TStrings;
     fOnSelect: TNotifyEvent;
     fOnChange: TNotifyEvent;
     fItemHeight: Integer;
+    fStyle: TComboBoxStyle;
     method SetOnSelect(aValue: TNotifyEvent);
+    method SetStyle(aValue: TComboBoxStyle);
     method SetOnChange(aValue: TNotifyEvent);
     method SetItems(aValue: TStrings);
   protected
     method GetItemIndex: Integer; override;
     method SetItemIndex(aValue: Integer); override;
+    method PlatformSetStyle(aValue: TComboBoxStyle); virtual; partial; empty;
   published
     constructor(aOwner: TComponent);
     method Loaded; override;
@@ -159,6 +163,7 @@ type
     method SelectAll; override;
     property Items: TStrings read fItems write SetItems;
     property ItemHeight: Integer read fItemHeight write fItemHeight;
+    property Style: TComboBoxStyle read fStyle write SetStyle;
     property Text: String read PlatformGetText write PlatformSetText;
     property OnSelect: TNotifyEvent read fOnSelect write SetOnSelect;
     property OnChange: TNotifyEvent read fOnChange write SetOnChange;
@@ -203,7 +208,6 @@ type
     property Position: Integer read fPosition write SetPosition;
     property Style: TProgressBarStyle read fStyle write SetStyle;
   end;
-  {$ENDIF}
   {$ENDIF}
 
   procedure ShowMessage(aMessage: String);
@@ -275,8 +279,6 @@ begin
   inherited;
 end;
 
-{$IF NOT LINUX}
-
 constructor TListControl(aOwner: TComponent);
 begin
   fTabStop := true;
@@ -303,8 +305,8 @@ end;
 
 method TListControlItems.Clear;
 begin
+  PlatformClear; // we need the count of items in gtk
   inherited;
-  PlatformClear;
 end;
 
 constructor TListBox(aOwner: TComponent);
@@ -434,6 +436,7 @@ end;
 
 constructor TComboBox(aOwner: TComponent);
 begin
+  fStyle := TComboBoxStyle.csDropDown;
   fItems := new TComboBoxItems();
   TComboBoxItems(fItems).ListControl := self;
 end;
@@ -473,6 +476,14 @@ end;
 method TComboBox.SelectAll;
 begin
   PlatformSelectAll;
+end;
+
+method TComboBox.SetStyle(aValue: TComboBoxStyle);
+begin
+  if aValue ≠ fStyle then begin
+    fStyle := aValue;
+    PlatformSetStyle(aValue);
+  end;
 end;
 
 {$IF WEBASSEMBLY}
@@ -551,8 +562,6 @@ begin
   fPosition := value;
   PlatformSetPosition(value);
 end;
-{$ENDIF}
-
 {$ENDIF}
 
 {$ENDIF}

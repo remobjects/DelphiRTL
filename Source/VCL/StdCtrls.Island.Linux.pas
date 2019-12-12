@@ -65,6 +65,54 @@ type
     method Click; override;
   end;
 
+  TListControlItems = public partial class(TStringList)
+  private
+    class var fKeyData := "ListItemKeyData".ToAnsiChars(true);
+    class var fKeyDataObject := "ListItemKeyDataObject".ToAnsiChars(true);
+    method CreateListItem(S: DelphiString; aObject: TObject): ^glib.GList;
+  protected
+    method PlatformAddItem(S: DelphiString; aObject: TObject);
+    method PlatformInsert(aIndex: Integer; S: DelphiString);
+    method PlatformClear;
+    method PlatformDelete(aIndex: Integer);
+  end;
+
+  TListBox = public partial class(TMultiSelectListControl)
+  protected
+    method CreateHandle; override;
+    method PlatformSelectAll;
+    method PlatformGetSelected(aIndex: Integer): Boolean;
+    method PlatformSetSelected(aIndex: Integer; value: Boolean);
+    method PlatformGetSelCount: Integer;
+    method PlatformGetMultiSelect: Boolean;
+    method PlatformSetMultiSelect(value: Boolean);
+    method PlatformClearSelection;
+    method PlatformDeleteSelected;
+    method PlatformSetItemIndex(value: Integer);
+    method PlatformGetItemIndex: Integer;
+  end;
+
+  TComboBoxItems = public partial class(TStringList)
+    method PlatformAddItem(S: DelphiString; aObject: TObject);
+    method PlatformInsert(aIndex: Integer; S: DelphiString);
+    method PlatformClear;
+    method PlatformDelete(aIndex: Integer);
+  end;
+
+  TComboBox = public partial class(TListControl)
+  protected
+    method CreateHandle; override;
+    method PlatformGetText: String;
+    method PlatformSetText(aValue: String);
+    method PlatformSetOnSelect(aValue: TNotifyEvent);
+    method PlatformSetOnChange(aValue: TNotifyEvent);
+    method PlatformSelectAll;
+    method PlatformClearSelection;
+    method PlatformDeleteSelected;
+    method PlatformSetItemIndex(value: Integer);
+    method PlatformGetItemIndex: Integer;
+  end;
+
 procedure PlatformShowMessage(aMessage: String);
 
 implementation
@@ -194,12 +242,21 @@ end;
 
 method TCheckBox.PlatformSetState(aValue: TCheckBoxState);
 begin
+  case aValue of
+    TCheckBoxState.cbUnChecked:
+      gtk.gtk_toggle_button_set_active(^gtk.GtkToggleButton(fHandle), 0);
 
+    TCheckBoxState.cbChecked:
+    gtk.gtk_toggle_button_set_active(^gtk.GtkToggleButton(fHandle), 1);
+
+    TCheckBoxState.cbGrayed:
+      gtk.gtk_toggle_button_set_inconsistent(^gtk.GtkToggleButton(fHandle), 1);
+  end;
 end;
 
 method TCheckBox.PlatformSetAllowGrayed(aValue: Boolean);
 begin
-
+  gtk.gtk_toggle_button_set_inconsistent(^gtk.GtkToggleButton(fHandle), Convert.ToInt32(aValue));
 end;
 
 method TRadioButton.CreateHandle;
@@ -213,5 +270,172 @@ begin
 
 end;
 
+method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
+begin
+  var lList := CreateListItem(S, aObject);
+  gtk.gtk_list_append_items(^gtk.GtkList(ListControl.Handle), lList);
+end;
+
+method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
+begin
+  var lList := CreateListItem(S, nil);
+  gtk.gtk_list_insert_items(^gtk.GtkList(ListControl.Handle), lList, aIndex);
+end;
+
+method TListControlItems.PlatformClear;
+begin
+  gtk.gtk_list_clear_items(^gtk.GtkList(ListControl.Handle), 0, Count - 1);
+end;
+
+method TListControlItems.PlatformDelete(aIndex: Integer);
+begin
+  gtk.gtk_list_clear_items(^gtk.GtkList(ListControl.Handle), aIndex, aIndex);
+end;
+
+method TListControlItems.CreateListItem(S: DelphiString; aObject: TObject): ^glib.GList;
+begin
+  result := nil;
+  var lText := PlatformString(S).ToAnsiChars(true);
+  var lItem := gtk.gtk_list_item_new_with_label(@lText[0]);
+  result := glib.g_list_append(^glib.GList(result), lItem);
+
+  gtk.gtk_widget_show(^gtk.GtkWidget(lItem));
+  gtk.gtk_object_set_data(^gtk.GtkObject(lItem), @fKeyData[0], @lText[0]);
+  gtk.gtk_object_set_data(^gtk.GtkObject(lItem), @fKeyDataObject[0], InternalCalls.Cast(aObject));
+end;
+
+method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
+begin
+  var lText := PlatformString(S).ToAnsiChars(true);
+  gtk.gtk_combo_box_text_append_text(^gtk.GtkComboBoxText(ListControl.Handle), @lText[0]);
+end;
+
+method TComboBoxItems.PlatformInsert(aIndex: Integer; S: DelphiString);
+begin
+  var lText := PlatformString(S).ToAnsiChars(true);
+  gtk.gtk_combo_box_text_insert_text(^gtk.GtkComboBoxText(ListControl.Handle), aIndex, @lText[0]);
+end;
+
+method TComboBoxItems.PlatformClear;
+begin
+  for i: Integer := 0 to Count - 1 do
+    gtk.gtk_combo_box_text_remove(^gtk.GtkComboBoxText(ListControl.Handle), i);
+end;
+
+method TComboBoxItems.PlatformDelete(aIndex: Integer);
+begin
+  gtk.gtk_combo_box_text_remove(^gtk.GtkComboBoxText(ListControl.Handle), aIndex);
+end;
+
+method TListBox.CreateHandle;
+begin
+  fHandle := gtk.gtk_list_new();
+end;
+
+method TListBox.PlatformSelectAll;
+begin
+
+end;
+
+method TListBox.PlatformGetSelected(aIndex: Integer): Boolean;
+begin
+
+end;
+
+method TListBox.PlatformSetSelected(aIndex: Integer; value: Boolean);
+begin
+
+end;
+
+method TListBox.PlatformGetSelCount: Integer;
+begin
+
+end;
+
+method TListBox.PlatformGetMultiSelect: Boolean;
+begin
+
+end;
+
+method TListBox.PlatformSetMultiSelect(value: Boolean);
+begin
+
+end;
+
+method TListBox.PlatformClearSelection;
+begin
+
+end;
+
+method TListBox.PlatformDeleteSelected;
+begin
+
+end;
+
+method TListBox.PlatformSetItemIndex(value: Integer);
+begin
+
+end;
+
+method TListBox.PlatformGetItemIndex: Integer;
+begin
+
+end;
+
+method TComboBox.CreateHandle;
+begin
+  if fStyle = TComboBoxStyle.csDropDown then
+    fHandle := gtk.gtk_combo_box_text_new_with_entry()
+  else
+    fHandle := gtk.gtk_combo_box_text_new();
+end;
+
+method TComboBox.PlatformGetText: String;
+begin
+
+end;
+
+method TComboBox.PlatformSetText(aValue: String);
+begin
+
+end;
+
+method TComboBox.PlatformSetOnSelect(aValue: TNotifyEvent);
+begin
+
+end;
+
+method TComboBox.PlatformSetOnChange(aValue: TNotifyEvent);
+begin
+
+end;
+
+method TComboBox.PlatformSelectAll;
+begin
+
+end;
+
+method TComboBox.PlatformClearSelection;
+begin
+
+end;
+
+method TComboBox.PlatformDeleteSelected;
+begin
+
+end;
+
+method TComboBox.PlatformSetItemIndex(value: Integer);
+begin
+
+end;
+
+method TComboBox.PlatformGetItemIndex: Integer;
+begin
+
+end;
+
 {$ENDIF}
+
+
 end.
