@@ -66,10 +66,6 @@ type
   end;
 
   TListControlItems = public partial class(TStringList)
-  private
-    class var fKeyData := "ListItemKeyData".ToAnsiChars(true);
-    class var fKeyDataObject := "ListItemKeyDataObject".ToAnsiChars(true);
-    method CreateListItem(S: DelphiString; aObject: TObject): ^glib.GList;
   protected
     method PlatformAddItem(S: DelphiString; aObject: TObject);
     method PlatformInsert(aIndex: Integer; S: DelphiString);
@@ -78,7 +74,11 @@ type
   end;
 
   TListBox = public partial class(TMultiSelectListControl)
+  public
+    const kListItem = 0;
+    const kColumns = 1;
   protected
+    var fStore: ^gtk.GtkListStore;
     method CreateHandle; override;
     method PlatformSelectAll;
     method PlatformGetSelected(aIndex: Integer): Boolean;
@@ -90,6 +90,8 @@ type
     method PlatformDeleteSelected;
     method PlatformSetItemIndex(value: Integer);
     method PlatformGetItemIndex: Integer;
+  public
+    property Store: ^gtk.GtkListStore read fStore;
   end;
 
   TComboBoxItems = public partial class(TStringList)
@@ -272,36 +274,35 @@ end;
 
 method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
-  var lList := CreateListItem(S, aObject);
-  gtk.gtk_list_append_items(^gtk.GtkList(ListControl.Handle), lList);
+  var lIter: ^gtk.GtkTreeIter;
+  var lText := PlatformString(S).ToAnsiChars(true);
+
+  gtk.gtk_list_store_append((ListControl as TListBox).Store, lIter);
+  gtk.gtk_list_store_set((ListControl as TListBox).Store, lIter, (ListControl as TListBox).kListItem, @lText[0], -1);
 end;
 
 method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
-  var lList := CreateListItem(S, nil);
-  gtk.gtk_list_insert_items(^gtk.GtkList(ListControl.Handle), lList, aIndex);
+  var lIter: ^gtk.GtkTreeIter;
+  var lText := PlatformString(S).ToAnsiChars(true);
+  gtk.gtk_list_store_insert((ListControl as TListBox).Store, lIter, aIndex);
+  gtk.gtk_list_store_set((ListControl as TListBox).Store, lIter, (ListControl as TListBox).kListItem, @lText[0], -1);
 end;
 
 method TListControlItems.PlatformClear;
 begin
-  gtk.gtk_list_clear_items(^gtk.GtkList(ListControl.Handle), 0, Count - 1);
+  gtk.gtk_list_store_clear((ListControl as TListBox).Store);
 end;
 
 method TListControlItems.PlatformDelete(aIndex: Integer);
 begin
-  gtk.gtk_list_clear_items(^gtk.GtkList(ListControl.Handle), aIndex, aIndex);
-end;
-
-method TListControlItems.CreateListItem(S: DelphiString; aObject: TObject): ^glib.GList;
-begin
-  result := nil;
-  var lText := PlatformString(S).ToAnsiChars(true);
-  var lItem := gtk.gtk_list_item_new_with_label(@lText[0]);
-  result := glib.g_list_append(^glib.GList(result), lItem);
-
-  gtk.gtk_widget_show(^gtk.GtkWidget(lItem));
-  gtk.gtk_object_set_data(^gtk.GtkObject(lItem), @fKeyData[0], @lText[0]);
-  gtk.gtk_object_set_data(^gtk.GtkObject(lItem), @fKeyDataObject[0], InternalCalls.Cast(aObject));
+  var lIter: ^gtk.GtkTreeIter;
+  if gtk.gtk_tree_model_get_iter_first((ListControl as TListBox).Store, lIter) ≠ 0 then begin
+    for i: Integer := 0 to aIndex - 1 do
+      if gtk.gtk_tree_model_iter_next((ListControl as TListBox).Store, lIter) = 0 then
+        exit;
+  end;
+  gtk.gtk_list_store_remove((ListControl as TListBox).Store, lIter);
 end;
 
 method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
@@ -319,7 +320,7 @@ end;
 method TComboBoxItems.PlatformClear;
 begin
   for i: Integer := 0 to Count - 1 do
-    gtk.gtk_combo_box_text_remove(^gtk.GtkComboBoxText(ListControl.Handle), i);
+    gtk.gtk_combo_box_text_remove(^gtk.GtkComboBoxText(ListControl.Handle), 0);
 end;
 
 method TComboBoxItems.PlatformDelete(aIndex: Integer);
@@ -329,7 +330,15 @@ end;
 
 method TListBox.CreateHandle;
 begin
-  fHandle := gtk.gtk_list_new();
+  fHandle := gtk.gtk_tree_view_new();
+  var lListItem := "List Item".ToAnsiChars(true);
+  var lText := "text".ToAnsiChars(true);
+  var lRenderer := gtk.gtk_cell_renderer_text_new();
+  var lColumn := gtk.gtk_tree_view_column_new_with_attributes(@lListItem[0], lRenderer, [@lText[0], kListItem, nil]);
+  gtk.gtk_tree_view_append_column(^gtk.GtkTreeView(fHandle), lColumn);
+  fStore := gtk.gtk_list_store_new(kColumns, [gtk.GTK_TYPE_STRING]);
+  gtk.gtk_tree_view_set_model(^gtk.GtkTreeView(fHandle), ^gtk.GtkTreeModel(fStore));
+  gobject.g_object_unref(fStore);
 end;
 
 method TListBox.PlatformSelectAll;
