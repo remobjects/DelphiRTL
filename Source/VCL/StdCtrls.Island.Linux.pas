@@ -74,6 +74,8 @@ type
   end;
 
   TListBox = public partial class(TMultiSelectListControl)
+  private
+    method GetFirstSelectedIter: ^gtk.GtkTreeIter;
   public
     const kListItem = 0;
     const kColumns = 1;
@@ -343,52 +345,105 @@ end;
 
 method TListBox.PlatformSelectAll;
 begin
-
+  var lSelection := gtk.gtk_tree_view_get_selection(^gtk.GtkTreeView(fHandle));
+  gtk.gtk_tree_selection_select_all(lSelection);
 end;
 
 method TListBox.PlatformGetSelected(aIndex: Integer): Boolean;
 begin
-
+  var lSelection := gtk.gtk_tree_view_get_selection(^gtk.GtkTreeView(fHandle));
+  var lText := aIndex.ToString.ToAnsiChars(true);
+  var lPath := gtk.gtk_tree_path_new_from_string(@lText[0]);
+  result := gtk.gtk_tree_selection_path_is_selected(lSelection, lPath) ≠ 0;
 end;
 
 method TListBox.PlatformSetSelected(aIndex: Integer; value: Boolean);
 begin
-
+  var lSelection := gtk.gtk_tree_view_get_selection(^gtk.GtkTreeView(fHandle));
+  var lText := aIndex.ToString.ToAnsiChars(true);
+  var lPath := gtk.gtk_tree_path_new_from_string(@lText[0]);
+  if value then
+    gtk.gtk_tree_selection_select_path(lSelection, lPath)
+  else
+    gtk.gtk_tree_selection_unselect_path(lSelection, lPath);
 end;
 
 method TListBox.PlatformGetSelCount: Integer;
 begin
-
+  var lSelection := gtk.gtk_tree_view_get_selection(^gtk.GtkTreeView(fHandle));
+  gtk.gtk_tree_selection_count_selected_rows(lSelection);
 end;
 
 method TListBox.PlatformGetMultiSelect: Boolean;
 begin
-
+  var lSelection := gtk.gtk_tree_view_get_selection(^gtk.GtkTreeView(fHandle));
+  var lMode := gtk.gtk_tree_selection_get_mode(lSelection);
+  result := lMode ≠ gtk.GtkSelectionMode.GTK_SELECTION_EXTENDED;
 end;
 
 method TListBox.PlatformSetMultiSelect(value: Boolean);
 begin
-
+  var lSelectionMode := if value then gtk.GtkSelectionMode.GTK_SELECTION_EXTENDED else gtk.GtkSelectionMode.GTK_SELECTION_SINGLE;
+  var lSelection := gtk.gtk_tree_view_get_selection(^gtk.GtkTreeView(fHandle));
+  gtk.gtk_tree_selection_set_mode(lSelection, lSelectionMode);
 end;
 
 method TListBox.PlatformClearSelection;
 begin
+  var lSelection := gtk.gtk_tree_view_get_selection(^gtk.GtkTreeView(fHandle));
+  gtk.gtk_tree_selection_unselect_all(lSelection);
+end;
 
+method TListBox.GetFirstSelectedIter: ^gtk.GtkTreeIter;
+begin
+  var lSelection := gtk.gtk_tree_view_get_selection(^gtk.GtkTreeView(fHandle));
+  var lList := gtk.gtk_tree_selection_get_selected_rows(lSelection, ^^gtk.GtkTreeModel(@fStore));
+  var lIter: ^gtk.GtkTreeIter := nil;
+  if lList ≠ nil then begin
+    var lData := ^gtk.GtkTreePath(lList.data);
+    if lData ≠ nil then begin
+      var lChars := gtk.gtk_tree_path_to_string(lData);
+      gtk.gtk_tree_model_get_iter_from_string(fStore, lIter, lChars);
+    end;
+  end;
+
+  glib.g_list_foreach(lList, glib.GFunc((data, user)->gtk.gtk_tree_path_free(data)), nil);
+  glib.g_list_free(lList);
+
+  exit lIter;
 end;
 
 method TListBox.PlatformDeleteSelected;
 begin
-
+  var lIter := GetFirstSelectedIter;
+  if lIter ≠ nil then
+    gtk.gtk_tree_store_remove(^gtk.GtkTreeStore(fStore), lIter);
 end;
 
 method TListBox.PlatformSetItemIndex(value: Integer);
 begin
-
+  var lPath := gtk.gtk_tree_path_new_from_indices(value);
+  var lColumn := gtk.gtk_tree_view_get_column(^gtk.GtkTreeView(fHandle), value);
+  gtk.gtk_tree_view_row_activated(^gtk.GtkTreeView(fHandle), lPath, lColumn);
 end;
 
 method TListBox.PlatformGetItemIndex: Integer;
 begin
-
+  var lIter: ^gtk.GtkTreeIter;
+  if not MultiSelect then begin
+    var lSelection := gtk.gtk_tree_view_get_selection(^gtk.GtkTreeView(fHandle));
+    if gtk.gtk_tree_selection_get_selected(lSelection, ^^gtk.GtkTreeModel(fStore), lIter) = 0 then
+      exit -1;
+  end
+  else begin
+    lIter := GetFirstSelectedIter;
+    if lIter = nil then
+      exit -1;
+  end;
+  var lChars := gtk.gtk_tree_model_get_string_from_iter(^gtk.GtkTreeModel(fStore), lIter);
+  var lIndex := Convert.ToInt32(String.FromPAnsiChars(lChars));
+  glib.g_free(lChars);
+  exit lIndex;
 end;
 
 method TComboBox.CreateHandle;
