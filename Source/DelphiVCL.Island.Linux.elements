@@ -65,6 +65,7 @@
     <Reference Include="Island">
       <HintPath>..\..\IslandRTL\Source\Bin\Debug\Ubuntu\x86_64\Island.fx</HintPath>
     </Reference>
+    <Reference Include="gdk" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

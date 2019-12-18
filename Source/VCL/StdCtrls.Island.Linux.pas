@@ -157,10 +157,10 @@ begin
   lSelf.OnClick(lSelf);
 end;
 
-method gchandlefree(data: glib.gpointer; closure: ^gobject.GClosure);
+{method gchandlefree(data: glib.gpointer; closure: ^gobject.GClosure);
 begin
   new GCHandle(NativeInt(data)).Dispose();
-end;
+end;}
 
 method TLabel.CreateHandle;
 begin
@@ -456,7 +456,9 @@ end;
 
 method TComboBox.PlatformGetText: String;
 begin
-
+  var lChars := gtk.gtk_combo_box_text_get_active_text(^gtk.GtkComboBoxText(fHandle));
+  result := String.FromPAnsiChars(lChars);
+  glib.g_free(lChars);
 end;
 
 method TComboBox.PlatformSetText(aValue: String);
@@ -464,39 +466,55 @@ begin
 
 end;
 
+method &select(app: ^gtk.GtkWidget; userdata: ^Void);
+begin
+  var lSelf := new GCHandle(NativeInt(userdata)).Target as TComboBox;
+  if lSelf.OnSelect ≠ nil then
+    lSelf.OnSelect(lSelf);
+end;
+
 method TComboBox.PlatformSetOnSelect(aValue: TNotifyEvent);
 begin
+  gobject.g_signal_connect_data(fHandle, 'changed', glib.GVoidFunc(^Void(@&select)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
+end;
 
+method change(app: ^gtk.GtkWidget; userdata: ^Void);
+begin
+  var lSelf := new GCHandle(NativeInt(userdata)).Target as TComboBox;
+  if lSelf.OnChange ≠ nil then
+    lSelf.OnChange(lSelf);
 end;
 
 method TComboBox.PlatformSetOnChange(aValue: TNotifyEvent);
 begin
-
+  gobject.g_signal_connect_data(fHandle, 'changed', glib.GVoidFunc(^Void(@change)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
 end;
 
 method TComboBox.PlatformSelectAll;
 begin
-
+  // Nothing to do...
 end;
 
 method TComboBox.PlatformClearSelection;
 begin
-
+  gtk.gtk_combo_box_set_active_iter(^gtk.GtkComboBox(fHandle), nil);
 end;
 
 method TComboBox.PlatformDeleteSelected;
 begin
-
+  var lIndex := gtk.gtk_combo_box_get_active(^gtk.GtkComboBox(fHandle));
+  if lIndex ≠ -1 then
+    gtk.gtk_combo_box_text_remove(^gtk.GtkComboBoxText(fHandle), lIndex);
 end;
 
 method TComboBox.PlatformSetItemIndex(value: Integer);
 begin
-
+  gtk.gtk_combo_box_set_active(^gtk.GtkComboBox(fHandle), value);
 end;
 
 method TComboBox.PlatformGetItemIndex: Integer;
 begin
-
+  result := gtk.gtk_combo_box_get_active(^gtk.GtkComboBox(fHandle));
 end;
 
 {$ENDIF}

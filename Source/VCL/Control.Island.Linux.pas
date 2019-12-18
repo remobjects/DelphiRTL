@@ -32,6 +32,8 @@ type
   public
   end;
 
+method gchandlefree(data: glib.gpointer; closure: ^gobject.GClosure); assembly;
+
 implementation
 
 method TControl.HandleAllocated: Boolean;
@@ -68,17 +70,17 @@ end;
 
 method TControl.PlatformSetOnClick(aValue: TNotifyEvent);
 begin
-
+  gobject.g_signal_connect_data(fHandle, 'clicked', glib.GVoidFunc(^Void(@internalClicked)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
 end;
 
 method TControl.PlatformSetOnKeyPress(aValue: TKeyPressEvent);
 begin
-
+  gobject.g_signal_connect_data(fHandle, 'key-press-event', glib.GVoidFunc(^Void(@internalKeyPressEvent)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
 end;
 
 method TControl.PlatformSetOnKeyDown(aValue: TKeyEvent);
 begin
-
+  gobject.g_signal_connect_data(fHandle, 'key-down-event', glib.GVoidFunc(^Void(@internalKeyDownEvent)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
 end;
 
 method TControl.PlatformSetOnKeyUp(aValue: TKeyEvent);
@@ -119,6 +121,34 @@ begin
       gtk.gtk_widget_hide(fHandle);
   end;
 end;
+
+method internalClicked(app: ^gtk.GtkWidget; userdata: ^Void);
+begin
+  var lSelf := new GCHandle(NativeInt(userdata)).Target as TButton;
+  if lSelf.OnClick ≠ nil then
+    lSelf.OnClick(lSelf);
+end;
+
+method internalKeyPressEvent(app: ^gtk.GtkWidget; &event: ^gdk.GdkEvent; userdata: ^Void);
+begin
+  var lSelf := new GCHandle(NativeInt(userdata)).Target as TComboBox;
+  //if lSelf.OnKeyPress ≠ nil then
+    //lSelf.OnKeyPress(lSelf);
+    // TODO
+end;
+
+method gchandlefree(data: glib.gpointer; closure: ^gobject.GClosure);
+begin
+  new GCHandle(NativeInt(data)).Dispose();
+end;
+
+method internalKeyDownEvent(app: ^gtk.GtkWidget; &event: ^gdk.GdkEvent; userdata: ^Void);
+begin
+  var lSelf := new GCHandle(NativeInt(userdata)).Target as TComboBox;
+  //if lSelf.OnKeyDown ≠ nil then
+    //lSelf.OnKeyDown(lSelf);
+end;
+
 {$ENDIF}
 
 end.

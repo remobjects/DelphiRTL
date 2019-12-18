@@ -35,6 +35,7 @@
     <Reference Include="DelphiVCL">
       <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Ubuntu\x86_64\DelphiVCL.fx</HintPath>
     </Reference>
+    <Reference Include="gdk" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />
