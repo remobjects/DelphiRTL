@@ -42,11 +42,12 @@
     <Reference Include="DelphiVCL">
       <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Ubuntu\armv6\DelphiVCL.fx</HintPath>
     </Reference>
+    <Reference Include="gdk" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />
     <Compile Include="Unit5.pas" />
-    <Resource Include="..\OneButton.dfm" />
+    <Resource Include="..\OneButtonAndLabel.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Linux.targets" />
 </Project>

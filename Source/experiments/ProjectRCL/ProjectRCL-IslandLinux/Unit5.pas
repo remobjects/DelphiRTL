@@ -13,7 +13,14 @@ type
   public
   { Public declarations }
     Button1: TButton;
+    Button2: TButton;
+    ListBox1: TListBox;
+    Label1: TLabel;
+    CheckBox1: TCheckBox;
+    RadioButton1: TRadioButton;
+    Edit1: TEdit;
     procedure Button1Click(Sender: TObject);
+    procedure Edit1KeyPress(Sender: TObject; var key: Char);
   end;
 
   var
@@ -25,6 +32,11 @@ procedure TForm6.Button1Click(Sender: TObject);
 begin
   writeLn('Yes????');
   ShowMessage("ok from ShowMessage");
+end;
+
+procedure TForm6.Edit1KeyPress(Sender: TObject; var key: Char);
+begin
+
 end;
 
 end.

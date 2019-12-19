@@ -157,11 +157,6 @@ begin
   lSelf.OnClick(lSelf);
 end;
 
-{method gchandlefree(data: glib.gpointer; closure: ^gobject.GClosure);
-begin
-  new GCHandle(NativeInt(data)).Dispose();
-end;}
-
 method TLabel.CreateHandle;
 begin
   var lCaption := Caption.ToAnsiChars(true);
@@ -177,9 +172,7 @@ end;
 
 method TEdit.CreateHandle;
 begin
-  var lCaption := Text.ToAnsiChars(true);
   fHandle := gtk.gtk_entry_new();
-  gtk.gtk_entry_set_text(^gtk.GtkEntry(fHandle), @lCaption[0]);
 end;
 
 method TEdit.PlatformSetText(aValue: String);

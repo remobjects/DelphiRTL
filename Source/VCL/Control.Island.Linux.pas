@@ -66,6 +66,7 @@ end;
 method TControl.PlatformSetParent(aValue: TControl);
 begin
   gtk.gtk_fixed_put(^gtk.GtkFixed(aValue.fBox), fHandle, fLeft, fTop);
+  gtk.gtk_widget_show(fHandle);
 end;
 
 method TControl.PlatformSetOnClick(aValue: TNotifyEvent);
@@ -85,7 +86,7 @@ end;
 
 method TControl.PlatformSetOnKeyUp(aValue: TKeyEvent);
 begin
-
+  gobject.g_signal_connect_data(fHandle, 'key-release-event', glib.GVoidFunc(^Void(@internalKeyReleaseEvent)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
 end;
 
 method TControl.PlatformSetCaption(aValue: String);
@@ -124,17 +125,35 @@ end;
 
 method internalClicked(app: ^gtk.GtkWidget; userdata: ^Void);
 begin
-  var lSelf := new GCHandle(NativeInt(userdata)).Target as TButton;
+  var lSelf := new GCHandle(NativeInt(userdata)).Target as TControl;
   if lSelf.OnClick ≠ nil then
     lSelf.OnClick(lSelf);
 end;
 
-method internalKeyPressEvent(app: ^gtk.GtkWidget; &event: ^gdk.GdkEvent; userdata: ^Void);
+method getShiftState(aValue: cardinal): TShiftState;
 begin
-  var lSelf := new GCHandle(NativeInt(userdata)).Target as TComboBox;
-  //if lSelf.OnKeyPress ≠ nil then
-    //lSelf.OnKeyPress(lSelf);
-    // TODO
+  result := [];
+  if (aValue and gdk.GdkModifierType.GDK_SHIFT_MASK) ≠ 0 then
+    result := result + [TShiftStateValues.ssShift];
+  if (aValue and gdk.GdkModifierType.GDK_CONTROL_MASK) ≠ 0 then
+    result := result + [TShiftStateValues.ssCtrl];
+  if (aValue and gdk.GdkModifierType.GDK_MOD1_MASK) ≠ 0 then
+    result := result + [TShiftStateValues.ssAlt];
+  if (aValue and gdk.GdkModifierType.GDK_BUTTON1_MASK) ≠ 0 then
+    result := result + [TShiftStateValues.ssLeft];
+  if (aValue and gdk.GdkModifierType.GDK_BUTTON2_MASK) ≠ 0 then
+    result := result + [TShiftStateValues.ssRight];
+  if (aValue and gdk.GdkModifierType.GDK_BUTTON3_MASK) ≠ 0 then
+    result := result + [TShiftStateValues.ssMiddle];
+end;
+
+method internalKeyPressEvent(app: ^gtk.GtkWidget; &event: ^gdk.GdkEvent; userdata: ^Void): glib.gboolean;
+begin
+  var lSelf := new GCHandle(NativeInt(userdata)).Target as TControl;
+  var lKey: Char := Chr(^gdk.GdkEventKey(&event)^.keyval);
+  if lSelf.OnKeyPress ≠ nil then
+    lSelf.OnKeyPress(lSelf, var lKey);
+  exit Convert.ToInt32(lKey = #0);
 end;
 
 method gchandlefree(data: glib.gpointer; closure: ^gobject.GClosure);
@@ -142,13 +161,25 @@ begin
   new GCHandle(NativeInt(data)).Dispose();
 end;
 
-method internalKeyDownEvent(app: ^gtk.GtkWidget; &event: ^gdk.GdkEvent; userdata: ^Void);
+method internalKeyDownEvent(app: ^gtk.GtkWidget; &event: ^gdk.GdkEvent; userdata: ^Void): glib.gboolean;
 begin
-  var lSelf := new GCHandle(NativeInt(userdata)).Target as TComboBox;
-  //if lSelf.OnKeyDown ≠ nil then
-    //lSelf.OnKeyDown(lSelf);
+  var lSelf := new GCHandle(NativeInt(userdata)).Target as TControl;
+  var lShiftState := getShiftState(^gdk.GdkEventKey(&event)^.state);
+  var lWord: Word := ^gdk.GdkEventKey(&event)^.keyval;
+  if lSelf.OnKeyDown ≠ nil then
+    lSelf.OnKeyDown(lSelf, var lWord, lShiftState);
+  exit lWord;
 end;
 
+method internalKeyReleaseEvent(app: ^gtk.GtkWidget; &event: ^gdk.GdkEvent; userdata: ^Void): glib.gboolean;
+begin
+  var lSelf := new GCHandle(NativeInt(userdata)).Target as TControl;
+  var lShiftState := getShiftState(^gdk.GdkEventKey(&event)^.state);
+  var lWord: Word := ^gdk.GdkEventKey(&event)^.keyval;
+  if lSelf.OnKeyUp ≠ nil then
+    lSelf.OnKeyUp(lSelf, var lWord, lShiftState);
+  exit lWord;
+end;
 {$ENDIF}
 
 end.

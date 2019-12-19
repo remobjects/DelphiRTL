@@ -13,6 +13,7 @@ type
   public
   { Public declarations }
     Button1: TButton;
+    Label1: TLabel;
     procedure Button1Click(Sender: TObject);
   end;
 
