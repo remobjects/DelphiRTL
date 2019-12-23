@@ -17,6 +17,7 @@ type
     ListBox1: TListBox;
     Label1: TLabel;
     CheckBox1: TCheckBox;
+    ComboBox1: TComboBox;
     RadioButton1: TRadioButton;
     Edit1: TEdit;
     procedure Button1Click(Sender: TObject);
@@ -31,7 +32,9 @@ implementation
 procedure TForm6.Button1Click(Sender: TObject);
 begin
   writeLn('Yes????');
-  ShowMessage("ok from ShowMessage");
+  //ShowMessage("ok from ShowMessage");
+  ListBox1.Items.Add('Dame 1');
+  ComboBox1.Items.Add('Dame 1');
 end;
 
 procedure TForm6.Edit1KeyPress(Sender: TObject; var key: Char);

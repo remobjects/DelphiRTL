@@ -81,6 +81,7 @@ type
     const kColumns = 1;
   protected
     var fStore: ^gtk.GtkListStore;
+    var fInnerWindow: ^gtk.GtkWidget;
     method CreateHandle; override;
     method PlatformSelectAll;
     method PlatformGetSelected(aIndex: Integer): Boolean;
@@ -92,6 +93,11 @@ type
     method PlatformDeleteSelected;
     method PlatformSetItemIndex(value: Integer);
     method PlatformGetItemIndex: Integer;
+    method PlatformSetParent(aValue: TControl); override;
+    method PlatformSetWidth(aValue: Integer); override;
+    method PlatformSetHeight(aValue: Integer); override;
+    method PlatformSetTop(aValue: Integer); override;
+    method PlatformSetLeft(aValue: Integer); override;
   public
     property Store: ^gtk.GtkListStore read fStore;
   end;
@@ -269,17 +275,18 @@ end;
 
 method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
-  var lIter: ^gtk.GtkTreeIter;
+  var lIter: gtk.GtkTreeIter;
   var lText := PlatformString(S).ToAnsiChars(true);
 
-  gtk.gtk_list_store_append((ListControl as TListBox).Store, lIter);
-  gtk.gtk_list_store_set((ListControl as TListBox).Store, lIter, (ListControl as TListBox).kListItem, @lText[0], -1);
+  gtk.gtk_list_store_append((ListControl as TListBox).Store, @lIter);
+  gtk.gtk_list_store_set((ListControl as TListBox).Store, @lIter, (ListControl as TListBox).kListItem, @lText[0], -1);
 end;
 
 method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
   var lIter: ^gtk.GtkTreeIter;
   var lText := PlatformString(S).ToAnsiChars(true);
+  gtk.gtk_tree_model_get_iter_from_string((ListControl as TListBox).Store, lIter, @lText[0]);
   gtk.gtk_list_store_insert((ListControl as TListBox).Store, lIter, aIndex);
   gtk.gtk_list_store_set((ListControl as TListBox).Store, lIter, (ListControl as TListBox).kListItem, @lText[0], -1);
 end;
@@ -325,15 +332,46 @@ end;
 
 method TListBox.CreateHandle;
 begin
+  fInnerWindow := gtk.gtk_scrolled_window_new(nil, nil);
+  gtk.gtk_widget_show(fInnerWindow);
   fHandle := gtk.gtk_tree_view_new();
+  gtk.gtk_container_add(^gtk.GtkContainer(fInnerWindow), fHandle);
+  gtk.gtk_tree_view_set_headers_visible(^gtk.GtkTreeView(fHandle), 0);
   var lListItem := "List Item".ToAnsiChars(true);
   var lText := "text".ToAnsiChars(true);
   var lRenderer := gtk.gtk_cell_renderer_text_new();
-  var lColumn := gtk.gtk_tree_view_column_new_with_attributes(@lListItem[0], lRenderer, [@lText[0], kListItem, nil]);
-  gtk.gtk_tree_view_append_column(^gtk.GtkTreeView(fHandle), lColumn);
-  fStore := gtk.gtk_list_store_new(kColumns, [gtk.GTK_TYPE_STRING]);
+  gtk.gtk_tree_view_insert_column_with_attributes(^gtk.GtkTreeView(fHandle), -1, @lListItem[0], lRenderer, @lText[0], kListItem, nil);
+  fStore := gtk.gtk_list_store_new(kColumns, gtk.GTK_TYPE_STRING);
   gtk.gtk_tree_view_set_model(^gtk.GtkTreeView(fHandle), ^gtk.GtkTreeModel(fStore));
   gobject.g_object_unref(fStore);
+end;
+
+method TListBox.PlatformSetParent(aValue: TControl);
+begin
+  gtk.gtk_fixed_put(^gtk.GtkFixed(aValue.InnerBox), fInnerWindow, Left, Top);
+  gtk.gtk_widget_show(fHandle);
+end;
+
+method TListBox.PlatformSetWidth(aValue: Integer);
+begin
+  gtk.gtk_widget_set_size_request(fInnerWindow, aValue, Height);
+end;
+
+method TListBox.PlatformSetHeight(aValue: Integer);
+begin
+  gtk.gtk_widget_set_size_request(fInnerWindow, Width, aValue);
+end;
+
+method TListBox.PlatformSetTop(aValue: Integer);
+begin
+  if Parent <> nil then
+    gtk.gtk_fixed_move(^gtk.GtkFixed(Parent.InnerBox), fInnerWindow, Left, aValue);
+end;
+
+method TListBox.PlatformSetLeft(aValue: Integer);
+begin
+  if Parent <> nil then
+    gtk.gtk_fixed_move(^gtk.GtkFixed(Parent.InnerBox), fInnerWindow, aValue, Top);
 end;
 
 method TListBox.PlatformSelectAll;

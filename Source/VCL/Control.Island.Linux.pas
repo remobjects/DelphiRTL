@@ -30,6 +30,7 @@ type
     method PlatformGetDefaultName: String; virtual; partial;
     method PlatformApplyDefaults; virtual; partial;
   public
+    property InnerBox: ^gtk.GtkWidget read fBox;
   end;
 
 method gchandlefree(data: glib.gpointer; closure: ^gobject.GClosure); assembly;

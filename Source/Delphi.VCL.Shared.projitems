@@ -54,5 +54,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Form.Island.Linux.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Control.Island.Linux.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)VCL\StdCtrls.Island.Linux.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)VCL\ExtCtrls.Island.Linux.pas" />
   </ItemGroup>
 </Project>
