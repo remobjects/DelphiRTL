@@ -5,6 +5,7 @@
 interface
 
 uses
+  RemObjects.Elements.System,
   RemObjects.Elements.RTL.Delphi;
 
 type
@@ -52,7 +53,7 @@ begin
   var lNode: rtl.TVITEM;
   lNode.mask := rtl.TVIF_TEXT;
   lNode.hItem := fItemId;
-  lNode.pszText := aValue.ToLPCWSTR;
+  lNode.pszText := RemObjects.Elements.System.String(aValue).ToLPCWSTR;
   rtl.SendMessage(fOwner.Owner.Handle, rtl.TVM_SETITEM, 0, rtl.LPARAM(@lNode));
 end;
 
@@ -155,7 +156,7 @@ begin
   var lNode: rtl.TVITEM;
 
   lNode.mask := rtl.TVIF_TEXT;
-  lNode.pszText := aNode.Text.ToLPCWSTR;
+  lNode.pszText := RemObjects.Elements.System.String(aNode.Text).ToLPCWSTR;
   aInsertData.u.item := lNode;
   aNode.fItemId := rtl.HTREEITEM(rtl.SendMessage(fOwner.Handle, rtl.TVM_INSERTITEM, 0, rtl.LPARAM(@aInsertData)));
 end;

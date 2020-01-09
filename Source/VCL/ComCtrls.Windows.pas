@@ -5,6 +5,7 @@
 interface
 
 uses
+  RemObjects.Elements.System,
   RemObjects.Elements.RTL.Delphi;
 
 type
@@ -63,7 +64,7 @@ method TListColumn.PlatformSetCaption(aValue: String);
 begin
   var lColumn: rtl.LVCOLUMN;
   lColumn.mask := rtl.LVCF_TEXT or rtl.LVCF_FMT;
-  lColumn.pszText := aValue.ToLPCWSTR;
+  lColumn.pszText := RemObjects.Elements.System.String(aValue).ToLPCWSTR;
 
   rtl.SendMessage(((Collection as TListColumns).Owner as TListView).Handle, rtl.LVM_SETCOLUMN, ColIndex, rtl.LPARAM(@lColumn));
 end;
@@ -154,7 +155,7 @@ begin
   lHandle.iItem := fItems.Count - 1;
   lHandle.iSubItem := 0;
   lHandle.mask := rtl.LVIF_TEXT or rtl.LVIF_IMAGE;
-  lHandle.pszText := 'New Item'.ToLPCWSTR;
+  lHandle.pszText := RemObjects.Elements.System.String('New Item').ToLPCWSTR;
   rtl.SendMessage(fOwner.Handle, rtl.LVM_INSERTITEM, 0, rtl.LPARAM(@lHandle));
 end;
 
@@ -234,14 +235,14 @@ begin
       case lplvdi^.item.iSubItem of
         0: begin
           // 0 as SubItem index is the caption
-          lplvdi^.item.pszText := String(Items[lplvdi^.item.iItem].Caption).ToLPCWSTR;
+          lplvdi^.item.pszText := RemObjects.Elements.System.String(Items[lplvdi^.item.iItem].Caption).ToLPCWSTR;
         end;
 
         else begin
           if (lplvdi^.item.iSubItem - 1) < Items[lplvdi^.item.iItem].SubItems.Count then
-            lplvdi^.item.pszText := String(Items[lplvdi^.item.iItem].SubItems[lplvdi^.item.iSubItem - 1]).ToLPCWSTR
+            lplvdi^.item.pszText := RemObjects.Elements.System.String(Items[lplvdi^.item.iItem].SubItems[lplvdi^.item.iSubItem - 1]).ToLPCWSTR
           else
-            lplvdi^.item.pszText := ''.ToLPCWSTR;
+            lplvdi^.item.pszText := RemObjects.Elements.System.String('').ToLPCWSTR;
         end;
       end;
     end;
