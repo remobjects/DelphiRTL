@@ -9,8 +9,8 @@ type
   Object__Delphi = public extension class(Object)
   public
 
-    method Destroy; empty; // no-op for compatibility
-    method Free; empty;    // no-op for compatibility
+    method Destroy; virtual; empty; // no-op for compatibility
+    method Free; empty;
 
     class method InitInstance(Instance: Pointer): TObject; empty;
     method CleanupInstance; empty;
