@@ -16,9 +16,12 @@ type
 
 
 function Pos(SubStr: DelphiString; S: DelphiString; aOffset: Integer := 1): Integer; inline;
+function Pos(SubStr: PlatformString; S: PlatformString; aOffset: Integer := 1): Integer; inline;
 procedure Insert(aSource: DelphiString; var aTarget: DelphiString; aOffset: Integer); inline;
+procedure Insert(aSource: PlatformString; var aTarget: PlatformString; aOffset: Integer); inline;
 procedure Delete(var S: DelphiString; aIndex: Integer; aCount: Integer); inline;
 function &Copy(S: DelphiString; aIndex: Integer; aCount: Integer): DelphiString; inline;
+function &Copy(S: PlatformString; aIndex: Integer; aCount: Integer): DelphiString; inline;
 procedure FillChar(var Dest: DelphiString; aCount: Integer; aValue: Char);
 function StringOfChar(aCh: Char; aCount: Integer): DelphiString; inline;
 
@@ -45,9 +48,19 @@ begin
   result := S.IndexOf(SubStr, aOffset) + 1;
 end;
 
+function Pos(SubStr: PlatformString; S: PlatformString; aOffset: Integer := 1): Integer;
+begin
+  result := DelphiString(S).IndexOf(DelphiString(SubStr), aOffset) + 1;
+end;
+
 procedure Insert(aSource: DelphiString; var aTarget: DelphiString; aOffset: Integer);
 begin
   aTarget.Insert(aOffset - 1, aSource);
+end;
+
+procedure Insert(aSource: PlatformString; var aTarget: PlatformString; aOffset: Integer);
+begin
+  DelphiString(aTarget).Insert(aOffset - 1, aSource);
 end;
 
 procedure Delete(var S: DelphiString; aIndex: Integer; aCount: Integer);
@@ -58,6 +71,11 @@ end;
 function &Copy(S: DelphiString; aIndex: Integer; aCount: Integer): DelphiString;
 begin
   result := S.SubString(aIndex - 1, aCount);
+end;
+
+function &Copy(S: PlatformString; aIndex: Integer; aCount: Integer): DelphiString;
+begin
+  result := DelphiString(S).SubString(aIndex - 1, aCount);
 end;
 
 procedure FillChar(var Dest: DelphiString; aCount: Integer; aValue: Char);
