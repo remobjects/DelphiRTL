@@ -6,6 +6,9 @@ uses
 type
   TObject = public Object;
 
+  IInterface = public interface
+  end;
+
   Object__Delphi = public extension class(Object)
   public
 

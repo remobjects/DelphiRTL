@@ -14,4 +14,7 @@ type
   PInterfaceTable = public Pointer;
   HResult = public Int64;
 
+  DWORD = public UInt32;
+  BYTEBOOL = public Boolean;
+
 end.
