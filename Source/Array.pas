@@ -8,6 +8,8 @@ implementation
 
 method SetLenth<T>(var aArray: array of T; aNewLength: Integer);
 begin
+  if not assigned(aArray) then
+    exit;
   var len: Integer := length(aArray);
   if len = aNewLength then
     exit;
