@@ -21,6 +21,7 @@
     <Mode>Echoes</Mode>
     <SubMode>Full</SubMode>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AllowUnsafeCode>True</AllowUnsafeCode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Cooper' ">
     <Mode>Cooper</Mode>
