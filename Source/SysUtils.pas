@@ -132,8 +132,8 @@ type
   end;
 
 var
-  FormatSettings: TFormatSettings := TFormatSettings.Create;
-  SysLocale: TSysLocale;
+  FormatSettings: TFormatSettings := TFormatSettings.Create; public;
+  SysLocale: TSysLocale; public;
 
 { File functions }
 {$IF NOT WEBASSEMBLY}
