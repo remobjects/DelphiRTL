@@ -29,8 +29,8 @@ published
 end;
 
 var
-  Application: TApplication := nil;
-  Screen: TScreen := nil;
+  Application: TApplication := nil; public;
+  Screen: TScreen := nil; public;
 
 implementation
 
