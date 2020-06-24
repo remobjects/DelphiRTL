@@ -156,7 +156,7 @@ end;
 
 method TControl.PlatformSetColor(aValue: TColor);
 begin
-  fhandle.style['background-color'] := '#' + RemObjects.Elements.RTL.Convert.ToHexString(aValue);
+  fHandle.style['background-color'] := '#' + RemObjects.Elements.RTL.Convert.ToHexString(aValue);
 end;
 
 method TControl.ProcessKeyboardStatus(aStatus: EcmaScriptObject; var aKey: Word): TShiftState;
