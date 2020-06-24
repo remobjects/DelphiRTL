@@ -170,11 +170,11 @@ end;
 method TGroupBox.CreateHandle;
 begin
   //fHandle := Browser.CreateElement("FIELDSET");
-  fLabelHandle := Browser.CreateElement("LEGEND");
-  var lText := Browser.CreateTextNode(Name);
-  fLabelHandle.appendChild(lText);
-  fHandle.appendChild(fLabelHandle);
-  fHandle.style.position := "absolute";
+  //fLabelHandle := Browser.CreateElement("LEGEND");
+  //var lText := Browser.CreateTextNode(Name);
+  //fLabelHandle.appendChild(lText);
+  //fHandle.appendChild(fLabelHandle);
+  //fHandle.style.position := "absolute";
 end;
 
 method TGroupBox.PlatformSetCaption(aValue: String);
@@ -221,7 +221,7 @@ end;
 
 method TCheckBox.CreateHandle;
 begin
-  internalCreateHandle("checkbox");
+  //internalCreateHandle("checkbox");
 end;
 
 method TButtonControl.PlatformSetCaption(value: String);
@@ -275,14 +275,14 @@ end;
 
 method TRadioButton.CreateHandle;
 begin
-  internalCreateHandle("radio");
+  //internalCreateHandle("radio");
 end;
 
 method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
-  var lOption := Browser.CreateElement("OPTION");
-  lOption.text := String(S);
-  ListControl.Handle.add(lOption, aIndex);
+  //var lOption := Browser.CreateElement("OPTION");
+  //lOption.text := String(S);
+  //ListControl.Handle.add(lOption, aIndex);
 end;
 
 method TListControlItems.PlatformClear;
@@ -298,9 +298,9 @@ end;
 
 method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
-  var lOption := Browser.CreateElement("OPTION");
-  lOption.text := String(S);
-  ListControl.Handle.add(Object(lOption));
+  //var lOption := Browser.CreateElement("OPTION");
+  //lOption.text := String(S);
+  //ListControl.Handle.add(Object(lOption));
 end;
 
 method TListBox.CreateHandle;
@@ -367,16 +367,16 @@ end;
 
 method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
-  var lOption := Browser.CreateElement("OPTION");
-  lOption.text := String(S);
-  ListControl.Handle.add(lOption);
+  //var lOption := Browser.CreateElement("OPTION");
+  //lOption.text := String(S);
+  //ListControl.Handle.add(lOption);
 end;
 
 method TComboBoxItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
-  var lOption := Browser.CreateElement("OPTION");
-  lOption.text := String(S);
-  ListControl.Handle.add(lOption, aIndex);
+  //var lOption := Browser.CreateElement("OPTION");
+  //lOption.text := String(S);
+  //ListControl.Handle.add(lOption, aIndex);
 end;
 
 method TComboBoxItems.PlatformClear;
