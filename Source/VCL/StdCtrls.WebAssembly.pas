@@ -141,7 +141,7 @@ end;
 
 method TButton.CreateHandle;
 begin
-  fHandle := Browser.CreateElement('BUTTON');
+  //fHandle := Browser.CreateElement('BUTTON');
   var lCaption := Browser.CreateTextNode(Name);
   fHandle.style.position := "absolute";
   fHandle.appendChild(lCaption);
@@ -155,7 +155,7 @@ end;
 
 method TLabel.CreateHandle;
 begin
-  fHandle := Browser.CreateElement('LABEL');
+  //fHandle := Browser.CreateElement('LABEL');
   var lCaption := Browser.CreateTextNode(Name);
   fHandle.appendChild(lCaption);
   Caption := Name;
@@ -169,7 +169,7 @@ end;
 
 method TGroupBox.CreateHandle;
 begin
-  fHandle := Browser.CreateElement("FIELDSET");
+  //fHandle := Browser.CreateElement("FIELDSET");
   fLabelHandle := Browser.CreateElement("LEGEND");
   var lText := Browser.CreateTextNode(Name);
   fLabelHandle.appendChild(lText);
@@ -184,7 +184,7 @@ end;
 
 method TEdit.CreateHandle;
 begin
-  fHandle := Browser.CreateElement("INPUT");
+  //fHandle := Browser.CreateElement("INPUT");
   fHandle.setAttribute("type", "text");
   fHandle.style.position := "absolute";
 end;
@@ -255,10 +255,10 @@ end;
 
 method TButtonControl.internalCreateHandle(aType: String);
 begin
-  fHandle := Browser.CreateElement("INPUT");
+  //fHandle := Browser.CreateElement("INPUT");
   fHandle.setAttribute("type", aType);
   fHandle.style.position := "absolute";
-  fLabelHandle := Browser.CreateElement("LABEL");
+  //fLabelHandle := Browser.CreateElement("LABEL");
   fLabelHandle.style.position := "absolute";
   fLabelHandle.innerText := Name;
 end;
@@ -305,7 +305,7 @@ end;
 
 method TListBox.CreateHandle;
 begin
-  fHandle := Browser.CreateElement("SELECT");
+  //fHandle := Browser.CreateElement("SELECT");
   fHandle.setAttribute("size", 6);
   fHandle.style.position := "absolute";
 end;
@@ -392,7 +392,7 @@ end;
 
 method TComboBox.CreateHandle;
 begin
-  fHandle := Browser.CreateElement("SELECT");
+  //fHandle := Browser.CreateElement("SELECT");
   fHandle.style.position := "absolute";
 end;
 
@@ -451,13 +451,13 @@ end;
 
 method TMemo.CreateHandle;
 begin
-  fHandle := Browser.CreateElement("TEXTAREA");
+  //fHandle := Browser.CreateElement("TEXTAREA");
   fHandle.style.position := "absolute";
 end;
 
 method TProgressBar.CreateHandle;
 begin
-  fHandle := Browser.CreateElement('PROGRESS');
+  //fHandle := Browser.CreateElement('PROGRESS');
   fHandle.style.position := "absolute";
 end;
 
