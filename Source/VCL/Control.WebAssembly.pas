@@ -87,13 +87,14 @@ end;
 method TControl.PlatformGetDefaultName: String;
 begin
   var i := 1;
-  var lObject: dynamic;
+  //var lObject: dynamic;
   repeat
     result := InstanceClassName;
     result := result.Substring(result.LastIndexOf('.') + 2) + i.ToString; // + 2 to remove initial 'T'...
     inc(i);
-    lObject := Browser.GetElementById(result);
-  until lObject = nil;
+    //lObject := Browser.GetElementById(result);
+  //until lObject = nil;
+  until Browser.GetElementById(result) = nil;
 end;
 
 method TControl.PlatformApplyDefaults;
