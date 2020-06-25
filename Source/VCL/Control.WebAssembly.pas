@@ -171,13 +171,13 @@ end;
 
 method TCustomControl.CreateHandle;
 begin
-  //fHandle := Browser.CreateElement('div');
+  fHandle := Browser.CreateElement('div');
   fHandle.style.position := "absolute";
 end;
 
 method TGraphicControl.CreateHandle;
 begin
-  //fHandle := Browser.CreateElement('div');
+  fHandle := Browser.CreateElement('div');
   fHandle.style.position := "absolute";
 end;
 
