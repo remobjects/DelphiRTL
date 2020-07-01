@@ -82,6 +82,57 @@ type
     class operator Less(Value1, Value2: DelphiString): Boolean;
     class operator GreaterOrEqual(Value1, Value2: DelphiString): Boolean;
     class operator LessOrEqual(Value1, Value2: DelphiString): Boolean;
+
+    class operator Equal(Value1: Char; Value2: DelphiString): Boolean;
+    begin
+      exit DelphiString(Value1) = Value2;
+    end;
+    class operator NotEqual(Value1: Char; Value2: DelphiString): Boolean;
+    begin
+      exit DelphiString(Value1) <> Value2;
+    end;
+    class operator Greater(Value1: Char; Value2: DelphiString): Boolean;
+    begin
+      exit DelphiString(Value1) > Value2;
+    end;
+    class operator Less(Value1: Char; Value2: DelphiString): Boolean;
+    begin
+      exit DelphiString(Value1) < Value2;
+    end;
+    class operator GreaterOrEqual(Value1: Char; Value2: DelphiString): Boolean;
+    begin
+      exit DelphiString(Value1) >= Value2;
+    end;
+    class operator LessOrEqual(Value1: Char; Value2: DelphiString): Boolean;
+    begin
+      exit DelphiString(Value1) <= Value2;
+    end;
+
+    class operator Equal(Value2: DelphiString; Value1: Char): Boolean;
+    begin
+      exit DelphiString(Value1) = Value2;
+    end;
+    class operator NotEqual(Value2: DelphiString; Value1: Char): Boolean;
+    begin
+      exit DelphiString(Value1) <> Value2;
+    end;
+    class operator Greater(Value2: DelphiString; Value1: Char): Boolean;
+    begin
+      exit DelphiString(Value1) > Value2;
+    end;
+    class operator Less(Value2: DelphiString; Value1: Char): Boolean;
+    begin
+      exit DelphiString(Value1) < Value2;
+    end;
+    class operator GreaterOrEqual(Value2: DelphiString; Value1: Char): Boolean;
+    begin
+      exit DelphiString(Value1) >= Value2;
+    end;
+    class operator LessOrEqual(Value2: DelphiString; Value1: Char): Boolean;
+    begin
+      exit DelphiString(Value1) <= Value2;
+    end;
+
     class property Offset: Integer read fOffset write SetOffset;
 
     [ToString]
