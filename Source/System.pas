@@ -13,7 +13,7 @@ type
   TDateTime = public Double;
   TDate = public TDateTime;
   TTime = public TDateTime;
-
+  TCustomAttribute = public Attribute;
 
 function Pos(SubStr: DelphiString; S: DelphiString; aOffset: Integer := 1): Integer; inline;
 function Pos(SubStr: PlatformString; S: PlatformString; aOffset: Integer := 1): Integer; inline;
