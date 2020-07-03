@@ -86,7 +86,7 @@ type
   TCollectionNotification = public enum (cnAdded, cnRemoved, cnExtracted) of Integer;
   TCollectionNotifyEvent<T> = public block(Sender: TObject; const Item: T; Action: TCollectionNotification);
 
-  TList<T> = public class(TEnumerable<T>){$IF TOFFEE}where T is class;{$ENDIF}
+  TList<T> = public class(TEnumerable<T>)
   private
     fList: List<T>;
     fComparer: IComparer<T>;
@@ -147,6 +147,9 @@ type
     property List: array of T read GetItems;
 
     property OnNotify: TCollectionNotifyEvent<T> read fOnNotify write fOnNotify;
+  end;
+
+  TObjectList<T> = public class(TList<T>){$IF TOFFEE}where T is class;{$ENDIF}
   end;
 
 
