@@ -131,6 +131,26 @@ type
     class property LineBreak: String read fLineBreak;
   end;
 
+  EArgumentException = class(Exception);
+  EArgumentOutOfRangeException = class(EArgumentException);
+  EArgumentNilException = class(EArgumentException);
+
+  EPathTooLongException = class(Exception);
+  ENotSupportedException = class(Exception);
+  EDirectoryNotFoundException = class(Exception);
+  EFileNotFoundException = class(Exception);
+  EPathNotFoundException = class(Exception);
+
+  EListError = class(Exception);
+
+  EInvalidOpException = class(Exception);
+
+  ENoConstructException = class(Exception);
+
+  ExceptClass = class of Exception;
+
+  EAbort = class(Exception);
+
 var
   FormatSettings: TFormatSettings := TFormatSettings.Create; public;
   SysLocale: TSysLocale; public;
