@@ -13,7 +13,9 @@ type
   TDateTime = public Double;
   TDate = public TDateTime;
   TTime = public TDateTime;
+  {$IF NOT COOPER}
   TCustomAttribute = public Attribute;
+  {$ENDIF}
 
 function Pos(SubStr: DelphiString; S: DelphiString; aOffset: Integer := 1): Integer; inline;
 function Pos(SubStr: PlatformString; S: PlatformString; aOffset: Integer := 1): Integer; inline;

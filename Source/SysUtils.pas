@@ -134,16 +134,20 @@ type
 // Generic Anonymous method declarations
 type
   TProc = block;
+  {$IF NOT COOPER AND NOT TOFFEE}
   TProc<T> = block(Arg1: T);
   TProc<T1,T2> = block(Arg1: T1; Arg2: T2);
   TProc<T1,T2,T3> = block(Arg1: T1; Arg2: T2; Arg3: T3);
   TProc<T1,T2,T3,T4> = block(Arg1: T1; Arg2: T2; Arg3: T3; Arg4: T4);
+  {$ENDIF}
 
   TFunc<TResult> = block(): TResult;
+  {$IF NOT COOPER AND NOT TOFFEE}
   TFunc<T,TResult> = block(Arg1: T): TResult;
   TFunc<T1,T2,TResult> = block(Arg1: T1; Arg2: T2): TResult;
   TFunc<T1,T2,T3,TResult> = block(Arg1: T1; Arg2: T2; Arg3: T3): TResult;
   TFunc<T1,T2,T3,T4,TResult> = block(Arg1: T1; Arg2: T2; Arg3: T3; Arg4: T4): TResult;
+  {$ENDIF}
 
   TPredicate<T> = block(Arg1: T): Boolean;
 
