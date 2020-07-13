@@ -2,14 +2,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
   <PropertyGroup>
     <RootNamespace>RemObjects.Elements.RTL.Delphi</RootNamespace>
-    <ProjectGuid>014A45CE-7C50-4A22-9D4D-A617F535907F</ProjectGuid>
+    <ProjectGuid>{014A45CE-7C50-4A22-9D4D-A617F535907F}</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>Delphi</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <SDK>macOS</SDK>
     <CreateHeaderFile>True</CreateHeaderFile>
@@ -18,6 +13,7 @@
     <DeploymentTargetVersion>10.10</DeploymentTargetVersion>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <CrossPlatform>True</CrossPlatform>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Optimize>false</Optimize>

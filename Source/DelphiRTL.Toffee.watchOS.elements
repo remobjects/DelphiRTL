@@ -5,11 +5,7 @@
     <ProjectGuid>ab2b6666-8d9e-4b25-83f9-375da1aebc16</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>Delphi</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <SDK>watchOS</SDK>
     <CreateHeaderFile>True</CreateHeaderFile>

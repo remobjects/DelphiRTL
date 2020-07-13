@@ -6,11 +6,7 @@
     <ProjectGuid>C17C9ABA-7654-4B05-9800-413B6D210307</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>DelphiVCL</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <CrossPlatform>True</CrossPlatform>

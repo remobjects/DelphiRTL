@@ -3,17 +3,13 @@
   <PropertyGroup>
     <ProductVersion>3.5</ProductVersion>
     <RootNamespace>RemObjects.Elements.RTL.Delphi</RootNamespace>
-    <ProjectGuid>2c5035ae-20bf-44e5-b186-21accaa7bbb1</ProjectGuid>
+    <ProjectGuid>{2C5035AE-20BF-44E5-B186-21ACCAA7BBB1}</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>Delphi</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <CrossPlatform>True</CrossPlatform>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>false</Optimize>

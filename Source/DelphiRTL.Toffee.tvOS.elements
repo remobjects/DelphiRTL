@@ -5,11 +5,7 @@
     <ProjectGuid>f7cd09c9-64d0-4bae-bf53-d6189f056ad8</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>Delphi</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <SDK>tvOS</SDK>
     <CreateHeaderFile>True</CreateHeaderFile>

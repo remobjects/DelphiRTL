@@ -5,11 +5,7 @@
     <ProjectGuid>{30EBF31A-6F0F-4E33-BA92-51174DA67575}</ProjectGuid>
     <OutputType>Executable</OutputType>
     <AssemblyName>ProjectRCLMac</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <SDK>macOS 10.14</SDK>
     <MangleTypeNames>True</MangleTypeNames>
