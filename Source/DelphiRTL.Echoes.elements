@@ -11,6 +11,7 @@
     <CrossPlatform>True</CrossPlatform>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <AllowLegacyEnums>True</AllowLegacyEnums>
+    <AllowUnsafeCode>True</AllowUnsafeCode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Optimize>false</Optimize>
