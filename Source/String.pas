@@ -1102,8 +1102,8 @@ begin
     lStart := lToParse.IndexOf(lOldValue, lStart);
     if lStart <> -1 then begin
       var lRest: DelphiString := '';
-      if lStart + oldValue_Length < result.Length then lRest := result.Substring(lStart + oldValue_Length);
-      result := result.Substring(0, lStart) + NewValue + lRest;
+      if lStart + oldValue_Length < result.Length then lRest := result.SubString(lStart + oldValue_Length);
+      result := result.SubString(0, lStart) + NewValue + lRest;
       inc(lStart, oldValue_Length);
     end
     else

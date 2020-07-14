@@ -30,7 +30,7 @@ type
     method StringToUTF8(aString: PlatformString): array of Byte;
     method GetLength: Integer;
     class method CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer); static;
-    class method InternalCompareStr(S1: AnsiString; S2: DelphiString): Integer; static; 
+    class method InternalCompareStr(S1: AnsiString; S2: DelphiString): Integer; static;
     class method InternalCompareText(S1: AnsiString; S2: DelphiString): Integer; static;
     method CheckfData; inline;
   public
@@ -85,13 +85,13 @@ type
     {$ELSEIF TOFFEE}
     method hash: Foundation.NSUInteger;
     {$ENDIF}
-    
+
     {$IF TOFFEE}
     method isEqual(Obj: id): Boolean;
     {$ELSE}
     method &Equals(Obj: Object): Boolean; override;
     {$ENDIF}
-    
+
     [ToString]
     method ToString: PlatformString;
 
@@ -363,7 +363,7 @@ method AnsiString.CastCharArrayToByteArray(aCharArray: array of Char; StartIndex
 begin
   result := new Byte[aLength];
   for i: Integer := 0 to aLength - 1 do
-    result[i] := Byte(aCharArray[StartIndex + i]); 
+    result[i] := Byte(aCharArray[StartIndex + i]);
 end;
 
 operator AnsiString.Implicit(Value: array of Char): AnsiString;
@@ -373,7 +373,7 @@ end;
 
 operator AnsiString.Implicit(Value: DelphiString): AnsiString;
 begin
-  result := new AnsiString(Value.ToCharArray, false); 
+  result := new AnsiString(Value.ToCharArray, false);
 end;
 
 constructor AnsiString(Value: array of Char; PreserveChars: Boolean = true);
@@ -452,7 +452,7 @@ begin
   {$ELSEIF ECHOES}
   exit System.Text.Encoding.UTF8.GetBytes(aString) as not nullable;
   {$ELSEIF ISLAND}
-  exit TextConvert.StringToUTF8(aString) as not nullable;
+  exit Encoding.UTF8.GetBytes(aString) as not nullable;
   {$ELSEIF TOFFEE}
   var lData := Binary(aString.dataUsingEncoding(NSStringEncoding.NSUTF8StringEncoding));
   exit lData.ToArray as not nullable;
@@ -577,7 +577,7 @@ begin
   end;
 end;
 
-class method AnsiString.CompareStr(S1: AnsiString; S2: DelphiString): Integer; 
+class method AnsiString.CompareStr(S1: AnsiString; S2: DelphiString): Integer;
 begin
   result := InternalCompareStr(S1, S2);
 end;
@@ -628,7 +628,7 @@ end;
 
 class method AnsiString.&Copy(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer): AnsiString;
 begin
-  var lCount := if (aSourceIndex + aCount) > aSource.Length then (aSource.Length - aSourceIndex) else aCount; 
+  var lCount := if (aSourceIndex + aCount) > aSource.Length then (aSource.Length - aSourceIndex) else aCount;
   result := new AnsiString(lCount);
   for i: Integer := 0 to lCount - 1 do
     result.Chars[i] := aSource.Chars[aSourceIndex + i];
@@ -834,7 +834,7 @@ begin
 end;
 
 {$IF COOPER}
-method AnsiString.hashCode: Integer; 
+method AnsiString.hashCode: Integer;
 begin
   if fHashCode = 0 then begin
     var lMultiplier: Integer := 1;
@@ -901,7 +901,7 @@ begin
   var lItem := AnsiString(Obj);
   result := &Equals(lItem);
  end;
-{$ENDIF} 
+{$ENDIF}
 
 procedure SetLength(var aString: AnsiString; aLength: Integer);
 begin

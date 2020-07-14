@@ -6,7 +6,9 @@ uses
 type
   TClass = public Pointer;
   ShortString = String;
+  {$HIDE CPW8}
   Pointer = public {$IF COOPER}Integer{$ELSE}^Void{$ENDIF};
+  {$SHOW CPW8}
 
   TGUID = public RemObjects.Elements.RTL.Guid;
 
