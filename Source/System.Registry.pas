@@ -17,7 +17,7 @@ type
     FileTime: rtl.FILETIME;
   end;
 
-  TRegDataType = public (Unknown, String, ExpandString, Integer, Binary) of rtl.DWORD;
+  TRegDataType = public (rdUnknown, rdString, rdExpandString, rdInteger, rdBinary) of rtl.DWORD;
 
   TRegDataInfo = public record
     RegData: TRegDataType;
@@ -197,21 +197,21 @@ end;
 method TRegistry.ConvertDataType(Value: rtl.DWORD): TRegDataType;
 begin
   result := case Value of
-    rtl.REG_BINARY: TRegDataType.Binary;
-    rtl.REG_DWORD: TRegDataType.Integer;
-    rtl.REG_SZ: TRegDataType.String;
-    rtl.REG_EXPAND_SZ: TRegDataType.ExpandString;
-    else TRegDataType.Unknown;
+    rtl.REG_BINARY: TRegDataType.rdBinary;
+    rtl.REG_DWORD: TRegDataType.rdInteger;
+    rtl.REG_SZ: TRegDataType.rdString;
+    rtl.REG_EXPAND_SZ: TRegDataType.rdExpandString;
+    else TRegDataType.rdUnknown;
   end;
 end;
 
 method TRegistry.ConvertToDataType(Value: TRegDataType): rtl.DWORD;
 begin
   result := case Value of
-    TRegDataType.Binary: rtl.REG_BINARY;
-    TRegDataType.Integer: rtl.REG_DWORD;
-    TRegDataType.String: rtl.REG_SZ;
-    TRegDataType.ExpandString: rtl.REG_EXPAND_SZ;
+    TRegDataType.rdBinary: rtl.REG_BINARY;
+    TRegDataType.rdInteger: rtl.REG_DWORD;
+    TRegDataType.rdString: rtl.REG_SZ;
+    TRegDataType.rdExpandString: rtl.REG_EXPAND_SZ;
     else rtl.REG_NONE;
   end;
 end;
@@ -292,7 +292,7 @@ begin
   if GetDataInfo(ValueName, var lData) then
     result := lData.RegData
   else
-    result := TRegDataType.Unknown;
+    result := TRegDataType.rdUnknown;
 end;
 
 method TRegistry.GetKeyInfo(var Value: TRegKeyInfo): Boolean;
@@ -421,7 +421,7 @@ method TRegistry.ReadBinaryData(Name: DelphiString; var Buffer: Pointer; BufSize
 begin
   var lRegData: TRegDataType;
   result := GetData(Name, Buffer, BufSize, var lRegData);
-  if lRegData <> TRegDataType.Binary then
+  if lRegData <> TRegDataType.rdBinary then
     raise new Exception('Can not read ' + Name + ' as binary data');
 end;
 
@@ -439,7 +439,7 @@ method TRegistry.ReadDateTime(Name: DelphiString): TDateTime;
 begin
   var lRegData: TRegDataType;
   GetData(Name, @result, sizeOf(result), var lRegData);
-  if lRegData <> TRegDataType.Binary then
+  if lRegData <> TRegDataType.rdBinary then
     raise new Exception('Can not read ' + Name + ' as datetime value');
 end;
 
@@ -447,7 +447,7 @@ method TRegistry.ReadFloat(Name: DelphiString): Double;
 begin
   var lRegData: TRegDataType;
   GetData(Name, @result, sizeOf(result), var lRegData);
-  if lRegData <> TRegDataType.Binary then
+  if lRegData <> TRegDataType.rdBinary then
     raise new Exception('Can not read ' + Name + ' as float value');
 end;
 
@@ -455,7 +455,7 @@ method TRegistry.ReadInteger(Name: DelphiString): Integer;
 begin
   var lRegData: TRegDataType;
   GetData(Name, @result, sizeOf(result), var lRegData);
-  if lRegData <> TRegDataType.Integer then
+  if lRegData <> TRegDataType.rdInteger then
     raise new Exception('Can not read ' + Name + ' as integer value');
 end;
 
@@ -465,7 +465,7 @@ begin
   var lChars := new Char[lSize div sizeOf(Char)];
   var lRegData: TRegDataType;
   var lTotal := GetData(Name, @lChars[0], lSize, var lRegData);
-  if (lRegData = TRegDataType.String) or (lRegData = TRegDataType.ExpandString) then
+  if (lRegData = TRegDataType.rdString) or (lRegData = TRegDataType.rdExpandString) then
     result := DelphiString.Create(lChars, 0, (lTotal div sizeOf(Char)) - 1) // remove #0
   else
     raise new Exception('Can no read ' + Name + ' as string value');
@@ -519,7 +519,7 @@ end;
 
 method TRegistry.WriteBinaryData(Name: DelphiString; Buffer: Pointer; BufSize: Integer);
 begin
-  PutData(Name, Buffer, BufSize, TRegDataType.Binary);
+  PutData(Name, Buffer, BufSize, TRegDataType.rdBinary);
 end;
 
 method TRegistry.WriteBool(Name: DelphiString; Value: Boolean);
@@ -534,23 +534,23 @@ end;
 
 method TRegistry.WriteDateTime(Name: DelphiString; Value: TDateTime);
 begin
-  PutData(Name, @Value, sizeOf(Double), TRegDataType.Binary);
+  PutData(Name, @Value, sizeOf(Double), TRegDataType.rdBinary);
 end;
 
 method TRegistry.WriteFloat(Name: DelphiString; Value: Double);
 begin
-  PutData(Name, @Value, sizeOf(Double), TRegDataType.Binary);
+  PutData(Name, @Value, sizeOf(Double), TRegDataType.rdBinary);
 end;
 
 method TRegistry.WriteInteger(Name: DelphiString; Value: Integer);
 begin
-  PutData(Name, @Value, sizeOf(Integer), TRegDataType.Integer);
+  PutData(Name, @Value, sizeOf(Integer), TRegDataType.rdInteger);
 end;
 
 method TRegistry.WriteString(Name, Value: DelphiString);
 begin
   var lChars := Value.ToString.ToCharArray(true);
-  PutData(Name, @lChars[0], lChars.Length * sizeOf(Char), TRegDataType.String);
+  PutData(Name, @lChars[0], lChars.Length * sizeOf(Char), TRegDataType.rdString);
 end;
 
 method TRegistry.WriteExpandString(Name, Value: DelphiString);
