@@ -44,20 +44,20 @@ implementation
 
 method THighDPI.GetFuncAddress(aName: String; aLib: rtl.HMODULE): ^Void;
 begin
-  var lBytes := aName.ToAnsiChars(true);
+  var lBytes := PlatformString(aName).ToAnsiChars(true);
   result := ^Void(rtl.GetProcAddress(aLib, @lBytes[0]));
 end;
 
 method THighDPI.SetupRequiredFunctions;
 begin
-  var lUserLibName := 'User32.dll'.ToCharArray(true);
+  var lUserLibName := PlatformString('User32.dll').ToCharArray(true);
   var lUserLib := rtl.LoadLibrary(@lUserLibName[0]);
 
   if TOSVersion.Check(6, 0) then
     fSetProcessDPIAware := TSetProcessDPIAwareFunc(GetFuncAddress('SetProcessDpiAware', lUserLib));
 
   if TOSVersion.Check(6, 3) then begin
-    var lShLibName := 'Shcore.dll'.ToCharArray(true);
+    var lShLibName := PlatformString('Shcore.dll').ToCharArray(true);
     var lShLib := rtl.LoadLibrary(@lShLibName[0]);
     fSetProcessDPIAwareness := TSetProcessDPIAwarenessFunc(GetFuncAddress('SetProcessDpiAwareness', lShLib));
     fGetDPIForMonitor := TGetDPIForMonitorFunc(GetFuncAddress('GetDpiForMonitor', lShLib));

@@ -12,12 +12,12 @@ type
   private
     fData: RemObjects.Elements.RTL.StringBuilder;
     {$IFDEF COOPER or TOFFEE}
-    method GetChars(aIndex : Integer): Char; 
+    method GetChars(aIndex : Integer): Char;
     begin
       result := fData[aIndex];
     end;
-    
-    method SetChars(aIndex : Integer; Value: Char); 
+
+    method SetChars(aIndex : Integer; Value: Char);
     begin
       fData[aIndex] := Value;
     end;
@@ -26,11 +26,11 @@ type
     begin
       result := fData[aIndex];
     end;
-    
+
     method SetChars(aIndex : Integer; Value: Char); inline;
     begin
       fData[aIndex] := Value;
-    end;    
+    end;
 {$ENDIF}
   public
     constructor;
@@ -104,7 +104,7 @@ type
     method Replace(const OldValue: DelphiString; const NewValue: DelphiString; StartIndex: Integer; Count: Integer): TStringBuilder;
 
     [ToString]
-    method ToString: String; override;
+    method ToString: RTL2String; override;
     method ToString(StartIndex: Integer; StrLength: Integer): DelphiString;
 
     property Capacity: Integer read fData.Length write fData.Length;

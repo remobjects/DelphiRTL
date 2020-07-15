@@ -36,6 +36,7 @@ type
   public
     constructor;
     constructor(aLength: Integer);
+    constructor(Value: String; AsUTF16Bytes: Boolean := false);
     constructor(Value: PlatformString; AsUTF16Bytes: Boolean := false);
     constructor(C: AnsiChar; Count: Integer);
     constructor(Value: array of Char; PreserveChars: Boolean = true);
@@ -180,6 +181,11 @@ begin
   end
   else
     fData := StringToUTF8(Value);
+end;
+
+constructor AnsiString(Value: String; AsUTF16Bytes: Boolean := false);
+begin
+  constructor(Value as PlatformString, AsUTF16Bytes);
 end;
 
 method AnsiString.SetLength(aLength: Integer);

@@ -299,7 +299,7 @@ begin
   try
     aList.Clear;
     for each lItem in fData do begin
-      aList.Add('[' + lItem.Key + ']');
+      aList.Add('[' + (lItem.Key as not nullable as PlatformString) + ']');
       aList.AddStrings(lItem.Value);
     end;
   finally

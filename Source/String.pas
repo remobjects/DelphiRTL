@@ -20,9 +20,11 @@ type
   //TArray<T> = array of T;
   TStringSplitOptions = public (None, ExcludeEmpty);
 
-  [assembly:DefaultStringType("Elements.RTL.Delphi", typeOf(RemObjects.Elements.RTL.Delphi.WideString))]
+  [assembly:DefaultStringType("RemObjects.Elements.RTL.Delphi", typeOf(RemObjects.Elements.RTL.Delphi.WideString))]
 
+  String = public DelphiString;
   WideString = public DelphiString;
+  RTL2String = RemObjects.Elements.RTL.String;
   PlatformString = public {$IF ECHOES}System.String{$ELSEIF TOFFEE}Foundation.NSString{$ELSEIF COOPER}java.lang.String{$ELSEIF ISLAND}RemObjects.Elements.System.String{$ENDIF};
 
   DelphiString = public partial record
@@ -67,10 +69,15 @@ type
     class method Create(C: Char; Count: Integer): DelphiString; static;
     class method Create(const Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString; static;
     class method Create(const Value: array of Char): DelphiString; static;
+
     class operator Implicit(Value: Char): DelphiString;
     class operator Implicit(Value: PlatformString): DelphiString;
-    class operator Implicit(Value: DelphiString): String;
+    //class operator Implicit(Value: RemObjects.Elements.RTL.String): DelphiString;
     class operator Implicit(Value: AnsiString): DelphiString;
+    class operator Implicit(Value: DelphiString): PlatformString;
+    //class operator Implicit(Value: DelphiString): RemObjects.Elements.RTL.String;
+    class operator Implicit(Value: DelphiString): AnsiString;
+
     class operator &Add(Value1: DelphiString; Value2: Char): DelphiString;
     class operator &Add(Value1: Char; Value2: DelphiString): DelphiString;
     class operator &Add(Value1: DelphiString; Value2: DelphiString): not nullable DelphiString;
@@ -518,10 +525,10 @@ begin
   result := new DelphiString(Value);
 end;
 
-class operator DelphiString.Implicit(Value: DelphiString): String;
-begin
-  result := Value.fData;
-end;
+//class operator DelphiString.Implicit(Value: RemObjects.Elements.RTL.String): DelphiString;
+//begin
+  //result := new DelphiString(Value);
+//end;
 
 class operator DelphiString.Implicit(Value: AnsiString): DelphiString;
 begin
@@ -541,6 +548,21 @@ begin
   {$ELSE}
   result := Value.ToString();
   {$ENDIF}
+end;
+
+class operator DelphiString.Implicit(Value: DelphiString): PlatformString;
+begin
+  result := Value.fData;
+end;
+
+//class operator DelphiString.Implicit(Value: DelphiString): RemObjects.Elements.RTL.String;
+//begin
+  //result := Value.fData;
+//end;
+
+class operator DelphiString.Implicit(Value: DelphiString): AnsiString;
+begin
+  result := Value.fData;
 end;
 
 constructor DelphiString(Value: PlatformString);
@@ -897,7 +919,7 @@ begin
   result := sb.toString;
   {$ELSEIF ECHOES OR ISLAND}
   var lArray := StringArrayToPlatformArray(Values);
-  result := {$IF ECHOES}System.String.Join(Separator, lArray, StartIndex, Count){$ELSE}String.Join(Separator, lArray, StartIndex, Count){$ENDIF};
+  result := PlatformString.Join(Separator, lArray, StartIndex, Count);
   {$ELSEIF TOFFEE}
   var lArray := new NSMutableArray withCapacity(Values.length);
   for i: Integer := StartIndex to (StartIndex + Count) - 1 do
@@ -1452,7 +1474,7 @@ begin
   {$ELSEIF ECHOES}
   result := new System.String([]);
   {$ELSEIF ISLAND}
-  result := String.FromPChar(nil, 0);
+  result := PlatformString.FromPChar(nil, 0);
   {$ELSEIF TOFFEE}
   result := Foundation.NSString.string;
   {$ENDIF}
@@ -1468,7 +1490,7 @@ begin
   {$ELSEIF ECHOES}
   result := System.String.Copy(Value);
   {$ELSEIF ISLAND}
-  result := String.FromPChar(Value.FirstChar, Value.Length);
+  result := PlatformString.FromPChar(Value.FirstChar, Value.Length);
   {$ELSEIF TOFFEE}
   result := Foundation.NSString.stringWithString(Value);
   {$ENDIF}
@@ -1484,7 +1506,7 @@ begin
   {$ELSEIF ECHOES}
   result := new System.String(Char, Count);
   {$ELSEIF ISLAND}
-  result := String.FromRepeatedChar(Char, Count);
+  result := PlatformString.FromRepeatedChar(Char, Count);
   {$ELSEIF TOFFEE}
   result := Foundation.NSString("").stringByPaddingToLength(Count) withString(Foundation.NSString.stringWithFormat("%c", Char)) startingAtIndex(0);
   {$ENDIF}
@@ -1497,7 +1519,7 @@ begin
   {$ELSEIF ECHOES}
   result := new System.String(Value, StartIndex, ALength);
   {$ELSEIF ISLAND}
-  result := String.FromPChar(@Value[StartIndex], aLength);
+  result := PlatformString.FromPChar(@Value[StartIndex], aLength);
   {$ELSEIF TOFFEE}
   result := new Foundation.NSString withCharacters(@Value[StartIndex]) length(aLength);
   {$ENDIF}

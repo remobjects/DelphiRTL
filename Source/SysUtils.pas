@@ -849,7 +849,7 @@ end;
 
 class method TOSVersion.ToString: DelphiString;
 begin
-  result := String.Format('%s (Version %d.%d.%d)', [fName, fMajor, fMinor, fServicePackMajor]);
+  result := RTL2String.Format('%s (Version %d.%d.%d)', [fName, fMajor, fMinor, fServicePackMajor]);
 end;
 
 

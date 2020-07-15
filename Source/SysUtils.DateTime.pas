@@ -405,7 +405,7 @@ begin
   result := TryEncodeDateTime(lCal.get(java.util.Calendar.YEAR), lCal.get(java.util.Calendar.MONTH), lCal.get(java.util.Calendar.DAY_OF_MONTH),
     lCal.get(java.util.Calendar.HOUR), lCal.get(java.util.Calendar.MINUTE), lCal.get(java.util.Calendar.SECOND), lCal.get(java.util.Calendar.MILLISECOND), out aValue);
   {$ELSEIF ECHOES}
-  var lFormats := new String[1];
+  var lFormats := new PlatformString[1];
   var lDateTime: System.DateTime;
   lFormats[0] := aFormatSettings.ShortDateFormat;
   result := System.DateTime.TryParseExact(S, lFormats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out lDateTime);
@@ -454,7 +454,7 @@ function TryStrToTime(const S: DelphiString; out aValue: TDateTime; const aForma
 begin
   var lAMPM := (S.IndexOf(aFormatSettings.TimeAMString) >= 0) or (S.IndexOf('AM') >= 0) or
     (S.IndexOf(aFormatSettings.TimePMString) >= 0) or (S.IndexOf('PM') >= 0);
-  var lFormats := new String[2];
+  var lFormats := new PlatformString[2];
   {$IF COOPER OR TOFFEE}
   if lAMPM then begin
     lFormats[0] := "hh" + aFormatSettings.TimeSeparator + "mm" + aFormatSettings.TimeSeparator + "ss a";
