@@ -10,6 +10,7 @@
     <AssemblyName>delphi.vcl</AssemblyName>
     <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
     <CrossPlatform>True</CrossPlatform>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

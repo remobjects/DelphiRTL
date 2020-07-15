@@ -7,6 +7,7 @@
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>Delphi</AssemblyName>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <CrossPlatform>True</CrossPlatform>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>

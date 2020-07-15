@@ -11,6 +11,7 @@
     <DefaultUses>Foundation</DefaultUses>
     <MangleTypeNames>True</MangleTypeNames>
     <DeploymentTargetVersion>10.10</DeploymentTargetVersion>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <CrossPlatform>True</CrossPlatform>
     <AllowLegacyEnums>True</AllowLegacyEnums>

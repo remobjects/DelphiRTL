@@ -9,6 +9,7 @@
     <AllowLegacyEnums>True</AllowLegacyEnums>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <CrossPlatform>True</CrossPlatform>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

@@ -11,6 +11,7 @@
     <CrossPlatform>True</CrossPlatform>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <GenerateDebugInfo>True</GenerateDebugInfo>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <KnownConditionalDefines>DEBUG;TRACE;WEBASSEMBLY</KnownConditionalDefines>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

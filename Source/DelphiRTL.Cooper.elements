@@ -8,6 +8,7 @@
     <AssemblyName>delphi</AssemblyName>
     <RootNamespace>RemObjects.Elements.RTL.Delphi</RootNamespace>
     <CrossPlatform>True</CrossPlatform>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <AllowLegacyEnums>True</AllowLegacyEnums>
   </PropertyGroup>

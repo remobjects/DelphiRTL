@@ -12,6 +12,7 @@
     <CrossPlatform>True</CrossPlatform>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <DefineConstants>ECHOESWPF</DefineConstants>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <AllowUnsafeCode>True</AllowUnsafeCode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

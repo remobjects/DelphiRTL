@@ -10,6 +10,7 @@
         <CrossPlatform>True</CrossPlatform>
     <GeneratePDB>True</GeneratePDB>
     <GenerateMDB>True</GenerateMDB>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <GenerateDebugInfo>True</GenerateDebugInfo>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <AllowLegacyEnums>True</AllowLegacyEnums>

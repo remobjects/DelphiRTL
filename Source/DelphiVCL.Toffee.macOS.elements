@@ -11,6 +11,7 @@
     <CreateHeaderFile>True</CreateHeaderFile>
     <DefaultUses>Foundation</DefaultUses>
     <MangleTypeNames>True</MangleTypeNames>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <DeploymentTargetVersion>10.10</DeploymentTargetVersion>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <CrossPlatform>True</CrossPlatform>
