@@ -4,6 +4,9 @@
 
 interface
 
+uses
+  RemObjects.Elements.RTL.Delphi;
+
 type
   TCustomForm = public partial class(TNativeControl)
   protected
