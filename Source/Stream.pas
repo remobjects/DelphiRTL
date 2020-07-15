@@ -167,9 +167,11 @@ type
   private
     fFileName: DelphiString;
   public
+    constructor(aHandle: THandle); empty;
     constructor(const aFileName: DelphiString; Mode: Word);
     constructor(const aFileName: DelphiString; Mode: Word; Rights: Cardinal);
     finalizer;
+    class method Create(aHandle: THandle): TFileStream; static;
     class method Create(const aFileName: DelphiString; Mode: Word): TFileStream; static;
     class method Create(const aFileName: DelphiString; Mode: Word; Rights: Cardinal): TFileStream; static;
 
@@ -1170,6 +1172,11 @@ end;
 class method TFileStream.Create(const aFileName: DelphiString; Mode: Word; Rights: Cardinal): TFileStream;
 begin
   result := new TFileStream(aFileName, Mode, Rights);
+end;
+
+class method TFileStream.Create(aHandle: THandle): TFileStream;
+begin
+  result := new TFileStream(aHandle);
 end;
 
 finalizer TFileStream;
