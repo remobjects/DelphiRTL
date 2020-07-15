@@ -136,7 +136,7 @@ implementation
 
 procedure PlatformShowMessage(aMessage: String);
 begin
-  WebAssemblyCalls.ShowMessage(aMessage.FirstChar, aMessage.Length);
+  WebAssemblyCalls.ShowMessage(PlatformString(aMessage).FirstChar, aMessage.Length);
 end;
 
 method TButton.CreateHandle;

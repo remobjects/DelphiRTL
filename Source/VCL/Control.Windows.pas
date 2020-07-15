@@ -129,7 +129,7 @@ implementation
 
 procedure PlatformShowMessage(aMessage: String);
 begin
-  var lMessage := aMessage.ToCharArray(true);
+  var lMessage := PlatformString(aMessage).ToCharArray(true);
   rtl.MessageBoxW(nil, @lMessage[0], nil, 0);
 end;
 
@@ -307,7 +307,7 @@ begin
     var lMaxLength := rtl.GetWindowTextLength(fHandle);
     var lBuffer := new Char[lMaxLength + 1];
     rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength + 1);
-    result := String.FromPChar(@lBuffer[0]);
+    result := PlatformString.FromPChar(@lBuffer[0]);
   end
   else
     result := fCaption;
@@ -316,7 +316,7 @@ end;
 method TControl.PlatformSetCaption(aValue: String);
 begin
   if HandleAllocated then begin
-    var lText := aValue.ToCharArray(true);
+    var lText := PlatformString(aValue).ToCharArray(true);
     rtl.SetWindowText(fHandle, @lText[0]);
   end;
 end;
@@ -446,7 +446,7 @@ begin
   aParams.Width := Width;
   aParams.Height := Height;
   var lCaption := 'Caption';
-  aParams.Caption := lCaption.ToCharArray(true);
+  aParams.Caption := PlatformString(lCaption).ToCharArray(true);
 end;
 
 method TNativeControl.CreateWindowHandle(aParams: TCreateParams);

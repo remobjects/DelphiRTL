@@ -67,7 +67,7 @@ begin
   lFontInfo.lfClipPrecision := rtl.CLIP_DEFAULT_PRECIS;
   lFontInfo.lfQuality := aQuality;
   lFontInfo.lfPitchAndFamily := aPitch;
-  var lName := aFontName.ToCharArray(true);
+  var lName := PlatformString(aFontName).ToCharArray(true);
   memcpy(@lFontInfo.lfFaceName[0], @lName[0], length(lName) * 2);
 
   result := rtl.CreateFontIndirect(@lFontInfo);

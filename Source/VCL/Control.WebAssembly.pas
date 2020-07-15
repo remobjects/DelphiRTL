@@ -103,7 +103,7 @@ end;
 method TControl.PlatformFontChanged;
 begin
   fHandle.style.fontFamily := fFont.Name;
-  fHandle.style.fontSize := fFont.Size + 'px';
+  fHandle.style.fontSize := fFont.Size.ToString + 'px';
   if (TFontStyle.Italic in fFont.Style) then fHandle.style.fontStyle := 'italic' else fHandle.style.fontStyle := 'normal';
   if (TFontStyle.Bold in fFont.Style) then fHandle.style.fontWeight := 'bold' else fHandle.style.fontWeight := 'normal';
   if (TFontStyle.StrikeOut in fFont.Style) or (TFontStyle.Underline in fFont.Style) then begin

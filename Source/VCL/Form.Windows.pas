@@ -70,7 +70,7 @@ begin
   var lString: RemObjects.Elements.System.String := 'WindowClass1';
   var lArray := lString.ToCharArray(true);
   wc.lpszClassName := @lArray[0];
-  var lTitleArray := 'Test'.ToCharArray(true);
+  var lTitleArray := PlatformString('Test').ToCharArray(true);
 
   // register the window class
   rtl.RegisterClassEx(@wc);

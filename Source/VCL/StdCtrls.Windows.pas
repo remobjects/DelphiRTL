@@ -123,7 +123,7 @@ method TEdit.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
   aParams.ExStyle := rtl.WS_EX_CLIENTEDGE;
-  aParams.WidgetClassName := 'EDIT'.ToCharArray(true);
+  aParams.WidgetClassName := PlatformString('EDIT').ToCharArray(true);
   CreateClass(var aParams);
 end;
 
@@ -152,19 +152,19 @@ begin
   var lMaxLength := rtl.GetWindowTextLength(fHandle);
   var lBuffer := new Char[lMaxLength + 1];
   rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength + 1);
-  result := String.FromPChar(@lBuffer[0]);
+  result := PlatformString.FromPChar(@lBuffer[0]);
 end;
 
 method TEdit.PlatformSetText(aValue: String);
 begin
-  var lBuffer := aValue.ToCharArray(true);
+  var lBuffer := PlatformString(aValue).ToCharArray(true);
   rtl.SetWindowText(fHandle, @lBuffer[0]);
 end;
 
 method TCheckBox.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
+  aParams.WidgetClassName := PlatformString('BUTTON').ToCharArray(true);
   CreateClass(var aParams);
   aParams.Style := aParams.Style or rtl.BS_3STATE;
 end;
@@ -187,7 +187,7 @@ end;
 method TRadioButton.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
+  aParams.WidgetClassName := PlatformString('BUTTON').ToCharArray(true);
   CreateClass(var aParams);
   aParams.Style := aParams.Style or rtl.BS_RADIOBUTTON;
 end;
@@ -212,7 +212,7 @@ end;
 method TButton.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
+  aParams.WidgetClassName := PlatformString('BUTTON').ToCharArray(true);
   CreateClass(var aParams);
 end;
 
@@ -230,7 +230,7 @@ end;
 method TLabel.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WidgetClassName := 'STATIC'.ToCharArray(true);
+  aParams.WidgetClassName := PlatformString('STATIC').ToCharArray(true);
   aParams.DefaultWndProc := true;
   CreateClass(var aParams);
 end;
@@ -244,14 +244,14 @@ end;
 method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
   var lString := String(S);
-  var lArray := lString.ToCharArray(true);
+  var lArray := PlatformString(lString).ToCharArray(true);
   rtl.SendMessage(ListControl.Handle, rtl.LB_ADDSTRING, 0, rtl.LPARAM(@lArray[0]));
 end;
 
 method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
   var lString := String(S);
-  var lArray := lString.ToCharArray(true);
+  var lArray := PlatformString(lString).ToCharArray(true);
   rtl.SendMessage(ListControl.Handle, rtl.LB_INSERTSTRING, aIndex, rtl.LPARAM(@lArray[0]));
 end;
 
@@ -268,7 +268,7 @@ end;
 method TListBox.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WidgetClassName := 'LISTBOX'.ToCharArray(true);
+  aParams.WidgetClassName := PlatformString('LISTBOX').ToCharArray(true);
   aParams.Style := aParams.Style or rtl.ES_AUTOVSCROLL;
   if MultiSelect then aParams.Style := aParams.Style or rtl.LBS_EXTENDEDSEL;
   aParams.ExStyle := rtl.WS_EX_CLIENTEDGE;
@@ -330,14 +330,14 @@ end;
 method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
   var lString := String(S);
-  var lArray := lString.ToCharArray(true);
+  var lArray := PlatformString(lString).ToCharArray(true);
   rtl.SendMessage(ListControl.Handle, rtl.CB_ADDSTRING, 0, rtl.LPARAM(@lArray[0]));
 end;
 
 method TComboBoxItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
   var lString := String(S);
-  var lArray := lString.ToCharArray(true);
+  var lArray := PlatformString(lString).ToCharArray(true);
   rtl.SendMessage(ListControl.Handle, rtl.CB_INSERTSTRING, aIndex, rtl.LPARAM(@lArray[0]));
 end;
 
@@ -354,7 +354,7 @@ end;
 method TComboBox.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WidgetClassName := 'COMBOBOX'.ToCharArray(true);
+  aParams.WidgetClassName := PlatformString('COMBOBOX').ToCharArray(true);
   aParams.Style := aParams.Style or rtl.CBS_DROPDOWN or rtl.CBS_HASSTRINGS or rtl.CBS_AUTOHSCROLL;
   aParams.ExStyle := rtl.WS_EX_CLIENTEDGE;
   CreateClass(var aParams);
@@ -435,12 +435,12 @@ begin
   var lMaxLength := rtl.GetWindowTextLength(fHandle);
   var lBuffer := new Char[lMaxLength + 1];
   rtl.GetWindowText(fHandle, @lBuffer[0], lMaxLength + 1);
-  result := String.FromPChar(@lBuffer[0]);
+  result := PlatformString.FromPChar(@lBuffer[0]);
 end;
 
 method TComboBox.PlatformSetText(aValue: String);
 begin
-  var lBuffer := aValue.ToCharArray(true);
+  var lBuffer := PlatformString(aValue).ToCharArray(true);
   rtl.SetWindowText(fHandle, @lBuffer[0]);
 end;
 
@@ -497,7 +497,7 @@ end;
 method TGroupBox.CreateParams(var aParams: TCreateParams);
 begin
   inherited(var aParams);
-  aParams.WidgetClassName := 'BUTTON'.ToCharArray(true);
+  aParams.WidgetClassName := PlatformString('BUTTON').ToCharArray(true);
   aParams.Style := aParams.Style or rtl.BS_GROUPBOX or rtl.WS_GROUP or rtl.WS_CHILD;
   CreateClass(var aParams);
 end;

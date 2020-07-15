@@ -919,9 +919,9 @@ begin
   var lModule: rtl.HMODULE := 0;
   var lResName := ResName.ToCharArray;
   var lResource := rtl.FindResource(lModule, @lResName[0], rtl.LPCWSTR(rtl.RT_RCDATA));
-  if lResource = nil then raise new Exception('Can not locale resource: ' + lResName);
+  if lResource = nil then raise new Exception('Can not locale resource: ' + ResName);
   var lHandle := rtl.LoadResource(lModule, lResource);
-  if lHandle = nil then raise new Exception('Can not load resource: ' + lResName);
+  if lHandle = nil then raise new Exception('Can not load resource: ' + ResName);
   var lPointer := rtl.LockResource(lHandle);
   var lSize := rtl.SizeofResource(lModule, lResource);
   Size := lSize;
