@@ -11,6 +11,7 @@ function ArcCos(X: Double): Double; inline;
 function ArcTan2(Y, X: Double): Double; inline;
 function ArcSin(X: Double): Double; inline;
 function Floor(X: Double): Integer; inline;
+function Ceil(X: Double): Integer; inline;
 function Log10(X: Double): Double; inline;
 function Max(A, B: Integer): Integer; inline;
 function Max(A, B: Int64): Int64; inline;
@@ -40,6 +41,11 @@ end;
 function Floor(X: Double): Integer;
 begin
   result := Integer(Math.Floor(X));
+end;
+
+function Ceil(X: Double): Integer;
+begin
+  result := Integer(Math.Ceiling(X));
 end;
 
 function Log10(X: Double): Double;
