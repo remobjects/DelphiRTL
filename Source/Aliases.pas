@@ -12,6 +12,10 @@ type
 
   TGUID = public RemObjects.Elements.RTL.Guid;
 
+  {$IF NOT COOPER}
+  PChar = public ^Char;
+  PAnsiChar = public ^AnsiChar;
+  {$ENDIF}
   PInterfaceEntry = public Pointer;
   PInterfaceTable = public Pointer;
   HResult = public Int64;

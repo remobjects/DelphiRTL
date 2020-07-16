@@ -35,5 +35,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Classes.Collection.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)System.UITypes.pas" />
     <Compile Include="$(MSBuildThisFileDirectory)Array.pas" />
+    <Compile Include="$(MSBuildThisFileDirectory)PChars.pas" />
   </ItemGroup>
 </Project>
