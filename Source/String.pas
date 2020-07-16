@@ -74,6 +74,9 @@ type
     class operator Implicit(Value: PlatformString): DelphiString;
     //class operator Implicit(Value: RemObjects.Elements.RTL.String): DelphiString;
     class operator Implicit(Value: AnsiString): DelphiString;
+    {$IF NOT COOPER}
+    class operator Implicit(Value: PChar): DelphiString; unsafe;
+    {$ENDIF}
     class operator Implicit(Value: DelphiString): PlatformString;
     //class operator Implicit(Value: DelphiString): RemObjects.Elements.RTL.String;
     class operator Implicit(Value: DelphiString): AnsiString;
@@ -539,6 +542,27 @@ begin
 
   result := DelphiString.Create(lArray);
 end;
+
+{$IF NOT COOPER}
+class operator DelphiString.Implicit(Value: PChar): DelphiString;
+begin
+  if assigned(Value) then begin
+    {$IF ECHOES}
+    var len := StrLen(Value);
+    var lBytes := new Byte[len*2];
+    var lSource := ^Byte(Value);
+    for i: Integer := 0 to (len-1)*2 do
+      lBytes[i] := (lSource+i)^;
+    result := Encoding.UTF16LE.GetString(lBytes);
+    {$ELSEIF ISLAND}
+    result := PlatformString.FromPChar(Value);
+    {$ELSEIF TOFFEE}
+    var len := StrLen(Value);
+    result := Foundation.NSString.stringWithCharacters(value) length(len);
+    {$ENDIF}
+  end;
+end;
+{$ENDIF}
 
 operator DelphiString.Implicit(Value: Char): DelphiString;
 begin
