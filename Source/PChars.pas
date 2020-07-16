@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi;
 
+{$IF NOT COOPER}
+
 interface
 
 method StrLen(aString: PChar): Integer; public;
@@ -13,6 +15,8 @@ begin
     inc(aString);
   end;
 end;
+
+{$ENDIF}
 
 
 end.

@@ -115,12 +115,14 @@ type
     property UseLocale: Boolean read GetUseLocale write SetUseLocale;
     property Options: TStringsOptions read fOptions write fOptions;
 
-    [&Sequence]
+    {$IF NOT COOPER}
+    [&Sequence] // ASPE Duplicate iterator implementation
     method GetSequence: sequence of String; iterator;
     begin
       for i: Integer := 0 to Count-1 do
         yield self[i];
     end;
+    {$ENDIF}
   end;
 
   TStringList = public class(TStrings, sequence of String)
@@ -177,13 +179,6 @@ type
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
     property OnChanging: TNotifyEvent read fOnChanging write fOnChanging;
     property OwnsObjects: Boolean read fOwnsObject write fOwnsObject;
-
-    [&Sequence]
-    method GetSequence: sequence of String; iterator;
-    begin
-      for i: Integer := 0 to Count-1 do
-        yield self[i];
-    end;
   end;
 
 implementation
