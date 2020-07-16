@@ -13,7 +13,7 @@ type
   TStringListSortCompare = public block(x: TInternalItem; y: TInternalItem): Integer;
   TNotifyEvent = public block(Sender: TObject);
 
-  TStrings = public abstract class(TPersistent, sequence of String)
+  TStrings = public abstract class(TPersistent{$IF NOT TOFFEE}, sequence of String{$ENDIF})
   private
     fUpdateCount: Integer;
     fOptions: TStringsOptions;
@@ -115,7 +115,7 @@ type
     property UseLocale: Boolean read GetUseLocale write SetUseLocale;
     property Options: TStringsOptions read fOptions write fOptions;
 
-    {$IF NOT COOPER}
+    {$IF NOT COOPER AND NOT TOFFEE}
     [&Sequence] // ASPE Duplicate iterator implementation
     method GetSequence: sequence of String; iterator;
     begin
@@ -125,7 +125,7 @@ type
     {$ENDIF}
   end;
 
-  TStringList = public class(TStrings, sequence of String)
+  TStringList = public class(TStrings)
   private
     fList: List<TInternalItem>;
     fDuplicates: TDuplicates;
