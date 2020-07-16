@@ -289,6 +289,40 @@ type
     property Length: Integer read GetLength;
   end;
 
+  {$IF ECHOES}
+  DelphiString = public partial record(/*System.Collections.ICollection, */System.Collections.Generic.ICollection<Char>)
+  private
+    //method CopyTo(&array: &Array; &index: Integer);
+    //property Count: Integer read Length;
+    //property SyncRoot: Object read;
+    //property IsSynchronized: Boolean read;
+
+    method &Add(item: Char); empty;
+    method Clear; empty;
+    method &Remove(item: Char): Boolean; empty;
+    property Count: Integer read Length;
+    property IsReadOnly: Boolean read true;
+
+    method Contains(item: Char): Boolean;
+    begin
+      result := IndexOf(item) > -1;
+    end;
+
+    method CopyTo(&array: array of Char; arrayIndex: Integer);
+    begin
+      for i: Integer := 1 to Length do
+        &array[arrayIndex+i] := self[i];
+    end;
+
+    [&Sequence]
+    method GetSequence: sequence of Char; iterator;
+    begin
+      for i: Integer := 1 to Length do
+        yield self[i];
+    end;
+  end;
+  {$ENDIF}
+
 implementation
 
 constructor DelphiString;

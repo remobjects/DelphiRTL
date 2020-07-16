@@ -13,7 +13,7 @@ type
   TStringListSortCompare = public block(x: TInternalItem; y: TInternalItem): Integer;
   TNotifyEvent = public block(Sender: TObject);
 
-  TStrings = public abstract class(TPersistent)
+  TStrings = public abstract class(TPersistent, sequence of String)
   private
     fUpdateCount: Integer;
     fOptions: TStringsOptions;
@@ -114,9 +114,16 @@ type
     property TrailingLineBreak: Boolean read GetTrailingLineBreak write SetTrailingLineBreak;
     property UseLocale: Boolean read GetUseLocale write SetUseLocale;
     property Options: TStringsOptions read fOptions write fOptions;
+
+    [&Sequence]
+    method GetSequence: sequence of String; iterator;
+    begin
+      for i: Integer := 0 to Count-1 do
+        yield self[i];
+    end;
   end;
 
-  TStringList = public class(TStrings)
+  TStringList = public class(TStrings, sequence of String)
   private
     fList: List<TInternalItem>;
     fDuplicates: TDuplicates;
@@ -170,6 +177,13 @@ type
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
     property OnChanging: TNotifyEvent read fOnChanging write fOnChanging;
     property OwnsObjects: Boolean read fOwnsObject write fOwnsObject;
+
+    [&Sequence]
+    method GetSequence: sequence of String; iterator;
+    begin
+      for i: Integer := 0 to Count-1 do
+        yield self[i];
+    end;
   end;
 
 implementation

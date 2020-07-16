@@ -15,7 +15,7 @@ uses
 type
   TContentType = public (UTF8, UTF16, Unknown);
 
-  AnsiString = public record
+  AnsiString = public partial record
   private
     fHashCode: Integer := 0;
     fData: array of Byte;
@@ -103,7 +103,7 @@ type
     method &Remove(StartIndex: Integer): AnsiString;
     method &Remove(StartIndex: Integer; aCount: Integer): AnsiString;
     method SetLength(aLength: Integer);
-    method CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; Count: Integer);
+    method CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; aCount: Integer);
     method CopyFrom(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer);
     method ToUpper: AnsiString;
     method ToLower: AnsiString;
@@ -127,6 +127,40 @@ type
     property Character[aIndex: Integer]: AnsiChar read GetOffsetChar write SetOffsetChar; default;
     property Data: array of Byte read GetData;
   end;
+
+  {$IF ECHOES}
+  AnsiString = public partial record(/*System.Collections.ICollection, */System.Collections.Generic.ICollection<AnsiChar>)
+  private
+    //method CopyTo(&array: &Array; &index: Integer);
+    //property Count: Integer read Length;
+    //property SyncRoot: Object read;
+    //property IsSynchronized: Boolean read;
+
+    method &Add(item: AnsiChar); empty;
+    method Clear; empty;
+    method &Remove(item: AnsiChar): Boolean; empty;
+    property Count: Integer read Length;
+    property IsReadOnly: Boolean read true;
+
+    method Contains(item: AnsiChar): Boolean;
+    begin
+      result := IndexOf(item) > -1;
+    end;
+
+    method CopyTo(&array: array of AnsiChar; arrayIndex: Integer);
+    begin
+      for i: Integer := 1 to Length do
+        &array[arrayIndex+i] := self[i];
+    end;
+
+    [&Sequence]
+    method GetSequence: sequence of AnsiChar; iterator;
+    begin
+      for i: Integer := 1 to Length do
+        yield self[i];
+    end;
+  end;
+  {$ENDIF}
 
   // Original functions
   procedure SetLength(var aString: AnsiString; aLength: Integer);
@@ -646,9 +680,9 @@ begin
     fData[i] := Byte(aSource.Chars[aSourceIndex + i]);
 end;
 
-method AnsiString.CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; Count: Integer);
+method AnsiString.CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; aCount: Integer);
 begin
-  for i: Integer := 0 to Count - 1 do
+  for i: Integer := 0 to aCount - 1 do
     Destination[DestinationIndex + i] := fData[SourceIndex + i];
 end;
 
