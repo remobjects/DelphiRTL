@@ -504,7 +504,7 @@ begin
   fData.Replace(StartIndex, Count, lTemp);
 end;
 
-method TStringBuilder.ToString: String;
+method TStringBuilder.ToString: RTL2String;
 begin
   result := fData.Substring(0);
 end;

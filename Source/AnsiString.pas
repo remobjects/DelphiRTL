@@ -38,12 +38,12 @@ type
     constructor(aLength: Integer);
     constructor(Value: String; AsUTF16Bytes: Boolean := false);
     constructor(Value: PlatformString; AsUTF16Bytes: Boolean := false);
-    constructor(C: AnsiChar; Count: Integer);
+    constructor(C: AnsiChar; aCount: Integer);
     constructor(Value: array of Char; PreserveChars: Boolean = true);
     constructor(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true);
     constructor(Value: array of Byte);
     constructor(Value: array of Byte; StartIndex: Integer; aLength: Integer);
-    class method Create(C: AnsiChar; Count: Integer): AnsiString; static;
+    class method Create(C: AnsiChar; aCount: Integer): AnsiString; static;
     class method Create(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true): AnsiString; static;
     class method Create(Value: array of Char; PreserveChars: Boolean = true): AnsiString; static;
     class operator Implicit(Value: Char): AnsiString;
@@ -131,10 +131,6 @@ type
   {$IF ECHOES}
   AnsiString = public partial record(/*System.Collections.ICollection, */System.Collections.Generic.ICollection<AnsiChar>)
   private
-    //method CopyTo(&array: &Array; &index: Integer);
-    //property Count: Integer read Length;
-    //property SyncRoot: Object read;
-    //property IsSynchronized: Boolean read;
 
     method &Add(item: AnsiChar); empty;
     method Clear; empty;
@@ -235,9 +231,9 @@ begin
      fData := new Byte[aLength];
 end;
 
-class method AnsiString.Create(C: AnsiChar; Count: Integer): AnsiString;
+class method AnsiString.Create(C: AnsiChar; aCount: Integer): AnsiString;
 begin
-  result := new AnsiString(C, Count);
+  result := new AnsiString(C, aCount);
 end;
 
 class method AnsiString.Create(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true): AnsiString;
@@ -432,10 +428,10 @@ begin
     fData := CastCharArrayToByteArray(Value, StartIndex, aLength);
 end;
 
-constructor AnsiString(C: AnsiChar; Count: Integer);
+constructor AnsiString(C: AnsiChar; aCount: Integer);
 begin
-  fData := new Byte[Count];
-  for i: Integer := 0 to Count - 1 do
+  fData := new Byte[aCount];
+  for i: Integer := 0 to aCount - 1 do
     fData[i] := Byte(C);
 end;
 

@@ -48,9 +48,9 @@ type
     end;
 
     method GetLength: Integer;
-    class method CreateWithChars(Char: Char; Count: Integer): DelphiString; static;
+    class method CreateWithChars(Char: Char; aCount: Integer): DelphiString; static;
     class method CreateFromArray(Value: array of Char; StartIndex: Integer; aLength: Integer): DelphiString; static;
-    class method PlatformArrayToStringArray(Value: array of PlatformString; Count: Integer := -1): array of DelphiString; static;
+    class method PlatformArrayToStringArray(Value: array of PlatformString; aCount: Integer := -1): array of DelphiString; static;
     class method StringArrayToPlatformArray(Value: array of DelphiString): array of PlatformString; static;
     {$IF COOPER}
     class method ArrayToSplitRegex(Value: array of Char): PlatformString; static;
@@ -61,12 +61,12 @@ type
     method InternalIndexOfAny(Value: array of DelphiString; StartIndex: Integer; var CurrentLength: Integer): Integer;
     {$ENDIF}
     {$IF TOFFEE}
-    method NSArrayToStringArray(Value: NSArray; Count: Integer): array of DelphiString;
+    method NSArrayToStringArray(Value: NSArray; aCount: Integer): array of DelphiString;
     {$ENDIF}
   public
     constructor;
     constructor(Value: PlatformString);
-    class method Create(C: Char; Count: Integer): DelphiString; static;
+    class method Create(C: Char; aCount: Integer): DelphiString; static;
     class method Create(const Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString; static;
     class method Create(const Value: array of Char): DelphiString; static;
 
@@ -199,7 +199,7 @@ type
     method CompareTo(const strB: DelphiString): Integer;
     method Contains(const Value: DelphiString): Boolean;
     class method &Copy(const Str: DelphiString): DelphiString; static;
-    method CopyTo(SourceIndex: Integer; var destination: array of Char; DestinationIndex: Integer; Count: Integer);
+    method CopyTo(SourceIndex: Integer; var destination: array of Char; DestinationIndex: Integer; aCount: Integer);
     method CountChar(const C: Char): Integer;
     method DeQuotedString: DelphiString;
     method DeQuotedString(const QuoteChar: Char): DelphiString;
@@ -213,11 +213,11 @@ type
     method IndexOf(const Value: DelphiString): Integer;
     method IndexOf(Value: Char; StartIndex: Integer): Integer;
     method IndexOf(const Value: DelphiString; StartIndex: Integer): Integer;
-    method IndexOf(Value: Char; StartIndex: Integer; Count: Integer): Integer;
-    method IndexOf(const Value: DelphiString; StartIndex: Integer; Count: Integer): Integer;
+    method IndexOf(Value: Char; StartIndex: Integer; aCount: Integer): Integer;
+    method IndexOf(const Value: DelphiString; StartIndex: Integer; aCount: Integer): Integer;
     method IndexOfAny(const AnyOf: array of Char): Integer;
     method IndexOfAny(const AnyOf: array of Char; StartIndex: Integer): Integer;
-    method IndexOfAny(      AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer;
+    method IndexOfAny(      AnyOf: array of Char; StartIndex: Integer; aCount: Integer): Integer;
     method Insert(StartIndex: Integer; const Value: DelphiString): DelphiString;
     method IsDelimiter(const Delimiters: DelphiString; aIndex: Integer): Boolean;
     method IsEmpty: Boolean;
@@ -225,17 +225,17 @@ type
     class method IsNullOrWhiteSpace(const Value: DelphiString): Boolean; static;
     class method &Join(Separator: DelphiString; Values: array of DelphiString): DelphiString; static;
     class method &Join(Separator: DelphiString; Values: sequence of DelphiString): DelphiString; static;
-    class method &Join(Separator: DelphiString; Values: array of DelphiString; StartIndex: Integer; Count: Integer): DelphiString; static;
+    class method &Join(Separator: DelphiString; Values: array of DelphiString; StartIndex: Integer; aCount: Integer): DelphiString; static;
     method LastDelimiter(const Delims: DelphiString): Integer;
     method LastIndexOf(Value: Char): Integer;
     method LastIndexOf(const Value: DelphiString): Integer;
     method LastIndexOf(Value: Char; StartIndex: Integer): Integer;
     method LastIndexOf(const Value: DelphiString; StartIndex: Integer): Integer;
-    method LastIndexOf(Value: Char; StartIndex: Integer; Count: Integer): Integer;
-    method LastIndexOf(const Value: DelphiString; StartIndex: Integer; Count: Integer): Integer;
+    method LastIndexOf(Value: Char; StartIndex: Integer; aCount: Integer): Integer;
+    method LastIndexOf(const Value: DelphiString; StartIndex: Integer; aCount: Integer): Integer;
     method LastIndexOfAny(const AnyOf: array of Char): Integer;
     method LastIndexOfAny(const AnyOf: array of Char; StartIndex: Integer): Integer;
-    method LastIndexOfAny(      AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer;
+    method LastIndexOfAny(      AnyOf: array of Char; StartIndex: Integer; aCount: Integer): Integer;
     method PadLeft(TotalWidth: Integer): DelphiString;
     method PadLeft(TotalWidth: Integer; PaddingChar: Char): DelphiString;
     method PadRight(TotalWidth: Integer): DelphiString;
@@ -250,13 +250,13 @@ type
     method Replace(const OldValue: DelphiString; const NewValue: DelphiString; ReplaceFlags: TReplaceFlags): DelphiString;
 
     method Split(const Separator: array of Char): array of DelphiString; inline;
-    method Split(const Separator: array of Char; Count: Integer): array of DelphiString; inline;
+    method Split(const Separator: array of Char; aCount: Integer): array of DelphiString; inline;
     method Split(const Separator: array of Char; Options: TStringSplitOptions): array of DelphiString; inline;
-    method Split(      Separator: array of Char; Count: Integer; Options: TStringSplitOptions): array of DelphiString;
+    method Split(      Separator: array of Char; aCount: Integer; Options: TStringSplitOptions): array of DelphiString;
     method Split(const Separator: array of DelphiString): array of DelphiString; inline;
-    method Split(const Separator: array of DelphiString; Count: Integer): array of DelphiString;
+    method Split(const Separator: array of DelphiString; aCount: Integer): array of DelphiString;
     method Split(const Separator: array of DelphiString; Options: TStringSplitOptions): array of DelphiString;
-    method Split(const Separator: array of DelphiString; Count: Integer; Options: TStringSplitOptions): array of DelphiString;
+    method Split(const Separator: array of DelphiString; aCount: Integer; Options: TStringSplitOptions): array of DelphiString;
 
     method StartsWith(const Value: DelphiString): Boolean;
     method StartsWith(const Value: DelphiString; IgnoreCase: Boolean): Boolean;
@@ -292,15 +292,11 @@ type
   {$IF ECHOES}
   DelphiString = public partial record(/*System.Collections.ICollection, */System.Collections.Generic.ICollection<Char>)
   private
-    //method CopyTo(&array: &Array; &index: Integer);
-    //property Count: Integer read Length;
-    //property SyncRoot: Object read;
-    //property IsSynchronized: Boolean read;
 
     method &Add(item: Char); empty;
     method Clear; empty;
     method &Remove(item: Char): Boolean; empty;
-    property Count: Integer read Length;
+    private property Count: Integer read Length;
     property IsReadOnly: Boolean read true;
 
     method Contains(item: Char): Boolean;
@@ -330,9 +326,9 @@ begin
   fData := InternalCreate;
 end;
 
-class method DelphiString.Create(C: Char; Count: Integer): DelphiString;
+class method DelphiString.Create(C: Char; aCount: Integer): DelphiString;
 begin
-  result := CreateWithChars(C, Count);
+  result := CreateWithChars(C, aCount);
 end;
 
 class method DelphiString.Create(const Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString;
@@ -702,13 +698,13 @@ begin
   result := Value1.fData <= Value2.fData;
 end;
 
-class method DelphiString.PlatformArrayToStringArray(Value: array of PlatformString; Count: Integer := -1): array of DelphiString;
+class method DelphiString.PlatformArrayToStringArray(Value: array of PlatformString; aCount: Integer := -1): array of DelphiString;
 begin
   var lTotal: Integer;
-  if Count = -1 then
+  if aCount = -1 then
     lTotal := Value.length - 1
   else
-    lTotal := Count - 1;
+    lTotal := aCount - 1;
 
   result := new DelphiString[lTotal + 1];
   for i: Integer := 0 to lTotal do
@@ -764,15 +760,15 @@ begin
   result := Str.fData as DelphiString;
 end;
 
-method DelphiString.CopyTo(SourceIndex: Integer; var destination: array of Char; DestinationIndex: Integer; Count: Integer);
+method DelphiString.CopyTo(SourceIndex: Integer; var destination: array of Char; DestinationIndex: Integer; aCount: Integer);
 begin
   {$IF COOPER}
-  for i: Integer := 0 to Count - 1 do
+  for i: Integer := 0 to aCount - 1 do
     destination[DestinationIndex + i] := self.chars[SourceIndex + i];
   {$ELSEIF ECHOES OR ISLAND}
-  PlatformString(fData).CopyTo(SourceIndex, destination, DestinationIndex, Count);
+  PlatformString(fData).CopyTo(SourceIndex, destination, DestinationIndex, aCount);
   {$ELSEIF TOFFEE}
-  PlatformString(fData).getCharacters(@destination[DestinationIndex]) range(Foundation.NSMakeRange(SourceIndex, Count));
+  PlatformString(fData).getCharacters(@destination[DestinationIndex]) range(Foundation.NSMakeRange(SourceIndex, aCount));
   {$ENDIF}
 end;
 
@@ -831,27 +827,27 @@ begin
   result := fData.IndexOf(Value, StartIndex);
 end;
 
-method DelphiString.IndexOf(Value: Char; StartIndex: Integer; Count: Integer): Integer;
+method DelphiString.IndexOf(Value: Char; StartIndex: Integer; aCount: Integer): Integer;
 begin
   {$IF COOPER OR ISLAND}
   var lIndex := PlatformString(fData).indexOf(Value, StartIndex);
-  result := if (lIndex >= StartIndex) and (lIndex <= (StartIndex + Count - 1)) then lIndex else -1;
+  result := if (lIndex >= StartIndex) and (lIndex <= (StartIndex + aCount - 1)) then lIndex else -1;
   {$ELSEIF ECHOES}
-  result := PlatformString(fData).IndexOf(Value, StartIndex, Count);
+  result := PlatformString(fData).IndexOf(Value, StartIndex, aCount);
   {$ELSEIF TOFFEE}
-  result := IndexOf(DelphiString(Value), StartIndex, Count);
+  result := IndexOf(DelphiString(Value), StartIndex, aCount);
   {$ENDIF}
 end;
 
-method DelphiString.IndexOf(const Value: DelphiString; StartIndex: Integer; Count: Integer): Integer;
+method DelphiString.IndexOf(const Value: DelphiString; StartIndex: Integer; aCount: Integer): Integer;
 begin
   {$IF COOPER OR ISLAND}
   var lIndex := PlatformString(fData).indexOf(Value, StartIndex);
-  result := if (lIndex >= StartIndex) and (lIndex <= (StartIndex + Count - 1)) then lIndex else -1;
+  result := if (lIndex >= StartIndex) and (lIndex <= (StartIndex + aCount - 1)) then lIndex else -1;
   {$ELSEIF ECHOES}
-  result := PlatformString(fData).IndexOf(Value, StartIndex, Count);
+  result := PlatformString(fData).IndexOf(Value, StartIndex, aCount);
   {$ELSEIF TOFFEE}
-  var lRange:= PlatformString(fData).rangeOfString(Value) options(NSStringCompareOptions.NSLiteralSearch) range(Foundation.NSMakeRange(StartIndex, Count));
+  var lRange:= PlatformString(fData).rangeOfString(Value) options(NSStringCompareOptions.NSLiteralSearch) range(Foundation.NSMakeRange(StartIndex, aCount));
   result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
@@ -874,14 +870,14 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.IndexOfAny(AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer;
+method DelphiString.IndexOfAny(AnyOf: array of Char; StartIndex: Integer; aCount: Integer): Integer;
 begin
   {$IF COOPER OR ISLAND}
   var lEnd: Integer;
-  if (StartIndex + Count) >= fData.length then
+  if (StartIndex + aCount) >= fData.length then
     lEnd := fData.length
   else
-    lEnd := StartIndex + Count;
+    lEnd := StartIndex + aCount;
   for i: Integer := StartIndex to lEnd - 1 do begin
      for each c: Char in AnyOf do begin
        if Chars[i] = c then
@@ -890,10 +886,10 @@ begin
   end;
   result := -1;
   {$ELSEIF ECHOES}
-  result := PlatformString(fData).IndexOfAny(AnyOf, StartIndex, Count);
+  result := PlatformString(fData).IndexOfAny(AnyOf, StartIndex, aCount);
   {$ELSEIF TOFFEE}
   var lChars := Foundation.NSCharacterSet.characterSetWithCharactersInString(new Foundation.NSString withCharacters(@AnyOf) length(AnyOf.length));
-  var lRange := PlatformString(fData).rangeOfCharacterFromSet(lChars) options(NSStringCompareOptions.NSLiteralSearch) range(Foundation.NSMakeRange(StartIndex, Count));
+  var lRange := PlatformString(fData).rangeOfCharacterFromSet(lChars) options(NSStringCompareOptions.NSLiteralSearch) range(Foundation.NSMakeRange(StartIndex, aCount));
   result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
@@ -965,11 +961,11 @@ begin
     result := '';
 end;
 
-class method DelphiString.Join(Separator: DelphiString; Values: array of DelphiString; StartIndex: Integer; Count: Integer): DelphiString;
+class method DelphiString.Join(Separator: DelphiString; Values: array of DelphiString; StartIndex: Integer; aCount: Integer): DelphiString;
 begin
   {$IF COOPER}
   var sb := new StringBuilder;
-  for i: Integer := StartIndex to (StartIndex + Count) - 1 do begin
+  for i: Integer := StartIndex to (StartIndex + aCount) - 1 do begin
      if i <> StartIndex then
       sb.append(Separator);
     sb.append(Values[i]);
@@ -977,10 +973,10 @@ begin
   result := sb.toString;
   {$ELSEIF ECHOES OR ISLAND}
   var lArray := StringArrayToPlatformArray(Values);
-  result := PlatformString.Join(Separator, lArray, StartIndex, Count);
+  result := PlatformString.Join(Separator, lArray, StartIndex, aCount);
   {$ELSEIF TOFFEE}
   var lArray := new NSMutableArray withCapacity(Values.length);
-  for i: Integer := StartIndex to (StartIndex + Count) - 1 do
+  for i: Integer := StartIndex to (StartIndex + aCount) - 1 do
     lArray.addObject(Values[i].fData);
 
   result := lArray.componentsJoinedByString(Separator.fData);
@@ -1013,29 +1009,29 @@ begin
   result := fData.LastIndexOf(Value, StartIndex);
 end;
 
-method DelphiString.LastIndexOf(Value: Char; StartIndex: Integer; Count: Integer): Integer;
+method DelphiString.LastIndexOf(Value: Char; StartIndex: Integer; aCount: Integer): Integer;
 begin
   {$IF COOPER OR ISLAND}
   result := PlatformString(fData).lastIndexOf(Value, StartIndex);
-  if result < (StartIndex - Count) + 1 then
+  if result < (StartIndex - aCount) + 1 then
     result := -1;
   {$ELSEIF ECHOES}
-  result := PlatformString(fData).LastIndexOf(Value, StartIndex, Count);
+  result := PlatformString(fData).LastIndexOf(Value, StartIndex, aCount);
   {$ELSEIF TOFFEE}
-  result := LastIndexOf(DelphiString(Value), StartIndex, Count);
+  result := LastIndexOf(DelphiString(Value), StartIndex, aCount);
   {$ENDIF}
 end;
 
-method DelphiString.LastIndexOf(const Value: DelphiString; StartIndex: Integer; Count: Integer): Integer;
+method DelphiString.LastIndexOf(const Value: DelphiString; StartIndex: Integer; aCount: Integer): Integer;
 begin
   {$IF COOPER OR ISLAND}
   result := PlatformString(fData).lastIndexOf(Value, StartIndex);
-  if result < (StartIndex - Count) + 1 then
+  if result < (StartIndex - aCount) + 1 then
     result := -1;
   {$ELSEIF ECHOES}
-  result := PlatformString(fData).LastIndexOf(Value, StartIndex, Count);
+  result := PlatformString(fData).LastIndexOf(Value, StartIndex, aCount);
   {$ELSEIF TOFFEE}
-  var lRange:= PlatformString(fData).rangeOfString(Value) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange((StartIndex - Count) + 1, Count));
+  var lRange:= PlatformString(fData).rangeOfString(Value) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange((StartIndex - aCount) + 1, aCount));
   result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
@@ -1058,7 +1054,7 @@ begin
   {$ENDIF}
 end;
 
-method DelphiString.LastIndexOfAny(AnyOf: array of Char; StartIndex: Integer; Count: Integer): Integer;
+method DelphiString.LastIndexOfAny(AnyOf: array of Char; StartIndex: Integer; aCount: Integer): Integer;
 begin
   {$IF COOPER OR ISLAND}
   var lStart: Integer;
@@ -1066,7 +1062,7 @@ begin
     lStart := StartIndex
   else
     lStart := fData.length;
-  var lEnd: Integer := lStart - Count + 1;
+  var lEnd: Integer := lStart - aCount + 1;
   if lEnd < 0 then
     lEnd := 0;
 
@@ -1078,10 +1074,10 @@ begin
   end;
   result := -1;
   {$ELSEIF ECHOES}
-  result := PlatformString(fData).LastIndexOfAny(AnyOf, StartIndex, Count);
+  result := PlatformString(fData).LastIndexOfAny(AnyOf, StartIndex, aCount);
   {$ELSEIF TOFFEE}
   var lChars := Foundation.NSCharacterSet.characterSetWithCharactersInString(new Foundation.NSString withCharacters(@AnyOf) length(AnyOf.length));
-  var lRange := PlatformString(fData).rangeOfCharacterFromSet(lChars) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange((StartIndex - Count) + 1, Count));
+  var lRange := PlatformString(fData).rangeOfCharacterFromSet(lChars) options(NSStringCompareOptions.NSLiteralSearch or NSStringCompareOptions.NSBackwardsSearch) range(Foundation.NSMakeRange((StartIndex - aCount) + 1, aCount));
   result := if lRange.location <> NSNotFound then Integer(lRange.location) else -1;
   {$ENDIF}
 end;
@@ -1251,9 +1247,9 @@ begin
   result := Split(Separator, -1, TStringSplitOptions.None);
 end;
 
-method DelphiString.Split(const Separator: array of Char; Count: Integer): array of DelphiString;
+method DelphiString.Split(const Separator: array of Char; aCount: Integer): array of DelphiString;
 begin
-  result := Split(Separator, Count, TStringSplitOptions.None);
+  result := Split(Separator, aCount, TStringSplitOptions.None);
 end;
 
 method DelphiString.Split(const Separator: array of Char; Options: TStringSplitOptions): array of DelphiString;
@@ -1261,15 +1257,15 @@ begin
   result := Split(Separator, -1, Options);
 end;
 
-method DelphiString.Split(Separator: array of Char; Count: Integer; Options: TStringSplitOptions): array of DelphiString;
+method DelphiString.Split(Separator: array of Char; aCount: Integer; Options: TStringSplitOptions): array of DelphiString;
 begin
   {$IF COOPER}
   var lSep := ArrayToSplitRegex(Separator);
-  var lArray := PlatformString(fData).split(lSep, Count);
+  var lArray := PlatformString(fData).split(lSep, aCount);
   if Options = TStringSplitOptions.ExcludeEmpty then begin
     var lList: java.util.List := new java.util.ArrayList;
     for i: Integer := 0 to lArray.Length - 1 do begin
-      if (i = Count - 2) and (DelphiString(lArray[i + 1]).IndexOfAny(Separator) = 0) then
+      if (i = aCount - 2) and (DelphiString(lArray[i + 1]).IndexOfAny(Separator) = 0) then
           lArray[i + 1] := lArray[i + 1].substring(1);
 
         if lArray[i] <> '' then
@@ -1277,10 +1273,10 @@ begin
       end;
     lArray := lList.ToArray(new PlatformString[0]);
   end;
-  result := PlatformArrayToStringArray(lArray, Count);
+  result := PlatformArrayToStringArray(lArray, aCount);
   {$ELSEIF ECHOES}
   var lArray: array of PlatformString;
-  var lCount := if Count = -1 then Consts.MaxInt32 else Count;
+  var lCount := if aCount = -1 then Consts.MaxInt32 else aCount;
   if Options = TStringSplitOptions.ExcludeEmpty then
     lArray := PlatformString(fData).Split(Separator, lCount, [StringSplitOptions.RemoveEmptyEntries])
   else
@@ -1292,14 +1288,14 @@ begin
   for i: Integer := 0 to Separator.length - 1 do
     lSeparators[i] := DelphiString(Separator[i]);
 
-  result := Split(lSeparators, Count, Options);
+  result := Split(lSeparators, aCount, Options);
   {$ELSEIF TOFFEE}
-  if Count <> -1 then begin
+  if aCount <> -1 then begin
     var lArray := new DelphiString[Separator.length];
     for i: Integer := 0 to Separator.length - 1 do
       lArray[i] := DelphiString(Separator[i]);
 
-    result := Split(lArray, Count, Options);
+    result := Split(lArray, aCount, Options);
   end
   else begin
     var lChars := Foundation.NSCharacterSet.characterSetWithCharactersInString(new Foundation.NSString withCharacters(@Separator) length(Separator.length));
@@ -1307,7 +1303,7 @@ begin
     if Options = TStringSplitOptions.ExcludeEmpty then
       lArray := lArray.filteredArrayUsingPredicate(NSPredicate.predicateWithFormat('length > 0'));
 
-    result := NSArrayToStringArray(lArray, Count);
+    result := NSArrayToStringArray(lArray, aCount);
   end;
   {$ENDIF}
 end;
@@ -1317,9 +1313,9 @@ begin
   result := Split(Separator, -1, TStringSplitOptions.None);
 end;
 
-method DelphiString.Split(const Separator: array of DelphiString; Count: Integer): array of DelphiString;
+method DelphiString.Split(const Separator: array of DelphiString; aCount: Integer): array of DelphiString;
 begin
-  result := Split(Separator, Count, TStringSplitOptions.None);
+  result := Split(Separator, aCount, TStringSplitOptions.None);
 end;
 
 method DelphiString.Split(const Separator: array of DelphiString; Options: TStringSplitOptions): array of DelphiString;
@@ -1342,13 +1338,13 @@ end;
 {$ENDIF}
 
 {$IF TOFFEE}
-method DelphiString.NSArrayToStringArray(Value: NSArray; Count: Integer): array of DelphiString;
+method DelphiString.NSArrayToStringArray(Value: NSArray; aCount: Integer): array of DelphiString;
 begin
   var lTotal: Integer;
-  if Count = -1 then
-    lTotal := Value.count
+  if aCount = -1 then
+    lTotal := Value.aCount
   else
-    lTotal := Count;
+    lTotal := aCount;
 
   result := new DelphiString[lTotal];
   for i: Integer := 0 to lTotal - 1 do
@@ -1356,17 +1352,17 @@ begin
 end;
 {$ENDIF}
 
-method DelphiString.Split(const Separator: array of DelphiString; Count: Integer; Options: TStringSplitOptions): array of DelphiString;
+method DelphiString.Split(const Separator: array of DelphiString; aCount: Integer; Options: TStringSplitOptions): array of DelphiString;
 begin
   {$IF COOPER}
   var lSep := ArrayToSplitRegex(Separator);
-  var lArray := PlatformString(fData).split(lSep, Count);
+  var lArray := PlatformString(fData).split(lSep, aCount);
 
   if Options = TStringSplitOptions.ExcludeEmpty then begin
     var lCurrentLength := 0;
     var lList: java.util.List := new java.util.ArrayList;
     for i: Integer := 0 to lArray.Length - 1 do begin
-      if (i = Count - 2) and (DelphiString(lArray[i + 1]).InternalIndexOfAny(Separator, 0, var lCurrentLength) = 0) then
+      if (i = aCount - 2) and (DelphiString(lArray[i + 1]).InternalIndexOfAny(Separator, 0, var lCurrentLength) = 0) then
         lArray[i + 1] := lArray[i + 1].substring(lCurrentLength);
 
       if not lArray[i].isEmpty then
@@ -1375,11 +1371,11 @@ begin
     lArray := lList.ToArray(new PlatformString[0]);
   end;
 
-  result := PlatformArrayToStringArray(lArray, Count);
+  result := PlatformArrayToStringArray(lArray, aCount);
   {$ELSEIF ECHOES}
   var lArray: array of PlatformString;
   var lSep := StringArrayToPlatformArray(Separator);
-  var lCount := if Count = -1 then Consts.MaxInt32 else Count;
+  var lCount := if aCount = -1 then Consts.MaxInt32 else aCount;
   if Options = TStringSplitOptions.ExcludeEmpty then
     lArray := PlatformString(fData).Split(lSep, lCount, [StringSplitOptions.RemoveEmptyEntries])
   else
@@ -1393,7 +1389,7 @@ begin
   var lCurrentLength := 0;
   var lStartIndex := 0;
   var lStr: DelphiString := '';
-  var lCount := if Count = -1 then {$IF ISLAND}Integer.MaxValue{$ELSE}Consts.MaxInt32{$ENDIF} else Count;
+  var lCount := if aCount = -1 then {$IF ISLAND}Integer.MaxValue{$ELSE}Consts.MaxInt32{$ENDIF} else aCount;
 
   lIndex := InternalIndexOfAny(Separator, lStartIndex, var lCurrentLength);
   while (lIndex >= 0) and (lTotal < lCount) do
@@ -1413,8 +1409,8 @@ begin
   if (lStartIndex < Length) and (lTotal < lCount) then
     lList.Add(SubString(lStartIndex));
 
-  result := new DelphiString[lList.Count];
-  for i: Integer := 0 to lList.Count - 1 do
+  result := new DelphiString[lList.aCount];
+  for i: Integer := 0 to lList.aCount - 1 do
     result[i] := lList[i];
   {$ENDIF}
 end;
@@ -1554,19 +1550,19 @@ begin
   {$ENDIF}
 end;
 
-class method DelphiString.CreateWithChars(Char: Char; Count: Integer): DelphiString;
+class method DelphiString.CreateWithChars(Char: Char; aCount: Integer): DelphiString;
 begin
   {$IF COOPER}
-  var lChars := new Char[Count];
-  for i: Integer := 0 to Count-1 do
+  var lChars := new Char[aCount];
+  for i: Integer := 0 to aCount-1 do
     lChars[i] := Char;
   result := new java.lang.String(lChars);
   {$ELSEIF ECHOES}
-  result := new System.String(Char, Count);
+  result := new System.String(Char, aCount);
   {$ELSEIF ISLAND}
-  result := PlatformString.FromRepeatedChar(Char, Count);
+  result := PlatformString.FromRepeatedChar(Char, aCount);
   {$ELSEIF TOFFEE}
-  result := Foundation.NSString("").stringByPaddingToLength(Count) withString(Foundation.NSString.stringWithFormat("%c", Char)) startingAtIndex(0);
+  result := Foundation.NSString("").stringByPaddingToLength(aCount) withString(Foundation.NSString.stringWithFormat("%c", Char)) startingAtIndex(0);
   {$ENDIF}
 end;
 
