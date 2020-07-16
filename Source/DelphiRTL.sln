@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # RemObjects Water
-Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "Delphi.VCL.Shared", "Delphi.VCL.Shared.elements", "{2C8BFC71-4766-4D9A-801F-A7F0E7034D78}"
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Shared", "DelphiVCL.Shared.elements", "{2C8BFC71-4766-4D9A-801F-A7F0E7034D78}"
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Cooper", "DelphiRTL.Cooper.elements", "{5EB6180E-7F22-4174-887B-EA1C3469A61C}"
 EndProject

@@ -58,7 +58,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
-  <Import Project="Delphi.VCL.Shared.projitems" Label="Shared" />
+  <Import Project="DelphiVCL.Shared.projitems" Label="Shared" />
   <PropertyGroup>
     <PreBuildEvent />
   </PropertyGroup>

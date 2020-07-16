@@ -5,9 +5,7 @@
     <HasSharedItems>true</HasSharedItems>
     <ProjectGuid>{3ADE82F2-FA7D-43CA-B8D2-380614815573}</ProjectGuid>
     <SharedGUID>{2C8BFC71-4766-4D9A-801F-A7F0E7034D78}</SharedGUID>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Delphi.VCL.Shared</Import_RootNamespace>
+    <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)VCL\Application.Mac.pas" />

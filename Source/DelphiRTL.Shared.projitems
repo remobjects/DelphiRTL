@@ -4,9 +4,9 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
     <SharedGUID>422C7732-516B-4349-88E8-7F01BA91FF08</SharedGUID>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration">
     <Import_RootNamespace>DelphiRTL.Shared</Import_RootNamespace>
+    <ProjectGuid>{422C7732-516B-4349-88E8-7F01BA91FF08}</ProjectGuid>
+    <RootNamespace>RemObjects.Elements.RTL.Delphi</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AnsiString.pas" />

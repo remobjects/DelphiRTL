@@ -66,5 +66,5 @@
   <PropertyGroup>
     <PreBuildEvent />
   </PropertyGroup>
-  <Import Project="Delphi.VCL.Shared.projitems" Label="Shared" />
+  <Import Project="DelphiVCL.Shared.projitems" Label="Shared" />
 </Project>
