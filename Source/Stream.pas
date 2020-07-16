@@ -1085,7 +1085,7 @@ end;
 method TStream.WriteString(aString: DelphiString; aEncoding: TEncoding := TEncoding.UTF16LE): LongInt;
 begin
   var lBytes := aEncoding.GetBytes(aString);
-  &Write(lBytes, 0, length(lBytes));
+  &Write(lBytes, 0, RemObjects.Elements.System.length(lBytes));
 end;
 
 method TStream.CopyFrom(const Source: TStream; Count: Int64): Int64;

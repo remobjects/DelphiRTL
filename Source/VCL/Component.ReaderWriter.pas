@@ -1103,7 +1103,7 @@ end;
 method TWriter.WriteUTF8Str(aValue: string);
 begin
   var lBytes := RemObjects.Elements.RTL.Encoding.UTF8.GetBytes(aValue);
-  var lTotal := if length(lBytes) > 255 then 255 else length(lBytes);
+  var lTotal := if RemObjects.Elements.System.length(lBytes) > 255 then 255 else length(lBytes);
   fStream.WriteData(Byte(lTotal));
   fStream.Write(lBytes, 0, lTotal);
 end;
@@ -1116,7 +1116,7 @@ end;
 method TWriter.WriteString(aValue: string);
 begin
   var lBytes := RemObjects.Elements.RTL.Encoding.UTF8.GetBytes(aValue);
-  var lTotal := length(lBytes);
+  var lTotal := RemObjects.Elements.System.length(lBytes);
   fStream.WriteData(Byte(TValueType.vaString));
   fStream.WriteData(Byte(lTotal));
   fStream.Write(lBytes, lTotal);

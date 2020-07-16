@@ -32,7 +32,7 @@ end;
 
 method FillChar(var aArray: array of Byte; aValue: Byte);
 begin
-  for i: Integer := 0 to length(aArray)-1 do
+  for i: Integer := 0 to RemObjects.Elements.System.length(aArray)-1 do
     aArray[i] := aValue;
 end;
 
