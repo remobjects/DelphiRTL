@@ -9,7 +9,7 @@ type
   //TArray<T> = class
   //end;
 
-  IComparer<T> = public interface
+  IComparer<T> = public interface({$IFDEF ECHOES}System.Collections.Generic.IComparer<T>{$ENDIF ECHOES})
     function Compare(const Left, Right: T): Integer;
   end;
 
@@ -19,6 +19,33 @@ type
   end;
 
   IEnumerable<T> = public ISequence<T>;
+
+  TEnumerator<T> = public abstract class({$IFDEF ECHOES}System.Collections.Generic.IEnumerator<T>{$ENDIF ECHOES})
+  protected
+    function DoGetCurrent: T; virtual; abstract;
+    function DoMoveNext: Boolean; virtual; abstract;
+    {$IFDEF ECHOES}
+    function GetNonGenericCurrent: Object;
+    begin
+      Result := DoGetCurrent;
+    end;
+    {$ENDIF ECHOES}
+
+    procedure Reset; virtual;
+    begin
+      raise new ENotImplemented("Reset is not implemented");
+    end;
+
+    method Dispose; virtual; begin end;
+  public
+    {$IFDEF ECHOES}property NonGenericCurrent: Object read GetNonGenericCurrent; implements System.Collections.IEnumerator.Current;{$ENDIF ECHOES}
+    property Current: T read DoGetCurrent;
+
+    function MoveNext: Boolean;
+    begin
+      Result := DoMoveNext;
+    end;
+  end;
 
   TEnumerable<T> = public abstract class(ISequence<T>)
   private
@@ -47,9 +74,19 @@ type
     begin
       result := GetEnumerator();
     end;
-    method GetEnumerator: System.Collections.Generic.IEnumerator<T>; //implements System.Collections.Generic.IEnumerable<T>.GetEnumerator<T>;
+
+    method DoGetEnumerator: TEnumerator<T>; virtual;
     begin
-      exit System.Collections.Generic.IEnumerable<T>(GetSequence()).GetEnumerator;
+      exit nil;
+    end;
+
+    method GetEnumerator: System.Collections.Generic.IEnumerator<T>; public; //implements System.Collections.Generic.IEnumerable<T>.GetEnumerator<T>; 
+    begin
+      var enumerator := DoGetEnumerator;
+      if assigned(enumerator) then
+        exit enumerator
+      else
+        exit System.Collections.Generic.IEnumerable<T>(GetSequence()).GetEnumerator;
     end;
     {$ELSEIF TOFFEE}
     method countByEnumeratingWithState(aState: ^NSFastEnumerationState) objects(aStackbuf: ^T) count(len: NSUInteger): NSUInteger;
