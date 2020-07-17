@@ -25,6 +25,10 @@ type
     method SetSize(NewSize: LongInt); virtual;
     method SetSize(const NewSize: Int64); virtual;
   public
+    {$IFDEF ECHOES}
+    method &Read(var Buffer; Count: LongInt): LongInt; virtual;
+    method &Write(const Buffer; Count: LongInt): LongInt; virtual;
+    {$ENDIF ECHOES}
     method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; virtual;
     method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; virtual;
 
@@ -266,14 +270,34 @@ begin
     raise new Exception('Error reading from stream');
 end;
 
-method TStream.Read(Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+{$IFDEF ECHOES}
+method TStream.Read(var Buffer; Count: Longint): Longint; 
 begin
   result := 0;
 end;
 
-method TStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+method TStream.Write(const Buffer; Count: Longint): Longint; 
 begin
   result := 0;
+end;
+{$ENDIF ECHOES}
+
+method TStream.Read(Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+begin
+  {$IFDEF ECHOES}
+  result := Read(var Buffer[Offset], Count);
+  {$ELSE}
+  result := 0;
+  {$ENDIF ECHOES}
+end;
+
+method TStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+begin
+  {$IFDEF ECHOES}
+  result := Write(Buffer[Offset], Count);
+  {$ELSE}
+  result := 0;
+  {$ENDIF ECHOES}
 end;
 
 {$IF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
