@@ -151,8 +151,8 @@ type
 
   TPredicate<T> = block(Arg1: T): Boolean;
 
-  ENotImplemented = public class(Exception);
-  EArgumentException = public class(Exception);
+  ENotImplemented = public class(NotImplementedException);
+  EArgumentException = public class(ArgumentException);
   EArgumentOutOfRangeException = public class(EArgumentException);
   EArgumentNilException = public class(EArgumentException);
   EOutOfMemory = public class({$IFDEF ECHOES}System.OutOfMemoryException{$ELSE}Exception{$ENDIF ECHOES});
