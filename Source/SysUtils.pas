@@ -43,6 +43,17 @@ type
   {$ENDIF}
   TEncoding = public Encoding;
 
+  EncodingExtension = public extension class(Encoding)
+	public 
+		class method Unicode: Encoding; static;
+		{$IFDEF ECHOES}
+		class method Convert(srcEncoding: Encoding; dstEncoding: Encoding; bytes: TBytes): TBytes;
+		{$ENDIF}
+		method GetPreamble: TBytes;
+		method Clone: Encoding;
+		class method GetBufferEncoding(const Buffer: TBytes; var AEncoding: Encoding; ADefaultEncoding: Encoding = Encoding.Default): Integer;
+	end;
+
   TSysLocale = public record
   public
     DefaultLCID: TLocaleID;
@@ -860,5 +871,75 @@ begin
   result := RTL2String.Format('%s (Version %d.%d.%d)', [fName, fMajor, fMinor, fServicePackMajor]);
 end;
 
+class method EncodingExtension.Unicode: Encoding;
+begin
+	result := Encoding.UTF16LE;
+end;
+
+{$IFDEF ECHOES}
+class method EncodingExtension.Convert(srcEncoding: Encoding; dstEncoding: Encoding; bytes: TBytes): TBytes;
+begin
+	result := System.Text.Encoding.Convert(srcEncoding, dstEncoding, bytes);
+end;
+{$ENDIF}
+
+method EncodingExtension.GetPreamble: TBytes;
+begin
+	result := Self.GetPreamble();
+end;
+
+method EncodingExtension.Clone: Encoding;
+begin
+	result := Self.Clone();
+end;
+
+class method EncodingExtension.GetBufferEncoding(const Buffer: TBytes; var AEncoding: Encoding;
+  ADefaultEncoding: Encoding): Integer;
+
+  function ContainsPreamble(const Buffer, Signature: array of Byte): Boolean;
+  var
+    I: Integer;
+  begin
+    Result := True;
+    if Length(Buffer) >= Length(Signature) then
+    begin
+      for I := 1 to Length(Signature) do
+        if Buffer[I - 1] <> Signature [I - 1] then
+        begin
+          Result := False;
+          Break;
+        end;
+    end
+    else
+      Result := False;
+  end;
+
+var
+  Preamble: TBytes;
+begin
+  Result := 0;
+  if AEncoding = nil then
+  begin
+    // Find the appropraite encoding
+    if ContainsPreamble(Buffer, Encoding.UTF8.GetPreamble) then
+      AEncoding := Encoding.UTF8
+    else if ContainsPreamble(Buffer, Encoding.UTF16LE.GetPreamble) then
+      AEncoding := Encoding.UTF16LE
+    else if ContainsPreamble(Buffer, Encoding.UTF16BE.GetPreamble) then
+      AEncoding := Encoding.UTF16BE
+    else
+    begin
+      AEncoding := ADefaultEncoding;
+      Exit; // Don't proceed just in case ADefaultEncoding has a Preamble
+    end;
+    Result := Length(AEncoding.GetPreamble);
+  end
+  else
+  begin
+    Preamble := AEncoding.GetPreamble;
+    if ContainsPreamble(Buffer, Preamble) then
+      Result := Length(Preamble);
+  end;
+end;
 
 end.
