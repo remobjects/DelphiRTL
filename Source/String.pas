@@ -1342,7 +1342,7 @@ method DelphiString.NSArrayToStringArray(Value: NSArray; aCount: Integer): array
 begin
   var lTotal: Integer;
   if aCount = -1 then
-    lTotal := Value.aCount
+    lTotal := Value.Count
   else
     lTotal := aCount;
 
@@ -1409,8 +1409,8 @@ begin
   if (lStartIndex < Length) and (lTotal < lCount) then
     lList.Add(SubString(lStartIndex));
 
-  result := new DelphiString[lList.aCount];
-  for i: Integer := 0 to lList.aCount - 1 do
+  result := new DelphiString[lList.Count];
+  for i: Integer := 0 to lList.Count - 1 do
     result[i] := lList[i];
   {$ENDIF}
 end;
