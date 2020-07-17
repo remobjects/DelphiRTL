@@ -151,6 +151,14 @@ type
 
   TPredicate<T> = block(Arg1: T): Boolean;
 
+  ENotImplemented = public class(Exception);
+  EArgumentException = public class(Exception);
+  EArgumentOutOfRangeException = public class(EArgumentException);
+  EArgumentNilException = public class(EArgumentException);
+  EOutOfMemory = public class({$IFDEF ECHOES}System.OutOfMemoryException{$ELSE}Exception{$ENDIF ECHOES});
+  EConvertError = public class(Exception);
+  EAbstractError = public class(Exception);
+
 var
   FormatSettings: TFormatSettings := TFormatSettings.Create; public;
   SysLocale: TSysLocale; public;
