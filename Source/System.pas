@@ -43,8 +43,10 @@ function ArcTan(X: Double): Double; inline;
 function Tangent(X: Double): Double; inline;
 procedure SineCosine(X: Double; var aSin, aCos: Double);
 
-function InterlockedIncrement(var Addend: Integer): Integer; 
-function InterlockedDecrement(var Addend: Integer): Integer; 
+{$IF NOT COOPER}
+function InterlockedIncrement(var Addend: Integer): Integer;
+function InterlockedDecrement(var Addend: Integer): Integer;
+{$ENDIF}
 
 implementation
 
@@ -160,14 +162,16 @@ begin
   aCos := Math.Cos(X);
 end;
 
-function InterlockedIncrement(var Addend: Integer): Integer; 
+{$IF NOT COOPER}
+function InterlockedIncrement(var Addend: Integer): Integer;
 begin
   interlockedInc(var Addend);
 end;
 
-function InterlockedDecrement(var Addend: Integer): Integer; 
+function InterlockedDecrement(var Addend: Integer): Integer;
 begin
   interlockedDec(var Addend);
 end;
+{$ENDIF}
 
 end.
