@@ -66,9 +66,12 @@ type
   public
     constructor;
     constructor(Value: PlatformString);
+    constructor(aBytes: array of Byte);
+
     class method Create(C: Char; aCount: Integer): DelphiString; static;
     class method Create(const Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString; static;
     class method Create(const Value: array of Char): DelphiString; static;
+    class method Create(aBytes: array of Byte): DelphiString; static;
 
     class operator Implicit(Value: Char): DelphiString;
     class operator Implicit(Value: PlatformString): DelphiString;
@@ -270,6 +273,8 @@ type
     method ToExtended: Extended;
     method ToCharArray: array of Char;
     method ToCharArray(StartIndex: Integer; aLength: Integer): array of Char;
+    method ToByteArray: array of Byte;
+    method ToByteArray(StartIndex: Integer; aLength: Integer): array of Byte;
     method ToLower: DelphiString;
     method ToLower(LocaleID: TLocaleID): DelphiString;
     method ToLowerInvariant: DelphiString;
@@ -342,6 +347,11 @@ begin
   fData := InternalCreate;
 end;
 
+constructor DelphiString(aBytes: array of Byte);
+begin
+  fData := Encoding.UTF16LE.GetString(aBytes);
+end;
+
 class method DelphiString.Create(C: Char; aCount: Integer): DelphiString;
 begin
   result := CreateWithChars(C, aCount);
@@ -355,6 +365,11 @@ end;
 class method DelphiString.Create(const Value: array of Char): DelphiString;
 begin
   result := &Create(Value, 0, Value.length);
+end;
+
+class method DelphiString.Create(aBytes: array of Byte): DelphiString;
+begin
+  result := Encoding.UTF16LE.GetString(aBytes);
 end;
 
 class method DelphiString.Compare(const StrA: DelphiString; const StrB: DelphiString): Integer;
@@ -1475,6 +1490,16 @@ begin
   for i: Integer := 0 to lArray.length do
     result[i] := lArray[i];
   {$ENDIF}
+end;
+
+method DelphiString.ToByteArray: array of Byte;
+begin
+  result := Encoding.UTF16LE.GetBytes(fData);
+end;
+
+method DelphiString.ToByteArray(StartIndex: Integer; aLength: Integer): array of Byte;
+begin
+  result := Encoding.UTF16LE.GetBytes(fData.Substring(StartIndex, aLength));
 end;
 
 method DelphiString.ToLower: DelphiString;
