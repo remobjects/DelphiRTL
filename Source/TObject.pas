@@ -137,7 +137,7 @@ type
         {$IF ECHOES}
         GC.SuppressFinalize(self);
         {$ENDIF}
-        {$IF ISLAND}
+        {$IF ISLAND  AND NOT WEBASSEMBLY}
         DefaultGC.SuppressFinalize(self);
         {$ENDIF}
       end;
