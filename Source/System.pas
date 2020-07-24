@@ -24,15 +24,14 @@ procedure Insert(aSource: PlatformString; var aTarget: PlatformString; aOffset: 
 procedure Delete(var S: DelphiString; aIndex: Integer; aCount: Integer); inline;
 function &Copy(S: DelphiString; aIndex: Integer; aCount: Integer): DelphiString; inline;
 function &Copy(S: PlatformString; aIndex: Integer; aCount: Integer): DelphiString; inline;
+{$IF NOT COOPER}
 function &Copy<T>(B: array of T; aIndex: Integer; aCount: Integer): array of T; public;
 function &Copy<T>(B: TArray<T>; aIndex: Integer): TArray<T>; inline; public;
-procedure FillChar(var Dest: DelphiString; aCount: Integer; aValue: Char);
 procedure Delete<T>(var Arr: TArray<T>; Start: Integer; Count: Integer);
+{$ENDIF}
 
-{$IFNDEF COOPER}
-type
-  PByte = public ^Byte;
-
+procedure FillChar(var Dest: DelphiString; aCount: Integer; aValue: Char);
+{$IF NOT COOPER}
 procedure FillChar(var Dest; aCount: Integer; aValue: Byte); unsafe;
 procedure Move<T, U>(var ASource; var Dest: U; Count: NativeInt); unsafe;
 function CompareMem(P1, P2: Pointer; Length: Integer): Boolean; unsafe;
@@ -98,6 +97,7 @@ begin
   result := DelphiString(S).SubString(aIndex - 1, aCount);
 end;
 
+{$IF NOT COOPER}
 function &Copy<T>(B: array of T; aIndex: Integer; aCount: Integer): array of T;
 begin
   result := new T[aCount];
@@ -113,6 +113,7 @@ function &Copy<T>(B: TArray<T>; aIndex: Integer): TArray<T>; inline;
 begin
   result := &Copy(B, aIndex, B.length);
 end;
+{$ENDIF}
 
 procedure FillChar(var Dest: DelphiString; aCount: Integer; aValue: Char);
 begin
@@ -120,6 +121,7 @@ begin
   Dest.Chars[i] := aValue;
 end;
 
+{$IF NOT COOPER}
 procedure Delete<T>(var Arr: TArray<T>; Start: Integer; Count: Integer);
 begin
   var Source := Arr;
@@ -130,8 +132,9 @@ begin
   for Index: Integer := Start + Count to Source.Length - 1 do
     Arr[Index - Count] := Source[Index];
 end;
+{$ENDIF}
 
-{$IFNDEF COOPER}
+{$IF NOT COOPER}
 procedure FillChar(var Dest; aCount: Integer; aValue: Byte);
 begin
   var Ptr := PByte(@Dest); pinned;
