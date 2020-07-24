@@ -13,7 +13,7 @@ type
   TStringListSortCompare = public block(x: TInternalItem; y: TInternalItem): Integer;
   TNotifyEvent = public block(Sender: TObject);
 
-  TStrings = public abstract class(TPersistent{$IF NOT TOFFEE}, sequence of String{$ENDIF})
+  TStrings = public abstract class(TPersistent)
   private
     fUpdateCount: Integer;
     fOptions: TStringsOptions;
@@ -72,7 +72,7 @@ type
     method EndUpdate;
     method &Equals(aStrings: TStrings): Boolean;
     method Exchange(aIndex1, aIndex2: Integer); virtual;
-    /*method GetEnumerator: TStringsEnumerator; */
+    method GetEnumerator: TEnumerator<DelphiString>;
     method IndexOf(const S: DelphiString): Integer; virtual;
     method IndexOfName(const aName: DelphiString): Integer; virtual;
     method IndexOfObject(aObject: TObject): Integer; virtual;
@@ -114,15 +114,17 @@ type
     property TrailingLineBreak: Boolean read GetTrailingLineBreak write SetTrailingLineBreak;
     property UseLocale: Boolean read GetUseLocale write SetUseLocale;
     property Options: TStringsOptions read fOptions write fOptions;
+  end;
 
-    {$IF NOT COOPER AND NOT TOFFEE}
-    [&Sequence] // ASPE Duplicate iterator implementation
-    method GetSequence: sequence of String; iterator;
-    begin
-      for i: Integer := 0 to Count-1 do
-        yield self[i];
-    end;
-    {$ENDIF}
+  TStringsEnumerator = public class(TEnumerator<DelphiString>)
+  private
+    FStrings: TStrings;
+    FIndex: Integer;
+  protected
+    function DoGetCurrent: {$IF TOFFEE}nullable DelphiString{$ELSE}DelphiString{$ENDIF}; override;
+    function DoMoveNext: Boolean; override;
+  public
+    constructor Create(AStrings: TStrings);
   end;
 
   TStringList = public class(TStrings)
@@ -1024,6 +1026,28 @@ begin
       end;
     end;
   end;
+end;
+
+method TStrings.GetEnumerator: TEnumerator<DelphiString>;
+begin
+  result := new TStringsEnumerator(self);
+end;
+
+method TStringsEnumerator.DoGetCurrent: {$IF TOFFEE}nullable DelphiString{$ELSE}DelphiString{$ENDIF};
+begin
+  result := FStrings[FIndex];
+end;
+
+method TStringsEnumerator.DoMoveNext: Boolean;
+begin
+  Inc(FIndex);
+  result := FIndex < FStrings.Count;
+end;
+
+constructor TStringsEnumerator(AStrings: TStrings);
+begin
+  FStrings := AStrings;
+  FIndex := -1;
 end;
 
 end.
