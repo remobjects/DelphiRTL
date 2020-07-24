@@ -208,7 +208,7 @@ type
     property Capacity: LongInt read fData.Length write fData.SetLength;
   public
     constructor;
-    class method Create: TCustomMemoryStream; static;
+    class method Create: TMemoryStream; static; 
     method Clear;
     method LoadFromStream(aStream: TStream);
     {$IF NOT WEBASSEMBLY}
@@ -1279,7 +1279,7 @@ begin
   inherited;
 end;
 
-class method TMemoryStream.Create: TCustomMemoryStream;
+class method TMemoryStream.Create: TMemoryStream;
 begin
   result := new TMemoryStream();
 end;
