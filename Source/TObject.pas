@@ -32,52 +32,28 @@ type
 
     method ClassType: TClass;
     begin
-      {$IF ECHOES}
-      result := typeOf(self);
-      {$ELSE}
-      result := nil;
-      {$ENDIF}
+      result := new RemObjects.Elements.RTL.Reflection.Type withPlatformType(typeOf(self));
     end;
 
 
     class method ClassName: ShortString;
     begin
-      {$IF ISLAND}
       result := typeOf(self).Name;
-      {$ELSEIF ECHOES}
-      result := typeOf(self).FullName;
-      {$ELSE}
-      result := '';
-      {$ENDIF}
     end;
 
     method InstanceClassName: String;
     begin
-      {$IF ISLAND}
-        result := typeOf(self).Name;
-      {$ELSEIF ECHOES}
-      result := ClassType.FullName;
-      {$ELSE}
-        result := '';
-      {$ENDIF}
+      result := ClassType.Name;
     end;
 
     class method ClassNameIs(const Name: String): Boolean; 
     begin
-      {$IF ECHOES}
-      result := System.String.Equals(ClassName, Name, StringComparison.CurrentCultureIgnoreCase);
-      {$ELSE}
-      result := false;
-      {$ENDIF}
+      result := RemObjects.Elements.RTL.String.EqualsIgnoringCase(ClassName, Name);
     end;
 
     class method ClassParent: TClass; 
     begin
-      {$IF ECHOES}
-      result := typeOf(self).BaseType;
-      {$ELSE}
-      result := nil;
-      {$ENDIF}
+      result := (new RemObjects.Elements.RTL.Reflection.Type withPlatformType(typeOf(self))).BaseType;
     end;
 
     class method ClassInfo: Pointer; empty;
@@ -85,10 +61,17 @@ type
 
     class method InheritsFrom(AClass: TClass): Boolean; 
     begin
-      {$IF ECHOES}
-      result := (AClass = typeOf(self)) or (typeOf(self).IsSubclassOf(AClass));
-      {$ELSE}
+      {$IF COOPER}
       result := false;
+      (*var SelfType := new RemObjects.Elements.RTL.Reflection.Type withPlatformType(typeOf(self));
+      var altSelfType := typeOf(Self);
+      result := (AClass = typeOf(self)) or altSelfType.IsSubClassOf(AClass);
+      result := RemObjects.Elements.RTL.String.Equals(SelfType.Name, AClass.Name) or (SelfType.IsSubclassOf(AClass));*)
+      {$ELSEIF TOFFEE}
+      var SelfType := new RemObjects.Elements.RTL.Reflection.Type withPlatformType(typeOf(self));
+      result := RemObjects.Elements.RTL.String.Equals(SelfType.Name, AClass.Name) or (SelfType.IsSubclassOf(AClass));
+      {$ELSE}
+      result := (AClass = typeOf(self)) or (typeOf(self).IsSubclassOf(AClass));
       {$ENDIF}
     end;
 
