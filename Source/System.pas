@@ -24,7 +24,20 @@ procedure Insert(aSource: PlatformString; var aTarget: PlatformString; aOffset: 
 procedure Delete(var S: DelphiString; aIndex: Integer; aCount: Integer); inline;
 function &Copy(S: DelphiString; aIndex: Integer; aCount: Integer): DelphiString; inline;
 function &Copy(S: PlatformString; aIndex: Integer; aCount: Integer): DelphiString; inline;
+function &Copy<T>(B: array of T; aIndex: Integer; aCount: Integer): array of T; public;
+function &Copy<T>(B: TArray<T>; aIndex: Integer): TArray<T>; inline; public;
 procedure FillChar(var Dest: DelphiString; aCount: Integer; aValue: Char);
+procedure Delete<T>(var Arr: TArray<T>; Start: Integer; Count: Integer);
+
+{$IFNDEF COOPER}
+type
+  PByte = public ^Byte;
+
+procedure FillChar(var Dest; aCount: Integer; aValue: Byte); unsafe;
+procedure Move<T, U>(var ASource; var Dest: U; Count: NativeInt); unsafe;
+function CompareMem(P1, P2: Pointer; Length: Integer): Boolean; unsafe;
+{$ENDIF COOPER}
+
 function StringOfChar(aCh: Char; aCount: Integer): DelphiString; inline;
 
 function Trunc(Val: Double): Integer; inline;
@@ -85,11 +98,78 @@ begin
   result := DelphiString(S).SubString(aIndex - 1, aCount);
 end;
 
+function &Copy<T>(B: array of T; aIndex: Integer; aCount: Integer): array of T; 
+begin
+	result := new T[aCount];
+	{$IF TOFFEE}
+	for i: Integer := 0 to aCount do
+		result[i] := B[aIndex + i];
+	{$ELSE}
+	system.Array.Copy(B, aIndex, result, 0, aCount);
+	{$ENDIF}
+end;
+
+function &Copy<T>(B: TArray<T>; aIndex: Integer): TArray<T>; inline;
+begin
+	result := &Copy(B, aIndex, B.length);
+end;
+
 procedure FillChar(var Dest: DelphiString; aCount: Integer; aValue: Char);
 begin
   for i: Integer := 0 to Dest.Length - 1 do
   Dest.Chars[i] := aValue;
 end;
+
+procedure Delete<T>(var Arr: TArray<T>; Start: Integer; Count: Integer);
+begin
+  var Source := Arr;
+  Arr := new T[Arr.Length - Count];
+  for Index: Integer := 0 to Start - 1 do
+    Arr[Index] := Source[Index];
+
+  for Index: Integer := Start + Count to Source.Length - 1 do
+    Arr[Index - Count] := Source[Index];
+end;
+
+{$IFNDEF COOPER}
+procedure FillChar(var Dest; aCount: Integer; aValue: Byte);
+begin
+  var Ptr := PByte(@Dest); pinned;
+  for Idx: Integer := 0 to aCount - 1 do 
+  begin
+    Ptr^ := aValue;
+    inc(Ptr);
+  end;
+end;
+
+procedure Move<T, U>(var ASource; var Dest: U; Count: NativeInt); unsafe;
+begin
+  var SourcePtr := PByte(@ASource); pinned;
+  var DestPtr := PByte(@Dest); pinned;
+  for Idx: Integer := 0 to Count - 1 do 
+  begin
+    DestPtr^ := SourcePtr^;
+    inc(SourcePtr);
+    inc(DestPtr);
+  end;
+  //System.Buffer.MemoryCopy(@Source, @Dest, Count, Count);
+end;
+
+function CompareMem(P1, P2: Pointer; Length: Integer): Boolean; 
+begin
+  var Left := PByte(P1); pinned;
+  var Right := PByte(P2); pinned;
+  for Idx: Integer := 0 to Length - 1 do 
+  begin
+    if Left^ <> Right^ then
+      exit(False);
+    inc(Left);
+    inc(Right);
+  end;
+
+  exit(True);
+end;
+{$ENDIF COOPER}
 
 function StringOfChar(aCh: Char; aCount: Integer): DelphiString;
 begin
