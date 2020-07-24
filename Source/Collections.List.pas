@@ -80,7 +80,7 @@ type
       exit nil;
     end;
 
-    method GetEnumerator: System.Collections.Generic.IEnumerator<T>; public; //implements System.Collections.Generic.IEnumerable<T>.GetEnumerator<T>; 
+    method GetEnumerator: System.Collections.Generic.IEnumerator<T>; public; //implements System.Collections.Generic.IEnumerable<T>.GetEnumerator<T>;
     begin
       var enumerator := DoGetEnumerator;
       if assigned(enumerator) then
@@ -93,7 +93,7 @@ type
     begin
       var currentSequence: NSArray<T>;
       if aState^.state = 0 then begin
-        currentSequence := GetSequence().array;
+        currentSequence := GetSequence().ToNSArray;
         aState^.extra[0] := NSInteger(bridge<CFArrayRef>(currentSequence));
       end
       else begin
