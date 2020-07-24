@@ -240,6 +240,9 @@ type
 TRTLGetVersionFunc = public function(lpVersionInformation: ^rtl.OSVERSIONINFO): rtl.DWORD;
 {$ENDIF}
 
+procedure FreeAndNil<T: class>(var AObject: T);
+function FloatToStr(Value: Double): String;
+
 implementation
 
 type
@@ -869,6 +872,19 @@ end;
 class method TOSVersion.ToString: DelphiString;
 begin
 	result := RTL2String.Format('%s (Version %d.%d.%d)', [fName, fMajor, fMinor, fServicePackMajor]);
+end;
+
+procedure FreeAndNil<T>(var AObject: T);
+begin
+	var lTmp := AObject;
+	AObject := nil;
+  IDisposable(lTmp):Dispose; // just to be nice
+  lTmp.Free;
+end;
+
+function FloatToStr(Value: Double): String;
+begin
+  result := Value.ToString();
 end;
 
 class method Encoding_Extension.Unicode: Encoding;
