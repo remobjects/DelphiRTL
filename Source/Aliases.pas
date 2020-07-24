@@ -4,7 +4,7 @@ uses
   RemObjects.Elements.RTL;
 
 type
-  TClass = public Pointer;
+  TClass = public RemObjects.Elements.RTL.Reflection.Type;
   ShortString = String;
   {$HIDE CPW8}
   Pointer = public {$IF COOPER}Integer{$ELSE}^Void{$ENDIF};
@@ -15,6 +15,7 @@ type
   {$IF NOT COOPER}
   PChar = public ^Char;
   PAnsiChar = public ^AnsiChar;
+  PByte = public ^Byte;
   {$ENDIF}
   PInterfaceEntry = public Pointer;
   PInterfaceTable = public Pointer;
