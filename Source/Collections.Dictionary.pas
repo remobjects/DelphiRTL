@@ -28,6 +28,7 @@ type
     {$ENDIF}
     constructor(aCapacity: Integer := 0);
     constructor(const Collection: TEnumerable<TPair<TKey,TValue>>);
+    constructor(aCapacity: Integer; const aComparer: IEqualityComparer<TKey>);
 
     class method Create(aCapacity: Integer := 0): TDictionary<TKey,TValue>;
     class method Create(const aComparer: IEqualityComparer<TKey>): TDictionary<TKey,TValue>;
@@ -88,13 +89,18 @@ end;
 
 constructor TDictionary<TKey,TValue>(aCapacity: Integer := 0);
 begin
-  Initialize(aCapacity);
+  constructor(aCapacity, nil);
 end;
 
 constructor TDictionary<TKey,TValue>(const Collection: TEnumerable<TPair<TKey,TValue>>);
 begin
   Initialize;
   AddCollection(Collection);
+end;
+
+constructor TDictionary<TKey,TValue>(aCapacity: Integer; const aComparer: IEqualityComparer<TKey>);
+begin
+  Initialize(aCapacity);
 end;
 
 method TDictionary<TKey,TValue>.Add(const Key: TKey; const Value: TValue);
