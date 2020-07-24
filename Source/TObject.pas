@@ -30,12 +30,22 @@ type
     class method InitInstance(Instance: Pointer): TObject; empty;
     method CleanupInstance; empty;
 
-    method ClassType: TClass; empty;
+    method ClassType: TClass;
+    begin
+      {$IF ECHOES}
+      result := typeOf(self);
+      {$ELSE}
+      result := nil;
+      {$ENDIF}
+    end;
+
 
     class method ClassName: ShortString;
     begin
       {$IF ISLAND}
       result := typeOf(self).Name;
+      {$ELSEIF ECHOES}
+      result := typeOf(self).FullName;
       {$ELSE}
       result := '';
       {$ENDIF}
@@ -45,16 +55,42 @@ type
     begin
       {$IF ISLAND}
         result := typeOf(self).Name;
+      {$ELSEIF ECHOES}
+      result := ClassType.FullName;
       {$ELSE}
         result := '';
       {$ENDIF}
     end;
 
-    class method ClassNameIs(const Name: String): Boolean; empty;
-    class method ClassParent: TClass; empty;
+    class method ClassNameIs(const Name: String): Boolean; 
+    begin
+      {$IF ECHOES}
+      result := System.String.Equals(ClassName, Name, StringComparison.CurrentCultureIgnoreCase);
+      {$ELSE}
+      result := false;
+      {$ENDIF}
+    end;
+
+    class method ClassParent: TClass; 
+    begin
+      {$IF ECHOES}
+      result := typeOf(self).BaseType;
+      {$ELSE}
+      result := nil;
+      {$ENDIF}
+    end;
+
     class method ClassInfo: Pointer; empty;
     class method InstanceSize: LongInt; empty;
-    class method InheritsFrom(AClass: TClass): Boolean; empty;
+
+    class method InheritsFrom(AClass: TClass): Boolean; 
+    begin
+      {$IF ECHOES}
+      result := (AClass = typeOf(self)) or (typeOf(self).IsSubclassOf(AClass));
+      {$ELSE}
+      result := false;
+      {$ENDIF}
+    end;
 
     class method MethodAddress(const Name: ShortString): Pointer;
     begin

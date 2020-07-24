@@ -4,7 +4,11 @@ uses
   RemObjects.Elements.RTL;
 
 type
+  {$IF ECHOES}
+  TClass = public System.Type;
+  {$ELSE}
   TClass = public Pointer;
+  {$ENDIF}
   ShortString = String;
   {$HIDE CPW8}
   Pointer = public {$IF COOPER}Integer{$ELSE}^Void{$ENDIF};
