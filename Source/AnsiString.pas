@@ -25,6 +25,7 @@ type
     method SetOffsetChar(aIndex: Integer; aValue: AnsiChar);
     method GetChar(aIndex: Integer): AnsiChar; inline;
     method SetChar(aIndex: Integer; Value: AnsiChar); inline;
+    method CharArrayToByteArray(aCharArray: array of AnsiChar; StartIndex: Integer; aLength: Integer): array of Byte;
     method CharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
     method CastCharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
     method StringToUTF8(aString: PlatformString): array of Byte;
@@ -39,6 +40,7 @@ type
     constructor(Value: String; AsUTF16Bytes: Boolean := false);
     constructor(Value: PlatformString; AsUTF16Bytes: Boolean := false);
     constructor(C: AnsiChar; aCount: Integer);
+    constructor(Value: array of AnsiChar);
     constructor(Value: array of Char; PreserveChars: Boolean = true);
     constructor(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true);
     constructor(Value: array of Byte);
@@ -51,6 +53,7 @@ type
     class operator Implicit(Value: AnsiString): String;
     class operator Implicit(Value: array of Char): AnsiString;
     class operator Implicit(Value: DelphiString): AnsiString;
+    class operator Implicit(Value: array of AnsiChar): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: Char): AnsiString;
     class operator &Add(Value1: Char; Value2: AnsiString): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: AnsiChar): AnsiString;
@@ -402,7 +405,19 @@ begin
     result[i] := Byte(aCharArray[StartIndex + i]);
 end;
 
+method AnsiString.CharArrayToByteArray(aCharArray: array of AnsiChar; StartIndex: Integer; aLength: Integer): array of Byte;
+begin
+  result := new Byte[aLength];
+  for i: Integer := 0 to aLength - 1 do
+    result[i] := Byte(aCharArray[StartIndex + i]);
+end;
+
 operator AnsiString.Implicit(Value: array of Char): AnsiString;
+begin
+  result := new AnsiString(Value);
+end;
+
+operator AnsiString.Implicit(Value: array of AnsiChar): AnsiString;
 begin
   result := new AnsiString(Value);
 end;
@@ -410,6 +425,11 @@ end;
 operator AnsiString.Implicit(Value: DelphiString): AnsiString;
 begin
   result := new AnsiString(Value.ToCharArray, false);
+end;
+
+constructor AnsiString(Value: array of AnsiChar);
+begin
+  fData := CharArrayToByteArray(Value, 0, Value.Length)
 end;
 
 constructor AnsiString(Value: array of Char; PreserveChars: Boolean = true);
