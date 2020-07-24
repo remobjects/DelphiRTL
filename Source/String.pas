@@ -67,7 +67,7 @@ type
     constructor;
     constructor(Value: PlatformString);
     constructor(aBytes: array of Byte);
-
+    constructor(C: Char; aCount: Integer);
     class method Create(C: Char; aCount: Integer): DelphiString; static;
     class method Create(const Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString; static;
     class method Create(const Value: array of Char): DelphiString; static;
@@ -292,6 +292,8 @@ type
     property Chars[Index: Integer]: Char read GetChar write SetChar;
     property Character[Index: Integer]: Char read GetOffsetChar write SetOffsetChar; default;
     property Length: Integer read GetLength;
+
+    const Empty = '';
   end;
 
   {$IF ECHOES}
@@ -653,6 +655,11 @@ end;
 constructor DelphiString(Value: PlatformString);
 begin
   fData := InternalCreate(Value);
+end;
+
+constructor DelphiString(C: Char; aCount: Integer);
+begin
+  self := CreateWithChars(C, aCount);
 end;
 
 class operator DelphiString.Add(Value1: DelphiString; Value2: Char): DelphiString;
