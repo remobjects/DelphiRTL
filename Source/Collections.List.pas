@@ -47,7 +47,7 @@ type
     end;
   end;
 
-  TEnumerable<T> = public abstract class(ISequence<T>)
+  TEnumerable<T> = public abstract class(TDelphiObject, ISequence<T>)
   private
     method ToArrayImpl(Count: Integer): TArray<T>;
   protected
