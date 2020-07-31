@@ -36,6 +36,7 @@ function AnsiCompareStr(const S1, S2: DelphiString): Integer; inline;
 function AnsiSameStr(const S1, S2: DelphiString): Boolean; inline;
 function AnsiCompareText(const S1, S2: DelphiString): Integer; inline;
 function AnsiSameText(const S1, S2: DelphiString): Boolean; inline;
+function AnsiStartsText(const ASubText, AText: DelphiString): Boolean; inline;
 function Trim(const S: DelphiString): DelphiString;
 function Trim(const S: PlatformString): DelphiString; inline;
 function TrimLeft(const S: DelphiString): DelphiString;
@@ -218,6 +219,11 @@ end;
 function AnsiSameText(const S1, S2: DelphiString): Boolean;
 begin
   result := DelphiString.Compare(S1, S2, true, TLanguages.UserDefaultLocale) = 0;
+end;
+
+function AnsiStartsText(const ASubText, AText: DelphiString): Boolean; inline;
+begin
+  result := AText.StartsWith(ASubText, true);
 end;
 
 function Trim(const S: DelphiString): DelphiString;
