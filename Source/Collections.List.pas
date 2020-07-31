@@ -13,7 +13,7 @@ type
     function Compare(const Left, Right: T): Integer;
   end;
 
-  IEqualityComparer<T> = public interface
+  IEqualityComparer<T> = public interface({$IFDEF ECHOES}System.Collections.Generic.IEqualityComparer<T>{$ENDIF ECHOES})
     function &Equals(const Left, Right: T): Boolean;
     function GetHashCode(const Value: T): Integer;
   end;
