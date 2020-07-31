@@ -94,6 +94,11 @@ type
     NegCurrFormat: Byte;
     NormalizedLocaleName: String;
     Locale: TLocaleID;
+
+    constructor;
+    constructor(aLocale: TLocaleID);
+    constructor(aLocaleName: DelphiString);
+ 
     class function Create: TFormatSettings; static;
     class function Create(aLocale: TLocaleID): TFormatSettings; static;
     class function Create(aLocaleName: DelphiString): TFormatSettings; static;
@@ -559,51 +564,56 @@ begin
 end;
 {$ENDIF}
 
-class function TFormatSettings.Create: TFormatSettings;
+constructor TFormatSettings;
 begin
-  result := Create(Locale.Current);
+  constructor(Locale.Current);
 end;
 
-class function TFormatSettings.Create(aLocale: TLocaleID): TFormatSettings;
+class function TFormatSettings.Create: TFormatSettings;
 begin
-  result.Locale  := aLocale;
+  result := new TFormatSettings(Locale.Current);
+end;
+
+constructor TFormatSettings.Create(aLocale: TLocaleID);
+begin
+  Locale  := aLocale;
   {$IF COOPER}
   var lFormat := java.text.SimpleDateFormat(java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG, java.util.Locale(aLocale)));
-  result.LongDateFormat := lFormat.toPattern;
+  LongDateFormat := lFormat.toPattern;
   lFormat := java.text.SimpleDateFormat(java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT, java.util.Locale(aLocale)));
-  result.ShortDateFormat := lFormat.toPattern;
-  result.LongTimeFormat := 'hh:mm:ss';
-  result.ShortTimeFormat := 'hh:mm';
+  ShortDateFormat := lFormat.toPattern;
+  LongTimeFormat := 'hh:mm:ss';
+  ShortTimeFormat := 'hh:mm';
   var lDateSymbols := lFormat.getDateFormatSymbols;
   if lDateSymbols.AmPmStrings.length > 1 then begin
-    result.TimeAMString := lDateSymbols.AmPmStrings[0];
-    result.TimePMString := lDateSymbols.AmPmStrings[1];
+    TimeAMString := lDateSymbols.AmPmStrings[0];
+    TimePMString := lDateSymbols.AmPmStrings[1];
   end;
-  result.DateSeparator := '/';
+  DateSeparator := '/';
 
   var lCurrency := java.util.Currency.getInstance(java.util.Locale(aLocale));
-  result.CurrencyString := lCurrency.getSymbol;
-  result.CurrencyDecimals := lCurrency.DefaultFractionDigits;
+  CurrencyString := lCurrency.getSymbol;
+  CurrencyDecimals := lCurrency.DefaultFractionDigits;
   var lSymbols := new java.text.DecimalFormat().getDecimalFormatSymbols;
-  result.DecimalSeparator := lSymbols.getDecimalSeparator;
-  result.ThousandSeparator := lSymbols.getGroupingSeparator;
+  DecimalSeparator := lSymbols.getDecimalSeparator;
+  ThousandSeparator := lSymbols.getGroupingSeparator;
   {$ELSEIF ECHOES}
   var lLocale := System.Globalization.CultureInfo(aLocale);
-  result.LongDateFormat := lLocale.DateTimeFormat.LongDatePattern;
-  result.ShortDateFormat := lLocale.DateTimeFormat.ShortDatePattern;
-  result.LongTimeFormat := lLocale.DateTimeFormat.LongTimePattern;
-  result.ShortTimeFormat := lLocale.DateTimeFormat.ShortTimePattern;
-  result.TimePMString := lLocale.DateTimeFormat.PMDesignator;
-  result.TimeAMString := lLocale.DateTimeFormat.AMDesignator;
-  result.DateSeparator := lLocale.DateTimeFormat.DateSeparator;
+  LongDateFormat := lLocale.DateTimeFormat.LongDatePattern;
+  ShortDateFormat := lLocale.DateTimeFormat.ShortDatePattern;
+  LongTimeFormat := lLocale.DateTimeFormat.LongTimePattern;
+  ShortTimeFormat := lLocale.DateTimeFormat.ShortTimePattern;
+  TimePMString := lLocale.DateTimeFormat.PMDesignator;
+  TimeAMString := lLocale.DateTimeFormat.AMDesignator;
+  DateSeparator := lLocale.DateTimeFormat.DateSeparator;
 
-  result.CurrencyString := lLocale.NumberFormat.CurrencySymbol;
+  CurrencyString := lLocale.NumberFormat.CurrencySymbol;
   if length(lLocale.NumberFormat.CurrencyGroupSizes) > 0 then
-    result.CurrencyDecimals := lLocale.NumberFormat.CurrencyGroupSizes[0];
+    CurrencyDecimals := lLocale.NumberFormat.CurrencyGroupSizes[0];
   if lLocale.NumberFormat.NumberDecimalSeparator.Length > 0 then
-    result.DecimalSeparator := lLocale.NumberFormat.NumberDecimalSeparator[0];
+    DecimalSeparator := lLocale.NumberFormat.NumberDecimalSeparator[0];
   if lLocale.NumberFormat.NumberGroupSeparator.Length > 0 then
-    result.ThousandSeparator := lLocale.NumberFormat.NumberGroupSeparator[0];
+    ThousandSeparator := lLocale.NumberFormat.NumberGroupSeparator[0];
   {$ELSEIF ISLAND AND WINDOWS}
   //var lLocale: rtl.LCID; // TODO
   var lBuffer := new Char[100];
@@ -611,67 +621,77 @@ begin
   var lTemp: DelphiString;
 
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SLONGDATE, @lBuffer[0], lBuffer.Length);
-  result.LongDateFormat := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  LongDateFormat := DelphiString.Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SSHORTDATE, @lBuffer[0], lBuffer.Length);
-  result.ShortDateFormat := DelphiString.Create(lBuffer, 0, lTotal - 1);
-  result.LongTimeFormat := 'hh:mm:ss';
-  result.ShortTimeFormat := 'hh:mm';
+  ShortDateFormat := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  LongTimeFormat := 'hh:mm:ss';
+  ShortTimeFormat := 'hh:mm';
 
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_S1159, @lBuffer[0], lBuffer.Length);
-  result.TimeAMString := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  TimeAMString := DelphiString.Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_S2359, @lBuffer[0], lBuffer.Length);
-  result.TimePMString := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  TimePMString := DelphiString.Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_STIME, @lBuffer[0], lBuffer.Length);
-  result.DateSeparator := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  DateSeparator := DelphiString.Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SDATE, @lBuffer[0], lBuffer.Length);
   lTemp := DelphiString.Create(lBuffer, 0, lTotal - 1);
   if lTemp.Length > 0 then
-    result.TimeSeparator := lTemp.Chars[0];
+    TimeSeparator := lTemp.Chars[0];
 
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SCURRENCY, @lBuffer[0], lBuffer.Length);
-  result.CurrencyString := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  CurrencyString := DelphiString.Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SDECIMAL, @lBuffer[0], lBuffer.Length);
   lTemp := DelphiString.Create(lBuffer, 0, lTotal - 1);
   if lTemp.Length > 0 then
-     result.DecimalSeparator := lTemp.Chars[0];
+     DecimalSeparator := lTemp.Chars[0];
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_STHOUSAND, @lBuffer[0], lBuffer.Length);
   lTemp := DelphiString.Create(lBuffer, 0, lTotal).SubString(0, 1);
   if lTemp.Length > 0 then
-  result.ThousandSeparator := lTemp.Chars[0];
+  ThousandSeparator := lTemp.Chars[0];
   {$ELSEIF TOFFEE}
   var lLocale := NSLocale(aLocale);
   var lDateFormatter := new NSDateFormatter();
   lDateFormatter.locale := lLocale;
   lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterFullStyle;
   lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
-  result.LongDateFormat := lDateFormatter.dateFormat;
+  LongDateFormat := lDateFormatter.dateFormat;
 
   lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterShortStyle;
   lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
-  result.ShortDateFormat := lDateFormatter.dateFormat;
+  ShortDateFormat := lDateFormatter.dateFormat;
 
   lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
   lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterMediumStyle;
-  result.LongTimeFormat := lDateFormatter.dateFormat;
+  LongTimeFormat := lDateFormatter.dateFormat;
 
   lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
   lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterShortStyle;
-  result.ShortTimeFormat := lDateFormatter.dateFormat;
+  ShortTimeFormat := lDateFormatter.dateFormat;
 
   var lNumberFormatter := new NSNumberFormatter();
   lNumberFormatter.locale := lLocale;
-  result.CurrencyString := lNumberFormatter.currencySymbol;
+  CurrencyString := lNumberFormatter.currencySymbol;
   if lNumberFormatter.decimalSeparator.length > 0 then
-    result.DecimalSeparator := lNumberFormatter.decimalSeparator[0];
+    DecimalSeparator := lNumberFormatter.decimalSeparator[0];
   if lNumberFormatter.groupingSeparator.length > 0 then
-  result.ThousandSeparator := lNumberFormatter.groupingSeparator[0];
+  ThousandSeparator := lNumberFormatter.groupingSeparator[0];
   {$ENDIF}
+end;
+
+class function TFormatSettings.Create(aLocale: TLocaleID): TFormatSettings;
+begin
+  result := new TFormatSettings(aLocale);
+end;
+
+constructor TFormatSettings.Create(aLocaleName: DelphiString);
+begin
+  var aLocale := TLanguages.GetLocaleIDFromLocaleName(aLocaleName);
+  constructor(aLocale);
 end;
 
 class function TFormatSettings.Create(aLocaleName: DelphiString): TFormatSettings;
 begin
-  var aLocale := TLanguages.GetLocaleIDFromLocaleName(aLocaleName);
-  result := Create(aLocale);
+  result := new TFormatSettings(aLocaleName);
 end;
 
 class function TFormatSettings.Invariant: TFormatSettings;
