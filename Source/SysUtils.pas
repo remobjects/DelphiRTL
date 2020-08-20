@@ -179,6 +179,8 @@ var
   FormatSettings: TFormatSettings := TFormatSettings.Create; public;
   SysLocale: TSysLocale; public;
 
+procedure GetFormatSettings;
+
 { File functions }
 {$IF NOT WEBASSEMBLY}
 function FileOpen(const FileName: DelphiString; Mode: Cardinal): THandle;
@@ -712,9 +714,22 @@ end;
 
 class constructor TFormatSettings;
 begin
+  InitSysLocale;
+end;
+
+method InitSysLocale;
+begin
   {$IF NOT COOPER}
   SysLocale.DefaultLCID := Locale.Current;
   {$ENDIF}
+end;
+
+method GetFormatSettings;
+begin
+  InitSysLocale;
+
+  // Default Format Settings for the current SystemLocale.
+  FormatSettings := TFormatSettings.Create(SysLocale.DefaultLCID);
 end;
 
 {$IF (ISLAND AND NOT WEBASSEMBLY) AND WINDOWS}
