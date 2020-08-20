@@ -59,7 +59,6 @@ type
   TDictionaryOwnerships = set of (doOwnsKeys, doOwnsValues);
 
   TObjectDictionary<TKey,TValue> = public class(TDictionary<TKey,TValue>)
-    where TKey is class, TValue is class;
   private
     FOwnerships: TDictionaryOwnerships;
   public
