@@ -30,31 +30,50 @@ type
     class method InitInstance(Instance: Pointer): TObject; empty;
     method CleanupInstance; empty;
 
-    method ClassType: TClass; empty;
+    method ClassType: TClass;
+    begin
+      result := new RemObjects.Elements.RTL.Reflection.Type withPlatformType(typeOf(self));
+    end;
+
 
     class method ClassName: ShortString;
     begin
-      {$IF ISLAND}
       result := typeOf(self).Name;
-      {$ELSE}
-      result := '';
-      {$ENDIF}
     end;
 
     method InstanceClassName: String;
     begin
-      {$IF ISLAND}
-        result := typeOf(self).Name;
-      {$ELSE}
-        result := '';
-      {$ENDIF}
+      result := ClassType.Name;
     end;
 
-    class method ClassNameIs(const Name: String): Boolean; empty;
-    class method ClassParent: TClass; empty;
+    class method ClassNameIs(const Name: String): Boolean; 
+    begin
+      result := RemObjects.Elements.RTL.String.EqualsIgnoringCase(ClassName, Name);
+    end;
+
+    class method ClassParent: TClass; 
+    begin
+      result := (new RemObjects.Elements.RTL.Reflection.Type withPlatformType(typeOf(self))).BaseType;
+    end;
+
     class method ClassInfo: Pointer; empty;
     class method InstanceSize: LongInt; empty;
-    class method InheritsFrom(AClass: TClass): Boolean; empty;
+
+    class method InheritsFrom(AClass: TClass): Boolean; 
+    begin
+      {$IF COOPER}
+      result := false;
+      (*var SelfType := new RemObjects.Elements.RTL.Reflection.Type withPlatformType(typeOf(self));
+      var altSelfType := typeOf(Self);
+      result := (AClass = typeOf(self)) or altSelfType.IsSubClassOf(AClass);
+      result := RemObjects.Elements.RTL.String.Equals(SelfType.Name, AClass.Name) or (SelfType.IsSubclassOf(AClass));*)
+      {$ELSEIF TOFFEE}
+      var SelfType := new RemObjects.Elements.RTL.Reflection.Type withPlatformType(typeOf(self));
+      result := RemObjects.Elements.RTL.String.Equals(SelfType.Name, AClass.Name) or (SelfType.IsSubclassOf(AClass));
+      {$ELSE}
+      result := (AClass = typeOf(self)) or (typeOf(self).IsSubclassOf(AClass));
+      {$ENDIF}
+    end;
 
     class method MethodAddress(const Name: ShortString): Pointer;
     begin
