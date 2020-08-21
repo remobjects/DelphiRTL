@@ -20,6 +20,7 @@ function Min(A, B: Integer): Integer; inline;
 function Min(A, B: Int64): Int64; inline;
 function Min(A, B: Double): Double; inline;
 function Power(Base, Exponent: Double): Double; inline;
+function IsInfinite(const AValue: Double): Boolean;
 
 implementation
 
@@ -86,6 +87,11 @@ end;
 function Power(Base, Exponent: Double): Double;
 begin
   result := Math.Pow(Base, Exponent);
+end;
+
+function IsInfinite(const AValue: Double): Boolean;
+begin
+  result := Consts.IsInfinity(AValue);
 end;
 
 end.
