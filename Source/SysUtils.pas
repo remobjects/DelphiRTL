@@ -43,6 +43,17 @@ type
   {$ENDIF}
   TEncoding = public Encoding;
 
+  Encoding_Extension = public extension class(Encoding)
+  public
+    class method Unicode: Encoding; static;
+    {$IFDEF ECHOES}
+    class method Convert(srcEncoding: Encoding; dstEncoding: Encoding; bytes: TBytes): TBytes;
+    {$ENDIF}
+    method GetPreamble: TBytes;
+    method Clone: Encoding;
+    class method GetBufferEncoding(const Buffer: TBytes; var AEncoding: Encoding; ADefaultEncoding: Encoding = Encoding.Default): Integer;
+  end;
+
   TSysLocale = public record
   public
     DefaultLCID: TLocaleID;
@@ -83,6 +94,11 @@ type
     NegCurrFormat: Byte;
     NormalizedLocaleName: String;
     Locale: TLocaleID;
+
+    constructor;
+    constructor(aLocale: TLocaleID);
+    constructor(aLocaleName: DelphiString);
+ 
     class function Create: TFormatSettings; static;
     class function Create(aLocale: TLocaleID): TFormatSettings; static;
     class function Create(aLocaleName: DelphiString): TFormatSettings; static;
@@ -131,9 +147,39 @@ type
     class property LineBreak: String read fLineBreak;
   end;
 
+// Generic Anonymous method declarations
+type
+  TProc = block;
+  {$IF NOT COOPER AND NOT TOFFEE}
+  TProc<T> = block(Arg1: T);
+  TProc<T1,T2> = block(Arg1: T1; Arg2: T2);
+  TProc<T1,T2,T3> = block(Arg1: T1; Arg2: T2; Arg3: T3);
+  TProc<T1,T2,T3,T4> = block(Arg1: T1; Arg2: T2; Arg3: T3; Arg4: T4);
+  {$ENDIF}
+
+  TFunc<TResult> = block(): TResult;
+  {$IF NOT COOPER AND NOT TOFFEE}
+  TFunc<T,TResult> = block(Arg1: T): TResult;
+  TFunc<T1,T2,TResult> = block(Arg1: T1; Arg2: T2): TResult;
+  TFunc<T1,T2,T3,TResult> = block(Arg1: T1; Arg2: T2; Arg3: T3): TResult;
+  TFunc<T1,T2,T3,T4,TResult> = block(Arg1: T1; Arg2: T2; Arg3: T3; Arg4: T4): TResult;
+  {$ENDIF}
+
+  TPredicate<T> = block(Arg1: T): Boolean;
+
+  ENotImplemented = public class(NotImplementedException);
+  EArgumentException = public class(ArgumentException);
+  EArgumentOutOfRangeException = public class(EArgumentException);
+  EArgumentNilException = public class(EArgumentException);
+  EOutOfMemory = public class({$IFDEF ECHOES}System.OutOfMemoryException{$ELSE}Exception{$ENDIF ECHOES});
+  EConvertError = public class(Exception);
+  EAbstractError = public class(Exception);
+
 var
-  FormatSettings: TFormatSettings := TFormatSettings.Create;
-  SysLocale: TSysLocale;
+  FormatSettings: TFormatSettings := TFormatSettings.Create; public;
+  SysLocale: TSysLocale; public;
+
+procedure GetFormatSettings;
 
 { File functions }
 {$IF NOT WEBASSEMBLY}
@@ -200,6 +246,9 @@ type
 [CallingConvention(CallingConvention.Stdcall)]
 TRTLGetVersionFunc = public function(lpVersionInformation: ^rtl.OSVERSIONINFO): rtl.DWORD;
 {$ENDIF}
+
+procedure FreeAndNil<T: class>(var AObject: T);
+function FloatToStr(Value: Double): String;
 
 implementation
 
@@ -517,51 +566,56 @@ begin
 end;
 {$ENDIF}
 
-class function TFormatSettings.Create: TFormatSettings;
+constructor TFormatSettings;
 begin
-  result := Create(Locale.Current);
+  constructor(Locale.Current);
 end;
 
-class function TFormatSettings.Create(aLocale: TLocaleID): TFormatSettings;
+class function TFormatSettings.Create: TFormatSettings;
 begin
-  result.Locale  := aLocale;
+  result := new TFormatSettings(Locale.Current);
+end;
+
+constructor TFormatSettings.Create(aLocale: TLocaleID);
+begin
+  Locale  := aLocale;
   {$IF COOPER}
   var lFormat := java.text.SimpleDateFormat(java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG, java.util.Locale(aLocale)));
-  result.LongDateFormat := lFormat.toPattern;
+  LongDateFormat := lFormat.toPattern;
   lFormat := java.text.SimpleDateFormat(java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT, java.util.Locale(aLocale)));
-  result.ShortDateFormat := lFormat.toPattern;
-  result.LongTimeFormat := 'hh:mm:ss';
-  result.ShortTimeFormat := 'hh:mm';
+  ShortDateFormat := lFormat.toPattern;
+  LongTimeFormat := 'hh:mm:ss';
+  ShortTimeFormat := 'hh:mm';
   var lDateSymbols := lFormat.getDateFormatSymbols;
   if lDateSymbols.AmPmStrings.length > 1 then begin
-    result.TimeAMString := lDateSymbols.AmPmStrings[0];
-    result.TimePMString := lDateSymbols.AmPmStrings[1];
+    TimeAMString := lDateSymbols.AmPmStrings[0];
+    TimePMString := lDateSymbols.AmPmStrings[1];
   end;
-  result.DateSeparator := '/';
+  DateSeparator := '/';
 
   var lCurrency := java.util.Currency.getInstance(java.util.Locale(aLocale));
-  result.CurrencyString := lCurrency.getSymbol;
-  result.CurrencyDecimals := lCurrency.DefaultFractionDigits;
+  CurrencyString := lCurrency.getSymbol;
+  CurrencyDecimals := lCurrency.DefaultFractionDigits;
   var lSymbols := new java.text.DecimalFormat().getDecimalFormatSymbols;
-  result.DecimalSeparator := lSymbols.getDecimalSeparator;
-  result.ThousandSeparator := lSymbols.getGroupingSeparator;
+  DecimalSeparator := lSymbols.getDecimalSeparator;
+  ThousandSeparator := lSymbols.getGroupingSeparator;
   {$ELSEIF ECHOES}
   var lLocale := System.Globalization.CultureInfo(aLocale);
-  result.LongDateFormat := lLocale.DateTimeFormat.LongDatePattern;
-  result.ShortDateFormat := lLocale.DateTimeFormat.ShortDatePattern;
-  result.LongTimeFormat := lLocale.DateTimeFormat.LongTimePattern;
-  result.ShortTimeFormat := lLocale.DateTimeFormat.ShortTimePattern;
-  result.TimePMString := lLocale.DateTimeFormat.PMDesignator;
-  result.TimeAMString := lLocale.DateTimeFormat.AMDesignator;
-  result.DateSeparator := lLocale.DateTimeFormat.DateSeparator;
+  LongDateFormat := lLocale.DateTimeFormat.LongDatePattern;
+  ShortDateFormat := lLocale.DateTimeFormat.ShortDatePattern;
+  LongTimeFormat := lLocale.DateTimeFormat.LongTimePattern;
+  ShortTimeFormat := lLocale.DateTimeFormat.ShortTimePattern;
+  TimePMString := lLocale.DateTimeFormat.PMDesignator;
+  TimeAMString := lLocale.DateTimeFormat.AMDesignator;
+  DateSeparator := lLocale.DateTimeFormat.DateSeparator;
 
-  result.CurrencyString := lLocale.NumberFormat.CurrencySymbol;
+  CurrencyString := lLocale.NumberFormat.CurrencySymbol;
   if length(lLocale.NumberFormat.CurrencyGroupSizes) > 0 then
-    result.CurrencyDecimals := lLocale.NumberFormat.CurrencyGroupSizes[0];
+    CurrencyDecimals := lLocale.NumberFormat.CurrencyGroupSizes[0];
   if lLocale.NumberFormat.NumberDecimalSeparator.Length > 0 then
-    result.DecimalSeparator := lLocale.NumberFormat.NumberDecimalSeparator[0];
+    DecimalSeparator := lLocale.NumberFormat.NumberDecimalSeparator[0];
   if lLocale.NumberFormat.NumberGroupSeparator.Length > 0 then
-    result.ThousandSeparator := lLocale.NumberFormat.NumberGroupSeparator[0];
+    ThousandSeparator := lLocale.NumberFormat.NumberGroupSeparator[0];
   {$ELSEIF ISLAND AND WINDOWS}
   //var lLocale: rtl.LCID; // TODO
   var lBuffer := new Char[100];
@@ -569,67 +623,77 @@ begin
   var lTemp: DelphiString;
 
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SLONGDATE, @lBuffer[0], lBuffer.Length);
-  result.LongDateFormat := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  LongDateFormat := DelphiString.Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SSHORTDATE, @lBuffer[0], lBuffer.Length);
-  result.ShortDateFormat := DelphiString.Create(lBuffer, 0, lTotal - 1);
-  result.LongTimeFormat := 'hh:mm:ss';
-  result.ShortTimeFormat := 'hh:mm';
+  ShortDateFormat := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  LongTimeFormat := 'hh:mm:ss';
+  ShortTimeFormat := 'hh:mm';
 
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_S1159, @lBuffer[0], lBuffer.Length);
-  result.TimeAMString := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  TimeAMString := DelphiString.Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_S2359, @lBuffer[0], lBuffer.Length);
-  result.TimePMString := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  TimePMString := DelphiString.Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_STIME, @lBuffer[0], lBuffer.Length);
-  result.DateSeparator := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  DateSeparator := DelphiString.Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SDATE, @lBuffer[0], lBuffer.Length);
   lTemp := DelphiString.Create(lBuffer, 0, lTotal - 1);
   if lTemp.Length > 0 then
-    result.TimeSeparator := lTemp.Chars[0];
+    TimeSeparator := lTemp.Chars[0];
 
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SCURRENCY, @lBuffer[0], lBuffer.Length);
-  result.CurrencyString := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  CurrencyString := DelphiString.Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SDECIMAL, @lBuffer[0], lBuffer.Length);
   lTemp := DelphiString.Create(lBuffer, 0, lTotal - 1);
   if lTemp.Length > 0 then
-     result.DecimalSeparator := lTemp.Chars[0];
+     DecimalSeparator := lTemp.Chars[0];
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_STHOUSAND, @lBuffer[0], lBuffer.Length);
   lTemp := DelphiString.Create(lBuffer, 0, lTotal).SubString(0, 1);
   if lTemp.Length > 0 then
-  result.ThousandSeparator := lTemp.Chars[0];
+  ThousandSeparator := lTemp.Chars[0];
   {$ELSEIF TOFFEE}
   var lLocale := NSLocale(aLocale);
   var lDateFormatter := new NSDateFormatter();
   lDateFormatter.locale := lLocale;
   lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterFullStyle;
   lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
-  result.LongDateFormat := lDateFormatter.dateFormat;
+  LongDateFormat := lDateFormatter.dateFormat;
 
   lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterShortStyle;
   lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
-  result.ShortDateFormat := lDateFormatter.dateFormat;
+  ShortDateFormat := lDateFormatter.dateFormat;
 
   lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
   lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterMediumStyle;
-  result.LongTimeFormat := lDateFormatter.dateFormat;
+  LongTimeFormat := lDateFormatter.dateFormat;
 
   lDateFormatter.dateStyle := NSDateFormatterStyle.NSDateFormatterNoStyle;
   lDateFormatter.timeStyle := NSDateFormatterStyle.NSDateFormatterShortStyle;
-  result.ShortTimeFormat := lDateFormatter.dateFormat;
+  ShortTimeFormat := lDateFormatter.dateFormat;
 
   var lNumberFormatter := new NSNumberFormatter();
   lNumberFormatter.locale := lLocale;
-  result.CurrencyString := lNumberFormatter.currencySymbol;
+  CurrencyString := lNumberFormatter.currencySymbol;
   if lNumberFormatter.decimalSeparator.length > 0 then
-    result.DecimalSeparator := lNumberFormatter.decimalSeparator[0];
+    DecimalSeparator := lNumberFormatter.decimalSeparator[0];
   if lNumberFormatter.groupingSeparator.length > 0 then
-  result.ThousandSeparator := lNumberFormatter.groupingSeparator[0];
+  ThousandSeparator := lNumberFormatter.groupingSeparator[0];
   {$ENDIF}
+end;
+
+class function TFormatSettings.Create(aLocale: TLocaleID): TFormatSettings;
+begin
+  result := new TFormatSettings(aLocale);
+end;
+
+constructor TFormatSettings.Create(aLocaleName: DelphiString);
+begin
+  var aLocale := TLanguages.GetLocaleIDFromLocaleName(aLocaleName);
+  constructor(aLocale);
 end;
 
 class function TFormatSettings.Create(aLocaleName: DelphiString): TFormatSettings;
 begin
-  var aLocale := TLanguages.GetLocaleIDFromLocaleName(aLocaleName);
-  result := Create(aLocale);
+  result := new TFormatSettings(aLocaleName);
 end;
 
 class function TFormatSettings.Invariant: TFormatSettings;
@@ -650,9 +714,22 @@ end;
 
 class constructor TFormatSettings;
 begin
+  InitSysLocale;
+end;
+
+method InitSysLocale;
+begin
   {$IF NOT COOPER}
   SysLocale.DefaultLCID := Locale.Current;
   {$ENDIF}
+end;
+
+method GetFormatSettings;
+begin
+  InitSysLocale;
+
+  // Default Format Settings for the current SystemLocale.
+  FormatSettings := TFormatSettings.Create(SysLocale.DefaultLCID);
 end;
 
 {$IF (ISLAND AND NOT WEBASSEMBLY) AND WINDOWS}
@@ -829,8 +906,91 @@ end;
 
 class method TOSVersion.ToString: DelphiString;
 begin
-  result := String.Format('%s (Version %d.%d.%d)', [fName, fMajor, fMinor, fServicePackMajor]);
+  result := RTL2String.Format('%s (Version %d.%d.%d)', [fName, fMajor, fMinor, fServicePackMajor]);
 end;
 
+procedure FreeAndNil<T>(var AObject: T);
+begin
+  var lTmp := AObject;
+  AObject := nil;
+  IDisposable(lTmp):Dispose; // just to be nice
+  lTmp.Free;
+end;
+
+function FloatToStr(Value: Double): String;
+begin
+  result := Value.ToString();
+end;
+
+class method Encoding_Extension.Unicode: Encoding;
+begin
+  result := Encoding.UTF16LE;
+end;
+
+{$IFDEF ECHOES}
+class method Encoding_Extension.Convert(srcEncoding: Encoding; dstEncoding: Encoding; bytes: TBytes): TBytes;
+begin
+  result := System.Text.Encoding.Convert(srcEncoding, dstEncoding, bytes);
+end;
+{$ENDIF}
+
+method Encoding_Extension.GetPreamble: TBytes;
+begin
+  result := Self.GetPreamble();
+end;
+
+method Encoding_Extension.Clone: Encoding;
+begin
+  result := Self.Clone();
+end;
+
+class method Encoding_Extension.GetBufferEncoding(const Buffer: TBytes; var AEncoding: Encoding;
+  ADefaultEncoding: Encoding): Integer;
+
+  function ContainsPreamble(const Buffer, Signature: array of Byte): Boolean;
+  var
+    I: Integer;
+  begin
+    Result := True;
+    if Length(Buffer) >= Length(Signature) then
+    begin
+      for I := 1 to Length(Signature) do
+        if Buffer[I - 1] <> Signature [I - 1] then
+        begin
+          Result := False;
+          Break;
+        end;
+    end
+    else
+      Result := False;
+  end;
+
+var
+  Preamble: TBytes;
+begin
+  Result := 0;
+  if AEncoding = nil then
+  begin
+    // Find the appropraite encoding
+    if ContainsPreamble(Buffer, Encoding.UTF8.GetPreamble) then
+      AEncoding := Encoding.UTF8
+    else if ContainsPreamble(Buffer, Encoding.UTF16LE.GetPreamble) then
+      AEncoding := Encoding.UTF16LE
+    else if ContainsPreamble(Buffer, Encoding.UTF16BE.GetPreamble) then
+      AEncoding := Encoding.UTF16BE
+    else
+    begin
+      AEncoding := ADefaultEncoding;
+      Exit; // Don't proceed just in case ADefaultEncoding has a Preamble
+    end;
+    Result := Length(AEncoding.GetPreamble);
+  end
+  else
+  begin
+    Preamble := AEncoding.GetPreamble;
+    if ContainsPreamble(Buffer, Preamble) then
+      Result := Length(Preamble);
+  end;
+end;
 
 end.

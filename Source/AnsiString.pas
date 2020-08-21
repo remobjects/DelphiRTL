@@ -15,7 +15,7 @@ uses
 type
   TContentType = public (UTF8, UTF16, Unknown);
 
-  AnsiString = public record
+  AnsiString = public partial record
   private
     fHashCode: Integer := 0;
     fData: array of Byte;
@@ -25,24 +25,27 @@ type
     method SetOffsetChar(aIndex: Integer; aValue: AnsiChar);
     method GetChar(aIndex: Integer): AnsiChar; inline;
     method SetChar(aIndex: Integer; Value: AnsiChar); inline;
+    method CharArrayToByteArray(aCharArray: array of AnsiChar; StartIndex: Integer; aLength: Integer): array of Byte;
     method CharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
     method CastCharArrayToByteArray(aCharArray: array of Char; StartIndex: Integer; aLength: Integer): array of Byte;
     method StringToUTF8(aString: PlatformString): array of Byte;
     method GetLength: Integer;
     class method CopyArray(aSource: array of Byte; aSourceIndex: Integer; var aTarget: array of Byte; aTargetIndex: Integer; aLength: Integer); static;
-    class method InternalCompareStr(S1: AnsiString; S2: DelphiString): Integer; static; 
+    class method InternalCompareStr(S1: AnsiString; S2: DelphiString): Integer; static;
     class method InternalCompareText(S1: AnsiString; S2: DelphiString): Integer; static;
     method CheckfData; inline;
   public
     constructor;
     constructor(aLength: Integer);
+    constructor(Value: String; AsUTF16Bytes: Boolean := false);
     constructor(Value: PlatformString; AsUTF16Bytes: Boolean := false);
-    constructor(C: AnsiChar; Count: Integer);
+    constructor(C: AnsiChar; aCount: Integer);
+    constructor(Value: array of AnsiChar);
     constructor(Value: array of Char; PreserveChars: Boolean = true);
     constructor(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true);
     constructor(Value: array of Byte);
     constructor(Value: array of Byte; StartIndex: Integer; aLength: Integer);
-    class method Create(C: AnsiChar; Count: Integer): AnsiString; static;
+    class method Create(C: AnsiChar; aCount: Integer): AnsiString; static;
     class method Create(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true): AnsiString; static;
     class method Create(Value: array of Char; PreserveChars: Boolean = true): AnsiString; static;
     class operator Implicit(Value: Char): AnsiString;
@@ -50,6 +53,7 @@ type
     class operator Implicit(Value: AnsiString): String;
     class operator Implicit(Value: array of Char): AnsiString;
     class operator Implicit(Value: DelphiString): AnsiString;
+    class operator Implicit(Value: array of AnsiChar): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: Char): AnsiString;
     class operator &Add(Value1: Char; Value2: AnsiString): AnsiString;
     class operator &Add(Value1: AnsiString; Value2: AnsiChar): AnsiString;
@@ -85,13 +89,13 @@ type
     {$ELSEIF TOFFEE}
     method hash: Foundation.NSUInteger;
     {$ENDIF}
-    
+
     {$IF TOFFEE}
     method isEqual(Obj: id): Boolean;
     {$ELSE}
     method &Equals(Obj: Object): Boolean; override;
     {$ENDIF}
-    
+
     [ToString]
     method ToString: PlatformString;
 
@@ -102,7 +106,7 @@ type
     method &Remove(StartIndex: Integer): AnsiString;
     method &Remove(StartIndex: Integer; aCount: Integer): AnsiString;
     method SetLength(aLength: Integer);
-    method CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; Count: Integer);
+    method CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; aCount: Integer);
     method CopyFrom(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer);
     method ToUpper: AnsiString;
     method ToLower: AnsiString;
@@ -126,6 +130,36 @@ type
     property Character[aIndex: Integer]: AnsiChar read GetOffsetChar write SetOffsetChar; default;
     property Data: array of Byte read GetData;
   end;
+
+  {$IF ECHOES}
+  AnsiString = public partial record(/*System.Collections.ICollection, */System.Collections.Generic.ICollection<AnsiChar>)
+  private
+
+    method &Add(item: AnsiChar); empty;
+    method Clear; empty;
+    method &Remove(item: AnsiChar): Boolean; empty;
+    property Count: Integer read Length;
+    property IsReadOnly: Boolean read true;
+
+    method Contains(item: AnsiChar): Boolean;
+    begin
+      result := IndexOf(item) > -1;
+    end;
+
+    method CopyTo(&array: array of AnsiChar; arrayIndex: Integer);
+    begin
+      for i: Integer := 1 to Length do
+        &array[arrayIndex+i] := self[i];
+    end;
+
+    [&Sequence]
+    method GetSequence: sequence of AnsiChar; iterator;
+    begin
+      for i: Integer := 1 to Length do
+        yield self[i];
+    end;
+  end;
+  {$ENDIF}
 
   // Original functions
   procedure SetLength(var aString: AnsiString; aLength: Integer);
@@ -182,6 +216,11 @@ begin
     fData := StringToUTF8(Value);
 end;
 
+constructor AnsiString(Value: String; AsUTF16Bytes: Boolean := false);
+begin
+  constructor(Value as PlatformString, AsUTF16Bytes);
+end;
+
 method AnsiString.SetLength(aLength: Integer);
 begin
   if Length > 0 then begin
@@ -195,9 +234,9 @@ begin
      fData := new Byte[aLength];
 end;
 
-class method AnsiString.Create(C: AnsiChar; Count: Integer): AnsiString;
+class method AnsiString.Create(C: AnsiChar; aCount: Integer): AnsiString;
 begin
-  result := new AnsiString(C, Count);
+  result := new AnsiString(C, aCount);
 end;
 
 class method AnsiString.Create(Value: array of Char; StartIndex: Integer; aLength: Integer; PreserveChars: Boolean = true): AnsiString;
@@ -363,7 +402,14 @@ method AnsiString.CastCharArrayToByteArray(aCharArray: array of Char; StartIndex
 begin
   result := new Byte[aLength];
   for i: Integer := 0 to aLength - 1 do
-    result[i] := Byte(aCharArray[StartIndex + i]); 
+    result[i] := Byte(aCharArray[StartIndex + i]);
+end;
+
+method AnsiString.CharArrayToByteArray(aCharArray: array of AnsiChar; StartIndex: Integer; aLength: Integer): array of Byte;
+begin
+  result := new Byte[aLength];
+  for i: Integer := 0 to aLength - 1 do
+    result[i] := Byte(aCharArray[StartIndex + i]);
 end;
 
 operator AnsiString.Implicit(Value: array of Char): AnsiString;
@@ -371,9 +417,19 @@ begin
   result := new AnsiString(Value);
 end;
 
+operator AnsiString.Implicit(Value: array of AnsiChar): AnsiString;
+begin
+  result := new AnsiString(Value);
+end;
+
 operator AnsiString.Implicit(Value: DelphiString): AnsiString;
 begin
-  result := new AnsiString(Value.ToCharArray, false); 
+  result := new AnsiString(Value.ToCharArray, false);
+end;
+
+constructor AnsiString(Value: array of AnsiChar);
+begin
+  fData := CharArrayToByteArray(Value, 0, Value.Length)
 end;
 
 constructor AnsiString(Value: array of Char; PreserveChars: Boolean = true);
@@ -392,10 +448,10 @@ begin
     fData := CastCharArrayToByteArray(Value, StartIndex, aLength);
 end;
 
-constructor AnsiString(C: AnsiChar; Count: Integer);
+constructor AnsiString(C: AnsiChar; aCount: Integer);
 begin
-  fData := new Byte[Count];
-  for i: Integer := 0 to Count - 1 do
+  fData := new Byte[aCount];
+  for i: Integer := 0 to aCount - 1 do
     fData[i] := Byte(C);
 end;
 
@@ -452,7 +508,7 @@ begin
   {$ELSEIF ECHOES}
   exit System.Text.Encoding.UTF8.GetBytes(aString) as not nullable;
   {$ELSEIF ISLAND}
-  exit TextConvert.StringToUTF8(aString) as not nullable;
+  exit Encoding.UTF8.GetBytes(aString) as not nullable;
   {$ELSEIF TOFFEE}
   var lData := Binary(aString.dataUsingEncoding(NSStringEncoding.NSUTF8StringEncoding));
   exit lData.ToArray as not nullable;
@@ -577,7 +633,7 @@ begin
   end;
 end;
 
-class method AnsiString.CompareStr(S1: AnsiString; S2: DelphiString): Integer; 
+class method AnsiString.CompareStr(S1: AnsiString; S2: DelphiString): Integer;
 begin
   result := InternalCompareStr(S1, S2);
 end;
@@ -628,7 +684,7 @@ end;
 
 class method AnsiString.&Copy(aSource: AnsiString; aSourceIndex: Integer; aCount: Integer): AnsiString;
 begin
-  var lCount := if (aSourceIndex + aCount) > aSource.Length then (aSource.Length - aSourceIndex) else aCount; 
+  var lCount := if (aSourceIndex + aCount) > aSource.Length then (aSource.Length - aSourceIndex) else aCount;
   result := new AnsiString(lCount);
   for i: Integer := 0 to lCount - 1 do
     result.Chars[i] := aSource.Chars[aSourceIndex + i];
@@ -640,9 +696,9 @@ begin
     fData[i] := Byte(aSource.Chars[aSourceIndex + i]);
 end;
 
-method AnsiString.CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; Count: Integer);
+method AnsiString.CopyTo(SourceIndex: Integer; var Destination: array of Byte; DestinationIndex: Integer; aCount: Integer);
 begin
-  for i: Integer := 0 to Count - 1 do
+  for i: Integer := 0 to aCount - 1 do
     Destination[DestinationIndex + i] := fData[SourceIndex + i];
 end;
 
@@ -834,7 +890,7 @@ begin
 end;
 
 {$IF COOPER}
-method AnsiString.hashCode: Integer; 
+method AnsiString.hashCode: Integer;
 begin
   if fHashCode = 0 then begin
     var lMultiplier: Integer := 1;
@@ -901,7 +957,7 @@ begin
   var lItem := AnsiString(Obj);
   result := &Equals(lItem);
  end;
-{$ENDIF} 
+{$ENDIF}
 
 procedure SetLength(var aString: AnsiString; aLength: Integer);
 begin

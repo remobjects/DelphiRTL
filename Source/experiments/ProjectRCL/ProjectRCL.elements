@@ -6,11 +6,7 @@
     <ProjectGuid>{F8CCC42D-68E3-4708-9C96-A85F0AD63095}</ProjectGuid>
     <OutputType>Executable</OutputType>
     <AssemblyName>ProjectRCL</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <DefaultUses>RemObjects.Elements.RTL</DefaultUses>

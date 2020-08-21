@@ -13,7 +13,7 @@ type
   TStringListSortCompare = public block(x: TInternalItem; y: TInternalItem): Integer;
   TNotifyEvent = public block(Sender: TObject);
 
-  TStrings = public abstract class(TPersistent)
+  TStrings = public abstract class(TPersistent{$IF NOT TOFFEE}, sequence of String{$ENDIF})
   private
     fUpdateCount: Integer;
     fOptions: TStringsOptions;
@@ -114,6 +114,15 @@ type
     property TrailingLineBreak: Boolean read GetTrailingLineBreak write SetTrailingLineBreak;
     property UseLocale: Boolean read GetUseLocale write SetUseLocale;
     property Options: TStringsOptions read fOptions write fOptions;
+
+    {$IF NOT COOPER AND NOT TOFFEE}
+    [&Sequence] // ASPE Duplicate iterator implementation
+    method GetSequence: sequence of String; iterator;
+    begin
+      for i: Integer := 0 to Count-1 do
+        yield self[i];
+    end;
+    {$ENDIF}
   end;
 
   TStringList = public class(TStrings)

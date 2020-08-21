@@ -6,13 +6,10 @@
     <ProjectGuid>C17C9ABA-7654-4B05-9800-413B6D210307</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>DelphiVCL</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <CrossPlatform>True</CrossPlatform>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -68,5 +65,5 @@
   <PropertyGroup>
     <PreBuildEvent />
   </PropertyGroup>
-  <Import Project="Delphi.VCL.Shared.projitems" Label="Shared" />
+  <Import Project="DelphiVCL.Shared.projitems" Label="Shared" />
 </Project>

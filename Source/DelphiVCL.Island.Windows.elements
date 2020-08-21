@@ -6,14 +6,11 @@
     <ProjectGuid>E22BEBBB-FCAD-4838-8F4C-1019518DED71</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>DelphiVCL</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <CrossPlatform>True</CrossPlatform>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -61,7 +58,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
-  <Import Project="Delphi.VCL.Shared.projitems" Label="Shared" />
+  <Import Project="DelphiVCL.Shared.projitems" Label="Shared" />
   <PropertyGroup>
     <PreBuildEvent />
   </PropertyGroup>

@@ -2,9 +2,8 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2C8BFC71-4766-4D9A-801F-A7F0E7034D78}</ProjectGuid>
-    <RootNamespace>Delphi.VCL.Shared</RootNamespace>
   </PropertyGroup>
-  <Import Project="Delphi.VCL.Shared.projitems" Label="Shared" />
+  <Import Project="DelphiVCL.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.SharedProject.targets" />
   <PropertyGroup>
     <PreBuildEvent />

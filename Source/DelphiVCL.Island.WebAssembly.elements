@@ -6,15 +6,12 @@
     <ProjectGuid>B00A5AD0-356D-4FC1-B704-E716AF11F93A</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>DelphiVCL</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <CrossPlatform>True</CrossPlatform>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <GenerateDebugInfo>True</GenerateDebugInfo>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <KnownConditionalDefines>DEBUG;TRACE;WEBASSEMBLY</KnownConditionalDefines>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -71,5 +68,5 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.WebAssembly.targets" />
-  <Import Project="Delphi.VCL.Shared.projitems" Label="Shared" />
+  <Import Project="DelphiVCL.Shared.projitems" Label="Shared" />
 </Project>

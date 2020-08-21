@@ -3,19 +3,16 @@
   <PropertyGroup>
     <ProductVersion>3.5</ProductVersion>
     <RootNamespace>RemObjects.Elements.RTL.Delphi</RootNamespace>
-    <ProjectGuid>E663418D-2453-4C69-8362-02CC6ABEAFA7</ProjectGuid>
+    <ProjectGuid>{E663418D-2453-4C69-8362-02CC6ABEAFA7}</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>Delphi</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <CrossPlatform>True</CrossPlatform>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <GenerateDebugInfo>True</GenerateDebugInfo>
     <KnownConditionalDefines>DEBUG;TRACE;WEBASSEMBLY</KnownConditionalDefines>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Optimize>false</Optimize>

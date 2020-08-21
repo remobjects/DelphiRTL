@@ -136,7 +136,7 @@ implementation
 
 procedure PlatformShowMessage(aMessage: String);
 begin
-  WebAssemblyCalls.ShowMessage(aMessage.FirstChar, aMessage.Length);
+  WebAssemblyCalls.ShowMessage(PlatformString(aMessage).FirstChar, aMessage.Length);
 end;
 
 method TButton.CreateHandle;
@@ -281,7 +281,7 @@ end;
 method TListControlItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
   var lOption := Browser.CreateElement("OPTION");
-  lOption.text := String(S);
+  lOption.textContent := String(S);
   ListControl.Handle.add(lOption, aIndex);
 end;
 
@@ -299,7 +299,7 @@ end;
 method TListControlItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
   var lOption := Browser.CreateElement("OPTION");
-  lOption.text := String(S);
+  lOption.textContent := String(S);
   ListControl.Handle.add(Object(lOption));
 end;
 
@@ -368,14 +368,14 @@ end;
 method TComboBoxItems.PlatformAddItem(S: DelphiString; aObject: TObject);
 begin
   var lOption := Browser.CreateElement("OPTION");
-  lOption.text := String(S);
+  lOption.textContent := String(S);
   ListControl.Handle.add(lOption);
 end;
 
 method TComboBoxItems.PlatformInsert(aIndex: Integer; S: DelphiString);
 begin
   var lOption := Browser.CreateElement("OPTION");
-  lOption.text := String(S);
+  lOption.textContent := String(S);
   ListControl.Handle.add(lOption, aIndex);
 end;
 

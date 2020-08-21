@@ -8,7 +8,6 @@ uses
 type
   TPair<T, U> = public KeyValuePair<T, U>;
   TDictionary<TKey,TValue> = public class(TEnumerable<TPair<TKey,TValue>>)
-    where TKey is class, TValue is class;
   private
     fDict: Dictionary<TKey, TValue>;
     method GetItem(const aKey: TKey): TValue;
@@ -29,6 +28,7 @@ type
     {$ENDIF}
     constructor(aCapacity: Integer := 0);
     constructor(const Collection: TEnumerable<TPair<TKey,TValue>>);
+    constructor(aCapacity: Integer; const aComparer: IEqualityComparer<TKey>);
 
     class method Create(aCapacity: Integer := 0): TDictionary<TKey,TValue>;
     class method Create(const aComparer: IEqualityComparer<TKey>): TDictionary<TKey,TValue>;
@@ -54,6 +54,25 @@ type
     property Values: ISequence<TValue> read GetValues;
     property OnKeyNotify: TCollectionNotifyEvent<TKey>;
     property OnValueNotify: TCollectionNotifyEvent<TValue>;
+  end;
+
+  TDictionaryOwnerships = set of (doOwnsKeys, doOwnsValues);
+
+  TObjectDictionary<TKey,TValue> = public class(TDictionary<TKey,TValue>)
+  private
+    FOwnerships: TDictionaryOwnerships;
+  public
+    constructor(aCapacity: Integer := 0); empty;
+    constructor(const Collection: TEnumerable<TPair<TKey,TValue>>); empty;
+    constructor(aCapacity: Integer; const aComparer: IEqualityComparer<TKey>); empty;
+
+    constructor(Ownerships: TDictionaryOwnerships; ACapacity: Integer = 0); 
+    constructor(Ownerships: TDictionaryOwnerships; const AComparer: IEqualityComparer<TKey>); 
+    constructor(Ownerships: TDictionaryOwnerships; ACapacity: Integer; const AComparer: IEqualityComparer<TKey>); 
+
+    class method Create(Ownerships: TDictionaryOwnerships; ACapacity: Integer = 0): TObjectDictionary<TKey,TValue>;
+    class method Create(Ownerships: TDictionaryOwnerships; const AComparer: IEqualityComparer<TKey>): TObjectDictionary<TKey,TValue>; 
+    class method Create(Ownerships: TDictionaryOwnerships; ACapacity: Integer; const AComparer: IEqualityComparer<TKey>): TObjectDictionary<TKey,TValue>;
   end;
 
 implementation
@@ -85,13 +104,18 @@ end;
 
 constructor TDictionary<TKey,TValue>(aCapacity: Integer := 0);
 begin
-  Initialize(aCapacity);
+  constructor(aCapacity, nil);
 end;
 
 constructor TDictionary<TKey,TValue>(const Collection: TEnumerable<TPair<TKey,TValue>>);
 begin
   Initialize;
   AddCollection(Collection);
+end;
+
+constructor TDictionary<TKey,TValue>(aCapacity: Integer; const aComparer: IEqualityComparer<TKey>);
+begin
+  Initialize(aCapacity);
 end;
 
 method TDictionary<TKey,TValue>.Add(const Key: TKey; const Value: TValue);
@@ -228,6 +252,38 @@ end;
 class method TDictionary<TKey,TValue>.Create(const Collection: TEnumerable<TPair<TKey,TValue>>; const aComparer: IEqualityComparer<TKey>): TDictionary<TKey,TValue>;
 begin
   result := new TDictionary<TKey,TValue>(Collection);
+end;
+
+constructor TObjectDictionary<TKey,TValue>(Ownerships: TDictionaryOwnerships; ACapacity: Integer := 0);
+begin
+  constructor(Ownerships, ACapacity, nil);
+end;
+
+constructor TObjectDictionary<TKey,TValue>(Ownerships: TDictionaryOwnerships; const AComparer: IEqualityComparer<TKey>);
+begin
+  constructor(Ownerships, 0, AComparer);
+end;
+
+constructor TObjectDictionary<TKey,TValue>(Ownerships: TDictionaryOwnerships; ACapacity: Integer; const AComparer: IEqualityComparer<TKey>);
+begin
+  constructor(ACapacity, AComparer);
+
+  FOwnerships := Ownerships;
+end;
+
+class method TObjectDictionary<TKey,TValue>.Create(Ownerships: TDictionaryOwnerships; ACapacity: Integer := 0): TObjectDictionary<TKey, TValue>;
+begin
+  result := new TObjectDictionary<TKey,TValue>(Ownerships, ACapacity);
+end;
+
+class method TObjectDictionary<TKey,TValue>.Create(Ownerships: TDictionaryOwnerships; const AComparer: IEqualityComparer<TKey>): TObjectDictionary<TKey, TValue>;
+begin
+  result := new TObjectDictionary<TKey,TValue>(Ownerships, AComparer);
+end;
+
+class method TObjectDictionary<TKey,TValue>.Create(Ownerships: TDictionaryOwnerships; ACapacity: Integer; const AComparer: IEqualityComparer<TKey>): TObjectDictionary<TKey, TValue>;
+begin
+  result := new TObjectDictionary<TKey,TValue>(Ownerships, ACapacity, AComparer);
 end;
 
 end.

@@ -9,18 +9,45 @@ type
   //TArray<T> = class
   //end;
 
-  IComparer<T> = public interface
+  IComparer<T> = public interface({$IFDEF ECHOES}System.Collections.Generic.IComparer<T>{$ENDIF ECHOES})
     function Compare(const Left, Right: T): Integer;
   end;
 
-  IEqualityComparer<T> = public interface
+  IEqualityComparer<T> = public interface({$IFDEF ECHOES}System.Collections.Generic.IEqualityComparer<T>{$ENDIF ECHOES})
     function &Equals(const Left, Right: T): Boolean;
     function GetHashCode(const Value: T): Integer;
   end;
 
   IEnumerable<T> = public ISequence<T>;
 
-  TEnumerable<T> = public abstract class(ISequence<T>)
+  TEnumerator<T> = public abstract class({$IFDEF ECHOES}System.Collections.Generic.IEnumerator<T>{$ENDIF ECHOES})
+  protected
+    function DoGetCurrent: T; virtual; abstract;
+    function DoMoveNext: Boolean; virtual; abstract;
+    {$IFDEF ECHOES}
+    function GetNonGenericCurrent: Object;
+    begin
+      Result := DoGetCurrent;
+    end;
+    {$ENDIF ECHOES}
+
+    procedure Reset; virtual;
+    begin
+      raise new ENotImplemented("Reset is not implemented");
+    end;
+
+    method Dispose; virtual; begin end;
+  public
+    {$IFDEF ECHOES}property NonGenericCurrent: Object read GetNonGenericCurrent; implements System.Collections.IEnumerator.Current;{$ENDIF ECHOES}
+    property Current: T read DoGetCurrent;
+
+    function MoveNext: Boolean;
+    begin
+      Result := DoMoveNext;
+    end;
+  end;
+
+  TEnumerable<T> = public abstract class(TDelphiObject, ISequence<T>)
   private
     method ToArrayImpl(Count: Integer): TArray<T>;
   protected
@@ -47,16 +74,26 @@ type
     begin
       result := GetEnumerator();
     end;
-    method GetEnumerator: System.Collections.Generic.IEnumerator<T>; //implements System.Collections.Generic.IEnumerable<T>.GetEnumerator<T>;
+
+    method DoGetEnumerator: TEnumerator<T>; virtual;
     begin
-      exit System.Collections.Generic.IEnumerable<T>(GetSequence()).GetEnumerator;
+      exit nil;
+    end;
+
+    method GetEnumerator: System.Collections.Generic.IEnumerator<T>; public; //implements System.Collections.Generic.IEnumerable<T>.GetEnumerator<T>;
+    begin
+      var enumerator := DoGetEnumerator;
+      if assigned(enumerator) then
+        exit enumerator
+      else
+        exit System.Collections.Generic.IEnumerable<T>(GetSequence()).GetEnumerator;
     end;
     {$ELSEIF TOFFEE}
     method countByEnumeratingWithState(aState: ^NSFastEnumerationState) objects(aStackbuf: ^T) count(len: NSUInteger): NSUInteger;
     begin
       var currentSequence: NSArray<T>;
       if aState^.state = 0 then begin
-        currentSequence := GetSequence().array;
+        currentSequence := GetSequence().ToNSArray;
         aState^.extra[0] := NSInteger(bridge<CFArrayRef>(currentSequence));
       end
       else begin

@@ -87,13 +87,11 @@ end;
 method TControl.PlatformGetDefaultName: String;
 begin
   var i := 1;
-  var lObject: Object;
   repeat
     result := InstanceClassName;
     result := result.Substring(result.LastIndexOf('.') + 2) + i.ToString; // + 2 to remove initial 'T'...
     inc(i);
-    lObject := Browser.GetElementById(result);
-  until lObject = nil;
+  until Browser.GetElementById(result) = nil;
 end;
 
 method TControl.PlatformApplyDefaults;
@@ -105,7 +103,7 @@ end;
 method TControl.PlatformFontChanged;
 begin
   fHandle.style.fontFamily := fFont.Name;
-  fHandle.style.fontSize := fFont.Size + 'px';
+  fHandle.style.fontSize := fFont.Size.ToString + 'px';
   if (TFontStyle.Italic in fFont.Style) then fHandle.style.fontStyle := 'italic' else fHandle.style.fontStyle := 'normal';
   if (TFontStyle.Bold in fFont.Style) then fHandle.style.fontWeight := 'bold' else fHandle.style.fontWeight := 'normal';
   if (TFontStyle.StrikeOut in fFont.Style) or (TFontStyle.Underline in fFont.Style) then begin
@@ -158,7 +156,7 @@ end;
 
 method TControl.PlatformSetColor(aValue: TColor);
 begin
-  fhandle.style['background-color'] := '#' + RemObjects.Elements.RTL.Convert.ToHexString(aValue);
+  fHandle.style['background-color'] := '#' + RemObjects.Elements.RTL.Convert.ToHexString(aValue);
 end;
 
 method TControl.ProcessKeyboardStatus(aStatus: EcmaScriptObject; var aKey: Word): TShiftState;

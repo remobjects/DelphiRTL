@@ -208,8 +208,8 @@ const
   RecodeLeaveFieldAsIs: Word = high(Word);
 
 var
-  ApproxDaysPerMonth: Double := 30.4375;
-  ApproxDaysPerYear: Double  := 365.25;
+  ApproxDaysPerMonth: Double := 30.4375; public;
+  ApproxDaysPerYear: Double  := 365.25; public;
 
 implementation
 

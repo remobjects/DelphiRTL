@@ -5,16 +5,13 @@
     <ProjectGuid>B77B4E51-16B6-446F-BDFB-D90BCC373470</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>DelphiVCL</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <SDK>macOS</SDK>
     <CreateHeaderFile>True</CreateHeaderFile>
     <DefaultUses>Foundation</DefaultUses>
     <MangleTypeNames>True</MangleTypeNames>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <DeploymentTargetVersion>10.10</DeploymentTargetVersion>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <CrossPlatform>True</CrossPlatform>
@@ -58,5 +55,5 @@
   <PropertyGroup>
     <PreBuildEvent />
   </PropertyGroup>
-  <Import Project="Delphi.VCL.Shared.projitems" Label="Shared" />
+  <Import Project="DelphiVCL.Shared.projitems" Label="Shared" />
 </Project>

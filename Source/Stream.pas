@@ -25,6 +25,10 @@ type
     method SetSize(NewSize: LongInt); virtual;
     method SetSize(const NewSize: Int64); virtual;
   public
+    {$IFDEF ECHOES}
+    method &Read(var Buffer; Count: LongInt): LongInt; virtual;
+    method &Write(const Buffer; Count: LongInt): LongInt; virtual;
+    {$ENDIF ECHOES}
     method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; virtual;
     method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; virtual;
 
@@ -167,9 +171,11 @@ type
   private
     fFileName: DelphiString;
   public
+    constructor(aHandle: THandle); empty;
     constructor(const aFileName: DelphiString; Mode: Word);
     constructor(const aFileName: DelphiString; Mode: Word; Rights: Cardinal);
     finalizer;
+    class method Create(aHandle: THandle): TFileStream; static;
     class method Create(const aFileName: DelphiString; Mode: Word): TFileStream; static;
     class method Create(const aFileName: DelphiString; Mode: Word; Rights: Cardinal): TFileStream; static;
 
@@ -202,7 +208,7 @@ type
     property Capacity: LongInt read fData.Length write fData.SetLength;
   public
     constructor;
-    class method Create: TCustomMemoryStream; static;
+    class method Create: TMemoryStream; static; 
     method Clear;
     method LoadFromStream(aStream: TStream);
     {$IF NOT WEBASSEMBLY}
@@ -266,14 +272,34 @@ begin
     raise new Exception('Error reading from stream');
 end;
 
-method TStream.Read(Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+{$IFDEF ECHOES}
+method TStream.Read(var Buffer; Count: Longint): Longint; 
 begin
   result := 0;
 end;
 
-method TStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+method TStream.Write(const Buffer; Count: Longint): Longint; 
 begin
   result := 0;
+end;
+{$ENDIF ECHOES}
+
+method TStream.Read(Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+begin
+  {$IFDEF ECHOES}
+  result := Read(var Buffer[Offset], Count);
+  {$ELSE}
+  result := 0;
+  {$ENDIF ECHOES}
+end;
+
+method TStream.Write(const Buffer: TBytes; Offset: LongInt; Count: LongInt): LongInt;
+begin
+  {$IFDEF ECHOES}
+  result := Write(Buffer[Offset], Count);
+  {$ELSE}
+  result := 0;
+  {$ENDIF ECHOES}
 end;
 
 {$IF (ISLAND AND NOT WEBASSEMBLY) OR TOFFEE}
@@ -1085,7 +1111,7 @@ end;
 method TStream.WriteString(aString: DelphiString; aEncoding: TEncoding := TEncoding.UTF16LE): LongInt;
 begin
   var lBytes := aEncoding.GetBytes(aString);
-  &Write(lBytes, 0, length(lBytes));
+  &Write(lBytes, 0, RemObjects.Elements.System.length(lBytes));
 end;
 
 method TStream.CopyFrom(const Source: TStream; Count: Int64): Int64;
@@ -1172,6 +1198,11 @@ begin
   result := new TFileStream(aFileName, Mode, Rights);
 end;
 
+class method TFileStream.Create(aHandle: THandle): TFileStream;
+begin
+  result := new TFileStream(aHandle);
+end;
+
 finalizer TFileStream;
 begin
   Close;
@@ -1248,7 +1279,7 @@ begin
   inherited;
 end;
 
-class method TMemoryStream.Create: TCustomMemoryStream;
+class method TMemoryStream.Create: TMemoryStream;
 begin
   result := new TMemoryStream();
 end;

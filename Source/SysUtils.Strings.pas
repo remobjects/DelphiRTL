@@ -13,16 +13,22 @@ const
   PathSep    = {$IF WINDOWS} ';' {$ELSE} ':' {$ENDIF};
 
 function UpperCase(const S: DelphiString): DelphiString;
+function UpperCase(const S: PlatformString): DelphiString; inline;
 function UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; inline;
 function LowerCase(const S: DelphiString): DelphiString;
+function LowerCase(const S: PlatformString): DelphiString; inline;
 function LowerCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString; inline;
 function CompareStr(const S1, S2: DelphiString): Integer; inline;
+function CompareStr(const S1, S2: PlatformString): Integer; inline;
 function CompareStr(const S1, S2: DelphiString; LocaleOptions: TLocaleOptions): Integer;
 function SameStr(const S1, S2: DelphiString): Boolean; inline;
+function SameStr(const S1, S2: PlatformString): Boolean; inline;
 function SameStr(const S1, S2: DelphiString; LocaleOptions: TLocaleOptions): Boolean;
 function CompareText(const S1, S2: DelphiString): Integer;
+function CompareText(const S1, S2: PlatformString): Integer; inline;
 function CompareText(const S1, S2: DelphiString; LocaleOptions: TLocaleOptions): Integer;
 function SameText(const S1, S2: DelphiString): Boolean; inline;
+function SameText(const S1, S2: PlatformString): Boolean; inline;
 function SameText(const S1, S2: DelphiString; LocaleOptions: TLocaleOptions): Boolean;
 function AnsiUpperCase(const S: DelphiString): DelphiString; inline;
 function AnsiLowerCase(const S: DelphiString): DelphiString; inline;
@@ -30,9 +36,13 @@ function AnsiCompareStr(const S1, S2: DelphiString): Integer; inline;
 function AnsiSameStr(const S1, S2: DelphiString): Boolean; inline;
 function AnsiCompareText(const S1, S2: DelphiString): Integer; inline;
 function AnsiSameText(const S1, S2: DelphiString): Boolean; inline;
+function AnsiStartsText(const ASubText, AText: DelphiString): Boolean; inline;
 function Trim(const S: DelphiString): DelphiString;
+function Trim(const S: PlatformString): DelphiString; inline;
 function TrimLeft(const S: DelphiString): DelphiString;
+function TrimLeft(const S: PlatformString): DelphiString; inline;
 function TrimRight(const S: DelphiString): DelphiString;
+function TrimRight(const S: PlatformString): DelphiString; inline;
 function QuotedStr(const S: DelphiString): DelphiString;
 function AnsiQuotedStr(const S: DelphiString; Quote: Char): DelphiString;
 function AnsiDequotedStr(const S: DelphiString; aQuote: Char): DelphiString;
@@ -72,6 +82,11 @@ begin
   result := DelphiString.Create(lTmp);
 end;
 
+function UpperCase(const S: PlatformString): DelphiString;
+begin
+  result := UpperCase(DelphiString(S));
+end;
+
 function UpperCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString;
 begin
   if LocaleOptions = TLocaleOptions.loInvariantLocale then
@@ -91,6 +106,11 @@ begin
   result := DelphiString.Create(lTmp);
 end;
 
+function LowerCase(const S: PlatformString): DelphiString;
+begin
+  result := LowerCase(DelphiString(S));
+end;
+
 function LowerCase(const S: DelphiString; LocaleOptions: TLocaleOptions): DelphiString;
 begin
   if LocaleOptions = TLocaleOptions.loInvariantLocale then
@@ -102,6 +122,11 @@ end;
 function CompareStr(const S1, S2: DelphiString): Integer;
 begin
   result := DelphiString.CompareOrdinal(S1, S2);
+end;
+
+function CompareStr(const S1, S2: PlatformString): Integer;
+begin
+  result := DelphiString.CompareOrdinal(DelphiString(S1), DelphiString(S2));
 end;
 
 function CompareStr(const S1, S2: DelphiString; LocaleOptions: TLocaleOptions): Integer;
@@ -117,6 +142,11 @@ begin
   result := DelphiString.Equals(S1, S2);
 end;
 
+function SameStr(const S1, S2: PlatformString): Boolean;
+begin
+  result := DelphiString.Equals(DelphiString(S1), DelphiString(S2));
+end;
+
 function SameStr(const S1, S2: DelphiString; LocaleOptions: TLocaleOptions): Boolean;
 begin
   if LocaleOptions = TLocaleOptions.loInvariantLocale then
@@ -130,6 +160,11 @@ begin
   result := DelphiString.CompareOrdinal(UpperCase(S1), UpperCase(S2));
 end;
 
+function CompareText(const S1, S2: PlatformString): Integer;
+begin
+  result := DelphiString.CompareOrdinal(UpperCase(DelphiString(S1)), UpperCase(DelphiString(S2)));
+end;
+
 function CompareText(const S1, S2: DelphiString; LocaleOptions: TLocaleOptions): Integer;
 begin
   if LocaleOptions = TLocaleOptions.loInvariantLocale then
@@ -141,6 +176,11 @@ end;
 function SameText(const S1, S2: DelphiString): Boolean;
 begin
   result := CompareText(S1, S2) = 0;
+end;
+
+function SameText(const S1, S2: PlatformString): Boolean;
+begin
+  result := CompareText(DelphiString(S1), DelphiString(S2)) = 0;
 end;
 
 function SameText(const S1, S2: DelphiString; LocaleOptions: TLocaleOptions): Boolean;
@@ -181,9 +221,19 @@ begin
   result := DelphiString.Compare(S1, S2, true, TLanguages.UserDefaultLocale) = 0;
 end;
 
+function AnsiStartsText(const ASubText, AText: DelphiString): Boolean; inline;
+begin
+  result := AText.StartsWith(ASubText, true);
+end;
+
 function Trim(const S: DelphiString): DelphiString;
 begin
   result := S.Trim;
+end;
+
+function Trim(const S: PlatformString): DelphiString;
+begin
+  result := DelphiString(S).Trim;
 end;
 
 function TrimLeft(const S: DelphiString): DelphiString;
@@ -191,9 +241,19 @@ begin
   result := S.TrimLeft;
 end;
 
+function TrimLeft(const S: PlatformString): DelphiString;
+begin
+  result := DelphiString(S).TrimLeft;
+end;
+
 function TrimRight(const S: DelphiString): DelphiString;
 begin
   result := S.TrimRight;
+end;
+
+function TrimRight(const S: PlatformString): DelphiString;
+begin
+  result := DelphiString(S).TrimRight;
 end;
 
 function QuotedStr(const S: DelphiString): DelphiString;

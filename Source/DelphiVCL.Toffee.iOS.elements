@@ -5,16 +5,13 @@
     <ProjectGuid>034B979F-731D-4B07-8AFB-39DC1C4C1B57</ProjectGuid>
     <OutputType>StaticLibrary</OutputType>
     <AssemblyName>DelphiVCL</AssemblyName>
-    <AllowGlobals>False</AllowGlobals>
-    <AllowLegacyWith>False</AllowLegacyWith>
-    <AllowLegacyOutParams>False</AllowLegacyOutParams>
-    <AllowLegacyCreate>False</AllowLegacyCreate>
-    <AllowUnsafeCode>False</AllowUnsafeCode>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <SDK>iOS</SDK>
     <CreateHeaderFile>True</CreateHeaderFile>
     <DefaultUses>Foundation</DefaultUses>
     <MangleTypeNames>True</MangleTypeNames>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
     <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <CrossPlatform>True</CrossPlatform>
@@ -59,5 +56,5 @@
   <PropertyGroup>
     <PreBuildEvent />
   </PropertyGroup>
-  <Import Project="Delphi.VCL.Shared.projitems" Label="Shared" />
+  <Import Project="DelphiVCL.Shared.projitems" Label="Shared" />
 </Project>
