@@ -81,6 +81,8 @@ type
 
   TIniFile = public class(TMemIniFile)
   public
+    constructor(aFileName: DelphiString);
+    constructor(aFileName: DelphiString; aEncoding: TEncoding);
     constructor(aFileName: DelphiString; aEncoding: TEncoding; aCaseSensitive: Boolean); override;
   end;
 
@@ -427,6 +429,18 @@ begin
         exit(i);
 
   result := -1;
+end;
+
+constructor TIniFile(aFileName: DelphiString);
+begin
+  inherited constructor(aFileName);
+  AutoSave := true;
+end;
+
+constructor TIniFile(aFileName: DelphiString; aEncoding: TEncoding);
+begin
+  inherited constructor(aFileName, aEncoding);
+  AutoSave := true;
 end;
 
 constructor TIniFile(aFileName: DelphiString; aEncoding: TEncoding; aCaseSensitive: Boolean);
