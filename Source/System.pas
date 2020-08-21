@@ -33,7 +33,7 @@ procedure Delete<T>(var Arr: TArray<T>; Start: Integer; Count: Integer);
 procedure FillChar(var Dest: DelphiString; aCount: Integer; aValue: Char);
 {$IF NOT COOPER}
 procedure FillChar(var Dest; aCount: Integer; aValue: Byte); unsafe;
-procedure Move<T, U>(var ASource; var Dest: U; Count: NativeInt); unsafe;
+procedure Move(const ASource; var Dest; Count: NativeInt); unsafe;
 function CompareMem(P1, P2: Pointer; Length: Integer): Boolean; unsafe;
 {$ENDIF COOPER}
 
@@ -145,7 +145,7 @@ begin
   end;
 end;
 
-procedure Move<T, U>(var ASource; var Dest: U; Count: NativeInt); unsafe;
+procedure Move(const ASource; var Dest; Count: NativeInt); unsafe;
 begin
   var SourcePtr := PByte(@ASource); pinned;
   var DestPtr := PByte(@Dest); pinned;
