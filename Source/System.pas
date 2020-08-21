@@ -19,6 +19,8 @@ type
 
 function Pos(SubStr: DelphiString; S: DelphiString; aOffset: Integer := 1): Integer; inline;
 function Pos(SubStr: PlatformString; S: PlatformString; aOffset: Integer := 1): Integer; inline;
+function Pos(SubStr: PlatformString; S: DelphiString; aOffset: Integer := 1): Integer; inline;
+function Pos(SubStr: DelphiString; S: PlatformString; aOffset: Integer := 1): Integer; inline;
 procedure Insert(aSource: DelphiString; var aTarget: DelphiString; aOffset: Integer); inline;
 procedure Insert(aSource: PlatformString; var aTarget: PlatformString; aOffset: Integer); inline;
 procedure Delete(var S: DelphiString; aIndex: Integer; aCount: Integer); inline;
@@ -69,7 +71,17 @@ end;
 
 function Pos(SubStr: PlatformString; S: PlatformString; aOffset: Integer := 1): Integer;
 begin
-  result := DelphiString(S).IndexOf(DelphiString(SubStr), aOffset) + 1;
+  result := Pos(DelphiString(SubStr), DelphiString(S));
+end;
+
+function Pos(SubStr: PlatformString; S: DelphiString; aOffset: Integer := 1): Integer; 
+begin
+  result := Pos(DelphiString(SubStr), S);
+end;
+
+function Pos(SubStr: DelphiString; S: PlatformString; aOffset: Integer := 1): Integer; 
+begin
+  result := Pos(SubStr, DelphiString(S));
 end;
 
 procedure Insert(aSource: DelphiString; var aTarget: DelphiString; aOffset: Integer);
