@@ -68,6 +68,9 @@ function StrToBool(const S: DelphiString): Boolean;
 function StrToBoolDef(const S: DelphiString; const aDefault: Boolean): Boolean;
 function TryStrToBool(const S: DelphiString; out Value: Boolean): Boolean;
 function BoolToStr(B: Boolean; UseBoolStrs: Boolean := False): DelphiString;
+function TryStrToFloat(const S: DelphiString; out Value: Double): Boolean;
+function StrToFloat(const S: DelphiString): Double;
+function StrToFloatDef(const S: DelphiString; const aDefault: Double): Double;
 
 implementation
 
@@ -410,6 +413,31 @@ end;
 function BoolToStr(B: Boolean; UseBoolStrs: Boolean := False): DelphiString;
 begin
   result := Convert.ToString(B);
+end;
+
+function TryStrToFloat(const S: DelphiString; out Value: Double): Boolean;
+begin
+  try
+    Value := S.ToDouble;
+    result := true;
+
+  except
+    result := false;
+  end;
+end;
+
+function StrToFloat(const S: DelphiString): Double;
+begin
+  result := S.ToDouble;
+end;
+
+function StrToFloatDef(const S: DelphiString; const aDefault: Double): Double;
+begin
+  try
+    result := S.ToDouble;
+  except
+    result := aDefault;
+  end;
 end;
 
 end.
