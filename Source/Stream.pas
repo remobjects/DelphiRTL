@@ -28,6 +28,8 @@ type
     {$IFDEF ECHOES}
     method &Read(var Buffer; Count: LongInt): LongInt; virtual;
     method &Write(const Buffer; Count: LongInt): LongInt; virtual;
+    method ToSystemStream: System.IO.Stream;
+    operator Implicit(aInstance: TStream): System.IO.Stream;
     {$ENDIF ECHOES}
     method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; virtual;
     method &Write(const Buffer: TBytes; Offset, Count: LongInt): LongInt; virtual;
@@ -281,6 +283,54 @@ end;
 method TStream.Write(const Buffer; Count: Longint): Longint; 
 begin
   result := 0;
+end;
+
+type
+  TIOStream = class(System.IO.Stream)
+  private
+    FSourceStream: TStream;
+  public
+    constructor (ASourceStream: TStream); begin FSourceStream := ASourceStream; end;
+
+    method Flush; override; begin end;
+
+    method &Read(buffer: array of Byte; offset: Integer; count: Integer): Integer; override;
+    begin
+      result := FSourceStream.Read(buffer, offset, count);
+    end;
+
+    method Seek(offset: Int64; origin: System.IO.SeekOrigin): Int64; override;
+    begin
+      const delphiRTLOrigin: array[System.IO.SeekOrigin] of TSeekOrigin = [soBeginning, soCurrent, soEnd];
+
+      result := FSourceStream.Seek(offset, delphiRTLOrigin[origin]);
+    end;
+
+    method SetLength(value: Int64); override;
+    begin
+      FSourceStream.Size := value;
+    end;
+
+    method &Write(buffer: array of Byte; offset: Integer; count: Integer); override;
+    begin
+      FSourceStream.Write(buffer, offset, count);
+    end;
+  
+    property CanRead: Boolean read begin result := true; end; override;
+    property CanSeek: Boolean read begin result := true; end; override;
+    property CanWrite: Boolean read begin result := true; end; override;
+    property Length: Int64 read begin result := FSourceStream.Size; end; override;
+    property Position: Int64 read begin result := FSourceStream.Position; end write begin FSourceStream.Position := value end; override;
+  end;
+
+method TStream.ToSystemStream: System.IO.Stream;
+begin
+  result := new TIOStream(self);
+end;
+
+operator TStream.Implicit(aInstance: TStream): System.IO.Stream;
+begin
+  result := aInstance.ToSystemStream;
 end;
 {$ENDIF ECHOES}
 
