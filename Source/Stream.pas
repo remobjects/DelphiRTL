@@ -28,7 +28,7 @@ type
     {$IFDEF ECHOES}
     method &Read(var Buffer; Count: LongInt): LongInt; virtual;
     method &Write(const Buffer; Count: LongInt): LongInt; virtual;
-    method ToSystemStream: System.IO.Stream;
+    method ToPlatformStream: System.IO.Stream;
     operator Implicit(aInstance: TStream): System.IO.Stream;
     {$ENDIF ECHOES}
     method &Read(Buffer: TBytes; Offset, Count: LongInt): LongInt; virtual;
@@ -323,14 +323,14 @@ type
     property Position: Int64 read begin result := FSourceStream.Position; end write begin FSourceStream.Position := value end; override;
   end;
 
-method TStream.ToSystemStream: System.IO.Stream;
+method TStream.ToPlatformStream: System.IO.Stream;
 begin
   result := new TIOStream(self);
 end;
 
 operator TStream.Implicit(aInstance: TStream): System.IO.Stream;
 begin
-  result := aInstance.ToSystemStream;
+  result := aInstance.ToPlatformStream;
 end;
 {$ENDIF ECHOES}
 
