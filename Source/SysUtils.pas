@@ -46,7 +46,6 @@ type
   Encoding_Extension = public extension class(Encoding)
   public
     class method Unicode: Encoding; static;
-    class method BigEndianUnicode: Encoding; static;
     {$IFDEF ECHOES}
     class method Convert(srcEncoding: Encoding; dstEncoding: Encoding; bytes: TBytes): TBytes;
     {$ENDIF}
@@ -926,11 +925,6 @@ end;
 class method Encoding_Extension.Unicode: Encoding;
 begin
   result := Encoding.UTF16LE;
-end;
-
-class method Encoding_Extension.BigEndianUnicode: Encoding;
-begin
-  result := Encoding.UTF16BE;
 end;
 
 {$IFDEF ECHOES}
