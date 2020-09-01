@@ -7,11 +7,11 @@ uses
   System.Resources,
   System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle('')]
+[assembly: AssemblyTitle('RemObjects Elements Del;phi RTL')]
 [assembly: AssemblyDescription('')]
 [assembly: AssemblyConfiguration('')]
-[assembly: AssemblyCompany('')]
-[assembly: AssemblyProduct('')]
+[assembly: AssemblyCompany('RemObjects Software, LLC')]
+[assembly: AssemblyProduct('RemObjects Elements')]
 [assembly: AssemblyCopyright('')]
 [assembly: AssemblyTrademark('')]
 [assembly: AssemblyCulture('')]
