@@ -31,6 +31,9 @@
     <GeneratePDB>True</GeneratePDB>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Elements">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Echoes">
       <Private>True</Private>
     </Reference>

@@ -32,20 +32,13 @@
     <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Echoes" />
     <Reference Include="mscorlib" />
-    <Reference Include="Elements" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    <Reference Include="System.Core" />
+    <Reference Include="Elements">
+      <Private>True</Private>
     </Reference>
     <Reference Include="Echoes">
       <Private>True</Private>
