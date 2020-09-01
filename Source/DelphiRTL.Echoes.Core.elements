@@ -12,7 +12,7 @@
     <AllowLegacyEnums>True</AllowLegacyEnums>
     <AllowUnsafeCode>True</AllowUnsafeCode>
     <Mode>Echoes</Mode>
-    <TargetFramework>.NETCore2.0</TargetFramework>
+    <TargetFramework>.NETCore2.2</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
