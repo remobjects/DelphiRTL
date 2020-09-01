@@ -11,6 +11,10 @@ type
   {$SHOW CPW8}
 
   TGUID = public RemObjects.Elements.RTL.Guid;
+  Guid_Extension = public extension class(Guid)
+  public
+    class property &Empty: Guid read begin result := self.EmptyGuid; end;
+  end;
 
   {$IF NOT COOPER}
   PChar = public ^Char;

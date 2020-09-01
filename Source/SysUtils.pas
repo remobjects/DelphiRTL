@@ -46,8 +46,13 @@ type
   Encoding_Extension = public extension class(Encoding)
   public
     class method Unicode: Encoding; static;
+    class method BigEndianUnicode: Encoding; static;
     {$IFDEF ECHOES}
     class method Convert(srcEncoding: Encoding; dstEncoding: Encoding; bytes: TBytes): TBytes;
+    class method GetEncoding(aCodePage: Integer): Encoding;
+
+    class property UTF7: Encoding read begin result := System.Text.Encoding.UTF7; end;
+    class property ANSI: Encoding read begin result := GetEncoding(1252); end;
     {$ENDIF}
     method GetPreamble: TBytes;
     method Clone: Encoding;
@@ -927,10 +932,20 @@ begin
   result := Encoding.UTF16LE;
 end;
 
+class method Encoding_Extension.BigEndianUnicode: Encoding;
+begin
+  result := Encoding.UTF16BE;
+end;
+
 {$IFDEF ECHOES}
 class method Encoding_Extension.Convert(srcEncoding: Encoding; dstEncoding: Encoding; bytes: TBytes): TBytes;
 begin
   result := System.Text.Encoding.Convert(srcEncoding, dstEncoding, bytes);
+end;
+
+class method Encoding_Extension.GetEncoding(aCodePage: Integer): Encoding; 
+begin 
+  result := System.Text.Encoding.GetEncoding(aCodePage); 
 end;
 {$ENDIF}
 
