@@ -266,7 +266,7 @@ end;
 
 constructor TObjectDictionary<TKey,TValue>(Ownerships: TDictionaryOwnerships; ACapacity: Integer; const AComparer: IEqualityComparer<TKey>);
 begin
-  constructor(ACapacity, AComparer);
+  inherited constructor(ACapacity, AComparer);
 
   FOwnerships := Ownerships;
 end;
