@@ -10,7 +10,38 @@ uses
 type
   THandle = public Int64; // Since native types are not supported on Java, THandle stores a 64 bit integer always
   TArray<T> = array of T;
-  TDateTime = public Double;
+  
+  TDateTime = public record
+  public
+    Value: Double;
+
+    operator Implicit(AValue: Double): TDateTime;
+    operator Implicit(ADateTime: TDateTime): Double;
+    operator &Add(ALeft, ARight: TDateTime): TDateTime;
+    operator &Add(ALeft: TDateTime; ARight: Double): TDateTime;
+    operator &Add(ALeft: TDateTime; ARight: Integer): TDateTime;
+    operator Subtract(ALeft, ARight: TDateTime): TDateTime;
+    operator Subtract(ALeft: TDateTime; ARight: Double): TDateTime;
+    operator Subtract(ALeft: TDateTime; ARight: Integer): TDateTime;
+    operator Equal(ALeft, ARight: TDateTime): Boolean;
+    operator Equal(ALeft: TDateTime; ARight: Double): Boolean;
+    operator NotEqual(ALeft, ARight: TDateTime): Boolean;
+    operator NotEqual(ALeft: TDateTime; ARight: Double): Boolean;
+    operator Less(ALeft, ARight: TDateTime): Boolean;
+    operator LessOrEqual(ALeft, ARight: TDateTime): Boolean;
+    operator Greater(ALeft, ARight: TDateTime): Boolean;
+    operator GreaterOrEqual(ALeft, ARight: TDateTime): Boolean;
+    operator Multiply(ALeft: TDateTime; ARight: Integer): Double;
+    operator Multiply(ALeft: TDateTime; ARight: Double): Double;
+    operator Divide(ALeft: TDateTime; ARight: Integer): Double;
+    operator Divide(ALeft: TDateTime; ARight: Double): Double;
+
+    {$IF ECHOES}
+    operator Implicit(ADateTime: TDateTime): System.DateTime;
+    operator Implicit(ADateTime: System.DateTime): TDateTime;
+    {$ENDIF}
+  end;
+
   TDate = public TDateTime;
   TTime = public TDateTime;
   {$IF NOT COOPER}
@@ -268,5 +299,137 @@ begin
   interlockedDec(var Addend);
 end;
 {$ENDIF}
+
+operator TDateTime.Implicit(AValue: Double): TDateTime;
+begin
+  result.Value := AValue;
+end;
+
+operator TDateTime.Implicit(ADateTime: TDateTime): Double;
+begin
+  result := ADateTime.Value;
+end;
+
+operator TDateTime.&Add(ALeft, ARight: TDateTime): TDateTime;
+begin
+  result.Value := ALeft.Value + ARight.Value;
+end;
+
+operator TDateTime.&Add(ALeft: TDateTime; ARight: Double): TDateTime;
+begin
+  result.Value := ALeft.Value + ARight;
+end;
+
+operator TDateTime.&Add(ALeft: TDateTime; ARight: Integer): TDateTime;
+begin
+  result.Value := ALeft.Value + ARight;
+end;
+
+operator TDateTime.Subtract(ALeft, ARight: TDateTime): TDateTime;
+begin
+  result.Value := ALeft.Value - ARight.Value;
+end;
+
+operator TDateTime.Subtract(ALeft: TDateTime; ARight: Double): TDateTime;
+begin
+  result.Value := ALeft.Value - ARight;
+end;
+
+operator TDateTime.Subtract(ALeft: TDateTime; ARight: Integer): TDateTime;
+begin
+  result.Value := ALeft.Value - ARight;
+end;
+
+operator TDateTime.Equal(ALeft, ARight: TDateTime): Boolean;
+begin
+  result := ALeft.Value = ARight.Value;
+end;
+
+operator TDateTime.Equal(ALeft: TDateTime; ARight: Double): Boolean;
+begin
+  result := ALeft.Value = ARight;
+end;
+
+operator TDateTime.NotEqual(ALeft, ARight: TDateTime): Boolean;
+begin
+  result := ALeft.Value <> ARight.Value;
+end;
+
+operator TDateTime.NotEqual(ALeft: TDateTime; ARight: Double): Boolean;
+begin
+  result := ALeft.Value <> ARight;
+end;
+
+operator TDateTime.Less(ALeft, ARight: TDateTime): Boolean;
+begin
+  result := ALeft.Value < ARight.Value;
+end;
+
+operator TDateTime.LessOrEqual(ALeft, ARight: TDateTime): Boolean;
+begin
+  result := ALeft.Value <= ARight.Value;
+end;
+
+operator TDateTime.Greater(ALeft, ARight: TDateTime): Boolean;
+begin
+  result := ALeft.Value > ARight.Value;
+end;
+
+operator TDateTime.GreaterOrEqual(ALeft, ARight: TDateTime): Boolean;
+begin
+  result := ALeft.Value >= ARight.Value;
+end;
+
+operator TDateTime.Multiply(ALeft: TDateTime; ARight: Integer): Double;
+begin
+  result := ALeft.Value * ARight;
+end;
+
+operator TDateTime.Multiply(ALeft: TDateTime; ARight: Double): Double;
+begin
+  result := ALeft.Value * ARight;
+end;
+
+operator TDateTime.Divide(ALeft: TDateTime; ARight: Integer): Double;
+begin
+  result := ALeft.Value / ARight;
+end;
+
+operator TDateTime.Divide(ALeft: TDateTime; ARight: Double): Double;
+begin
+  result := ALeft.Value / ARight;
+end;
+
+{$IF ECHOES}
+const 
+  DateTimeOrigin: System.DateTime = new System.DateTime(1899, 12, 30);
+
+operator TDateTime.Implicit(ADateTime: TDateTime): System.DateTime;
+begin
+  // FromOADate may be slow and imprecise, so use our own conversion
+  // References : 
+  //   https://stackoverflow.com/questions/13919641/how-to-convert-a-double-value-to-a-datetime-in-c#answer-36453145
+  //   https://stackoverflow.com/questions/3724355/net-datetime-different-resolution-when-converting-to-and-from-oadate/13922172#13922172
+  //
+  if Double.IsNaN(ADateTime.Value) or (-1 < ADateTime.Value < 0) then
+    raise new ArgumentOutOfRangeException; // NaN or ]-1..0[ ADateTime.Value not supported
+
+  var integerPart := System.Math.Truncate(ADateTime.Value);
+  var decimalPart := ADateTime.Value - integerPart;
+  result := 
+    DateTimeOrigin + 
+    System.TimeSpan.FromTicks(
+      Convert.ToInt64(
+        (integerPart + System.Math.Abs(decimalPart)) * System.TimeSpan.TicksPerDay
+      )
+    );
+end;
+
+operator TDateTime.Implicit(ADateTime: System.DateTime): TDateTime;
+begin
+  result.Value := ADateTime.ToOADate;
+end;
+{$ENDIF}
+
 
 end.
