@@ -69,10 +69,10 @@ function StrToTimeDef(const S: DelphiString; const aDefault: TDateTime; const aF
 function TryStrToTime(const S: DelphiString; out aValue: TDateTime): Boolean; inline;
 function TryStrToTime(const S: DelphiString; out aValue: TDateTime; const aFormatSettings: TFormatSettings): Boolean;
 
-function FormatDateTime(const Format: DelphiString; DateTime: TDateTime): DelphiString;  inline;
-function FormatDateTime(const Format: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;
-procedure DateTimeToString(var aResult: DelphiString; const Format: DelphiString; DateTime: TDateTime);  inline;
-procedure DateTimeToString(var aResult: DelphiString; const Format: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings);
+function FormatDateTime(const AFormat: DelphiString; DateTime: TDateTime): DelphiString;  inline;
+function FormatDateTime(const AFormat: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;
+procedure DateTimeToString(var aResult: DelphiString; const AFormat: DelphiString; DateTime: TDateTime);  inline;
+procedure DateTimeToString(var aResult: DelphiString; const AFormat: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings);
 
 function DateTimeToUnix(const aValue: TDateTime): Int64;
 function UnixToDateTime(const aValue: Int64): TDateTime;
@@ -516,19 +516,19 @@ begin
   {$ENDIF}
 end;
 
-function FormatDateTime(const Format: DelphiString; DateTime: TDateTime): DelphiString;
+function FormatDateTime(const AFormat: DelphiString; DateTime: TDateTime): DelphiString;
 begin
-  result := FormatDateTime(Format, DateTime, FormatSettings);
+  result := FormatDateTime(AFormat, DateTime, FormatSettings);
 end;
 
-function FormatDateTime(const Format: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;
+function FormatDateTime(const AFormat: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings): DelphiString;
 begin
-  DateTimeToString(var result, Format, DateTime, aFormatSettings);
+  DateTimeToString(var result, AFormat, DateTime, aFormatSettings);
 end;
 
-procedure DateTimeToString(var aResult: DelphiString; const Format: DelphiString; DateTime: TDateTime);
+procedure DateTimeToString(var aResult: DelphiString; const AFormat: DelphiString; DateTime: TDateTime);
 begin
-  DateTimeToString(var aResult, Format, DateTime, FormatSettings);
+  DateTimeToString(var aResult, AFormat, DateTime, FormatSettings);
 end;
 
 function FixFormatString(aFormat: DelphiString): DelphiString;
@@ -554,13 +554,13 @@ begin
   end;
 end;
 
-procedure DateTimeToString(var aResult: DelphiString; const Format: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings);
+procedure DateTimeToString(var aResult: DelphiString; const AFormat: DelphiString; DateTime: TDateTime; const aFormatSettings: TFormatSettings);
 begin
   var lYear, lMonth, lDay, lHour, lMin, lSec, lMSec: Word;
   DecodeDateTime(DateTime, out lYear, out lMonth, out lDay, out lHour, out lMin, out lSec, out lMSec);
-  var lFormat := Format;
-  if not DelphiString.IsNullOrEmpty(Format) then
-    lFormat := FixFormatString(Format);
+  var lFormat := AFormat;
+  if not DelphiString.IsNullOrEmpty(AFormat) then
+    lFormat := FixFormatString(AFormat);
   {$IF COOPER}
   var lCalendar := java.util.Calendar.getInstance;
   lCalendar.set(lYear, lMonth - 1, lDay, lHour, lMin, lSec);
