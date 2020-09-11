@@ -147,7 +147,12 @@ type
     constructor Create; virtual; empty;
     method Destroy; virtual; empty; // can't use "destructor" because this project isn't built using Delphi Compatibility. same diff though.
 
-    method Free;
+    method Free; inline;  // this allows writing SomeObject.Free without getting an NRE in Echoes
+    begin
+      self:InternalFree;
+    end;
+
+    method InternalFree;
     begin
       if assigned(self) and not fDestroyed then begin
         fDestroyed := true;
