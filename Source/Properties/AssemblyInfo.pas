@@ -7,7 +7,7 @@ uses
   System.Resources,
   System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle('RemObjects Elements Del;phi RTL')]
+[assembly: AssemblyTitle('RemObjects Elements Delphi RTL')]
 [assembly: AssemblyDescription('')]
 [assembly: AssemblyConfiguration('')]
 [assembly: AssemblyCompany('RemObjects Software, LLC')]

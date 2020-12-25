@@ -5,9 +5,9 @@ Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL", "DelphiRTL.elem
 EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Shared", "DelphiRTL.Shared.elements", "{422C7732-516B-4349-88E8-7F01BA91FF08}"
 EndProject
-Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Shared.VCL", "DelphiRTL.Shared.VCL.elements", "{0E930F04-C7D3-43B2-81B9-6BBC40FE20A5}"
-EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL", "DelphiVCL.elements", "{D3DFB8BC-1496-4781-A36B-6649C8E98C1F}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Shared", "DelphiVCL.Shared.elements", "{2C8BFC71-4766-4D9A-801F-A7F0E7034D78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
