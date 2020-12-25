@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF MACOS AND NOT (ISLAND AND DARWIN)}
+{$IF MACOS AND NOT MACCATALYST AND NOT (ISLAND AND DARWIN)}
 
 interface
 
