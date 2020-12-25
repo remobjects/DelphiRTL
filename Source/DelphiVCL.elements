@@ -2,12 +2,12 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
   <PropertyGroup>
     <ProductVersion>3.5</ProductVersion>
-    <RootNamespace>RemObjects.Elements.RTL.Delphi</RootNamespace>
-    <ProjectGuid>{EADD178D-DD01-4F3A-B93D-FDD263D7A19D}</ProjectGuid>
+    <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
+    <ProjectGuid>{D3DFB8BC-1496-4781-A36B-6649C8E98C1F}</ProjectGuid>
     <OutputType>library</OutputType>
     <AssemblyName>Delphi</AssemblyName>
     <AllowLegacyEnums>True</AllowLegacyEnums>
-        <CrossPlatform>True</CrossPlatform>
+    <CrossPlatform>True</CrossPlatform>
     <GeneratePDB>True</GeneratePDB>
     <GenerateMDB>True</GenerateMDB>
     <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
@@ -48,6 +48,7 @@
     <SDK>iOS</SDK>
     <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
+    <SupportMacCatalyst>True</SupportMacCatalyst>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island.Darwin.tvOS' ">
     <Mode>Island</Mode>
@@ -88,6 +89,7 @@
     <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
     <DefaultUses>Foundation</DefaultUses>
+    <SupportMacCatalyst>True</SupportMacCatalyst>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Toffee.tvOS' ">
     <Mode>Toffee</Mode>
@@ -136,16 +138,14 @@
     <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
     <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
   </PropertyGroup>
-  <ItemGroup></ItemGroup>
-  <ItemGroup></ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Echoes'">
-    <Compile Include="Properties\AssemblyInfo.pas"></Compile>
-    <Reference Include="mscorlib"></Reference>
-    <Reference Include="System"></Reference>
-    <Reference Include="System.Xml"></Reference>
-    <Reference Include="System.Core"></Reference>
-    <Reference Include="System.Xml.Linq"></Reference>
-    <Reference Include="System.Data.DataSetExtensions"></Reference>
+    <Compile Include="Properties\AssemblyInfo.pas" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Echoes">
       <Private>True</Private>
     </Reference>
@@ -154,7 +154,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Cooper'">
-    <Reference Include="rt"></Reference>
+    <Reference Include="rt" />
     <Reference Include="cooper">
       <Private>True</Private>
     </Reference>
@@ -163,76 +163,82 @@
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Island.Windows'">
-    <Reference Include="rtl"></Reference>
-    <Reference Include="gc"></Reference>
-    <Reference Include="Island"></Reference>
-    <Reference Include="Elements"></Reference>
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Island.Android'">
-    <Reference Include="rtl"></Reference>
-    <Reference Include="gc"></Reference>
-    <Reference Include="Island"></Reference>
-    <Reference Include="Elements"></Reference>
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Island.WebAssembly'">
-    <Reference Include="Island"></Reference>
-    <Reference Include="Elements"></Reference>
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Island.Linux'">
-    <Reference Include="rtl"></Reference>
-    <Reference Include="gc"></Reference>
-    <Reference Include="Island"></Reference>
-    <Reference Include="Elements"></Reference>
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Island.Darwin.macOS'">
-    <Reference Include="rtl"></Reference>
-    <Reference Include="gc"></Reference>
-    <Reference Include="Island"></Reference>
-    <Reference Include="Elements"></Reference>
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Island.Darwin.iOS'">
-    <Reference Include="rtl"></Reference>
-    <Reference Include="gc"></Reference>
-    <Reference Include="Island"></Reference>
-    <Reference Include="Elements"></Reference>
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Island.Darwin.tvOS'">
-    <Reference Include="rtl"></Reference>
-    <Reference Include="gc"></Reference>
-    <Reference Include="Island"></Reference>
-    <Reference Include="Elements"></Reference>
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Island.Darwin.watchOS'">
-    <Reference Include="rtl"></Reference>
-    <Reference Include="gc"></Reference>
-    <Reference Include="Island"></Reference>
-    <Reference Include="Elements"></Reference>
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Toffee.iOS'">
-    <Reference Include="Foundation"></Reference>
-    <Reference Include="rtl"></Reference>
-    <Reference Include="libToffee"></Reference>
-    <Reference Include="libElements"></Reference>
+    <Reference Include="Foundation" />
+    <Reference Include="rtl" />
+    <Reference Include="libToffee" />
+    <Reference Include="libElements" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Toffee.macOS'">
-    <Reference Include="Foundation"></Reference>
-    <Reference Include="rtl"></Reference>
-    <Reference Include="libToffee"></Reference>
-    <Reference Include="libElements"></Reference>
+    <Reference Include="Foundation" />
+    <Reference Include="rtl" />
+    <Reference Include="libToffee" />
+    <Reference Include="libElements" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Toffee.tvOS'">
-    <Reference Include="Foundation"></Reference>
-    <Reference Include="rtl"></Reference>
-    <Reference Include="libToffee"></Reference>
-    <Reference Include="libElements"></Reference>
+    <Reference Include="Foundation" />
+    <Reference Include="rtl" />
+    <Reference Include="libToffee" />
+    <Reference Include="libElements" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Toffee.watchOS'">
-    <Reference Include="Foundation"></Reference>
-    <Reference Include="rtl"></Reference>
-    <Reference Include="libToffee"></Reference>
-    <Reference Include="libElements"></Reference>
+    <Reference Include="Foundation" />
+    <Reference Include="rtl" />
+    <Reference Include="libToffee" />
+    <Reference Include="libElements" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="DelphiRTL">
+      <Project>{EADD178D-DD01-4F3A-B93D-FDD263D7A19D}</Project>
+      <ProjectFile>DelphiRTL.elements</ProjectFile>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
-  <Import Project="DelphiRTL.Shared.projitems" Label="Shared" />
   <Import Project="DelphiRTL.Shared.VCL.projitems" Label="Shared" />
 </Project>
