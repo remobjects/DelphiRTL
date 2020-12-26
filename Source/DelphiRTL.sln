@@ -3,11 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # RemObjects Fire
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL", "DelphiRTL.elements", "{EADD178D-DD01-4F3A-B93D-FDD263D7A19D}"
 EndProject
-Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiRTL.Shared", "DelphiRTL.Shared.elements", "{422C7732-516B-4349-88E8-7F01BA91FF08}"
-EndProject
 Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL", "DelphiVCL.elements", "{D3DFB8BC-1496-4781-A36B-6649C8E98C1F}"
-EndProject
-Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "DelphiVCL.Shared", "DelphiVCL.Shared.elements", "{2C8BFC71-4766-4D9A-801F-A7F0E7034D78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

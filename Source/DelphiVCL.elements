@@ -5,7 +5,6 @@
     <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
     <ProjectGuid>{D3DFB8BC-1496-4781-A36B-6649C8E98C1F}</ProjectGuid>
     <OutputType>library</OutputType>
-    <AssemblyName>Delphi</AssemblyName>
     <AllowLegacyEnums>True</AllowLegacyEnums>
     <CrossPlatform>True</CrossPlatform>
     <GeneratePDB>True</GeneratePDB>
@@ -14,6 +13,7 @@
     <GenerateDebugInfo>True</GenerateDebugInfo>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <AllowLegacyEnums>True</AllowLegacyEnums>
+    <BinaryName>DelphiVCL</BinaryName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Echoes' ">
     <Mode>Echoes</Mode>
@@ -46,7 +46,7 @@
     <Mode>Island</Mode>
     <SubMode>Darwin</SubMode>
     <SDK>iOS</SDK>
-    <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
+    <DeploymentTargetVersion>9.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
     <SupportMacCatalyst>True</SupportMacCatalyst>
   </PropertyGroup>
@@ -54,7 +54,7 @@
     <Mode>Island</Mode>
     <SubMode>Darwin</SubMode>
     <SDK>tvOS</SDK>
-    <DeploymentTargetVersion>10.0</DeploymentTargetVersion>
+    <DeploymentTargetVersion>9.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island.Darwin.watchOS' ">
@@ -86,7 +86,7 @@
     <Mode>Toffee</Mode>
     <SubMode>iOS</SubMode>
     <SDK>iOS</SDK>
-    <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
+    <DeploymentTargetVersion>9.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
     <DefaultUses>Foundation</DefaultUses>
     <SupportMacCatalyst>True</SupportMacCatalyst>
@@ -138,6 +138,48 @@
     <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
     <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="VCL\Application.Mac.pas" />
+    <Compile Include="VCL\Application.pas" />
+    <Compile Include="VCL\Application.WebAssembly.pas" />
+    <Compile Include="VCL\Application.Windows.pas" />
+    <Compile Include="VCL\Application.WPF.pas" />
+    <Compile Include="VCL\ComCtrls.Mac.pas" />
+    <Compile Include="VCL\ComCtrls.pas" />
+    <Compile Include="VCL\ComCtrls.TreeView.Mac.pas" />
+    <Compile Include="VCL\ComCtrls.TreeView.pas" />
+    <Compile Include="VCL\ComCtrls.TreeView.Windows.pas" />
+    <Compile Include="VCL\ComCtrls.TreeView.WPF.pas" />
+    <Compile Include="VCL\ComCtrls.Windows.pas" />
+    <Compile Include="VCL\ComCtrls.WPF.pas" />
+    <Compile Include="VCL\Component.pas" />
+    <Compile Include="VCL\Component.ReaderWriter.pas" />
+    <Compile Include="VCL\Control.Mac.pas" />
+    <Compile Include="VCL\Control.pas" />
+    <Compile Include="VCL\Control.WebAssembly.pas" />
+    <Compile Include="VCL\Control.Windows.pas" />
+    <Compile Include="VCL\Control.WPF.pas" />
+    <Compile Include="VCL\ExtCtrls.pas" />
+    <Compile Include="VCL\ExtCtrls.WebAssembly.pas" />
+    <Compile Include="VCL\ExtCtrls.Windows.pas" />
+    <Compile Include="VCL\ExtCtrls.WPF.pas" />
+    <Compile Include="VCL\Font.pas" />
+    <Compile Include="VCL\Font.Windows.pas" />
+    <Compile Include="VCL\Font.WPF.pas" />
+    <Compile Include="VCL\Form.Mac.pas" />
+    <Compile Include="VCL\Form.pas" />
+    <Compile Include="VCL\Form.WebAssembly.pas" />
+    <Compile Include="VCL\Form.Windows.pas" />
+    <Compile Include="VCL\Form.WPF.pas" />
+    <Compile Include="VCL\Graphics.pas" />
+    <Compile Include="VCL\Messages.Windows.pas" />
+    <Compile Include="VCL\StdCtrls.Mac.pas" />
+    <Compile Include="VCL\StdCtrls.pas" />
+    <Compile Include="VCL\StdCtrls.WebAssembly.pas" />
+    <Compile Include="VCL\StdCtrls.Windows.pas" />
+    <Compile Include="VCL\StdCtrls.WPF.pas" />
+    <Compile Include="VCL\Themes.Windows.pas" />
+  </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Echoes'">
     <Compile Include="Properties\AssemblyInfo.pas" />
     <Reference Include="mscorlib" />
@@ -240,5 +282,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
-  <Import Project="DelphiVCL.Shared.projitems" Label="Shared" />
 </Project>

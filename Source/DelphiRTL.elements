@@ -46,7 +46,7 @@
     <Mode>Island</Mode>
     <SubMode>Darwin</SubMode>
     <SDK>iOS</SDK>
-    <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
+    <DeploymentTargetVersion>9.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
     <SupportMacCatalyst>True</SupportMacCatalyst>
   </PropertyGroup>
@@ -54,7 +54,7 @@
     <Mode>Island</Mode>
     <SubMode>Darwin</SubMode>
     <SDK>tvOS</SDK>
-    <DeploymentTargetVersion>10.0</DeploymentTargetVersion>
+    <DeploymentTargetVersion>9.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island.Darwin.watchOS' ">
@@ -86,7 +86,7 @@
     <Mode>Toffee</Mode>
     <SubMode>iOS</SubMode>
     <SDK>iOS</SDK>
-    <DeploymentTargetVersion>8.0</DeploymentTargetVersion>
+    <DeploymentTargetVersion>9.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
     <DefaultUses>Foundation</DefaultUses>
     <SupportMacCatalyst>True</SupportMacCatalyst>
@@ -138,8 +138,37 @@
     <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
     <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AnsiString.pas" />
+    <Compile Include="Classes.Persistent.pas" />
+    <Compile Include="Classes.StringList.pas" />
+    <Compile Include="Collections.Dictionary.pas" />
+    <Compile Include="Collections.Queue.pas" />
+    <Compile Include="Collections.Stack.pas" />
+    <Compile Include="Collections.List.pas" />
+    <Compile Include="DateUtils.pas" />
+    <Compile Include="IniFiles.pas" />
+    <Compile Include="Locale.pas" />
+    <Compile Include="Stream.pas" />
+    <Compile Include="System.Math.pas" />
+    <Compile Include="System.pas" />
+    <Compile Include="System.Registry.pas" />
+    <Compile Include="SysUtils.DateTime.pas" />
+    <Compile Include="SysUtils.pas" />
+    <Compile Include="SysUtils.StringBuilder.pas" />
+    <Compile Include="SysUtils.Strings.pas" />
+    <Compile Include="TObject.pas" />
+    <Compile Include="Aliases.pas" />
+    <Compile Include="String.pas" />
+    <Compile Include="System.HighDPI.Windows.pas" />
+    <Compile Include="System.Types.pas" />
+    <Compile Include="Classes.Collection.pas" />
+    <Compile Include="System.UITypes.pas" />
+    <Compile Include="Array.pas" />
+    <Compile Include="PChars.pas" />
+    <Compile Include="SysUtils.Format.pas" />
+  </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Echoes'">
-    <Compile Include="Properties\AssemblyInfo.pas" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -152,6 +181,7 @@
     <Reference Include="Elements">
       <Private>True</Private>
     </Reference>
+    <Compile Include="Properties\AssemblyInfo.pas" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Cooper'">
     <Reference Include="rt" />
@@ -233,5 +263,4 @@
     <Reference Include="libElements" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
-  <Import Project="DelphiRTL.Shared.projitems" Label="Shared" />
 </Project>
