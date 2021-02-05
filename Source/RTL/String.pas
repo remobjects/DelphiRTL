@@ -687,7 +687,7 @@ begin
   {$ELSEIF ECHOES}
   result := (System.String(Value1) + System.String(Value2)) as not nullable;
   {$ELSEIF ISLAND}
-  result := String(Value1) + String(Value2) as not nullable;
+  result := PlatformString(Value1) + PlatformString(Value2) as not nullable;
   {$ELSEIF TOFFEE}
   result := (Foundation.NSString(Value1) + Foundation.NSString(Value2)) as not nullable;
   {$ENDIF}
