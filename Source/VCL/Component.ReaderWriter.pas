@@ -369,7 +369,7 @@ begin
     TValueType.vaList: begin
       var lIsTStrings: Boolean;
       {$IF TOFFEE}
-      lIsTStrings := new &Type withClass(typeOf(aInstance)).IsSubclassOf(new &Type withClass(typeOf(TStrings)));
+      lIsTStrings := new &Type withClass(typeOf(aInstance)).IsSubclassOf(typeOf(TStrings));
       {$ELSE}
       lIsTStrings := typeOf(aInstance).IsSubclassOf(typeOf(TStrings));
       {$ENDIF}
@@ -498,12 +498,7 @@ begin
     lName := lProps[lProps.Count - 1];
   end;
 
-  var lIsTStrings: Boolean;
-  {$IF TOFFEE}
-  lIsTStrings := lType.IsSubclassOf(new &Type withClass(typeOf(TStrings)));
-  {$ELSE}
-  lIsTStrings := lType.IsSubclassOf(typeOf(TStrings));
-  {$ENDIF}
+  var lIsTStrings := lType.IsSubclassOf(typeOf(TStrings));
 
   if not lIsTStrings then
     lProperty := FindProperty(lType, lName);

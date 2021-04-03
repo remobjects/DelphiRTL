@@ -439,11 +439,7 @@ end;
 
 constructor TListColumns(aOwner: TListView);
 begin
-  {$IF TOFFEE}
-  inherited(new &Type withClass(typeOf(TListColumn)));
-  {$ELSE}
   inherited(typeOf(TListColumn));
-  {$ENDIF}
   fOwner := aOwner;
 end;
 
