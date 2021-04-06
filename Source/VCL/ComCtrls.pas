@@ -7,12 +7,9 @@ interface
 uses
   RemObjects.Elements.RTL,
   RemObjects.Elements.RTL.Delphi,
-  {$IF ECHOESWPF}
-  System.Reflection
-  {$ELSEIF MACOS}
+  {$IF ECHOESWPF OR MACOS}
   RemObjects.Elements.RTL.Reflection
-  {$ENDIF}
-  ;
+  {$ENDIF};
 
 
 type
