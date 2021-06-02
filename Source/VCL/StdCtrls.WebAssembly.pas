@@ -211,7 +211,9 @@ end;
 
 method TEdit.PlatformGetText: String;
 begin
-  result := fHandle.value;
+  var lTmp: PlatformString := fHandle.value;
+  result := lTmp;
+  //result := fHandle.value;
 end;
 
 method TEdit.PlatformSetText(aValue: String);
@@ -416,7 +418,9 @@ end;
 
 method TComboBox.PlatformGetText: String;
 begin
-  result := fHandle.value;
+  var lStr: PlatformString := fHandle.value;
+  result := lStr;
+  //result := fHandle.value;
 end;
 
 method TComboBox.PlatformSetText(aValue: String);
@@ -441,7 +445,9 @@ end;
 
 method TMemoStrings.PlatformGetText: String;
 begin
-  result := fMemo.Handle.value;
+  var lStr: PlatformString := fMemo.Handle.value;
+  result := lStr;
+  //result := fMemo.Handle.value;
 end;
 
 method TMemoStrings.PlatformSetText(aValue: String);

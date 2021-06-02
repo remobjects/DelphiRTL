@@ -27,7 +27,13 @@ type
   RTL2String = RemObjects.Elements.RTL.String;
   PlatformString = public {$IF ECHOES}System.String{$ELSEIF TOFFEE}Foundation.NSString{$ELSEIF COOPER}java.lang.String{$ELSEIF ISLAND}RemObjects.Elements.System.String{$ENDIF};
 
-  DelphiString = public partial record
+  {$IF NOT ISLAND}
+  IString = public interface
+    method ToString: PlatformString;
+  end;
+  {$ENDIF}
+
+  DelphiString = public partial record(IString)
   private
     fData: RemObjects.Elements.RTL.String;
     class method InternalCompare(const StrA: DelphiString; IndexA: Integer; const StrB: DelphiString; IndexB, LengthA, LengthB: Integer; Options: TCompareOptions; LocaleID: TLocaleID): Integer; static;
@@ -63,7 +69,7 @@ type
     {$IF TOFFEE}
     method NSArrayToStringArray(Value: NSArray; aCount: Integer): array of DelphiString;
     {$ENDIF}
-  public
+  published
     constructor;
     constructor(Value: PlatformString);
     constructor(aBytes: array of Byte);
