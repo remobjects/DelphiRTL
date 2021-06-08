@@ -9,6 +9,7 @@ uses
 
 type
   TRegKeyInfo = public record
+  public
     NumSubKeys: rtl.DWORD;
     MaxSubKeyLen: rtl.DWORD;
     NumValues: rtl.DWORD;
@@ -20,6 +21,7 @@ type
   TRegDataType = public (rdUnknown, rdString, rdExpandString, rdInteger, rdBinary) of rtl.DWORD;
 
   TRegDataInfo = public record
+  public
     RegData: TRegDataType;
     DataSize: rtl.DWORD;
   end;
