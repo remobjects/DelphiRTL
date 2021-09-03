@@ -99,6 +99,7 @@ type
     constructor(Instance: THandle; ResName: String; ResType: TResourceId);
     {$ELSEIF WEBASSEMBLY}
     constructor(Instance: THandle; aResName: String);
+    constructor(Instance: THandle; aResName: String; aContent: String);
     {$ENDIF}
     //constructor(Instance: THandle; ResID: Integer; ResType: PChar);
     //method &Write(Buffer; Count: Longint): Longint; override; final;
@@ -910,6 +911,18 @@ begin
   var lContent := Browser.AjaxRequestBinary('wasm/resources/' + aResName);
   var lInput := new TMemoryStream();
   lInput.Write(lContent, 0, lContent.Length);
+  var lResHeaderSize := 62 + ((aResName.Length - 4) * 2); // -4 because .dfm is not included in resource name
+  lInput.Position := lResHeaderSize;
+  CopyFrom(lInput, lInput.Size - lResHeaderSize);
+end;
+
+constructor TResourceStream(Instance: THandle; aResName: String; aContent: String);
+begin
+  var lInput := new TMemoryStream();
+  var lArray := new Byte[aContent.Length];
+  for i: Integer := 0 to aContent.Length - 1 do
+    lArray[i] := Byte(chr(aContent[i]));
+  lInput.Write(lArray, 0, lArray.Length);
   var lResHeaderSize := 62 + ((aResName.Length - 4) * 2); // -4 because .dfm is not included in resource name
   lInput.Position := lResHeaderSize;
   CopyFrom(lInput, lInput.Size - lResHeaderSize);
