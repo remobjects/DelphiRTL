@@ -10,7 +10,7 @@ uses
 type
   TTreeNode = public partial class(TPersistent)
   protected
-    method PlatformSetText(aValue: String); partial;
+    method PlatformSetText(aValue: VCLString); partial;
     method PlatformGetSelected: Boolean; partial;
     method PlatformGetFocused: Boolean; partial;
     method PlatformGetExpanded: Boolean; partial;
@@ -39,7 +39,7 @@ type
 
 implementation
 
-method TTreeNode.PlatformSetText(aValue: String);
+method TTreeNode.PlatformSetText(aValue: VCLString);
 begin
   fItemId.Header := aValue;
 end;

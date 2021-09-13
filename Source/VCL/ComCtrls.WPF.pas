@@ -10,7 +10,7 @@ uses
 type
   TListColumn = public partial class(TCollectionItem)
   protected
-    method PlatformSetCaption(aValue: String); partial;
+    method PlatformSetCaption(aValue: VCLString); partial;
   public
     PlatformColumn: GridViewColumn;
   end;
@@ -34,7 +34,7 @@ type
 
   TListItem = public partial class(TPersistent)
   protected
-    method PlatformSetCaption(aValue: String); partial;
+    method PlatformSetCaption(aValue: VCLString); partial;
   end;
 
   TListItems = public partial class(TPersistent)
@@ -59,7 +59,7 @@ type
 
 implementation
 
-method TListColumn.PlatformSetCaption(aValue: String);
+method TListColumn.PlatformSetCaption(aValue: VCLString);
 begin
   PlatformColumn.Header := aValue;
 end;
@@ -116,7 +116,7 @@ begin
   Owner.Owner.Owner.RefreshContent;
 end;
 
-method TListItem.PlatformSetCaption(aValue: String);
+method TListItem.PlatformSetCaption(aValue: VCLString);
 begin
   Owner.Owner.RefreshContent;
 end;

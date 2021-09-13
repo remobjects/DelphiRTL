@@ -8,6 +8,7 @@ interface
 
 uses
   rtl,
+  RemObjects.Elements.RTL,
   RemObjects.Elements.RTL.Delphi;
 
 type
@@ -36,8 +37,8 @@ type
     method GetDefaultName: String;
     method HandleAllocated: Boolean; virtual; partial;
 
-    method PlatformGetCaption: String; partial;
-    method PlatformSetCaption(aValue: String); virtual; partial;
+    method PlatformGetCaption: VCLString; partial;
+    method PlatformSetCaption(aValue: VCLString); virtual; partial;
     method PlatformSetWidth(aValue: Integer); partial;
     method PlatformSetHeight(aValue: Integer); partial;
     method PlatformSetTop(aValue: Integer); virtual; partial;
@@ -114,7 +115,7 @@ type
   TMessageTable = public List<KeyValuePair<Cardinal, MethodInfo>>;
   TMessageTableCache = public static class
   private
-    class var fCache: Dictionary<&Type, TMessageTable> := new Dictionary<&Type, TMessageTable>();
+    class var fCache: RemObjects.Elements.System.Dictionary<&Type, TMessageTable> := new Dictionary<&Type, TMessageTable>();
   public
     class method MessageTableFor(aType: &Type): TMessageTable;
   end;
@@ -301,7 +302,7 @@ begin
   // TODO set control font, invalidate control
 end;
 
-method TControl.PlatformGetCaption: String;
+method TControl.PlatformGetCaption: VCLString;
 begin
   if HandleAllocated then begin
     var lMaxLength := rtl.GetWindowTextLength(fHandle);
@@ -313,7 +314,7 @@ begin
     result := fCaption;
 end;
 
-method TControl.PlatformSetCaption(aValue: String);
+method TControl.PlatformSetCaption(aValue: VCLString);
 begin
   if HandleAllocated then begin
     var lText := PlatformString(aValue).ToCharArray(true);
@@ -445,7 +446,7 @@ begin
   aParams.Y := Top;
   aParams.Width := Width;
   aParams.Height := Height;
-  var lCaption := 'Caption';
+  var lCaption: PlatformString := 'Caption';
   aParams.Caption := PlatformString(lCaption).ToCharArray(true);
 end;
 

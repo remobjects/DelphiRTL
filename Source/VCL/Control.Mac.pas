@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF MACOS AND NOT (ISLAND AND DARWIN)}
+{$IF MACOS AND NOT MACCATALYST AND NOT (ISLAND AND DARWIN)}
 
 interface
 
@@ -23,7 +23,7 @@ type
     method PlatformSetOnKeyPress(aValue: TKeyPressEvent); partial;
     method PlatformSetOnKeyDown(aValue: TKeyEvent); partial;
     method PlatformSetOnKeyUp(aValue: TKeyEvent); partial;
-    method PlatformSetCaption(aValue: String); virtual; partial;
+    method PlatformSetCaption(aValue: VCLString); virtual; partial;
     method PlatformSetTabOrder(aValue: Integer); virtual; partial;
 
     method PlatformFontChanged; virtual; partial;
@@ -93,7 +93,7 @@ begin
 
 end;
 
-method TControl.PlatformSetCaption(aValue: String);
+method TControl.PlatformSetCaption(aValue: VCLString);
 begin
 end;
 

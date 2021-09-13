@@ -2,6 +2,8 @@
 
 {$IF WEBASSEMBLY}
 
+//{$DEFINE ASYNC_FORM}
+
 interface
 
 uses
@@ -10,7 +12,7 @@ uses
 type
   TCustomForm = public partial class(TNativeControl)
   protected
-    method PlatformSetCaption(aValue: String); override;
+    method PlatformSetCaption(aValue: VCLString); override;
   public
     constructor(aOwner: TComponent);
   end;
@@ -31,14 +33,27 @@ begin
   var lName := typeOf(self).Name;
   lName := lName.Substring(lName.LastIndexOf('.') + 1).ToUpper;
   if lName.ToUpper <> 'TFORM' then begin
+    {$IF ASYNC_FORM}
+    var lHttp := Browser.NewXMLHttpRequest();
+    lHttp.open('GET', 'wasm/resources/' + lName + '.dfm');
+    lHttp.overrideMimeType('text/plain; charset=x-user-defined');
+    lHttp.onload := new WebAssemblyDelegate(() -> begin
+      var lStream := new TResourceStream(0, lName + '.dfm', lHttp.responseText);
+      lStream.Position := 0;
+      var lReader := new TReader(lStream, 100);
+      lReader.ReadRootComponent(self);
+    end);
+    lHttp.send(nil);
+    {$ELSE}
     var lStream := new TResourceStream(0, lName + '.dfm');
     lStream.Position := 0;
     var lReader := new TReader(lStream, 100);
     lReader.ReadRootComponent(self);
+    {$ENDIF}
   end;
 end;
 
-method TCustomForm.PlatformSetCaption(aValue: String);
+method TCustomForm.PlatformSetCaption(aValue: VCLString);
 begin
   // do nothing
 end;

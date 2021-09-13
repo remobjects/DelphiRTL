@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProductVersion>3.5</ProductVersion>
+    <RootNamespace>RemObjects.Elements.RTL.Delphi.VCL</RootNamespace>
+    <ProjectGuid>{D3DFB8BC-1496-4781-A36B-6649C8E98C1F}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
+    <CrossPlatform>True</CrossPlatform>
+    <GeneratePDB>True</GeneratePDB>
+    <GenerateMDB>True</GenerateMDB>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
+    <GenerateDebugInfo>True</GenerateDebugInfo>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <AllowLegacyEnums>True</AllowLegacyEnums>
+    <BinaryName>DelphiVCL</BinaryName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Echoes' ">
+    <Mode>Echoes</Mode>
+    <SubMode>Full</SubMode>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AllowUnsafeCode>True</AllowUnsafeCode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Cooper' ">
+    <Mode>Cooper</Mode>
+    <SubMode>Plain</SubMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Island.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <OutputType>staticlibrary</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Island.Linux' ">
+    <Mode>Island</Mode>
+    <SubMode>Linux</SubMode>
+    <OutputType>staticlibrary</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Island.Darwin.macOS' ">
+    <Mode>Island</Mode>
+    <SubMode>Darwin</SubMode>
+    <SDK>macOS</SDK>
+    <DeploymentTargetVersion>10.10</DeploymentTargetVersion>
+    <OutputType>staticlibrary</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Island.Darwin.iOS' ">
+    <Mode>Island</Mode>
+    <SubMode>Darwin</SubMode>
+    <SDK>iOS</SDK>
+    <DeploymentTargetVersion>9.0</DeploymentTargetVersion>
+    <OutputType>staticlibrary</OutputType>
+    <SupportMacCatalyst>True</SupportMacCatalyst>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Island.Darwin.tvOS' ">
+    <Mode>Island</Mode>
+    <SubMode>Darwin</SubMode>
+    <SDK>tvOS</SDK>
+    <DeploymentTargetVersion>9.0</DeploymentTargetVersion>
+    <OutputType>staticlibrary</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Island.Darwin.watchOS' ">
+    <Mode>Island</Mode>
+    <SubMode>Darwin</SubMode>
+    <SDK>watchOS</SDK>
+    <DeploymentTargetVersion>2.10</DeploymentTargetVersion>
+    <OutputType>staticlibrary</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Island.Android' ">
+    <Mode>Island</Mode>
+    <SubMode>Android</SubMode>
+    <OutputType>staticlibrary</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Island.WebAssembly' ">
+    <Mode>Island</Mode>
+    <SubMode>WebAssembly</SubMode>
+    <OutputType>staticlibrary</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Toffee.macOS' ">
+    <Mode>Toffee</Mode>
+    <SubMode>macOS</SubMode>
+    <SDK>macOS</SDK>
+    <DeploymentTargetVersion>10.10</DeploymentTargetVersion>
+    <OutputType>staticlibrary</OutputType>
+    <DefaultUses>Foundation</DefaultUses>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Toffee.iOS' ">
+    <Mode>Toffee</Mode>
+    <SubMode>iOS</SubMode>
+    <SDK>iOS</SDK>
+    <DeploymentTargetVersion>9.0</DeploymentTargetVersion>
+    <OutputType>staticlibrary</OutputType>
+    <DefaultUses>Foundation</DefaultUses>
+    <SupportMacCatalyst>True</SupportMacCatalyst>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Toffee.tvOS' ">
+    <Mode>Toffee</Mode>
+    <SubMode>tvOS</SubMode>
+    <SDK>tvOS</SDK>
+    <DeploymentTargetVersion>9.0</DeploymentTargetVersion>
+    <OutputType>staticlibrary</OutputType>
+    <DefaultUses>Foundation</DefaultUses>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Toffee.watchOS' ">
+    <Mode>Toffee</Mode>
+    <SubMode>watchOS</SubMode>
+    <SDK>watchOS</SDK>
+    <DeploymentTargetVersion>2.0</DeploymentTargetVersion>
+    <OutputType>staticlibrary</OutputType>
+    <DefaultUses>Foundation</DefaultUses>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;</DefineConstants>
+    <EnableAsserts>True</EnableAsserts>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <CaptureConsoleOutput>False</CaptureConsoleOutput>
+    <StartMode>Project</StartMode>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <CpuType>anycpu</CpuType>
+    <RuntimeVersion>v25</RuntimeVersion>
+    <XmlDoc>False</XmlDoc>
+    <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
+    <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
+    <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Optimize>true</Optimize>
+    <OutputPath>..\Bin\Release</OutputPath>
+    <EnableAsserts>False</EnableAsserts>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <CaptureConsoleOutput>False</CaptureConsoleOutput>
+    <StartMode>Project</StartMode>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <CpuType>anycpu</CpuType>
+    <RuntimeVersion>v25</RuntimeVersion>
+    <XmlDoc>False</XmlDoc>
+    <XmlDocWarningLevel>WarningOnPublicMembers</XmlDocWarningLevel>
+    <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
+    <WarnOnCaseMismatch>True</WarnOnCaseMismatch>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="VCL\Application.Mac.pas" />
+    <Compile Include="VCL\Application.pas" />
+    <Compile Include="VCL\Application.WebAssembly.pas" />
+    <Compile Include="VCL\Application.Windows.pas" />
+    <Compile Include="VCL\Application.WPF.pas" />
+    <Compile Include="VCL\ComCtrls.Mac.pas" />
+    <Compile Include="VCL\ComCtrls.pas" />
+    <Compile Include="VCL\ComCtrls.TreeView.Mac.pas" />
+    <Compile Include="VCL\ComCtrls.TreeView.pas" />
+    <Compile Include="VCL\ComCtrls.TreeView.Windows.pas" />
+    <Compile Include="VCL\ComCtrls.TreeView.WPF.pas" />
+    <Compile Include="VCL\ComCtrls.Windows.pas" />
+    <Compile Include="VCL\ComCtrls.WPF.pas" />
+    <Compile Include="VCL\Component.pas" />
+    <Compile Include="VCL\Component.ReaderWriter.pas" />
+    <Compile Include="VCL\Control.Mac.pas" />
+    <Compile Include="VCL\Control.pas" />
+    <Compile Include="VCL\Control.WebAssembly.pas" />
+    <Compile Include="VCL\Control.Windows.pas" />
+    <Compile Include="VCL\Control.WPF.pas" />
+    <Compile Include="VCL\ExtCtrls.pas" />
+    <Compile Include="VCL\ExtCtrls.WebAssembly.pas" />
+    <Compile Include="VCL\ExtCtrls.Windows.pas" />
+    <Compile Include="VCL\ExtCtrls.WPF.pas" />
+    <Compile Include="VCL\Font.pas" />
+    <Compile Include="VCL\Font.Windows.pas" />
+    <Compile Include="VCL\Font.WPF.pas" />
+    <Compile Include="VCL\Form.Mac.pas" />
+    <Compile Include="VCL\Form.pas" />
+    <Compile Include="VCL\Form.WebAssembly.pas" />
+    <Compile Include="VCL\Form.Windows.pas" />
+    <Compile Include="VCL\Form.WPF.pas" />
+    <Compile Include="VCL\Graphics.pas" />
+    <Compile Include="VCL\Messages.Windows.pas" />
+    <Compile Include="VCL\StdCtrls.Mac.pas" />
+    <Compile Include="VCL\StdCtrls.pas" />
+    <Compile Include="VCL\StdCtrls.WebAssembly.pas" />
+    <Compile Include="VCL\StdCtrls.Windows.pas" />
+    <Compile Include="VCL\StdCtrls.WPF.pas" />
+    <Compile Include="VCL\Themes.Windows.pas" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Echoes'">
+    <Compile Include="Properties\AssemblyInfo.pas" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Echoes">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Elements">
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Cooper'">
+    <Reference Include="rt" />
+    <Reference Include="cooper">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="elements">
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Island.Windows'">
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Island.Android'">
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Island.WebAssembly'">
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Island.Linux'">
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Island.Darwin.macOS'">
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Island.Darwin.iOS'">
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Island.Darwin.tvOS'">
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Island.Darwin.watchOS'">
+    <Reference Include="rtl" />
+    <Reference Include="gc" />
+    <Reference Include="Island" />
+    <Reference Include="Elements" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Toffee.iOS'">
+    <Reference Include="Foundation" />
+    <Reference Include="rtl" />
+    <Reference Include="libToffee" />
+    <Reference Include="libElements" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Toffee.macOS'">
+    <Reference Include="Foundation" />
+    <Reference Include="rtl" />
+    <Reference Include="libToffee" />
+    <Reference Include="libElements" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Toffee.tvOS'">
+    <Reference Include="Foundation" />
+    <Reference Include="rtl" />
+    <Reference Include="libToffee" />
+    <Reference Include="libElements" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Target)' == 'Toffee.watchOS'">
+    <Reference Include="Foundation" />
+    <Reference Include="rtl" />
+    <Reference Include="libToffee" />
+    <Reference Include="libElements" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="DelphiRTL">
+      <Project>{EADD178D-DD01-4F3A-B93D-FDD263D7A19D}</Project>
+      <ProjectFile>DelphiRTL.elements</ProjectFile>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
+</Project>

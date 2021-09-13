@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF MACOS AND NOT (ISLAND AND DARWIN)}
+{$IF MACOS AND NOT MACCATALYST AND NOT (ISLAND AND DARWIN)}
 
 interface
 
@@ -14,7 +14,7 @@ type
     method PlatformSetLeft(aValue: Integer); override;
     method PlatformSetWidth(aValue: Integer); override;
     method PlatformSetHeight(aValue: Integer); override;
-    method PlatformSetCaption(aValue: String); override;
+    method PlatformSetCaption(aValue: VCLString); override;
     method PlatformInitControl; override;
 
   public
@@ -80,7 +80,7 @@ begin
   (fHandle as NSWindow).setFrame(lFrame) display(YES) animate(YES);
 end;
 
-method TCustomForm.PlatformSetCaption(aValue: String);
+method TCustomForm.PlatformSetCaption(aValue: VCLString);
 begin
   (fHandle as NSWindow).title := aValue;
 end;

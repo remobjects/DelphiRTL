@@ -15,7 +15,7 @@ type
     method GetFontHandle: rtl.HFONT;
     method SetFontHandle(aValue: rtl.HFONT);
 
-    class method CreateFontFromData(aFontName: String; aCharset: TFontCharset; aHeight: Integer; aOrientation: Integer; aPitch: TFontPitch; aQuality: TFontQuality; aStyle: TFontStyles): rtl.HFONT;
+    class method CreateFontFromData(aFontName: VCLString; aCharset: TFontCharset; aHeight: Integer; aOrientation: Integer; aPitch: TFontPitch; aQuality: TFontQuality; aStyle: TFontStyles): rtl.HFONT;
     class var fDefaultFont: rtl.HFONT := 0;
     class var fDevicePixelsPerInch: Integer := 0;
     class constructor;
@@ -52,7 +52,7 @@ begin
   fPixelsPerInch := fDevicePixelsPerInch;
 end;
 
-class method TFont.CreateFontFromData(aFontName: String; aCharset: TFontCharset; aHeight: Integer; aOrientation: Integer; aPitch: TFontPitch; aQuality: TFontQuality; aStyle: TFontStyles): rtl.HFONT;
+class method TFont.CreateFontFromData(aFontName: VCLString; aCharset: TFontCharset; aHeight: Integer; aOrientation: Integer; aPitch: TFontPitch; aQuality: TFontQuality; aStyle: TFontStyles): rtl.HFONT;
 begin
   var lFontInfo: rtl.LOGFONT;
   lFontInfo.lfWidth := 0;
@@ -68,6 +68,7 @@ begin
   lFontInfo.lfQuality := aQuality;
   lFontInfo.lfPitchAndFamily := aPitch;
   var lName := PlatformString(aFontName).ToCharArray(true);
+
   memcpy(@lFontInfo.lfFaceName[0], @lName[0], length(lName) * 2);
 
   result := rtl.CreateFontIndirect(@lFontInfo);

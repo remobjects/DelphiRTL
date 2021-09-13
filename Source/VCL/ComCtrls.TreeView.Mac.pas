@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF MACOS AND NOT (ISLAND AND DARWIN)}
+{$IF MACOS AND NOT MACCATALYST AND NOT (ISLAND AND DARWIN)}
 
 interface
 
@@ -14,7 +14,7 @@ type
     fChilds: TList<TTreeNode>;
   protected
     method PlatformCreate; partial;
-    method PlatformSetText(aValue: String); partial;
+    method PlatformSetText(aValue: VCLString); partial;
     method PlatformGetSelected: Boolean; partial;
     //method PlatformGetFocused: Boolean; partial;
     method PlatformGetExpanded: Boolean; partial;
@@ -66,7 +66,7 @@ begin
   fChilds := new TList<TTreeNode>();
 end;
 
-method TTreeNode.PlatformSetText(aValue: String);
+method TTreeNode.PlatformSetText(aValue: VCLString);
 begin
   fOwner.Owner.UpdateDataModel;
 end;

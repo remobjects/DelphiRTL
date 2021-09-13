@@ -13,13 +13,13 @@ type
   TButton = public partial class(TNativeControl)
   protected
     method CreateHandle; partial; override;
-    method PlatformSetCaption(aValue: String); partial; override;
+    method PlatformSetCaption(aValue: VCLString); partial; override;
   end;
 
   TLabel = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String); override;
+    method PlatformSetCaption(aValue: VCLString); override;
   end;
 
   TGroupBox = public partial class(TNativeControl)
@@ -27,14 +27,14 @@ type
     fLabelHandle: dynamic;
   protected
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String); override;
+    method PlatformSetCaption(aValue: VCLString); override;
   end;
 
   TEdit = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
-    method PlatformSetText(aValue: String);
-    method PlatformGetText: String;
+    method PlatformSetText(aValue: VCLString);
+    method PlatformGetText: VCLString;
     method PlatformGetMaxLength: Integer;
     method PlatformSetMaxLength(aValue: Integer);
     method PlatformGetReadOnly: Boolean;
@@ -53,7 +53,7 @@ type
     method PlatformGetChecked: Boolean; virtual; partial;
     method PlatformSetChecked(value: Boolean); virtual; partial;
 
-    method PlatformSetCaption(value: String); override;
+    method PlatformSetCaption(value: VCLString); override;
   end;
 
   TCheckBox = public partial class(TButtonControl)
@@ -100,8 +100,8 @@ type
   TComboBox = public partial class(TListControl)
   protected
     method CreateHandle; override;
-    method PlatformGetText: String;
-    method PlatformSetText(aValue: String);
+    method PlatformGetText: VCLString;
+    method PlatformSetText(aValue: VCLString);
     method PlatformSetOnSelect(aValue: TNotifyEvent);
     method PlatformSetOnChange(aValue: TNotifyEvent);
     method PlatformSelectAll;
@@ -113,8 +113,8 @@ type
 
   TMemoStrings = partial class(TStringList)
   protected
-    method PlatformGetText: String;
-    method PlatformSetText(aValue: String);
+    method PlatformGetText: VCLString;
+    method PlatformSetText(aValue: VCLString);
   end;
 
   TMemo = public partial class(TControl)
@@ -147,7 +147,7 @@ begin
   fHandle.appendChild(lCaption);
 end;
 
-method TButton.PlatformSetCaption(aValue: String);
+method TButton.PlatformSetCaption(aValue: VCLString);
 begin
   HandleNeeded;
   fHandle.innerText := aValue;
@@ -162,7 +162,7 @@ begin
   fHandle.style.position := "absolute";
 end;
 
-method TLabel.PlatformSetCaption(aValue: String);
+method TLabel.PlatformSetCaption(aValue: VCLString);
 begin
   fHandle.innerHTML := aValue;
 end;
@@ -177,7 +177,7 @@ begin
   fHandle.style.position := "absolute";
 end;
 
-method TGroupBox.PlatformSetCaption(aValue: String);
+method TGroupBox.PlatformSetCaption(aValue: VCLString);
 begin
   fLabelHandle.innerText := aValue;
 end;
@@ -209,12 +209,14 @@ begin
   fHandle.readOnly := aValue;
 end;
 
-method TEdit.PlatformGetText: String;
+method TEdit.PlatformGetText: VCLString;
 begin
-  result := fHandle.value;
+  var lTmp: PlatformString := fHandle.value;
+  result := lTmp;
+  //result := fHandle.value;
 end;
 
-method TEdit.PlatformSetText(aValue: String);
+method TEdit.PlatformSetText(aValue: VCLString);
 begin
   fHandle.value := aValue;
 end;
@@ -224,7 +226,7 @@ begin
   internalCreateHandle("checkbox");
 end;
 
-method TButtonControl.PlatformSetCaption(value: String);
+method TButtonControl.PlatformSetCaption(value: VCLString);
 begin
   HandleNeeded;
   inherited;
@@ -414,12 +416,14 @@ method TComboBox.PlatformClearSelection;
 begin
 end;
 
-method TComboBox.PlatformGetText: String;
+method TComboBox.PlatformGetText: VCLString;
 begin
-  result := fHandle.value;
+  var lStr: PlatformString := fHandle.value;
+  result := lStr;
+  //result := fHandle.value;
 end;
 
-method TComboBox.PlatformSetText(aValue: String);
+method TComboBox.PlatformSetText(aValue: VCLString);
 begin
   fHandle.value := aValue;
 end;
@@ -439,12 +443,14 @@ begin
   result := fHandle.selectedIndex;
 end;
 
-method TMemoStrings.PlatformGetText: String;
+method TMemoStrings.PlatformGetText: VCLString;
 begin
-  result := fMemo.Handle.value;
+  var lStr: PlatformString := fMemo.Handle.value;
+  result := lStr;
+  //result := fMemo.Handle.value;
 end;
 
-method TMemoStrings.PlatformSetText(aValue: String);
+method TMemoStrings.PlatformSetText(aValue: VCLString);
 begin
   fMemo.Handle.value := aValue;
 end;

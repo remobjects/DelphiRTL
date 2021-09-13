@@ -10,7 +10,7 @@ uses
 type
   TListColumn = public partial class(TCollectionItem)
   protected
-    method PlatformSetCaption(aValue: String); partial;
+    method PlatformSetCaption(aValue: VCLString); partial;
   end;
 
   TListColumns = public partial class(TCollection)
@@ -32,7 +32,7 @@ type
 
   TListItem = public partial class(TPersistent)
   protected
-    method PlatformSetCaption(aValue: String); partial;
+    method PlatformSetCaption(aValue: VCLString); partial;
     method PlatformGetSelected: Boolean; partial;
     method PlatformSetSelected(aValue: Boolean); partial;
   end;
@@ -59,11 +59,11 @@ type
 
 implementation
 
-method TListColumn.PlatformSetCaption(aValue: String);
+method TListColumn.PlatformSetCaption(aValue: VCLString);
 begin
   var lColumn: rtl.LVCOLUMN;
   lColumn.mask := rtl.LVCF_TEXT or rtl.LVCF_FMT;
-  lColumn.pszText := aValue.ToLPCWSTR;
+  lColumn.pszText := PlatformString(aValue).ToLPCWSTR;
 
   rtl.SendMessage(((Collection as TListColumns).Owner as TListView).Handle, rtl.LVM_SETCOLUMN, ColIndex, rtl.LPARAM(@lColumn));
 end;
@@ -122,7 +122,7 @@ begin
     UpdateSubItem(i);
 end;
 
-method TListItem.PlatformSetCaption(aValue: String);
+method TListItem.PlatformSetCaption(aValue: VCLString);
 begin
   var lItem: rtl.LV_ITEMW;
   lItem.iSubItem := 0;

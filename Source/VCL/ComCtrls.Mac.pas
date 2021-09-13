@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF MACOS AND NOT (ISLAND AND DARWIN)}
+{$IF MACOS AND NOT MACCATALYST AND NOT (ISLAND AND DARWIN)}
 
 interface
 
@@ -10,7 +10,7 @@ uses
 type
   TListColumn = public partial class(TCollectionItem)
   protected
-    method PlatformSetCaption(aValue: String); partial;
+    method PlatformSetCaption(aValue: VCLString); partial;
   public
     PlatformColumn: NSTableColumn;
   end;
@@ -34,7 +34,7 @@ type
 
   TListItem = public partial class(TPersistent)
   protected
-    method PlatformSetCaption(aValue: String); partial;
+    method PlatformSetCaption(aValue: VCLString); partial;
   end;
 
   TListItems = public partial class(TPersistent)
@@ -69,7 +69,7 @@ type
 
 implementation
 
-method TListColumn.PlatformSetCaption(aValue: String);
+method TListColumn.PlatformSetCaption(aValue: VCLString);
 begin
   PlatformColumn.title := aValue;
 end;
@@ -119,7 +119,7 @@ begin
   fOwner.Owner.Owner.RefreshContent;
 end;
 
-method TListItem.PlatformSetCaption(aValue: String);
+method TListItem.PlatformSetCaption(aValue: VCLString);
 begin
   Owner.Owner.RefreshContent;
 end;

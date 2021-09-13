@@ -5,13 +5,11 @@
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi, RemObjects.Elements.RTL,
-  {$IF ECHOESWPF}
-  System.Reflection
-  {$ELSEIF MACOS}
+  RemObjects.Elements.RTL.Delphi,
+  RemObjects.Elements.RTL,
+  {$IF ECHOESWPF OR MACOS}
   RemObjects.Elements.RTL.Reflection
-  {$ENDIF}
-  ;
+  {$ENDIF};
 
 type
   TControlCtor = procedure(aInst: Object; aOwner: TComponent);
@@ -101,6 +99,7 @@ type
     constructor(Instance: THandle; ResName: String; ResType: TResourceId);
     {$ELSEIF WEBASSEMBLY}
     constructor(Instance: THandle; aResName: String);
+    constructor(Instance: THandle; aResName: String; aContent: String);
     {$ENDIF}
     //constructor(Instance: THandle; ResID: Integer; ResType: PChar);
     //method &Write(Buffer; Count: Longint): Longint; override; final;
@@ -324,7 +323,7 @@ begin
       {$ELSEIF TOFFEE}
       // TODO
       if aProperty.Type.IsDelegate then begin
-        var lType := new &Type withClass(typeOf(Root));
+        var lType := typeOf(Root);
         var lEvent: &Method := nil;
         for each lMethod in lType.Methods do begin
           var lName := lMethod.Name;
@@ -376,11 +375,7 @@ begin
 
     TValueType.vaList: begin
       var lIsTStrings: Boolean;
-      {$IF TOFFEE}
-      lIsTStrings := new &Type withClass(typeOf(aInstance)).IsSubclassOf(new &Type withClass(typeOf(TStrings)));
-      {$ELSE}
       lIsTStrings := typeOf(aInstance).IsSubclassOf(typeOf(TStrings));
-      {$ENDIF}
       if lIsTStrings then begin
         var lStrings := aInstance as TStrings;
         while not EndOfList do begin
@@ -394,11 +389,7 @@ begin
 
     TValueType.vaCollection: begin
       var lCollection := aProperty.GetValue(aInstance, []);
-      {$IF TOFFEE}
-      var lType := new &Type withClass(typeOf(lCollection));
-      {$ELSE}
       var lType := typeOf(lCollection);
-      {$ENDIF}
       {$IF ECHOES}
       var lAddMethod := lType.GetMethods().Where(a->a.Name = 'Add').FirstOrDefault;
       {$ELSEIF ISLAND}
@@ -480,11 +471,7 @@ method TReader.ReadProperty(aInstance: TPersistent);
 begin
   var lName := ReadStr;
   var lValue := ReadValue;
-  {$IF TOFFEE}
-  var lType := new &Type withClass(typeOf(aInstance));
-  {$ELSE}
   var lType := typeOf(aInstance);
-  {$ENDIF}
   var lProperty: PropertyInfo;
   var lInstance: Object := aInstance;
 
@@ -502,21 +489,12 @@ begin
       var lPropValue := lProperty.GetValue(lInstance, []);
       {$ENDIF}
       lInstance := lPropValue;
-      {$IF TOFFEE}
-      lType := new &Type withClass(typeOf(lInstance));
-      {$ELSE}
       lType := typeOf(lInstance);
-      {$ENDIF}
     end;
     lName := lProps[lProps.Count - 1];
   end;
 
-  var lIsTStrings: Boolean;
-  {$IF TOFFEE}
-  lIsTStrings := lType.IsSubclassOf(new &Type withClass(typeOf(TStrings)));
-  {$ELSE}
-  lIsTStrings := lType.IsSubclassOf(typeOf(TStrings));
-  {$ENDIF}
+  var lIsTStrings := lType.IsSubclassOf(typeOf(TStrings));
 
   if not lIsTStrings then
     lProperty := FindProperty(lType, lName);
@@ -622,7 +600,7 @@ begin
   {$ELSEIF TOFFEE}
   var lIvarInfos: ^rtl.Ivar;
   var lIvarCount: UInt32;
-  lIvarInfos := class_copyIvarList(typeOf(Root), var lIvarCount);
+  lIvarInfos := class_copyIvarList(typeOf(Root).TypeClass, var lIvarCount);
 
   var lNameIvar: rtl.Ivar := nil;
   for i: Int32 := 0 to lIvarCount - 1 do begin
@@ -960,6 +938,18 @@ begin
   var lContent := Browser.AjaxRequestBinary('wasm/resources/' + aResName);
   var lInput := new TMemoryStream();
   lInput.Write(lContent, 0, lContent.Length);
+  var lResHeaderSize := 62 + ((aResName.Length - 4) * 2); // -4 because .dfm is not included in resource name
+  lInput.Position := lResHeaderSize;
+  CopyFrom(lInput, lInput.Size - lResHeaderSize);
+end;
+
+constructor TResourceStream(Instance: THandle; aResName: String; aContent: String);
+begin
+  var lInput := new TMemoryStream();
+  var lArray := new Byte[aContent.Length];
+  for i: Integer := 0 to aContent.Length - 1 do
+    lArray[i] := Byte(chr(aContent[i]));
+  lInput.Write(lArray, 0, lArray.Length);
   var lResHeaderSize := 62 + ((aResName.Length - 4) * 2); // -4 because .dfm is not included in resource name
   lInput.Position := lResHeaderSize;
   CopyFrom(lInput, lInput.Size - lResHeaderSize);

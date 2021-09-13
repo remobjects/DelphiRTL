@@ -13,7 +13,7 @@ type
     method InternalGetNodeState(toCheck: Integer): Boolean;
     method InternalSetState(aState: Integer; aValue: Boolean);
   protected
-    method PlatformSetText(aValue: String); partial;
+    method PlatformSetText(aValue: VCLString); partial;
     method PlatformGetSelected: Boolean; partial;
     method PlatformGetFocused: Boolean; partial;
     method PlatformGetExpanded: Boolean; partial;
@@ -47,12 +47,12 @@ type
 
 implementation
 
-method TTreeNode.PlatformSetText(aValue: String);
+method TTreeNode.PlatformSetText(aValue: VCLString);
 begin
   var lNode: rtl.TVITEM;
   lNode.mask := rtl.TVIF_TEXT;
   lNode.hItem := fItemId;
-  lNode.pszText := aValue.ToLPCWSTR;
+  lNode.pszText := PlatformString(aValue).ToLPCWSTR;
   rtl.SendMessage(fOwner.Owner.Handle, rtl.TVM_SETITEM, 0, rtl.LPARAM(@lNode));
 end;
 
@@ -155,7 +155,7 @@ begin
   var lNode: rtl.TVITEM;
 
   lNode.mask := rtl.TVIF_TEXT;
-  lNode.pszText := aNode.Text.ToLPCWSTR;
+  lNode.pszText := PlatformString(aNode.Text).ToLPCWSTR;
   aInsertData.u.item := lNode;
   aNode.fItemId := rtl.HTREEITEM(rtl.SendMessage(fOwner.Handle, rtl.TVM_INSERTITEM, 0, rtl.LPARAM(@aInsertData)));
 end;

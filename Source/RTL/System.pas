@@ -19,6 +19,8 @@ type
 
 function Pos(SubStr: DelphiString; S: DelphiString; aOffset: Integer := 1): Integer; inline;
 function Pos(SubStr: PlatformString; S: PlatformString; aOffset: Integer := 1): Integer; inline;
+function Pos(SubStr: PlatformString; S: DelphiString; aOffset: Integer := 1): Integer; inline;
+function Pos(SubStr: DelphiString; S: PlatformString; aOffset: Integer := 1): Integer; inline;
 procedure Insert(aSource: DelphiString; var aTarget: DelphiString; aOffset: Integer); inline;
 procedure Insert(aSource: PlatformString; var aTarget: PlatformString; aOffset: Integer); inline;
 procedure Delete(var S: DelphiString; aIndex: Integer; aCount: Integer); inline;
@@ -33,7 +35,7 @@ procedure Delete<T>(var Arr: TArray<T>; Start: Integer; Count: Integer);
 procedure FillChar(var Dest: DelphiString; aCount: Integer; aValue: Char);
 {$IF NOT COOPER}
 procedure FillChar(var Dest; aCount: Integer; aValue: Byte); unsafe;
-procedure Move<T, U>(var ASource; var Dest: U; Count: NativeInt); unsafe;
+procedure Move(const ASource; var Dest; Count: NativeInt); unsafe;
 function CompareMem(P1, P2: Pointer; Length: Integer): Boolean; unsafe;
 {$ENDIF COOPER}
 
@@ -69,7 +71,17 @@ end;
 
 function Pos(SubStr: PlatformString; S: PlatformString; aOffset: Integer := 1): Integer;
 begin
-  result := DelphiString(S).IndexOf(DelphiString(SubStr), aOffset) + 1;
+  result := Pos(DelphiString(SubStr), DelphiString(S));
+end;
+
+function Pos(SubStr: PlatformString; S: DelphiString; aOffset: Integer := 1): Integer; 
+begin
+  result := Pos(DelphiString(SubStr), S);
+end;
+
+function Pos(SubStr: DelphiString; S: PlatformString; aOffset: Integer := 1): Integer; 
+begin
+  result := Pos(SubStr, DelphiString(S));
 end;
 
 procedure Insert(aSource: DelphiString; var aTarget: DelphiString; aOffset: Integer);
@@ -145,7 +157,7 @@ begin
   end;
 end;
 
-procedure Move<T, U>(var ASource; var Dest: U; Count: NativeInt); unsafe;
+procedure Move(const ASource; var Dest; Count: NativeInt); unsafe;
 begin
   var SourcePtr := PByte(@ASource); pinned;
   var DestPtr := PByte(@Dest); pinned;
