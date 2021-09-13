@@ -12,7 +12,7 @@ uses
 type
   TCustomForm = public partial class(TNativeControl)
   protected
-    method PlatformSetCaption(aValue: String); override;
+    method PlatformSetCaption(aValue: VCLString); override;
   public
     constructor(aOwner: TComponent);
   end;
@@ -53,7 +53,7 @@ begin
   end;
 end;
 
-method TCustomForm.PlatformSetCaption(aValue: String);
+method TCustomForm.PlatformSetCaption(aValue: VCLString);
 begin
   // do nothing
 end;

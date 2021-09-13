@@ -29,8 +29,8 @@ type
     method PlatformSetMaxLength(aValue: Integer);
     method PlatformGetReadOnly: Boolean;
     method PlatformSetReadOnly(aValue: Boolean);
-    method PlatformGetText: String;
-    method PlatformSetText(aValue: String);
+    method PlatformGetText: VCLString;
+    method PlatformSetText(aValue: VCLString);
   end;
 
   TCheckBox = public partial class(TButtonControl)
@@ -91,8 +91,8 @@ type
     fOldEditWndProc: TWndProc;
     method CreateParams(var aParams: TCreateParams); override;
     method CreateHandle; override;
-    method PlatformGetText: String;
-    method PlatformSetText(aValue: String);
+    method PlatformGetText: VCLString;
+    method PlatformSetText(aValue: VCLString);
     method PlatformSetOnSelect(aValue: TNotifyEvent);
     method PlatformSetOnChange(aValue: TNotifyEvent);
     method PlatformSelectAll;
@@ -147,7 +147,7 @@ begin
   rtl.SendMessage(fHandle, rtl.EM_SETREADONLY, Integer(aValue), 0);
 end;
 
-method TEdit.PlatformGetText: String;
+method TEdit.PlatformGetText: VCLString;
 begin
   var lMaxLength := rtl.GetWindowTextLength(fHandle);
   var lBuffer := new Char[lMaxLength + 1];
@@ -155,7 +155,7 @@ begin
   result := PlatformString.FromPChar(@lBuffer[0]);
 end;
 
-method TEdit.PlatformSetText(aValue: String);
+method TEdit.PlatformSetText(aValue: VCLString);
 begin
   var lBuffer := PlatformString(aValue).ToCharArray(true);
   rtl.SetWindowText(fHandle, @lBuffer[0]);
@@ -430,7 +430,7 @@ begin
 
 end;
 
-method TComboBox.PlatformGetText: String;
+method TComboBox.PlatformGetText: VCLString;
 begin
   var lMaxLength := rtl.GetWindowTextLength(fHandle);
   var lBuffer := new Char[lMaxLength + 1];
@@ -438,7 +438,7 @@ begin
   result := PlatformString.FromPChar(@lBuffer[0]);
 end;
 
-method TComboBox.PlatformSetText(aValue: String);
+method TComboBox.PlatformSetText(aValue: VCLString);
 begin
   var lBuffer := PlatformString(aValue).ToCharArray(true);
   rtl.SetWindowText(fHandle, @lBuffer[0]);

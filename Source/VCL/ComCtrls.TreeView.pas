@@ -21,7 +21,7 @@ type
   TTreeNode = public partial class(TPersistent)
   private
     fOwner: TTreeNodes;
-    fText: String;
+    fText: VCLString;
     fParent: TTreeNode;
     //fData: TCustomData;
     fItemId: TPlatformNodeHandle; assembly;
@@ -65,7 +65,7 @@ type
     method SetSelectedIndex(aValue: Integer);
     method SetSelected(aValue: Boolean);
     method SetStateIndex(aValue: Integer);
-    method SetText(aValue: String);
+    method SetText(aValue: VCLString);
     method SetEnabled(aValue: Boolean);
     //method ReadData(Stream: TStream; Info: PNodeInfo);
     //method ReadNodeData(Stream: TStream; NodeDataType: TNodeDataType);
@@ -76,7 +76,7 @@ type
     method GetState(NodeState: TNodeState): Boolean;
     method SetState(NodeState: TNodeState; Value: Boolean);
     method SetSelectedBit(Value: Boolean);
-    method PlatformSetText(aValue: String); virtual; partial; empty;
+    method PlatformSetText(aValue: VCLString); virtual; partial; empty;
     method PlatformGetSelected: Boolean; virtual; partial; empty;
     method PlatformGetFocused: Boolean; virtual; partial; empty;
     method PlatformGetExpanded: Boolean; virtual; partial; empty;
@@ -136,7 +136,7 @@ type
     property SelectedIndex: Integer read fSelectedIndex write SetSelectedIndex;
     property Enabled: Boolean read fEnabled write SetEnabled;
     property StateIndex: Integer read fStateIndex write SetStateIndex;
-    property Text: String read fText write SetText;
+    property Text: VCLString read fText write SetText;
     property TreeView: TTreeView read GetTreeView;
   end;
 
@@ -556,7 +556,7 @@ begin
 
 end;
 
-method TTreeNode.SetText(aValue: String);
+method TTreeNode.SetText(aValue: VCLString);
 begin
   fText := aValue;
   PlatformSetText(aValue);

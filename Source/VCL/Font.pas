@@ -18,7 +18,7 @@ type
   TFont = public partial class(TPersistent)
   private
     fColor: TColor;
-    fName: String := 'Tahoma';
+    fName: VCLString := 'Tahoma';
     fSize: Integer;
     fStyle: TFontStyles := [];
     fCharset: TFontCharset; // TODO
@@ -28,7 +28,7 @@ type
     fQuality: TFontQuality := TFontQuality.fqClearType;
     fPitch: TFontPitch;
     method setColor(aValue: TColor);
-    method setName(aValue: String);
+    method setName(aValue: VCLString);
     method setSize(aValue: Integer);
     method setStyle(aValue: TFontStyles);
     method setHeight(aValue: Integer);
@@ -38,14 +38,14 @@ type
     method SetPitch(aValue: TFontPitch);
     method GetQuality: TFontQuality;
     method SetQuality(aValue: TFontQuality);
-    method NotifyChanged(aPropName: String);
+    method NotifyChanged(aPropName: VCLString);
   protected
     method PlatformUpdate; virtual; partial; empty;
     method PlatformSetHeight(aValue: Integer); virtual; partial; empty;
   published
     property PropertyChanged: TPropertyChangedEvent;
     property Color: TColor read fColor write setColor;
-    property Name: String read fName write setName;
+    property Name: VCLString read fName write setName;
     property Size: Integer read fSize write setSize;
     property Style: TFontStyles read fStyle write setStyle;
     property Charset: TFontCharset read fCharset write fCharset;
@@ -58,7 +58,7 @@ type
 
 implementation
 
-method TFont.NotifyChanged(aPropName: String);
+method TFont.NotifyChanged(aPropName: VCLString);
 begin
   PlatformUpdate;
   if PropertyChanged <> nil then
@@ -71,7 +71,7 @@ begin
   NotifyChanged('color');
 end;
 
-method TFont.SetName(aValue: String);
+method TFont.SetName(aValue: VCLString);
 begin
   fName := aValue;
   NotifyChanged('name');

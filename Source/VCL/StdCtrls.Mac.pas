@@ -13,7 +13,7 @@ type
   TButton = public partial class(TNativeControl)
   protected
     method CreateHandle; partial; override;
-    method PlatformSetCaption(aValue: String); partial; override;
+    method PlatformSetCaption(aValue: VCLString); partial; override;
     method PlatformSetOnClick(aValue: TNotifyEvent); override;
     method ButtonClick(aEvent: NSEvent);
   end;
@@ -21,20 +21,20 @@ type
   TLabel = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String); override;
+    method PlatformSetCaption(aValue: VCLString); override;
   end;
 
   TGroupBox = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String); override;
+    method PlatformSetCaption(aValue: VCLString); override;
   end;
 
   TEdit = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
-    method PlatformSetText(aValue: String);
-    method PlatformGetText: String;
+    method PlatformSetText(aValue: VCLString);
+    method PlatformGetText: VCLString;
     method PlatformGetMaxLength: Integer;
     method PlatformSetMaxLength(aValue: Integer);
     method PlatformGetReadOnly: Boolean;
@@ -110,8 +110,8 @@ type
     fDelegate: TComboBoxDelegate;
   protected
     method CreateHandle; override;
-    method PlatformGetText: String;
-    method PlatformSetText(aValue: String);
+    method PlatformGetText: VCLString;
+    method PlatformSetText(aValue: VCLString);
     method PlatformSetOnSelect(aValue: TNotifyEvent);
     method PlatformSetOnChange(aValue: TNotifyEvent);
     method PlatformSelectAll;
@@ -147,7 +147,7 @@ begin
   (fHandle as NSButton).bezelStyle := NSBezelStyle.NSRoundedBezelStyle;
 end;
 
-method TButton.PlatformSetCaption(aValue: String);
+method TButton.PlatformSetCaption(aValue: VCLString);
 begin
   (fHandle as NSButton).title := aValue;
 end;
@@ -175,7 +175,7 @@ begin
   fHandle := lHandle;
 end;
 
-method TLabel.PlatformSetCaption(aValue: String);
+method TLabel.PlatformSetCaption(aValue: VCLString);
 begin
   (fHandle as NSTextField).stringValue := aValue;
 end;
@@ -185,7 +185,7 @@ begin
   fHandle := new NSBox();
 end;
 
-method TGroupBox.PlatformSetCaption(aValue: String);
+method TGroupBox.PlatformSetCaption(aValue: VCLString);
 begin
   (fHandle as NSBox).title := aValue;
 end;
@@ -195,12 +195,12 @@ begin
   fHandle := new NSTextView();
 end;
 
-method TEdit.PlatformSetText(aValue: String);
+method TEdit.PlatformSetText(aValue: VCLString);
 begin
   (fHandle as NSTextView).string := aValue;
 end;
 
-method TEdit.PlatformGetText: String;
+method TEdit.PlatformGetText: VCLString;
 begin
   result := (fHandle as NSTextView).string;
 end;
@@ -413,12 +413,12 @@ begin
   (fHandle as NSComboBox).delegate := fDelegate;
 end;
 
-method TComboBox.PlatformGetText: String;
+method TComboBox.PlatformGetText: VCLString;
 begin
   result := (fHandle as NSComboBox).stringValue;
 end;
 
-method TComboBox.PlatformSetText(aValue: String);
+method TComboBox.PlatformSetText(aValue: VCLString);
 begin
   (fHandle as NSComboBox).stringValue := aValue;
 end;

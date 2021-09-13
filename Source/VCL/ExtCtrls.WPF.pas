@@ -11,7 +11,7 @@ type
   TPanel = public partial class(TCustomControl)
   protected
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String); override;
+    method PlatformSetCaption(aValue: VCLString); override;
   end;
 
 implementation
@@ -26,7 +26,7 @@ begin
   (fHandle as System.Windows.Controls.ContentControl).Focusable := false;
 end;
 
-method TPanel.PlatformSetCaption(aValue: String);
+method TPanel.PlatformSetCaption(aValue: VCLString);
 begin
   // do nothing
 end;

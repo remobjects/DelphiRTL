@@ -21,7 +21,7 @@ type
     constructor(aOwner: TComponent);
     property MaxLength: Integer read PlatformGetMaxLength write PlatformSetMaxLength;
     property &ReadOnly: Boolean read PlatformGetReadOnly write PlatformSetReadOnly;
-    property Text: String read PlatformGetText write PlatformSetText;
+    property Text: VCLString read PlatformGetText write PlatformSetText;
   end;
 
   //TLabel = public partial class({$IF ISLAND AND WINDOWS}TGraphicControl{$ELSE}TNativeControl{$ENDIF})
@@ -147,7 +147,7 @@ type
     method SelectAll; override;
     property Items: TStrings read fItems write SetItems;
     property ItemHeight: Integer read fItemHeight write fItemHeight;
-    property Text: String read PlatformGetText write PlatformSetText;
+    property Text: VCLString read PlatformGetText write PlatformSetText;
     property OnSelect: TNotifyEvent read fOnSelect write SetOnSelect;
     property OnChange: TNotifyEvent read fOnChange write SetOnChange;
   end;

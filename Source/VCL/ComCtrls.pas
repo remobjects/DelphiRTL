@@ -23,7 +23,7 @@ type
   private
     fAlignment: TAlignment;
     fAutoSize: Boolean;
-    fCaption: String;
+    fCaption: VCLString;
     fMaxWidth: TWidth;
     fMinWidth: TWidth;
     fPrivateWidth: TWidth;
@@ -35,7 +35,7 @@ type
     method ReadData(aReader: TReader);
     method SetAlignment(aValue: TAlignment);
     method SetAutoSize(aValue: Boolean);
-    method SetCaption(aValue: String);
+    method SetCaption(aValue: VCLString);
     method SetMaxWidth(Value: TWidth);
     method SetMinWidth(Value: TWidth);
     method SetWidth(Value: TWidth);
@@ -43,13 +43,13 @@ type
     method GetDisplayName: String; override;
     //method SetIndex(Value: Integer); override;
 
-    method PlatformSetCaption(aValue: String); partial; virtual; empty;
+    method PlatformSetCaption(aValue: VCLString); partial; virtual; empty;
   published
     constructor(aCollection: TCollection);
     //method Assign(Source: TPersistent); override;
     property Alignment: TAlignment read fAlignment write SetAlignment default taLeftJustify;
     property AutoSize: Boolean read fAutoSize write SetAutoSize default False;
-    property Caption: String read fCaption write SetCaption;
+    property Caption: VCLString read fCaption write SetCaption;
     //property ImageIndex: TImageIndex read fImageIndex write SetImageIndex default -1;
     property MaxWidth: TWidth read fMaxWidth write SetMaxWidth default 0;
     property MinWidth: TWidth read fMinWidth write SetMinWidth default 0;
@@ -113,7 +113,7 @@ type
 
   TListItem = public partial class(TPersistent)
   private
-    fCaption: String;
+    fCaption: VCLString;
     fOwner: TListItems;
     fSubItems: TStrings;
     fImageIndex: TImageIndex;
@@ -134,7 +134,7 @@ type
     function GetTop: Integer;
     function IsEqual(Item: TListItem): Boolean;
     method SetChecked(Value: Boolean);
-    method SetCaption(aValue: string);
+    method SetCaption(aValue: VCLString);
     //method SetData(Value: TCustomData);
     //method SetImage(Index: Integer; Value: TImageIndex);
     method SetIndent(Value: Integer);
@@ -148,7 +148,7 @@ type
     //method SetSubItemImage(Index: Integer; const Value: Integer);
     //method SetGroupID(Value: Integer);
   protected
-    method PlatformSetCaption(aValue: String); partial; virtual; empty;
+    method PlatformSetCaption(aValue: VCLString); partial; virtual; empty;
     method PlatformGetSelected: Boolean; partial; virtual; empty;
     method PlatformSetSelected(aValue: Boolean); partial; virtual; empty;
   published
@@ -162,7 +162,7 @@ type
     method Update;
     //method SetPosition(const Value: TPoint);
     //function WorkArea: Integer;
-    property Caption: String read fCaption write SetCaption;
+    property Caption: VCLString read fCaption write SetCaption;
     property Checked: Boolean read GetChecked write SetChecked;
     //property Cut: Boolean index 0 read GetState write SetState;
     property Data: TCustomData read fData write fData;
@@ -367,7 +367,7 @@ begin
 
 end;
 
-method TListColumn.SetCaption(aValue: String);
+method TListColumn.SetCaption(aValue: VCLString);
 begin
   fCaption := aValue;
   PlatformSetCaption(aValue);
@@ -951,7 +951,7 @@ begin
 
 end;
 
-method TListItem.SetCaption(aValue: String);
+method TListItem.SetCaption(aValue: VCLString);
 begin
   fCaption := aValue;
   PlatformSetCaption(aValue);

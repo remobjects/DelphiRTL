@@ -5,7 +5,7 @@
 interface
 
 uses
-  RemObjects.Elements.RTL.Delphi;
+  RemObjects.Elements.RTL, RemObjects.Elements.RTL.Delphi;
 
 type
 
@@ -51,15 +51,15 @@ type
     fOnKeyDown: TKeyEvent;
     fOnKeyUp: TKeyEvent;
     fVisible: Boolean := true;
-    fCaption: String;
+    fCaption: VCLString;
     fControls: TList<TControl> := nil;
     fTabOrder: Integer; // TODO
     fParentFont: Boolean := true;
     fAlign: TAlign;
     fMargins: TMargins;
     fAlignWithMargins: Boolean := false;
-    method GetCaption: String;
-    method SetCaption(aValue: String);
+    method GetCaption: VCLString;
+    method SetCaption(aValue: VCLString);
     method SetWidth(aValue: Integer);
     method SetHeight(aValue: Integer);
     method SetTop(aValue: Integer);
@@ -100,8 +100,8 @@ type
     method Notification(aComponent: TComponent; aOperation: TOperation); virtual;
     constructor(aOwner: TComponent);
 
-    method PlatformGetCaption: String; partial; empty;
-    method PlatformSetCaption(aValue: String); virtual; partial; empty;
+    method PlatformGetCaption: VCLString; partial; empty;
+    method PlatformSetCaption(aValue: VCLString); virtual; partial; empty;
     method PlatformSetWidth(aValue: Integer); virtual; partial; empty;
     method PlatformSetHeight(aValue: Integer); virtual; partial; empty;
     method PlatformSetTop(aValue: Integer); virtual; partial; empty;
@@ -135,7 +135,7 @@ type
     property Font: TFont read fFont write setFont;
     property Parent: TNativeControl read fParent write SetParent;
     property ParentFont: Boolean read fParentFont write SetParentFont;
-    property Caption: String read GetCaption write SetCaption;
+    property Caption: VCLString read GetCaption write SetCaption;
     property Height: Integer read fHeight write SetHeight;
     property Width: Integer read fWidth write SetWidth;
     property ClientHeight: Integer read GetClientHeight write SetClientHeight;
@@ -243,12 +243,12 @@ begin
   PlatformFontChanged;
 end;
 
-method TControl.GetCaption: String;
+method TControl.GetCaption: VCLString;
 begin
   result := fCaption;
 end;
 
-method TControl.SetCaption(aValue: String);
+method TControl.SetCaption(aValue: VCLString);
 begin
   fCaption := aValue;
   PlatformSetCaption(aValue);
