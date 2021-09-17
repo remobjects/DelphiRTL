@@ -495,9 +495,9 @@ begin
       {$ENDIF}
       lInstance := lPropValue;
       {$IF TOFFEE}
-      lType := new &Type withclass(aInstance.class);
+      lType := new &Type withclass(lInstance.class);
       {$ELSE}
-      lType := typeOf(aInstance);
+      lType := typeOf(lInstance);
       {$ENDIF}
       //lType := typeOf(lInstance);
     end;
