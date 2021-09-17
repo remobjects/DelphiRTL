@@ -30,19 +30,17 @@
     <Reference Include="rtl" />
     <Reference Include="glib" />
     <Reference Include="gtk" />
-    <Reference Include="Island">
-      <HintPath>C:\dev\ro\IslandRTL\Source\Bin\Debug\Ubuntu\armv6\Island.fx</HintPath>
-    </Reference>
-    <Reference Include="Elements">
-      <HintPath>C:\dev\ro\RTL2\Source\bin\Debug\Ubuntu\armv6\Elements.fx</HintPath>
-    </Reference>
+    <Reference Include="Elements" />
     <Reference Include="Delphi">
       <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Ubuntu\armv6\Delphi.fx</HintPath>
     </Reference>
+    <Reference Include="gdk" />
     <Reference Include="DelphiVCL">
       <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Ubuntu\armv6\DelphiVCL.fx</HintPath>
     </Reference>
-    <Reference Include="gdk" />
+    <Reference Include="Island">
+      <HintPath>C:\dev\ro\IslandRTL\Source\Bin\Debug\Ubuntu\armv6\Island.fx</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />

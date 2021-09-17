@@ -72,22 +72,23 @@ end;
 
 method TControl.PlatformSetOnClick(aValue: TNotifyEvent);
 begin
-  gobject.g_signal_connect_data(fHandle, 'clicked', glib.GVoidFunc(^Void(@internalClicked)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
+  var lEvent := PlatformString('clicked').ToAnsiChars(true);
+  gobject.g_signal_connect_data(fHandle, @lEvent[0], glib.GVoidFunc(^Void(@internalClicked)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
 end;
 
 method TControl.PlatformSetOnKeyPress(aValue: TKeyPressEvent);
 begin
-  gobject.g_signal_connect_data(fHandle, 'key-press-event', glib.GVoidFunc(^Void(@internalKeyPressEvent)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
+  gobject.g_signal_connect_data(fHandle, @PlatformString('key-press-event').ToAnsiChars(true)[0], glib.GVoidFunc(^Void(@internalKeyPressEvent)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
 end;
 
 method TControl.PlatformSetOnKeyDown(aValue: TKeyEvent);
 begin
-  gobject.g_signal_connect_data(fHandle, 'key-down-event', glib.GVoidFunc(^Void(@internalKeyDownEvent)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
+  gobject.g_signal_connect_data(fHandle, @PlatformString('key-down-event').ToAnsiChars(true)[0], glib.GVoidFunc(^Void(@internalKeyDownEvent)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
 end;
 
 method TControl.PlatformSetOnKeyUp(aValue: TKeyEvent);
 begin
-  gobject.g_signal_connect_data(fHandle, 'key-release-event', glib.GVoidFunc(^Void(@internalKeyReleaseEvent)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
+  gobject.g_signal_connect_data(fHandle, @PlatformString('key-release-event').ToAnsiChars(true)[0], glib.GVoidFunc(^Void(@internalKeyReleaseEvent)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
 end;
 
 method TControl.PlatformSetCaption(aValue: String);

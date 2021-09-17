@@ -25,7 +25,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="gc" />
-    <Reference Include="Island" />
     <Reference Include="rtl" />
     <Reference Include="gtk" />
     <Reference Include="glib" />
@@ -36,11 +35,12 @@
       <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Ubuntu\x86_64\DelphiVCL.fx</HintPath>
     </Reference>
     <Reference Include="gdk" />
+    <Reference Include="Elements" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />
     <Compile Include="Unit5.pas" />
-    <Resource Include="..\withListboxAndCombo.dfm" />
+    <EmbeddedResource Include="..\withListboxAndCombo.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Linux.targets" />
 </Project>

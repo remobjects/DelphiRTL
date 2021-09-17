@@ -8,12 +8,12 @@ uses
 type
   Program = public static class
   public
-    method Main(aArguments: array of String): Int32;
+    method Main(aArguments: array of PlatformString): Int32;
   end;
 
 implementation
 
-method Program.Main(aArguments: array of String): Int32;
+method Program.Main(aArguments: array of PlatformString): Int32;
 begin
   {var lButton := new TControl;
   //lButton.OnClick := begin

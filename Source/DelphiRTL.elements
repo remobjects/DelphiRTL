@@ -34,6 +34,7 @@
     <Mode>Island</Mode>
     <SubMode>Linux</SubMode>
     <OutputType>staticlibrary</OutputType>
+    <Architecture>armv6;x86_64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island.Darwin.macOS' ">
     <Mode>Island</Mode>
@@ -41,6 +42,7 @@
     <SDK>macOS</SDK>
     <DeploymentTargetVersion>10.10</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
+    <Architecture>x86_64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island.Darwin.iOS' ">
     <Mode>Island</Mode>
@@ -211,8 +213,11 @@
   <ItemGroup Condition="'$(Target)' == 'Island.Linux'">
     <Reference Include="rtl" />
     <Reference Include="gc" />
-    <Reference Include="Island" />
     <Reference Include="Elements" />
+    <Reference Include="Island">
+      <HintPath>..\..\IslandRTL\Source\Bin\Debug\Ubuntu\armv6\Island.fx</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Island.Darwin.macOS'">
     <Reference Include="rtl" />
@@ -262,5 +267,6 @@
     <Reference Include="libToffee" />
     <Reference Include="libElements" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>

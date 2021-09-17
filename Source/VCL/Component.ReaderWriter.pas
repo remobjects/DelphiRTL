@@ -255,7 +255,7 @@ begin
       var lIdent := RemObjects.Elements.RTL.Encoding.UTF8.GetString(lBytes);
 
       {$IF ISLAND}
-        if (aProperty.Type.Flags and IslandTypeFlags.TypeKindMask) = IslandTypeFlags.Delegate then begin // delegate case
+      if (aProperty.Type.Flags and IslandTypeFlags.TypeKindMask) = IslandTypeFlags.Delegate then begin // delegate case
         var lType := typeOf(Root);
         var lMethod := lType.Methods.Where(a -> (a.Name = lIdent)).FirstOrDefault;
         var lDelegate := Utilities.NewDelegate(aProperty.Type.RTTI, Root, lMethod.Pointer);
@@ -323,7 +323,8 @@ begin
       {$ELSEIF TOFFEE}
       // TODO
       if aProperty.Type.IsDelegate then begin
-        var lType := typeOf(Root);
+        //var lType := typeOf(Root);
+        var lType := new &Type withClass(Root.class);
         var lEvent: &Method := nil;
         for each lMethod in lType.Methods do begin
           var lName := lMethod.Name;
@@ -471,7 +472,11 @@ method TReader.ReadProperty(aInstance: TPersistent);
 begin
   var lName := ReadStr;
   var lValue := ReadValue;
+  {$IF TOFFEE}
+  var lType := new &Type withclass(aInstance.class);
+  {$ELSE}
   var lType := typeOf(aInstance);
+  {$ENDIF}
   var lProperty: PropertyInfo;
   var lInstance: Object := aInstance;
 
@@ -489,12 +494,21 @@ begin
       var lPropValue := lProperty.GetValue(lInstance, []);
       {$ENDIF}
       lInstance := lPropValue;
-      lType := typeOf(lInstance);
+      {$IF TOFFEE}
+      lType := new &Type withclass(aInstance.class);
+      {$ELSE}
+      lType := typeOf(aInstance);
+      {$ENDIF}
+      //lType := typeOf(lInstance);
     end;
     lName := lProps[lProps.Count - 1];
   end;
 
+  {$IF TOFFEE}
+  var lIsTStrings := lType.IsSubclassOf(new &Type withClass(TStrings.class));
+  {$ELSE}
   var lIsTStrings := lType.IsSubclassOf(typeOf(TStrings));
+  {$ENDIF}
 
   if not lIsTStrings then
     lProperty := FindProperty(lType, lName);
@@ -600,7 +614,8 @@ begin
   {$ELSEIF TOFFEE}
   var lIvarInfos: ^rtl.Ivar;
   var lIvarCount: UInt32;
-  lIvarInfos := class_copyIvarList(typeOf(Root).TypeClass, var lIvarCount);
+  //lIvarInfos := class_copyIvarList(typeOf(Root).TypeClass, var lIvarCount);
+  lIvarInfos := class_copyIvarList(Root.class, var lIvarCount);
 
   var lNameIvar: rtl.Ivar := nil;
   for i: Int32 := 0 to lIvarCount - 1 do begin
@@ -651,7 +666,8 @@ begin
   {$ELSEIF ECHOESWPF}
   var lType := &Type.GetType('RemObjects.Elements.RTL.Delphi.VCL.' + aClassName);
   {$ELSEIF TOFFEE}
-  var lType := RemObjects.Elements.RTL.Reflection.Type.GetType('__RemObjects_Elements_RTL_Delphi_VCL_' + aClassName);
+  //var lType := RemObjects.Elements.RTL.Reflection.Type.GetType('__RemObjects_Elements_RTL_Delphi_VCL_' + aClassName);
+  var lType := RemObjects.Elements.RTL.Reflection.Type.GetType(aClassName);
   // TODO
   {$ENDIF}
   if lType = nil then raise new Exception('Can not get ' + aClassName + ' type');

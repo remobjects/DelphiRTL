@@ -22,7 +22,7 @@ type
     method PlatformSetMaxLength(aValue: Integer); virtual; partial; empty;
     method PlatformGetReadOnly: Boolean; virtual; partial; empty;
     method PlatformSetReadOnly(aValue: Boolean); virtual; partial; empty;
-    method PlatformGetText: String; virtual; partial; empty;
+    method PlatformGetText: VCLString; virtual; partial; empty;
     method PlatformSetText(aValue: String); virtual; partial; empty;
   published
     constructor(aOwner: TComponent);

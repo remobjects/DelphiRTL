@@ -13,14 +13,14 @@ type
   TButton = public partial class(TNativeControl)
   protected
     method CreateHandle; partial; override;
-    method PlatformSetCaption(aValue: String); partial; override;
+    method PlatformSetCaption(aValue: VCLString); partial; override;
     method PlatformSetOnClick(aValue: TNotifyEvent); override;
   end;
 
   TLabel = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String); override;
+    method PlatformSetCaption(aValue: VCLString); override;
   end;
 
   TGroupBox = public partial class(TNativeControl)
@@ -30,14 +30,14 @@ type
     // fHandle = GtkFixed widget used as container
     fInternal: ^gtk.GtkFrame;
     method CreateHandle; override;
-    method PlatformSetCaption(aValue: String); override;
+    method PlatformSetCaption(aValue: VCLString); override;
   end;
 
   TEdit = public partial class(TNativeControl)
   protected
     method CreateHandle; override;
-    method PlatformSetText(aValue: String); partial;
-    method PlatformGetText: String; partial;
+    method PlatformSetText(aValue: VCLString); partial;
+    method PlatformGetText: VCLString; partial;
     method PlatformGetMaxLength: Integer; partial;
     method PlatformSetMaxLength(aValue: Integer); partial;
     method PlatformGetReadOnly: Boolean; partial;
@@ -131,7 +131,8 @@ procedure PlatformShowMessage(aMessage: String);
 begin
   var lFlags := gtk.GtkDialogFlags.GTK_DIALOG_MODAL;
   var lParent: ^gtk.GtkWindow := if Application.MainForm ≠ nil then ^gtk.GtkWindow(Application.MainForm.Handle) else nil;
-  var lMessage := gtk.gtk_message_dialog_new(lParent, lFlags, gtk.GtkMessageType.GTK_MESSAGE_INFO, gtk.GtkButtonsType.GTK_BUTTONS_OK, aMessage);
+  var lMess := PlatformString(aMessage).ToAnsiChars(true);
+  var lMessage := gtk.gtk_message_dialog_new(lParent, lFlags, gtk.GtkMessageType.GTK_MESSAGE_INFO, gtk.GtkButtonsType.GTK_BUTTONS_OK, @lMess[0]);
 
   //gtk.gtk_widget_show_all(lMessage);
   gtk.gtk_dialog_run(^gtk.GtkDialog(lMessage));
@@ -140,20 +141,21 @@ end;
 
 method TButton.CreateHandle;
 begin
-  var lCaption := Caption.ToAnsiChars(true);
+  var lCaption := PlatformString(Caption).ToAnsiChars(true);
   fHandle := gtk.gtk_button_new_with_label(@lCaption[0]);
   gtk.gtk_widget_show(fHandle);
 end;
 
-method TButton.PlatformSetCaption(aValue: String);
+method TButton.PlatformSetCaption(aValue: VCLString);
 begin
-  var lCaption := aValue.ToAnsiChars(true);
+  var lCaption := PlatformString(aValue).ToAnsiChars(true);
   gtk.gtk_button_set_label(^gtk.GtkButton(fHandle), @lCaption[0]);
 end;
 
 method TButton.PlatformSetOnClick(aValue: TNotifyEvent);
 begin
-  gobject.g_signal_connect_data(fHandle, 'clicked', glib.GVoidFunc(^Void(@clicked)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
+  var lEvent := PlatformString('clicked').ToAnsiChars(true);
+  gobject.g_signal_connect_data(fHandle, @lEvent[0], glib.GVoidFunc(^Void(@clicked)), glib.gpointer(GCHandle.Allocate(self).Handle), @gchandlefree, gobject.GConnectFlags(0));
 end;
 
 method clicked(app: ^gtk.GtkWidget; userdata: ^Void);
@@ -165,14 +167,14 @@ end;
 
 method TLabel.CreateHandle;
 begin
-  var lCaption := Caption.ToAnsiChars(true);
+  var lCaption := PlatformString(Caption).ToAnsiChars(true);
   fHandle := gtk.gtk_label_new(@lCaption[0]);
   gtk.gtk_widget_show(fHandle);
 end;
 
-method TLabel.PlatformSetCaption(aValue: String);
+method TLabel.PlatformSetCaption(aValue: VCLString);
 begin
-  var lCaption := aValue.ToAnsiChars(true);
+  var lCaption := PlatformString(aValue).ToAnsiChars(true);
   gtk.gtk_label_set_text(^gtk.GtkLabel(fHandle), @lCaption[0]);
 end;
 
@@ -181,16 +183,16 @@ begin
   fHandle := gtk.gtk_entry_new();
 end;
 
-method TEdit.PlatformSetText(aValue: String);
+method TEdit.PlatformSetText(aValue: VCLString);
 begin
-  var lCaption := aValue.ToAnsiChars(true);
+  var lCaption := PlatformString(aValue).ToAnsiChars(true);
   gtk.gtk_entry_set_text(^gtk.GtkEntry(fHandle), @lCaption[0]);
 end;
 
-method TEdit.PlatformGetText: String;
+method TEdit.PlatformGetText: VCLString;
 begin
   var lText := gtk.gtk_entry_get_text(^gtk.GtkEntry(fHandle));
-  result := String.FromPAnsiChars(lText);
+  result := PlatformString.FromPAnsiChars(lText);
 end;
 
 method TEdit.PlatformGetMaxLength: Integer;
@@ -215,15 +217,15 @@ end;
 
 method TGroupBox.CreateHandle;
 begin
-  var lCaption := Caption.ToAnsiChars(true);
+  var lCaption := PlatformString(Caption).ToAnsiChars(true);
   fInternal := ^gtk.GtkFrame(gtk.gtk_frame_new(@lCaption[0]));
   fHandle := gtk.gtk_fixed_new();
   gtk.gtk_container_add(^gtk.GtkContainer(fInternal), fHandle);
 end;
 
-method TGroupBox.PlatformSetCaption(aValue: String);
+method TGroupBox.PlatformSetCaption(aValue: VCLString);
 begin
-  var lCaption := aValue.ToAnsiChars(true);
+  var lCaption := PlatformString(aValue).ToAnsiChars(true);
   gtk.gtk_frame_set_label(fInternal, @lCaption[0]);
 end;
 
@@ -239,7 +241,7 @@ end;
 
 method TCheckBox.CreateHandle;
 begin
-  var lCaption := Caption.ToAnsiChars(true);
+  var lCaption := PlatformString(Caption).ToAnsiChars(true);
   fHandle := gtk.gtk_check_button_new_with_label(@lCaption[0]);
 end;
 
@@ -264,7 +266,7 @@ end;
 
 method TRadioButton.CreateHandle;
 begin
-  var lCaption := Caption.ToAnsiChars(true);
+  var lCaption := PlatformString(Caption).ToAnsiChars(true);
   fHandle := gtk.gtk_radio_button_new_with_label(nil, @lCaption[0]);
 end;
 
@@ -337,10 +339,10 @@ begin
   fHandle := gtk.gtk_tree_view_new();
   gtk.gtk_container_add(^gtk.GtkContainer(fInnerWindow), fHandle);
   gtk.gtk_tree_view_set_headers_visible(^gtk.GtkTreeView(fHandle), 0);
-  var lListItem := "List Item".ToAnsiChars(true);
-  var lText := "text".ToAnsiChars(true);
+  var lListItem := PlatformString("List Item").ToAnsiChars(true);
+  var lText := PlatformString("text").ToAnsiChars(true);
   var lRenderer := gtk.gtk_cell_renderer_text_new();
-  gtk.gtk_tree_view_insert_column_with_attributes(^gtk.GtkTreeView(fHandle), -1, @lListItem[0], lRenderer, @lText[0], kListItem, nil);
+  //gtk.gtk_tree_view_insert_column_with_attributes(^gtk.GtkTreeView(fHandle), -1, @lListItem[0], lRenderer, @lText[0], kListItem, nil); TODO!!!!!!!!!!!!!!!
   fStore := gtk.gtk_list_store_new(kColumns, gtk.GTK_TYPE_STRING);
   gtk.gtk_tree_view_set_model(^gtk.GtkTreeView(fHandle), ^gtk.GtkTreeModel(fStore));
   gobject.g_object_unref(fStore);
@@ -472,7 +474,7 @@ begin
       exit -1;
   end;
   var lChars := gtk.gtk_tree_model_get_string_from_iter(^gtk.GtkTreeModel(fStore), lIter);
-  var lIndex := Convert.ToInt32(String.FromPAnsiChars(lChars));
+  var lIndex := Convert.ToInt32(PlatformString.FromPAnsiChars(lChars));
   glib.g_free(lChars);
   exit lIndex;
 end;
@@ -488,7 +490,7 @@ end;
 method TComboBox.PlatformGetText: String;
 begin
   var lChars := gtk.gtk_combo_box_text_get_active_text(^gtk.GtkComboBoxText(fHandle));
-  result := String.FromPAnsiChars(lChars);
+  result := PlatformString.FromPAnsiChars(lChars);
   glib.g_free(lChars);
 end;
 

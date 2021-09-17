@@ -56,6 +56,7 @@
     <Compile Include="Unit5.pas" />
     <Resource Include="manifest.res" />
     <Resource Include="withTreeView.dfm" />
+    <EmbeddedResource Include="withListboxAndCombo.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
 </Project>

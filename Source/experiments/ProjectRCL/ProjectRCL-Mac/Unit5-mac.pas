@@ -56,12 +56,12 @@ implementation
 procedure TForm6.Button1Click(Sender: TObject);
 begin
   writeLn('Yes????');
-  var lNode := treeView1.Items.Add(nil, 'New Node!');
-  treeView1.Items.AddChild(lNode, 'New Child!');
-  treeView1.Items.AddChildFirst(lNode, 'New First Child!');
-  lNode.Expanded := false;
+  //var lNode := treeView1.Items.Add(nil, 'New Node!');
+  //treeView1.Items.AddChild(lNode, 'New Child!');
+  //treeView1.Items.AddChildFirst(lNode, 'New First Child!');
+  //lNode.Expanded := false;
 
-  //ShowMessage('no?');
+  ShowMessage('no?');
   {
   if listView1.ViewStyle ≠ TViewStyle.vsReport then
     listView1.ViewStyle := TViewStyle.vsReport;

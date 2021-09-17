@@ -26,6 +26,7 @@ constructor TCustomForm(aOwner: TComponent);
 begin
   HandleNeeded;
   var lName := typeOf(self).Name;
+  lName := lName.Substring(lName.LastIndexOf('.') + 1);
   lName := lName.Substring(lName.LastIndexOf('.') + 1).ToUpper;
   if lName.ToUpper <> 'TFORM' then begin
     var lRes := Resources.FindResource(lName);
@@ -49,7 +50,7 @@ end;
 method TForm.CreateHandle;
 begin
   fHandle := gtk.gtk_window_new(gtk.GtkWindowType.GTK_WINDOW_TOPLEVEL);
-  gobject.g_signal_connect_data(fHandle, "destroy", glib.GVoidFunc(()->gtk.gtk_main_quit), nil, nil, 0);
+  gobject.g_signal_connect_data(fHandle, @PlatformString("destroy").ToAnsiChars(true)[0], glib.GVoidFunc(()->gtk.gtk_main_quit), nil, nil, 0);
   fBox := gtk.gtk_fixed_new();
   gtk.gtk_container_add(^gtk.GtkContainer(fHandle), fBox);
   gtk.gtk_widget_show(fBox);

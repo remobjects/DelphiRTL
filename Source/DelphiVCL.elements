@@ -34,6 +34,7 @@
     <Mode>Island</Mode>
     <SubMode>Linux</SubMode>
     <OutputType>staticlibrary</OutputType>
+    <Architecture>armv6;x86_64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island.Darwin.macOS' ">
     <Mode>Island</Mode>
@@ -179,6 +180,11 @@
     <Compile Include="VCL\StdCtrls.Windows.pas" />
     <Compile Include="VCL\StdCtrls.WPF.pas" />
     <Compile Include="VCL\Themes.Windows.pas" />
+    <Compile Include="VCL\Application.Island.Linux.pas" />
+    <Compile Include="VCL\Control.Island.Linux.pas" />
+    <Compile Include="VCL\ExtCtrls.Island.Linux.pas" />
+    <Compile Include="VCL\Form.Island.Linux.pas" />
+    <Compile Include="VCL\StdCtrls.Island.Linux.pas" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Echoes'">
     <Compile Include="Properties\AssemblyInfo.pas" />
@@ -223,8 +229,14 @@
   <ItemGroup Condition="'$(Target)' == 'Island.Linux'">
     <Reference Include="rtl" />
     <Reference Include="gc" />
-    <Reference Include="Island" />
     <Reference Include="Elements" />
+    <Reference Include="gtk" />
+    <Reference Include="glib" />
+    <Reference Include="gdk" />
+    <Reference Include="Island">
+      <Private>True</Private>
+      <HintPath>..\..\IslandRTL\Source\Bin\Debug\Ubuntu\armv6\Island.fx</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Island.Darwin.macOS'">
     <Reference Include="rtl" />
@@ -275,7 +287,7 @@
     <Reference Include="libElements" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="DelphiRTL">
+    <ProjectReference Include="DelphiRTL.elements">
       <Project>{EADD178D-DD01-4F3A-B93D-FDD263D7A19D}</Project>
       <ProjectFile>DelphiRTL.elements</ProjectFile>
       <Private>True</Private>
