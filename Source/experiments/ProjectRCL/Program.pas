@@ -16,7 +16,7 @@ type
     begin
       writeLn(aValue.ActualType.Name);
     end;
-    class method Main(args: array of String): Int32;
+    class method Main(args: array of PlatformString): Int32;
     begin
       {var lDfm := new TFileStream('C:\dev\ro\DelphiRTL\Source\experiments\ProjectRCL\withListItems.dfm', fmOpenRead);
       var lRes := new TFileStream('C:\dev\ro\DelphiRTL\Source\experiments\ProjectRCL\ComeOnListItems.res', fmCreate or fmOpenWrite);

@@ -34,11 +34,11 @@ type
   protected
     method CreateHandle; override;
     method PlatformSetText(aValue: VCLString);
-    method PlatformGetText: VCLString;
-    method PlatformGetMaxLength: Integer;
-    method PlatformSetMaxLength(aValue: Integer);
-    method PlatformGetReadOnly: Boolean;
-    method PlatformSetReadOnly(aValue: Boolean);
+    method PlatformGetText: VCLString; virtual; partial;
+    method PlatformGetMaxLength: Integer; virtual; partial;
+    method PlatformSetMaxLength(aValue: Integer); virtual; partial;
+    method PlatformGetReadOnly: Boolean; virtual; partial;
+    method PlatformSetReadOnly(aValue: Boolean); virtual; partial;
   end;
 
   TButtonControl = public partial class(TNativeControl)

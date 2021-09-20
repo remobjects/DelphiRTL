@@ -29,6 +29,7 @@
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <OutputType>staticlibrary</OutputType>
+	<Architecture>i386;x86_64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island.Linux' ">
     <Mode>Island</Mode>
@@ -40,7 +41,7 @@
     <Mode>Island</Mode>
     <SubMode>Darwin</SubMode>
     <SDK>macOS</SDK>
-    <DeploymentTargetVersion>10.10</DeploymentTargetVersion>
+    <DeploymentTargetVersion>10.12</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
     <Architecture>x86_64</Architecture>
   </PropertyGroup>
@@ -63,7 +64,7 @@
     <Mode>Island</Mode>
     <SubMode>Darwin</SubMode>
     <SDK>watchOS</SDK>
-    <DeploymentTargetVersion>2.10</DeploymentTargetVersion>
+    <DeploymentTargetVersion>3.0</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island.Android' ">

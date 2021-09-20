@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.RTL.Delphi.VCL;
 
-{$IF ISLAND AND LINUX}
+{$IF ISLAND AND (LINUX AND NOT ANDROID)}
 
 interface
 

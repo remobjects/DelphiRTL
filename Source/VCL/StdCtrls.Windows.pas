@@ -25,11 +25,11 @@ type
   TEdit = public partial class(TWinControl)
   protected
     method CreateParams(var aParams: TCreateParams); override;
-    method PlatformGetMaxLength: Integer;
-    method PlatformSetMaxLength(aValue: Integer);
-    method PlatformGetReadOnly: Boolean;
-    method PlatformSetReadOnly(aValue: Boolean);
-    method PlatformGetText: VCLString;
+    method PlatformGetMaxLength: Integer; virtual; partial;
+    method PlatformSetMaxLength(aValue: Integer); virtual; partial;
+    method PlatformGetReadOnly: Boolean; virtual; partial;
+    method PlatformSetReadOnly(aValue: Boolean); virtual; partial;
+    method PlatformGetText: VCLString; virtual; partial;
     method PlatformSetText(aValue: VCLString);
   end;
 

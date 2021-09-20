@@ -45,17 +45,16 @@
     <Reference Include="rtl" />
     <Reference Include="Elements" />
     <Reference Include="Delphi">
-      <HintPath>..\..\bin\Debug\Windows\i386\Delphi.fx</HintPath>
+      <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Windows\i386\Delphi.fx</HintPath>
     </Reference>
     <Reference Include="DelphiVCL">
-      <HintPath>..\..\Bin\Debug\Windows\i386\DelphiVCL.fx</HintPath>
+      <HintPath>C:\dev\ro\DelphiRTL\Bin\Debug\Windows\i386\DelphiVCL.fx</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.pas" />
     <Compile Include="Unit5.pas" />
     <Resource Include="manifest.res" />
-    <Resource Include="withTreeView.dfm" />
     <EmbeddedResource Include="withListboxAndCombo.dfm" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
