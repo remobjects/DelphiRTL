@@ -227,14 +227,18 @@ type
     method DateTimeToStringTests;
     begin
       var lDate := EncodeDateTime(2017, 1, 19, 20, 50, 30, 120);
+      {$IF COOPER}
+      var lString: nullable DelphiString;
+      {$ELSE}
       var lString: DelphiString;
+      {$ENDIF}
       DateTimeToString(var lString, 'dd/mm/yyyy', lDate, FormatSettings);
       Assert.AreEqual(lString, '19/01/2017');
 
-      DateTimeToString(var lString, 'hh:mm:ss', lDate);
+      DateTimeToString(var lString, 'hh:mm:ss', lDate, FormatSettings);
       Assert.AreEqual(lString, '20:50:30');
 
-      DateTimeToString(var lString, 'hh:nn:ss', lDate);
+      DateTimeToString(var lString, 'hh:nn:ss', lDate, FormatSettings);
       Assert.AreEqual(lString, '20:50:30');
     end;
 

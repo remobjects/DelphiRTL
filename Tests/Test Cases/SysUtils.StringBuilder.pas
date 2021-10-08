@@ -18,19 +18,19 @@ type
     method AppendTests;
     begin
       fData.Append(1);
-      Assert.AreEqual(fData[0], '1');
+      Assert.IsTrue(fData[0] = '1');
 
       fData.Append(3.0);
-      Assert.AreEqual(fData[1], '3');
+      Assert.IsTrue(fData[1] = '3');
     end;
 
     method Append2Tests;
     begin
       fData.Append('C');
-      Assert.AreEqual(fData[0], 'C');
+      Assert.IsTrue(fData[0] = 'C');
 
       fData.Append('Another');
-      Assert.AreEqual(fData[1], 'A');
+      Assert.IsTrue(fData[1] = 'A');
       Assert.AreEqual(fData.ToString(1, 7), 'Another');
     end;
 
@@ -62,9 +62,9 @@ type
     begin
       fData.AppendLine('One Line');
       if TOSVersion.Platform = TPlatform.pfWindows then
-        Assert.AreEqual(fData.Chars[8], #13)
-      else 
-        Assert.AreEqual(fData.Chars[8], #10);
+        Assert.IsTrue(fData.Chars[8] = #13)
+      else
+        Assert.IsTrue(fData.Chars[8] = #10);
     end;
 
     method CopyToTests;
@@ -72,11 +72,11 @@ type
       var lArray := new Char[11];
       fData.Append('one line');
       fData.CopyTo(0, lArray, 0, fData.Length);
-      Assert.AreEqual(new String(lArray, 0, 8), 'one line');
+      Assert.AreEqual(new RTL2String(lArray, 0, 8), 'one line');
 
       fData.Append('YYY');
       fData.CopyTo(8, lArray, 8, 3);
-      Assert.AreEqual(new String(lArray), 'one lineYYY');
+      Assert.AreEqual(new RTL2String(lArray), 'one lineYYY');
     end;
 
     method EqualsTests;

@@ -11,7 +11,7 @@ type
     method IndexerTests;
     begin
       var x : AnsiString := 'hello';
-      Assert.AreEqual(Char(x[1]), 'h');
+      Assert.IsTrue(x[1] = 'h');
     end;
 
     method InsertTests;
@@ -227,14 +227,14 @@ type
       //1 based
       var x: AnsiString := '';
       x := 'Mack';
-      Assert.AreEqual(Pos('M', x), 1);
-      Assert.AreEqual(Pos('', x), 0);
+      Assert.AreEqual(Pos(AnsiString('M'), x), 1);
+      Assert.AreEqual(Pos(AnsiString(''), x), 0);
 
       x := 'Hello Hello';
-      Assert.AreEqual(Pos('ll', x), 3);
+      Assert.AreEqual(Pos(AnsiString('ll'), x), 3);
 
       x := 'a string in the street';
-      Assert.AreEqual(Pos('street', x), 17);
+      Assert.AreEqual(Pos(AnsiString('street'), x), 17);
     end;
 
     method CopyTests;
@@ -248,7 +248,11 @@ type
     method DeleteTests;
     begin
       // 1 based
+      {$IF COOPER}
+      var x: nullable AnsiString := 'Test1234';
+      {$ELSE}
       var x: AnsiString := 'Test1234';
+      {$ENDIF}
       DeleteA(var x, 5, 4);
       Assert.AreEqual(x, 'Test');
       DeleteA(var x, 1, 1);
@@ -257,8 +261,12 @@ type
 
     method InsertFuncTests;
     begin
-      // Toffee affected by T77622 
+      // Toffee affected by T77622
+      {$IF COOPER}
+      var x: nullable AnsiString := 'Test1234';
+      {$ELSE}
       var x: AnsiString := 'Test1234';
+      {$ENDIF}
       Insert('5678', var x, 9);
       Assert.AreEqual(x, 'Test12345678');
       Insert('0', var x, 1);
@@ -344,7 +352,11 @@ type
 
     method FillCharFuncTests;
     begin
+      {$IF COOPER}
+      var x: nullable AnsiString := '';
+      {$ELSE}
       var x: AnsiString := '';
+      {$ENDIF}
       FillChar(var x, 10, AnsiChar('x'));
       Assert.AreEqual(x, 'xxxxxxxxxx');
     end;
@@ -403,7 +415,11 @@ type
 
     method SetLengthTests;
     begin
+      {$IF COOPER}
+      var x: nullable AnsiString := 'Testing 1234';
+      {$ELSE}
       var x: AnsiString := 'Testing 1234';
+      {$ENDIF}
       SetLength(var x, 4);
 
       Assert.IsTrue(x = 'Test');
