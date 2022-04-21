@@ -4,7 +4,7 @@ interface
 
 {$HIDE CPW8}
 
-method SetLenth<T>(var aArray: array of T; aNewLength: Integer);
+method SetLength<T>(var aArray: array of T; aNewLength: Integer);
 method FillChar(var aArray: array of Byte; aValue: Byte);
 {$IFNDEF COOPER}
 method FillChar(aDestination: ^Byte; aCount: Integer; aValue: Byte); unsafe;
@@ -13,7 +13,7 @@ method Move(aSource: ^Byte; aDestination: ^Byte; aCount: Integer); unsafe;
 
 implementation
 
-method SetLenth<T>(var aArray: array of T; aNewLength: Integer);
+method SetLength<T>(var aArray: array of T; aNewLength: Integer);
 begin
   if not assigned(aArray) then
     exit;
@@ -22,6 +22,10 @@ begin
     exit;
   {$IF COOPER}
   aArray := java.util.Arrays.copyOf(aArray, aNewLength);
+  {$ELSEIF ECHOES}
+  var lResult := new array of T(aNewLength);
+  aArray.Copy(aArray, lResult, Min(len, aNewLength));
+  aArray := lResult;
   {$ELSE}
   var lResult := new T[aNewLength];
   for i: Integer := 0 to Min(len, aNewLength)-1 do
