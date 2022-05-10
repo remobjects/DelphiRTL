@@ -106,7 +106,7 @@ begin
   if aCount ≤ 0 then
     exit;
   if aIndex+aCount ≥ length(aDestination) then begin
-    SetLength(var aDestination, Math.Min(aIndex, length(aDestination)));
+    SetLength(var aDestination, Math.Min(aIndex, Int64(length(aDestination))));
   end
   else begin
     var lCurrentCount := length(aDestination);
