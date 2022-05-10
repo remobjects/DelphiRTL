@@ -11,6 +11,10 @@ method FillChar(aDestination: ^Byte; aCount: Integer; aValue: Byte); unsafe;
 method Move(aSource: ^Byte; aDestination: ^Byte; aCount: Integer); unsafe;
 {$ENDIF}
 
+method Insert<T>(aSource: T; var aDestination: array of T; aIndex: Integer);
+method Insert<T>(aSource: array of T; var aDestination: array of T; aIndex: Integer);
+method Delete<T>(var aDestination: array of T; aIndex: Integer; aCount: Integer := 1);
+
 implementation
 
 method SetLength<T>(var aArray: array of T; aNewLength: Integer);
@@ -58,5 +62,72 @@ begin
 end;
 
 {$ENDIF}
+
+method Insert<T>(aSource: T; var aDestination: array of T; aIndex: Integer);
+begin
+  //var lTemp: array of T := [T]; // E0 Internal error: System.NullReferenceException: Object reference not set to an instance of an object
+  //Insert(lTemp, var aDestination, aIndex);
+end;
+
+method Insert<T>(aSource: array of T; var aDestination: array of T; aIndex: Integer);
+begin
+  var lCurrentCount := length(aDestination);
+  if aIndex > lCurrentCount then
+    raise new ArgumentOutOfRangeException($"Index {aIndex} is out of range of destination array (0..{lCurrentCount})");
+  var lAddedCount := length(aSource);
+  if lAddedCount > 0 then begin
+    {$IF COOPER}
+    var lResult := java.util.Arrays.copyOf(aDestination, lCurrentCount+lAddedCount);
+    //for i := 0 to aIndex-1 do
+      //lResult[i] := aDestination[i];
+    for i := 0 to lAddedCount-1 do
+      lResult[aIndex+i] := aSource[i];
+    for i := aIndex to lCurrentCount-1 do
+      lResult[aIndex+lAddedCount+i] := aDestination[aIndex+i];
+    aDestination := lResult;
+    {$ELSE}
+    var lResult := new T[lCurrentCount+lAddedCount];
+    for i := 0 to aIndex-1 do
+      lResult[i] := aDestination[i];
+    for i := 0 to lAddedCount-1 do
+      lResult[aIndex+i] := aSource[i];
+    for i := aIndex to lCurrentCount-1 do
+      lResult[lAddedCount+i] := aDestination[i];
+    aDestination := lResult;
+    {$ENDIF}
+  end;
+end;
+
+method Delete<T>(var aDestination: array of T; aIndex: Integer; aCount: Integer := 1);
+begin
+  if aCount ≤ 0 then
+    exit;
+  if aIndex+aCount ≥ length(aDestination) then begin
+    SetLength(var aDestination, Math.Min(aIndex, length(aDestination)));
+  end
+  else begin
+    var lCurrentCount := length(aDestination);
+    if lCurrentCount-aCount ≤ 0 then begin
+      SetLength(var aDestination, 0);
+    end
+    else begin
+      {$IF COOPER}
+      var lResult := java.util.Arrays.copyOf(aDestination, lCurrentCount-aCount);
+      //for i := 0 to aIndex-1 do
+        //lResult[i] := aDestination[i];
+      for i := aIndex+aCount to lCurrentCount-1 do
+        lResult[i-aCount] := aDestination[i];
+      aDestination := lResult;
+      {$ELSE}
+      var lResult := new T[lCurrentCount-aCount];
+      for i := 0 to aIndex-1 do
+        lResult[i] := aDestination[i];
+      for i := aIndex+aCount to lCurrentCount-1 do
+        lResult[i-aCount] := aDestination[i];
+      aDestination := lResult;
+      {$ENDIF}
+    end;
+  end;
+end;
 
 end.

@@ -29,7 +29,7 @@ function &Copy(S: PlatformString; aIndex: Integer; aCount: Integer): DelphiStrin
 {$IF NOT COOPER}
 function &Copy<T>(B: array of T; aIndex: Integer; aCount: Integer): array of T; public;
 function &Copy<T>(B: TArray<T>; aIndex: Integer): TArray<T>; inline; public;
-procedure Delete<T>(var Arr: TArray<T>; Start: Integer; Count: Integer);
+//procedure Delete<T>(var Arr: TArray<T>; Start: Integer; Count: Integer);
 {$ENDIF}
 
 procedure FillChar(var Dest: DelphiString; aCount: Integer; aValue: Char);
@@ -74,12 +74,12 @@ begin
   result := Pos(DelphiString(SubStr), DelphiString(S));
 end;
 
-function Pos(SubStr: PlatformString; S: DelphiString; aOffset: Integer := 1): Integer; 
+function Pos(SubStr: PlatformString; S: DelphiString; aOffset: Integer := 1): Integer;
 begin
   result := Pos(DelphiString(SubStr), S);
 end;
 
-function Pos(SubStr: DelphiString; S: PlatformString; aOffset: Integer := 1): Integer; 
+function Pos(SubStr: DelphiString; S: PlatformString; aOffset: Integer := 1): Integer;
 begin
   result := Pos(SubStr, DelphiString(S));
 end;
@@ -134,16 +134,16 @@ begin
 end;
 
 {$IF NOT COOPER}
-procedure Delete<T>(var Arr: TArray<T>; Start: Integer; Count: Integer);
-begin
-  var Source := Arr;
-  Arr := new T[Arr.Length - Count];
-  for Index: Integer := 0 to Start - 1 do
-    Arr[Index] := Source[Index];
+//procedure Delete<T>(var Arr: TArray<T>; Start: Integer; Count: Integer);
+//begin
+  //var Source := Arr;
+  //Arr := new T[Arr.Length - Count];
+  //for Index: Integer := 0 to Start - 1 do
+    //Arr[Index] := Source[Index];
 
-  for Index: Integer := Start + Count to Source.Length - 1 do
-    Arr[Index - Count] := Source[Index];
-end;
+  //for Index: Integer := Start + Count to Source.Length - 1 do
+    //Arr[Index - Count] := Source[Index];
+//end;
 {$ENDIF}
 
 {$IF NOT COOPER}
