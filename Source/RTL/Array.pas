@@ -18,6 +18,9 @@ method Concat<T>(params aArrays: array of array of T): nullable array of T;
 
 implementation
 
+uses
+  RemObjects.Elements.RTL;
+
 method SetLength<T>(var aArray: array of T; aNewLength: Integer);
 begin
   if not assigned(aArray) then
@@ -139,10 +142,10 @@ begin
   for each a in aArrays do
     inc(lTotalCount, length(a));
 
-  result := if defined("COOPER") then java.util.Arrays.copyOf(aArray.First, lTotalCount) else new T[lTotalCount];
+  result := if defined("COOPER") then java.util.Arrays.copyOf(aArrays[0], lTotalCount) else new T[lTotalCount];
   var lOffset := 0;
   {$IF COOPER}
-  inc(lOffset, length(a));
+  inc(lOffset, length(aArrays[0]));
   for each a in aArrays.Skip(1) do begin
     for i := 0 to length(a)-1 do
       result[lOffset+i] := a[i];
