@@ -65,8 +65,7 @@ end;
 
 method Insert<T>(aSource: T; var aDestination: array of T; aIndex: Integer);
 begin
-  //var lTemp: array of T := [T]; // E0 Internal error: System.NullReferenceException: Object reference not set to an instance of an object
-  //Insert(lTemp, var aDestination, aIndex);
+  Insert([aSource], var aDestination, aIndex);
 end;
 
 method Insert<T>(aSource: array of T; var aDestination: array of T; aIndex: Integer);
