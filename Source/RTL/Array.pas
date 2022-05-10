@@ -14,6 +14,7 @@ method Move(aSource: ^Byte; aDestination: ^Byte; aCount: Integer); unsafe;
 method Insert<T>(aSource: T; var aDestination: array of T; aIndex: Integer);
 method Insert<T>(aSource: array of T; var aDestination: array of T; aIndex: Integer);
 method Delete<T>(var aDestination: array of T; aIndex: Integer; aCount: Integer := 1);
+method Concat<T>(params aArrays: array of array of T): nullable array of T;
 
 implementation
 
@@ -128,5 +129,33 @@ begin
     end;
   end;
 end;
+
+method Concat<T>(params aArrays: array of array of T): nullable array of T;
+begin
+  if length(aArrays) = 0 then
+    exit nil;
+
+  var lTotalCount := 0;
+  for each a in aArrays do
+    inc(lTotalCount, length(a));
+
+  result := if defined("COOPER") then java.util.Arrays.copyOf(aArray.First, lTotalCount) else new T[lTotalCount];
+  var lOffset := 0;
+  {$IF COOPER}
+  inc(lOffset, length(a));
+  for each a in aArrays.Skip(1) do begin
+    for i := 0 to length(a)-1 do
+      result[lOffset+i] := a[i];
+    inc(lOffset, length(a));
+  end;
+  {$ELSE}
+  for each a in aArrays do begin
+    for i := 0 to length(a)-1 do
+      result[lOffset+i] := a[i];
+    inc(lOffset, length(a));
+  end;
+  {$ENDIF}
+end;
+
 
 end.
