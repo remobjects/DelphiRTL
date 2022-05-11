@@ -16,6 +16,9 @@ method Insert<T>(aSource: array of T; var aDestination: array of T; aIndex: Inte
 method Delete<T>(var aDestination: array of T; aIndex: Integer; aCount: Integer := 1);
 method Concat<T>(params aArrays: array of array of T): nullable array of T;
 
+method &Copy<T>(aSource: nullable array of T): nullable array of T;
+//method &Copy<T>(aSource: nullable array of T; aIndex: Integer; aCount: Integer): nullable array of T;
+
 implementation
 
 uses
@@ -31,7 +34,7 @@ begin
   {$IF COOPER}
   aArray := java.util.Arrays.copyOf(aArray, aNewLength);
   {$ELSEIF ECHOES}
-  var lResult := new array of T(aNewLength);
+  var lResult := new T[aNewLength];
   aArray.Copy(aArray, lResult, Min(len, aNewLength));
   aArray := lResult;
   {$ELSE}
@@ -160,5 +163,40 @@ begin
   {$ENDIF}
 end;
 
+method &Copy<T>(aSource: nullable array of T): nullable array of T;
+begin
+  if not assigned(aSource) then
+    exit nil;
+
+  {$IF COOPER}
+  result := java.util.Arrays.copyOf(aSource, length(aSource));
+  {$ELSEIF ECHOES}
+  result := new T[length(aSource)];
+  &Array.Copy(aSource, result, length(aSource));
+  {$ELSE}
+  result := new T[length(aSource)];
+  for i := 0 to length(aSource)-1 do
+    result[i] := aSource[i];
+  {$ENDIF}
+end;
+
+method &Copy<T>(aSource: nullable array of T; aIndex: Integer; aCount: Integer): nullable array of T;
+begin
+  if not assigned(aSource) then
+    exit nil;
+
+  {$IF COOPER}
+  result := java.util.Arrays.copyOf(aSource, aCount);
+  for i := 0 to aCount-1 do
+    result[i] := aSource[aIndex+i];
+  {$ELSEIF ECHOES}
+  result := new T[length(aSource)];
+  &Array.Copy(aSource, aIndex, result, 0, aCount);
+  {$ELSE}
+  result := new T[length(aSource)];
+  for i := 0 to aCount-1 do
+    result[i] := aSource[aIndex+i];
+  {$ENDIF}
+end;
 
 end.

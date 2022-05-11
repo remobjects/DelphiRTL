@@ -27,8 +27,8 @@ procedure Delete(var S: DelphiString; aIndex: Integer; aCount: Integer); inline;
 function &Copy(S: DelphiString; aIndex: Integer; aCount: Integer): DelphiString; inline;
 function &Copy(S: PlatformString; aIndex: Integer; aCount: Integer): DelphiString; inline;
 {$IF NOT COOPER}
-function &Copy<T>(B: array of T; aIndex: Integer; aCount: Integer): array of T; public;
-function &Copy<T>(B: TArray<T>; aIndex: Integer): TArray<T>; inline; public;
+//function &Copy<T>(B: array of T; aIndex: Integer; aCount: Integer): array of T; public;
+//function &Copy<T>(B: TArray<T>; aIndex: Integer): TArray<T>; inline; public;
 //procedure Delete<T>(var Arr: TArray<T>; Start: Integer; Count: Integer);
 {$ENDIF}
 
@@ -110,21 +110,21 @@ begin
 end;
 
 {$IF NOT COOPER}
-function &Copy<T>(B: array of T; aIndex: Integer; aCount: Integer): array of T;
-begin
-  result := new T[aCount];
-  {$IF TOFFEE}
-  for i: Integer := 0 to aCount do
-    result[i] := B[aIndex + i];
-  {$ELSE}
-  system.Array.Copy(B, aIndex, result, 0, aCount);
-  {$ENDIF}
-end;
+//function __Copy<T>(B: array of T; aIndex: Integer; aCount: Integer): array of T;
+//begin
+  //result := new T[aCount];
+  //{$IF TOFFEE}
+  //for i: Integer := 0 to aCount do
+    //result[i] := B[aIndex + i];
+  //{$ELSE}
+  //system.Array.Copy(B, aIndex, result, 0, aCount);
+  //{$ENDIF}
+//end;
 
-function &Copy<T>(B: TArray<T>; aIndex: Integer): TArray<T>; inline;
-begin
-  result := &Copy(B, aIndex, B.length);
-end;
+//function &Copy<T>(B: TArray<T>; aIndex: Integer): TArray<T>;
+//begin
+  //result := __Copy(B, aIndex, B.length);
+//end;
 {$ENDIF}
 
 procedure FillChar(var Dest: DelphiString; aCount: Integer; aValue: Char);
