@@ -335,7 +335,7 @@ type
 {$IF ISLAND AND WINDOWS}
 extension method RemObjects.Elements.System.String.ToLPCWSTR: rtl.LPCWSTR;
 begin
-  if String.IsNullOrEmpty(self) then exit nil;
+  if RemObjects.Elements.RTL.String.IsNullOrEmpty(self) then exit nil;
   var arr := ToCharArray(true);
   exit rtl.LPCWSTR(@arr[0]);
 end;
@@ -971,7 +971,7 @@ end;
 
 class method DelphiString.IsNullOrEmpty(const Value: DelphiString): Boolean;
 begin
-  result := (Value.fData = nil) or (String.IsNullOrEmpty(Value.fData));
+  result := (Value.fData = nil) or (RemObjects.Elements.RTL.String.IsNullOrEmpty(Value.fData));
 end;
 
 class method DelphiString.IsNullOrWhiteSpace(const Value: DelphiString): Boolean;
@@ -979,7 +979,7 @@ begin
   {$IF ISLAND}
   result := (PlatformString(Value.fData) = nil) or (Value.fData = ' ') or (Value.Length = 0);
   {$ELSE}
-  result := String.IsNullOrWhiteSpace(Value);
+  result := RemObjects.Elements.RTL.String.IsNullOrWhiteSpace(Value);
   {$ENDIF}
 end;
 
