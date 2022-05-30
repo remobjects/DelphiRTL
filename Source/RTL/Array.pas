@@ -17,7 +17,7 @@ method Delete<T>(var aDestination: array of T; aIndex: Integer; aCount: Integer 
 method Concat<T>(params aArrays: array of array of T): nullable array of T;
 
 method &Copy<T>(aSource: nullable array of T): nullable array of T;
-//method &Copy<T>(aSource: nullable array of T; aIndex: Integer; aCount: Integer): nullable array of T;
+method &Copy<T>(aSource: nullable array of T; aIndex: Integer; aCount: Integer): nullable array of T;
 
 implementation
 
