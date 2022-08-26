@@ -192,7 +192,7 @@ end;
 method TEdit.PlatformGetText: VCLString;
 begin
   var lText := gtk.gtk_entry_get_text(^gtk.GtkEntry(fHandle));
-  result := PlatformString.FromPAnsiChars(lText);
+  result := PlatformString.FromPAnsiChar(lText);
 end;
 
 method TEdit.PlatformGetMaxLength: Integer;
@@ -474,7 +474,7 @@ begin
       exit -1;
   end;
   var lChars := gtk.gtk_tree_model_get_string_from_iter(^gtk.GtkTreeModel(fStore), lIter);
-  var lIndex := Convert.ToInt32(PlatformString.FromPAnsiChars(lChars));
+  var lIndex := Convert.ToInt32(PlatformString.FromPAnsiChar(lChars));
   glib.g_free(lChars);
   exit lIndex;
 end;
@@ -490,7 +490,7 @@ end;
 method TComboBox.PlatformGetText: String;
 begin
   var lChars := gtk.gtk_combo_box_text_get_active_text(^gtk.GtkComboBoxText(fHandle));
-  result := PlatformString.FromPAnsiChars(lChars);
+  result := PlatformString.FromPAnsiChar(lChars);
   glib.g_free(lChars);
 end;
 
