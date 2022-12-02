@@ -916,6 +916,7 @@ begin
     fWriter.WriteUTF8Str(lValue2);
     fWriter.WriteUTF8Str(lValue);
     fParser.NextToken;
+    var lWithContent := (fParser.Token <> TParserToken.toEOF) and not (fParser.TokenSymbolIs('end'));
     while (fParser.Token <> TParserToken.toEOF) and not (fParser.TokenSymbolIs('end')) do begin
       if fParser.TokenSymbolIs('object') then begin
         fWriter.WriteListEnd;
@@ -926,7 +927,8 @@ begin
 
       fParser.NextToken;
     end;
-    fWriter.WriteListEnd;
+    if lWithContent then
+      fWriter.WriteListEnd;
     fWriter.WriteListEnd;
   end;
   //else
