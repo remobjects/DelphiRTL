@@ -71,6 +71,12 @@ type
     {$ENDIF}
   published
     constructor;
+    {$IFDEF ISLAND}
+    class operator Implicit(val: DelphiString): ^Char;
+    begin
+      exit ^Char(PlatformString(val.fData));
+    end;
+    {$ENDIF}
     constructor(Value: PlatformString);
     constructor(aBytes: array of Byte);
     constructor(C: Char; aCount: Integer);
