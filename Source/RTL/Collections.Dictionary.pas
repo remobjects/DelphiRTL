@@ -66,12 +66,12 @@ type
     constructor(const Collection: TEnumerable<TPair<TKey,TValue>>); empty;
     constructor(aCapacity: Integer; const aComparer: IEqualityComparer<TKey>); empty;
 
-    constructor(Ownerships: TDictionaryOwnerships; ACapacity: Integer = 0); 
-    constructor(Ownerships: TDictionaryOwnerships; const AComparer: IEqualityComparer<TKey>); 
-    constructor(Ownerships: TDictionaryOwnerships; ACapacity: Integer; const AComparer: IEqualityComparer<TKey>); 
+    constructor(Ownerships: TDictionaryOwnerships; ACapacity: Integer = 0);
+    constructor(Ownerships: TDictionaryOwnerships; const AComparer: IEqualityComparer<TKey>);
+    constructor(Ownerships: TDictionaryOwnerships; ACapacity: Integer; const AComparer: IEqualityComparer<TKey>);
 
     class method Create(Ownerships: TDictionaryOwnerships; ACapacity: Integer = 0): TObjectDictionary<TKey,TValue>;
-    class method Create(Ownerships: TDictionaryOwnerships; const AComparer: IEqualityComparer<TKey>): TObjectDictionary<TKey,TValue>; 
+    class method Create(Ownerships: TDictionaryOwnerships; const AComparer: IEqualityComparer<TKey>): TObjectDictionary<TKey,TValue>;
     class method Create(Ownerships: TDictionaryOwnerships; ACapacity: Integer; const AComparer: IEqualityComparer<TKey>): TObjectDictionary<TKey,TValue>;
   end;
 
@@ -220,7 +220,7 @@ end;
 
 method TDictionary<TKey,TValue>.Initialize(aCapacity: Integer);
 begin
-  fDict := new Dictionary<TKey,TValue>(aCapacity);
+  fDict := new Dictionary<TKey,TValue> withCapacity(aCapacity);
 end;
 
 method TDictionary<TKey,TValue>.AddCollection(aCollection: TEnumerable<TPair<TKey,TValue>>);
