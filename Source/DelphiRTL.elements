@@ -184,7 +184,7 @@
     <Reference Include="Elements">
       <Private>True</Private>
     </Reference>
-    <Compile Include="Properties\AssemblyInfo.pas" />
+    <Compile Include="RTL\Properties\AssemblyInfo.pas" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Cooper'">
     <Reference Include="rt" />

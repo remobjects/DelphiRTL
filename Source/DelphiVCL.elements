@@ -188,7 +188,7 @@
     <Compile Include="VCL\StdCtrls.Island.Linux.pas" />
   </ItemGroup>
   <ItemGroup Condition="'$(Target)' == 'Echoes'">
-    <Compile Include="Properties\AssemblyInfo.pas" />
+    <Compile Include="VCL\Properties\AssemblyInfo.pas" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
