@@ -628,31 +628,31 @@ begin
   var lTemp: DelphiString;
 
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SLONGDATE, @lBuffer[0], lBuffer.Length);
-  LongDateFormat := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  LongDateFormat := DelphiString.&Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SSHORTDATE, @lBuffer[0], lBuffer.Length);
-  ShortDateFormat := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  ShortDateFormat := DelphiString.&Create(lBuffer, 0, lTotal - 1);
   LongTimeFormat := 'hh:mm:ss';
   ShortTimeFormat := 'hh:mm';
 
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_S1159, @lBuffer[0], lBuffer.Length);
-  TimeAMString := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  TimeAMString := DelphiString.&Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_S2359, @lBuffer[0], lBuffer.Length);
-  TimePMString := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  TimePMString := DelphiString.&Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_STIME, @lBuffer[0], lBuffer.Length);
-  DateSeparator := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  DateSeparator := DelphiString.&Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SDATE, @lBuffer[0], lBuffer.Length);
-  lTemp := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  lTemp := DelphiString.&Create(lBuffer, 0, lTotal - 1);
   if lTemp.Length > 0 then
     TimeSeparator := lTemp.Chars[0];
 
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SCURRENCY, @lBuffer[0], lBuffer.Length);
-  CurrencyString := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  CurrencyString := DelphiString.&Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_SDECIMAL, @lBuffer[0], lBuffer.Length);
-  lTemp := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  lTemp := DelphiString.&Create(lBuffer, 0, lTotal - 1);
   if lTemp.Length > 0 then
      DecimalSeparator := lTemp.Chars[0];
   lTotal := rtl.GetLocaleInfo(rtl.LOCALE_NAME_USER_DEFAULT, rtl.LOCALE_STHOUSAND, @lBuffer[0], lBuffer.Length);
-  lTemp := DelphiString.Create(lBuffer, 0, lTotal).SubString(0, 1);
+  lTemp := DelphiString.&Create(lBuffer, 0, lTotal).SubString(0, 1);
   if lTemp.Length > 0 then
   ThousandSeparator := lTemp.Chars[0];
   {$ELSEIF TOFFEE}

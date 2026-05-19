@@ -10,6 +10,7 @@
     <GeneratePDB>True</GeneratePDB>
     <GenerateMDB>True</GenerateMDB>
     <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
+    <DelphiCompatibility>True</DelphiCompatibility>
     <GenerateDebugInfo>True</GenerateDebugInfo>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <AllowLegacyEnums>True</AllowLegacyEnums>
@@ -43,6 +44,7 @@
     <SDK>macOS</SDK>
     <DeploymentTargetVersion>10.12</DeploymentTargetVersion>
     <OutputType>staticlibrary</OutputType>
+    <Architecture>arm64;x86_64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Island.Darwin.iOS' ">
     <Mode>Island</Mode>

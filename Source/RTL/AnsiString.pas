@@ -246,7 +246,7 @@ end;
 
 class method AnsiString.Create(Value: array of Char; PreserveChars: Boolean = true): AnsiString;
 begin
-  result := Create(Value, 0, Value.Length, PreserveChars);
+  result := &Create(Value, 0, Value.Length, PreserveChars);
 end;
 
 operator AnsiString.Implicit(Value: Char): AnsiString;

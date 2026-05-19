@@ -83,7 +83,7 @@ begin
   {$IF WEBASSEMBLY OR ECHOESWPF}
   NotifyChanged('size');
   {$ELSEIF ISLAND AND WINDOWS}
-  SetHeight(-(aValue * fPixelsPerInch) / 72); // A point is very close to 1/72 inch...
+  SetHeight(-((aValue * fPixelsPerInch) div 72)); // A point is very close to 1/72 inch...
   {$ENDIF}
 end;
 

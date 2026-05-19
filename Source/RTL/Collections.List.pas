@@ -27,7 +27,7 @@ type
     {$IFDEF ECHOES}
     function GetNonGenericCurrent: Object;
     begin
-      Result := DoGetCurrent;
+      Result := Object(DoGetCurrent);
     end;
     {$ENDIF ECHOES}
 

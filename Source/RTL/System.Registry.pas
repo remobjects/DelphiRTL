@@ -315,7 +315,7 @@ begin
         lWritten := lBuffer.Length;
         if not CheckResult(rtl.RegEnumKeyEx(CurrentKey, i, @lBuffer[0], @lWritten, nil, nil, nil, nil)) then
           raise new Exception("Can not get registry subkeys");
-        Strings.Add(DelphiString.Create(lBuffer, 0, lWritten));
+        Strings.Add(DelphiString.&Create(lBuffer, 0, lWritten));
       end;
 
     finally
@@ -336,7 +336,7 @@ begin
         lWritten := lBuffer.Length;
         if not CheckResult(rtl.RegEnumValue(CurrentKey, i, @lBuffer[0], @lWritten, nil, nil, nil, nil)) then
           raise new Exception("Can not get registry value names");
-        Strings.Add(DelphiString.Create(lBuffer, 0, lWritten));
+        Strings.Add(DelphiString.&Create(lBuffer, 0, lWritten));
       end;
 
     finally
@@ -468,7 +468,7 @@ begin
   var lRegData: TRegDataType;
   var lTotal := GetData(Name, @lChars[0], lSize, var lRegData);
   if (lRegData = TRegDataType.rdString) or (lRegData = TRegDataType.rdExpandString) then
-    result := DelphiString.Create(lChars, 0, (lTotal div sizeOf(Char)) - 1) // remove #0
+    result := DelphiString.&Create(lChars, 0, (lTotal div sizeOf(Char)) - 1) // remove #0
   else
     raise new Exception('Can no read ' + Name + ' as string value');
 end;

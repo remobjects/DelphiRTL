@@ -207,7 +207,7 @@ begin
   var lCalendar := NSCalendar.currentCalendar;
   var lComponents := lCalendar.components(NSCalendarUnit.CalendarUnitYear or NSCalendarUnit.CalendarUnitMonth or NSCalendarUnit.CalendarUnitDay or
     NSCalendarUnit.CalendarUnitHour or NSCalendarUnit.CalendarUnitMinute or NSCalendarUnit.CalendarUnitSecond or NSCalendarUnit.NSCalendarUnitNanosecond) fromDate(lDateTime);
-  result := TryEncodeDateTime(lComponents.year, lComponents.month, lComponents.day, lComponents.hour, lComponents.minute, lComponents.second, (lComponents.nanosecond / 1000), out aValue);
+  result := TryEncodeDateTime(lComponents.year, lComponents.month, lComponents.day, lComponents.hour, lComponents.minute, lComponents.second, Word(lComponents.nanosecond div 1000), out aValue);
   {$ENDIF}
 end;
 
@@ -419,7 +419,7 @@ begin
   var lCalendar := NSCalendar.currentCalendar;
   var lComponents := lCalendar.components(NSCalendarUnit.CalendarUnitYear or NSCalendarUnit.CalendarUnitMonth or NSCalendarUnit.CalendarUnitDay or
     NSCalendarUnit.CalendarUnitHour or NSCalendarUnit.CalendarUnitMinute or NSCalendarUnit.CalendarUnitSecond or NSCalendarUnit.NSCalendarUnitNanosecond) fromDate(lDateTime);
-  result := TryEncodeDateTime(lComponents.year, lComponents.month, lComponents.day, lComponents.hour, lComponents.minute, lComponents.second, (lComponents.nanosecond / 1000), out aValue);
+  result := TryEncodeDateTime(lComponents.year, lComponents.month, lComponents.day, lComponents.hour, lComponents.minute, lComponents.second, Word(lComponents.nanosecond div 1000), out aValue);
   {$ENDIF}
 end;
 
@@ -509,7 +509,7 @@ begin
     var lCalendar := NSCalendar.currentCalendar;
     var lComponents := lCalendar.components(NSCalendarUnit.CalendarUnitYear or NSCalendarUnit.CalendarUnitMonth or NSCalendarUnit.CalendarUnitDay or
       NSCalendarUnit.CalendarUnitHour or NSCalendarUnit.CalendarUnitMinute or NSCalendarUnit.CalendarUnitSecond or NSCalendarUnit.NSCalendarUnitNanosecond) fromDate(lDateTime);
-    result := TryEncodeDateTime(lComponents.year, lComponents.month, lComponents.day, lComponents.hour, lComponents.minute, lComponents.second, (lComponents.nanosecond / 1000), out aValue);
+    result := TryEncodeDateTime(lComponents.year, lComponents.month, lComponents.day, lComponents.hour, lComponents.minute, lComponents.second, Word(lComponents.nanosecond div 1000), out aValue);
   end
   else
      result := false;
@@ -576,9 +576,9 @@ begin
   var lBuffer := new Char[255];
   DateTimeToSystemTime(DateTime, var lSystemTime);
   var lTotal := rtl.GetDateFormat(rtl.LOCALE_USER_DEFAULT, 0, @lSystemTime, @lFormatChars[0], @lBuffer[0], 255);
-  var lDateStr := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  var lDateStr := DelphiString.&Create(lBuffer, 0, lTotal - 1);
   lTotal := rtl.GetTimeFormat(rtl.LOCALE_USER_DEFAULT, 0, @lSystemTime, @lFormatChars[0], @lBuffer[0], 255);
-  var lTimeStr := DelphiString.Create(lBuffer, 0, lTotal - 1);
+  var lTimeStr := DelphiString.&Create(lBuffer, 0, lTotal - 1);
   lDateStr := lDateStr.Replace(lFormat, '').Trim;
   lTimeStr := lTimeStr.Replace(lFormat, '').Trim;
   aResult := '';

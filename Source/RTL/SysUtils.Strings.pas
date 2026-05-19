@@ -82,7 +82,7 @@ begin
     lTmp[i] := Char(Integer(S[i]) xor $0020)
   else
     lTmp[i] := S[i];
-  result := DelphiString.Create(lTmp);
+  result := DelphiString.&Create(lTmp);
 end;
 
 function UpperCase(const S: PlatformString): DelphiString;
@@ -106,7 +106,7 @@ begin
     lTmp[i] := Char(Integer(S[i]) or $0020)
   else
     lTmp[i] := S[i];
-  result := DelphiString.Create(lTmp);
+  result := DelphiString.&Create(lTmp);
 end;
 
 function LowerCase(const S: PlatformString): DelphiString;

@@ -271,7 +271,7 @@ end;
 
 method TStringBuilder.Append(const Value: array of Char): TStringBuilder;
 begin
-  fData.Append(DelphiString.Create(Value));
+  fData.Append(DelphiString.&Create(Value));
   result := self;
 end;
 
@@ -283,7 +283,7 @@ end;
 
 method TStringBuilder.Append(const Value: array of Char; StartIndex: Integer; CharCount: Integer): TStringBuilder;
 begin
-  fData.Append(DelphiString.Create(Value, StartIndex, CharCount), StartIndex, CharCount);
+  fData.Append(DelphiString.&Create(Value, StartIndex, CharCount), StartIndex, CharCount);
   result := self;
 end;
 
@@ -378,7 +378,7 @@ end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: array of Char): TStringBuilder;
 begin
-  fData.Insert(aIndex, DelphiString.Create(Value));
+  fData.Insert(aIndex, DelphiString.&Create(Value));
   result := self;
 end;
 
@@ -442,7 +442,7 @@ end;
 
 method TStringBuilder.Insert(aIndex: Integer; const Value: array of Char; startIndex: Integer; charCount: Integer): TStringBuilder;
 begin
-  fData.Insert(aIndex, DelphiString.Create(Value, startIndex, charCount));
+  fData.Insert(aIndex, DelphiString.&Create(Value, startIndex, charCount));
   result := self;
 end;
 

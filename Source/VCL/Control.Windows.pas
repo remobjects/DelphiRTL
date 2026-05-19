@@ -397,11 +397,11 @@ begin
     fCurrentPPI := GetDesignPPI;
 
   if newPPI ≠ fCurrentPPI then begin
-    Width := (Width * newPPI) / fCurrentPPI;
-    Height := (Height * newPPI) / fCurrentPPI;
-    Top := (Top * newPPI) / fCurrentPPI;
-    Left := (Left * newPPI) / fCurrentPPI;
-    Font.Height := (Font.Height * newPPI) / fCurrentPPI;
+    Width := (Width * newPPI) div fCurrentPPI;
+    Height := (Height * newPPI) div fCurrentPPI;
+    Top := (Top * newPPI) div fCurrentPPI;
+    Left := (Left * newPPI) div fCurrentPPI;
+    Font.Height := (Font.Height * newPPI) div fCurrentPPI;
 
     if fControls ≠ nil then begin
       for i: Integer := 0 to fControls.Count - 1 do

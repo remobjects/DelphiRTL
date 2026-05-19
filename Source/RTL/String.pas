@@ -366,22 +366,22 @@ begin
   fData := Encoding.UTF16LE.GetString(aBytes);
 end;
 
-class method DelphiString.Create(C: Char; aCount: Integer): DelphiString;
+class method DelphiString.&Create(C: Char; aCount: Integer): DelphiString;
 begin
   result := CreateWithChars(C, aCount);
 end;
 
-class method DelphiString.Create(const Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString;
+class method DelphiString.&Create(const Value: array of Char; StartIndex: Integer; ALength: Integer): DelphiString;
 begin
   result := CreateFromArray(Value, StartIndex, ALength);
 end;
 
-class method DelphiString.Create(const Value: array of Char): DelphiString;
+class method DelphiString.&Create(const Value: array of Char): DelphiString;
 begin
   result := &Create(Value, 0, Value.length);
 end;
 
-class method DelphiString.Create(aBytes: array of Byte): DelphiString;
+class method DelphiString.&Create(aBytes: array of Byte): DelphiString;
 begin
   result := Encoding.UTF16LE.GetString(aBytes);
 end;
@@ -615,7 +615,7 @@ begin
   for i: Integer := 0 to lSource.Length - 1 do
     lArray[i] := chr(lSource[i]);
 
-  result := DelphiString.Create(lArray);
+  result := DelphiString.&Create(lArray);
 end;
 
 {$IF NOT COOPER}
