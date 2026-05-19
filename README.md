@@ -2,6 +2,19 @@
 
 # DelphiRTL
 
+**Important notice:** This library is no longer our recommended solution for using Delphi code, and is no longer maintained.
+
+Instead, we recommend using **Island/Delphi**. This implements the Delphi object model allowing your Elements code to directly use and link to Delphi packages.
+
+For more information please see:
+
+* Our [Island/Delphi introduction blog post](https://blogs.remobjects.com/2023/09/01/using-delphi-apis-from-elements/) (Sep 2023)
+* Our [Island/Delphi documentation](https://docs.elementscompiler.com/Compiler/BackEnds/Island/ObjectModels/Delphi/)
+
+
+
+# Old readme
+
 Part of the RTL2 project, this is a Delphi-compatible RTL and non-visual VCL library implementation for the Elements compiler (and more specifically, the Oxygene language).
 
 ## Goal
