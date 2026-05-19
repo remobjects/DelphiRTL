@@ -13,7 +13,7 @@ type
     fApp: NSApplication;
     fDelegate: TAppDelegate;
   public
-    method CreateForm(InstanceClass: TComponentClass; var aFormRef); partial;
+    method CreateForm(InstanceClass: TComponentClass; var aFormRef: TCustomForm); partial;
     method Initialize; partial;
     method Run; partial;
     method Terminate; partial;
@@ -28,7 +28,7 @@ type
 
 implementation
 
-method TApplication.CreateForm(InstanceClass: TComponentClass; var aFormRef);
+method TApplication.CreateForm(InstanceClass: TComponentClass; var aFormRef: TCustomForm);
 begin
   {var lInstanceType := new &RemObjects.Elements.RTL.Reflection.Type withClass(InstanceClass);
   var lCtor: &RemObjects.Elements.RTL.Reflection.Method := nil;
@@ -62,10 +62,10 @@ begin
   //lCtor.Invoke(FormRef, [nil]);} // todo Invoke method}
   //aFormRef := ComponentsHelper.CreateComponent(new RemObjects.Elements.RTL.Reflection.Type withClass(InstanceClass), nil);}
 
-  var FormRef := ComponentsHelper.CreateComponent(new RemObjects.Elements.RTL.Reflection.Type withClass(InstanceClass), nil);
+  var FormRef := TForm(ComponentsHelper.CreateComponent(new RemObjects.Elements.RTL.Reflection.Type withClass(InstanceClass), nil));
   aFormRef := FormRef;
   if fMainForm = nil then
-    fMainForm := TForm(aFormRef);
+    fMainForm := FormRef;
 end;
 
 method TApplication.Initialize;

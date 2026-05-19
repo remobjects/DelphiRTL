@@ -13,7 +13,7 @@ private
 public
   constructor(aOwner: TComponent);
   class method Create(aOwner: TComponent): TApplication;
-  method CreateForm(InstanceClass: TComponentClass; var aFormRef); partial; empty;
+  method CreateForm(InstanceClass: TComponentClass; var aFormRef: TCustomForm); partial; empty;
   method Initialize; partial; empty;
   method Run; partial; empty;
   method Terminate; partial; empty;

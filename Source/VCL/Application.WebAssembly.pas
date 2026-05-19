@@ -7,7 +7,7 @@ interface
 type
   TApplication = public partial class(TComponent)
   public
-    method CreateForm(InstanceClass: TComponentClass; var aFormRef); partial;
+    method CreateForm(InstanceClass: TComponentClass; var aFormRef: TCustomForm); partial;
     method Initialize; partial;
     method Run; partial;
     method Terminate; partial;
@@ -15,7 +15,7 @@ type
 
 implementation
 
-method TApplication.CreateForm(InstanceClass: TComponentClass; var aFormRef);
+method TApplication.CreateForm(InstanceClass: TComponentClass; var aFormRef: TCustomForm);
 begin
   var lCtor: MethodInfo;
   var FormRef: TForm := TForm(aFormRef);
