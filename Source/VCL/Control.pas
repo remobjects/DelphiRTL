@@ -218,7 +218,7 @@ begin
   PlatformInitControl;
   Name := PlatformGetDefaultName;
   fFont := new TFont();
-  fFont.PropertyChanged := @Changed;
+  fFont.PropertyChanged := (aObject, propName) -> Changed(aObject, propName);
   fCaption := '';
   {$IF WEBASSEMBLY OR ECHOESWPF OR MACOS OR LINUX}
   CreateHandle;

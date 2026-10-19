@@ -645,7 +645,7 @@ method TStrings.AddStrings(const aStrings: array of DelphiString);
 begin
   BeginUpdate;
   try
-    for i: Integer := 0 to aStrings.length - 1 do
+    for i: Integer := 0 to length(aStrings) - 1 do
       &Add(aStrings[i]);
   finally
     EndUpdate;
@@ -654,12 +654,12 @@ end;
 
 method TStrings.AddStrings(const aStrings: array of DelphiString; const aObjects: array of TObject);
 begin
-  if aStrings.length <> aObjects.length then
+  if length(aStrings) <> length(aObjects) then
     raise new ArgumentOutOfRangeException("AddStrings aStrings aObjects");
 
   BeginUpdate;
   try
-    for i: Integer := 0 to aStrings.length - 1 do
+    for i: Integer := 0 to length(aStrings) - 1 do
       AddObject(aStrings[i], aObjects[i]);
   finally
     EndUpdate;

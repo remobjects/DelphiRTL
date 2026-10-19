@@ -919,7 +919,7 @@ begin
   var lTmp := AObject;
   AObject := nil;
   IDisposable(lTmp):Dispose; // just to be nice
-  lTmp.Free;
+  TObject(lTmp).Free;
 end;
 
 function FloatToStr(Value: Double): String;

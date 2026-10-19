@@ -469,12 +469,12 @@ end;
 
 method TProgressBar.PlatformSetPosition(value: Integer);
 begin
-  fHandle.value := value;
+  fHandle.setAttribute('value', value.ToString);
 end;
 
 method TProgressBar.PlatformSetMax(value: Integer);
 begin
-  fHandle.max := value;
+  fHandle.setAttribute('max', value.ToString);
 end;
 
 method TProgressBar.PlatformSetStyle(value: TProgressBarStyle);
@@ -484,8 +484,8 @@ begin
     fHandle.removeAttribute('max');
   end
   else begin
-    fHandle.max := fMax;
-    fHandle.value := fPosition;
+    fHandle.setAttribute('max', fMax.ToString);
+    fHandle.setAttribute('value', fPosition.ToString);
   end;
 end;
 

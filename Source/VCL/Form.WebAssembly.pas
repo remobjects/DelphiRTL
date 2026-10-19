@@ -68,7 +68,7 @@ end;
 method TForm.Show(aRootView: Object);
 begin
   var lRootView: dynamic := aRootView;
-  if lRootView = nil then begin
+  if aRootView = nil then begin
     // No parent html element provided to 'host' the main div
     var lWindow := Browser.GetWindowObject;
     lRootView := Browser.CreateElement('div');
